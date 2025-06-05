@@ -9,7 +9,19 @@ import { AR } from "./a-r";
 
 export const divisions = [BLS, AMU, FOR, CRU, FR, FT, PR, AR];
 
-export const pmTemplate = ({ date, division }) => {
+type Division = {
+  image: string;
+  divisionName: string;
+  rank: string;
+};
+
+export const pmTemplate = ({
+  date,
+  division,
+}: {
+  date: string;
+  division: Division;
+}) => {
   return `[LSEMSfooter][/LSEMSfooter]
 [divbox=white]
 [fimg=150,150]${division.image}[/fimg][aligntable=right,0,0,0,0,0,0][right][font=Arial][b]
