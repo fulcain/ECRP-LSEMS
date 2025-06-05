@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import LSEMS from "../public/LSEMS.png"
-
 
 export const metadata: Metadata = {
   title: "LSEMS Division PMs",
