@@ -8,24 +8,41 @@ import { PR } from "./pr";
 import { AR } from "./a-r";
 import { General } from "../general";
 
-export const divisions = [BLS, AMU, FOR, CRU, FR, FT, PR, AR, General];
-
-type Division = {
+export type Divisions = {
+  label: string;
   image: string;
+  data: DivisionData;
+};
+
+type DivisionData = {
+  image: string;
+  imageSize: string;
   divisionName: string;
   rank: string;
 };
+
+export const divisions: Divisions[] = [
+  BLS,
+  AMU,
+  FOR,
+  CRU,
+  FR,
+  FT,
+  PR,
+  AR,
+  General,
+];
 
 export const pmTemplate = ({
   date,
   division,
 }: {
   date: string;
-  division: Division;
+  division: DivisionData;
 }) => {
   return `[LSEMSfooter][/LSEMSfooter]
 [divbox=white]
-[fimg=150,150]${division.image}[/fimg][aligntable=right,0,0,0,0,0,0][right][font=Arial][b]
+[fimg=${division.imageSize}]${division.image}[/fimg][aligntable=right,0,0,0,0,0,0][right][font=Arial][b]
 [size=150]${division.divisionName}[/size][/b]
 [size=95]"One Team, One Mission, Saving Lives"[/size][/font]
 [size=115]Subject[/size]
