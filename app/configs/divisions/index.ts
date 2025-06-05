@@ -6,8 +6,9 @@ import { FR } from "./f-r";
 import { FT } from "./ft";
 import { PR } from "./pr";
 import { AR } from "./a-r";
+import { General } from "../general";
 
-export const divisions = [BLS, AMU, FOR, CRU, FR, FT, PR, AR];
+export const divisions = [BLS, AMU, FOR, CRU, FR, FT, PR, AR, General];
 
 type Division = {
   image: string;

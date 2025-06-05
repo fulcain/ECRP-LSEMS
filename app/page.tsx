@@ -2,9 +2,9 @@
 
 import React from "react";
 import Image from "next/image";
-import { divisions } from "@/app/components/divisions/";
+import { divisions } from "@/app/configs/divisions/";
 import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
-import { pmTemplate } from "@/app/components/divisions/";
+import { pmTemplate } from "@/app/configs/divisions/";
 import { ToastContainer, toast } from "react-toastify";
 import { Bounce } from "react-toastify";
 
