@@ -9,9 +9,14 @@ type Props = {
   medicCredentials: {
     name: string;
     signature: string;
+    rank: string;
   };
   setMedicCredentialsAction: React.Dispatch<
-    React.SetStateAction<{ name: string; signature: string }>
+    React.SetStateAction<{
+      name: string;
+      signature: string;
+      rank: string;
+    }>
   >;
 };
 
@@ -24,6 +29,7 @@ export function MedicCredentials({
     validationSchema: Yup.object({
       name: Yup.string().required("Name is required"),
       signature: Yup.string().required("Signature is required"),
+      rank: Yup.string().required("Rank is required"),
     }),
     onSubmit: (values) => {
       setMedicCredentialsAction(values);
@@ -61,7 +67,22 @@ export function MedicCredentials({
         <span className="text-sm text-red-500">{formik.errors.signature}</span>
       )}
 
-      <Button variant="outline" type="submit">Submit</Button>
+      <Input
+        id="rank"
+        name="rank"
+        type="text"
+        placeholder="Enter your rank"
+        onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        value={formik.values.rank}
+      />
+      {formik.touched.rank && formik.errors.rank && (
+        <span className="text-sm text-red-500">{formik.errors.rank}</span>
+      )}
+
+      <Button variant="outline" type="submit">
+        Submit
+      </Button>
     </form>
   );
 }

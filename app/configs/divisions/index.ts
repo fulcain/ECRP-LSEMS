@@ -36,9 +36,15 @@ export const divisions: Divisions[] = [
 export const pmTemplate = ({
   date,
   division,
+  medicCredentials,
 }: {
   date: string;
   division: DivisionData;
+  medicCredentials: {
+    name: string;
+    signature: string;
+    rank: string;
+  };
 }) => {
   return `[LSEMSfooter][/LSEMSfooter]
 [divbox=white]
@@ -56,9 +62,9 @@ export const pmTemplate = ({
 [hr]
 [b]Kind regards,[/b]
 
-[img]https://i.imgur.com/qLrboSu.png[/img]
-[i]Dmitry Petrov[/i]
-[b]EMT-I | ${division.rank}[/b]
+[img]${medicCredentials.signature}[/img]
+[i]${medicCredentials.name}[/i]
+[b]${medicCredentials.rank} | ${division.rank}[/b]
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox]
 [LSEMSfooter][/LSEMSfooter]

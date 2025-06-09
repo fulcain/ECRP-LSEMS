@@ -3,25 +3,30 @@
 import { divisions } from "@/app/configs/divisions/";
 import { pmTemplate } from "@/app/configs/divisions/";
 import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
+import { useLocalStorageState } from "@/app/hooks/useLocalStorage";
+import { MedicCredentials } from "@/components/MedicCredentials";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { Bounce } from "react-toastify";
-import { MedicCredentials } from "@/components/MedicCredentials";
-import { useLocalStorageState } from "@/app/hooks/useLocalStorage";
-import { Button } from "@/components/ui/button"; 
 
 export default function Home() {
   const date = getCurrentDateFormatted();
 
-  const [medicCredentials, setMedicCredentials] = useLocalStorageState("medic-credentials", {
-    name: "",
-    signature: "",
-  });
+  const [medicCredentials, setMedicCredentials] = useLocalStorageState(
+    "medic-credentials",
+    {
+      name: "",
+      signature: "",
+      rank: "",
+    },
+  );
 
   const [showEditForm, setShowEditForm] = useState(false);
 
-  const isCredentialsEmpty = !medicCredentials.name || !medicCredentials.signature;
+  const isCredentialsEmpty =
+    !medicCredentials.name || !medicCredentials.signature || !medicCredentials.rank;
 
   const handleClick = (generateText: (date: string) => string) => {
     const text = generateText(date).trim();
@@ -49,15 +54,15 @@ export default function Home() {
         transition={Bounce}
       />
 
-      <div className="mt-20 flex flex-col gap-10 items-center justify-center">
+      <div className="mt-20 flex flex-col items-center justify-center gap-10">
         <h1>LSEMS Division PMs</h1>
 
-        {(isCredentialsEmpty || showEditForm) ? (
+        {isCredentialsEmpty || showEditForm ? (
           <MedicCredentials
             medicCredentials={medicCredentials}
             setMedicCredentialsAction={(values) => {
               setMedicCredentials(values);
-              setShowEditForm(false); 
+              setShowEditForm(false);
             }}
           />
         ) : (
@@ -75,7 +80,9 @@ export default function Home() {
               key={idx}
               className="flex w-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-md bg-red-500 p-3 text-white transition hover:bg-red-600"
               onClick={() =>
-                handleClick(() => pmTemplate({ date, division: item.data }))
+                handleClick(() =>
+                  pmTemplate({ date, division: item.data, medicCredentials }),
+                )
               }
             >
               <div className="flex h-[100px] w-[100px] items-center justify-center rounded-md">
