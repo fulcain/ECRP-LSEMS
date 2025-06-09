@@ -4,12 +4,24 @@ import { divisions } from "@/app/configs/divisions/";
 import { pmTemplate } from "@/app/configs/divisions/";
 import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { Bounce } from "react-toastify";
+import { MedicCredentials } from "@/components/MedicCredentials";
+import { useLocalStorageState } from "@/app/hooks/useLocalStorage";
+import { Button } from "@/components/ui/button"; 
 
 export default function Home() {
   const date = getCurrentDateFormatted();
+
+  const [medicCredentials, setMedicCredentials] = useLocalStorageState("medic-credentials", {
+    name: "",
+    signature: "",
+  });
+
+  const [showEditForm, setShowEditForm] = useState(false);
+
+  const isCredentialsEmpty = !medicCredentials.name || !medicCredentials.signature;
 
   const handleClick = (generateText: (date: string) => string) => {
     const text = generateText(date).trim();
@@ -36,10 +48,27 @@ export default function Home() {
         theme="dark"
         transition={Bounce}
       />
-      <div className="grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-8 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
-        <h1>LSEMS Division PMs</h1>
-        <section></section>
 
+      <div className="mt-20 flex flex-col gap-10 items-center justify-center">
+        <h1>LSEMS Division PMs</h1>
+
+        {(isCredentialsEmpty || showEditForm) ? (
+          <MedicCredentials
+            medicCredentials={medicCredentials}
+            setMedicCredentialsAction={(values) => {
+              setMedicCredentials(values);
+              setShowEditForm(false); 
+            }}
+          />
+        ) : (
+          <div className="flex flex-col items-center gap-2">
+            <Button variant="outline" onClick={() => setShowEditForm(true)}>
+              Edit Credentials
+            </Button>
+          </div>
+        )}
+
+        {/* PM Template Buttons */}
         <section className="flex flex-row flex-wrap justify-center gap-4">
           {divisions.map((item, idx) => (
             <div
