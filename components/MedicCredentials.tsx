@@ -80,7 +80,7 @@ export function MedicCredentials({
         <span className="text-sm text-red-500">{formik.errors.rank}</span>
       )}
 
-      <Button variant="outline" type="submit">
+      <Button className="cursor-pointer" variant="outline" type="submit">
         Submit
       </Button>
     </form>

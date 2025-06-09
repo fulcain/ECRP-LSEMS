@@ -5,6 +5,6 @@ export const General = {
     imageSize: "150,150",
     image: "Los Santos Emergency Medical Services",
     divisionName: "Los Santos Emergency Medical Services",
-    rank: "",
+    ranks: "",
   },
 };

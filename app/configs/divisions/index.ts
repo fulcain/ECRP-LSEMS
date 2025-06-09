@@ -18,7 +18,7 @@ type DivisionData = {
   image: string;
   imageSize: string;
   divisionName: string;
-  rank: string;
+  ranks: string[] | string;
 };
 
 export const divisions: Divisions[] = [
@@ -37,17 +37,19 @@ export const pmTemplate = ({
   date,
   division,
   medicCredentials,
+  selectedRank,
 }: {
   date: string;
   division: DivisionData;
+  selectedRank: string;
   medicCredentials: {
     name: string;
     signature: string;
     rank: string;
   };
 }) => {
-  const rankLine = division.rank
-    ? `[b]${medicCredentials.rank} | ${division.rank}[/b]`
+  const rankLine = selectedRank
+    ? `[b]${medicCredentials.rank} | ${selectedRank}[/b]`
     : `[b]${medicCredentials.rank}[/b]`;
 
   return `[LSEMSfooter][/LSEMSfooter]

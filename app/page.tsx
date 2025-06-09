@@ -6,6 +6,13 @@ import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
 import { useLocalStorageState } from "@/app/hooks/useLocalStorage";
 import { MedicCredentials } from "@/components/MedicCredentials";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import Image from "next/image";
 import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
@@ -24,17 +31,27 @@ export default function Home() {
   );
 
   const [showEditForm, setShowEditForm] = useState(false);
+  const [selectedDivision, setSelectedDivision] = useState<any>(null);
+  const [selectedRank, setSelectedRank] = useState("");
 
   const isCredentialsEmpty =
-    !medicCredentials.name || !medicCredentials.signature || !medicCredentials.rank;
+    !medicCredentials.name ||
+    !medicCredentials.signature ||
+    !medicCredentials.rank;
 
-  const handleClick = (generateText: (date: string) => string) => {
-    const text = generateText(date).trim();
+  const handleGenerate = () => {
+    const text = pmTemplate({
+      date,
+      division: selectedDivision,
+      selectedRank: selectedRank || "",
+      medicCredentials: {
+        ...medicCredentials,
+      },
+    }).trim();
+
     navigator.clipboard
       .writeText(text)
-      .then(() => {
-        toast("Copied!");
-      })
+      .then(() => toast("Copied!"))
       .catch((err) => console.error("Failed to copy: ", err));
   };
 
@@ -55,7 +72,7 @@ export default function Home() {
       />
 
       <div className="mt-20 flex flex-col items-center justify-center gap-10">
-        <h1>LSEMS Division PMs</h1>
+        <h1 className="text-2xl font-bold">LSEMS Division PMs</h1>
 
         {isCredentialsEmpty || showEditForm ? (
           <MedicCredentials
@@ -67,7 +84,11 @@ export default function Home() {
           />
         ) : (
           <div className="flex flex-col items-center gap-2">
-            <Button variant="outline" onClick={() => setShowEditForm(true)}>
+            <Button
+              className="cursor-pointer"
+              variant="outline"
+              onClick={() => setShowEditForm(true)}
+            >
               Edit Credentials
             </Button>
           </div>
@@ -79,11 +100,10 @@ export default function Home() {
             <div
               key={idx}
               className="flex w-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-md bg-red-500 p-3 text-white transition hover:bg-red-600"
-              onClick={() =>
-                handleClick(() =>
-                  pmTemplate({ date, division: item.data, medicCredentials }),
-                )
-              }
+              onClick={() => {
+                setSelectedDivision(item.data);
+                setSelectedRank("");
+              }}
             >
               <div className="flex h-[100px] w-[100px] items-center justify-center rounded-md">
                 <Image
@@ -98,6 +118,43 @@ export default function Home() {
             </div>
           ))}
         </section>
+
+        {/* Rank Select + Generate PM */}
+        {selectedDivision && (
+          <div className="mt-6 flex flex-col items-center gap-4">
+            {selectedDivision?.ranks && (
+              <Select
+                onValueChange={(val) => setSelectedRank(val)}
+                value={selectedRank}
+              >
+                <SelectTrigger className="w-64">
+                  <SelectValue placeholder="Select a rank" />
+                </SelectTrigger>
+                <SelectContent>
+                  {selectedDivision.ranks?.map((rank: string, idx: number) => (
+                    <SelectItem key={idx} value={rank}>
+                      {rank}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
+            {selectedDivision?.ranks === "" ? (
+              <Button className="cursor-pointer" onClick={handleGenerate}>
+                Generate PM
+              </Button>
+            ) : (
+              <Button
+                className="cursor-pointer"
+                onClick={handleGenerate}
+                disabled={!selectedRank}
+              >
+                Generate PM
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     </>
   );

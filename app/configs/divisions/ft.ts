@@ -5,6 +5,14 @@ export const FT = {
     imageSize: "150,150",
     image: "https://i.imgur.com/9f9h6N3.png",
     divisionName: "Field Training Division",
-    rank: "Field Training Officer",
+    ranks: [
+      "Head Of FTD",
+      "Interim Head Of FTD",
+      "Assistant Head Of FTD",
+      "Interim Assistant Head Of FTD",
+      "Field Training Instructor",
+      "Field Training Officer",
+      "Field Training Officer in Training",
+    ],
   },
 };
