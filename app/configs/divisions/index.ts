@@ -63,7 +63,7 @@ export const pmTemplate = ({
 
 [hr]
 
-[b]Dear [RANK, NAME][/b],
+[b]Dear [/b],
 
 [hr]
 [b]Kind regards,[/b]
