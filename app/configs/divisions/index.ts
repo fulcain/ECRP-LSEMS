@@ -46,6 +46,10 @@ export const pmTemplate = ({
     rank: string;
   };
 }) => {
+  const rankLine = division.rank
+    ? `[b]${medicCredentials.rank} | ${division.rank}[/b]`
+    : `[b]${medicCredentials.rank}[/b]`;
+
   return `[LSEMSfooter][/LSEMSfooter]
 [divbox=white]
 [fimg=${division.imageSize}]${division.image}[/fimg][aligntable=right,0,0,0,0,0,0][right][font=Arial][b]
@@ -62,9 +66,9 @@ export const pmTemplate = ({
 [hr]
 [b]Kind regards,[/b]
 
-[img]${medicCredentials.signature}[/img]
+[img]https://i.imgur.com/qLrboSu.png[/img]
 [i]${medicCredentials.name}[/i]
-[b]${medicCredentials.rank} | ${division.rank}[/b]
+${rankLine}
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox]
 [LSEMSfooter][/LSEMSfooter]
