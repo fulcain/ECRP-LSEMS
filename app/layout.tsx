@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
 import "./globals.css";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "LSEMS Division PMs",
@@ -13,11 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={``}
-      >
-        {children}
-      </body>
+      <body className={``}>{children}</body>
     </html>
   );
 }

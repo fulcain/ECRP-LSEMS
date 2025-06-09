@@ -1,12 +1,12 @@
-import { BLS } from "./bls";
+import { General } from "../general";
+import { AR } from "./a-r";
 import { AMU } from "./amu";
-import { FOR } from "./for";
+import { BLS } from "./bls";
 import { CRU } from "./cru";
 import { FR } from "./f-r";
+import { FOR } from "./for";
 import { FT } from "./ft";
 import { PR } from "./pr";
-import { AR } from "./a-r";
-import { General } from "../general";
 
 export type Divisions = {
   label: string;
