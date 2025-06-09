@@ -101,7 +101,7 @@ export default function Home() {
               key={idx}
               className="flex w-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-md bg-red-500 p-3 text-white transition hover:bg-red-600"
               onClick={() => {
-                setSelectedDivision(item.data);
+                setSelectedDivision(item);
                 setSelectedRank("");
               }}
             >
@@ -121,8 +121,9 @@ export default function Home() {
 
         {/* Rank Select + Generate PM */}
         {selectedDivision && (
-          <div className="mt-6 flex flex-col items-center gap-4">
-            {selectedDivision?.ranks && (
+					<div className="mt-6 flex flex-col items-center gap-4">
+						<h3 className="font-bold text-lg">{selectedDivision.label}</h3>
+            {selectedDivision.data?.ranks && (
               <Select
                 onValueChange={(val) => setSelectedRank(val)}
                 value={selectedRank}
@@ -131,11 +132,13 @@ export default function Home() {
                   <SelectValue placeholder="Select a rank" />
                 </SelectTrigger>
                 <SelectContent>
-                  {selectedDivision.ranks?.map((rank: string, idx: number) => (
-                    <SelectItem key={idx} value={rank}>
-                      {rank}
-                    </SelectItem>
-                  ))}
+                  {selectedDivision.data.ranks?.map(
+                    (rank: string, idx: number) => (
+                      <SelectItem key={idx} value={rank}>
+                        {rank}
+                      </SelectItem>
+                    ),
+                  )}
                 </SelectContent>
               </Select>
             )}
