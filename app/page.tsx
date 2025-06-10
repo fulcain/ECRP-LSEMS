@@ -124,10 +124,10 @@ export default function Home() {
         </section>
 
         {/* Rank Select + Generate PM */}
-        {selectedDivision && (
+        {selectedDivision !== null && (
           <div className="mt-6 flex flex-col items-center gap-4">
             <h3 className="text-lg font-bold">{selectedDivision.label}</h3>
-            {selectedDivision.data?.ranks && (
+            {Array.isArray(selectedDivision.data?.ranks) && (
               <Select
                 onValueChange={(val) => setSelectedRank(val)}
                 value={selectedRank}
@@ -136,18 +136,15 @@ export default function Home() {
                   <SelectValue placeholder="Select a rank" />
                 </SelectTrigger>
                 <SelectContent>
-                  {selectedDivision.data.ranks?.map(
-                    (rank: string, idx: number) => (
-                      <SelectItem key={idx} value={rank}>
-                        {rank}
-                      </SelectItem>
-                    ),
-                  )}
+                  {selectedDivision.data.ranks.map((rank, idx) => (
+                    <SelectItem key={idx} value={rank}>
+                      {rank}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             )}
-
-            {selectedDivision?.data.ranks === "" ? (
+            {!Array.isArray(selectedDivision.data?.ranks) ? (
               <Button className="cursor-pointer" onClick={handleGenerate}>
                 Generate PM
               </Button>
