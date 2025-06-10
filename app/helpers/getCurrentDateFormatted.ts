@@ -1,6 +1,6 @@
 export const getCurrentDateFormatted = (): string => {
   const now = new Date();
-  const day = now.getDate().toString().padStart(2, "0");
+  const day = now.getUTCDate().toString().padStart(2, "0");
   const monthNames = [
     "JAN",
     "FEB",
@@ -15,7 +15,7 @@ export const getCurrentDateFormatted = (): string => {
     "NOV",
     "DEC",
   ];
-  const month = monthNames[now.getMonth()];
-  const year = now.getFullYear();
+  const month = monthNames[now.getUTCMonth()];
+  const year = now.getUTCFullYear();
   return `${day}/${month}/${year}`;
 };
