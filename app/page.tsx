@@ -1,6 +1,6 @@
 "use client";
 
-import { divisions } from "@/app/configs/divisions/";
+import { Divisions, divisions } from "@/app/configs/divisions/";
 import { pmTemplate } from "@/app/configs/divisions/";
 import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
 import { useLocalStorageState } from "@/app/hooks/useLocalStorage";
@@ -31,7 +31,9 @@ export default function Home() {
   );
 
   const [showEditForm, setShowEditForm] = useState(false);
-  const [selectedDivision, setSelectedDivision] = useState<any>(null);
+  const [selectedDivision, setSelectedDivision] = useState<Divisions | null>(
+    null,
+  );
   const [selectedRank, setSelectedRank] = useState("");
 
   const isCredentialsEmpty =
@@ -40,9 +42,11 @@ export default function Home() {
     !medicCredentials.rank;
 
   const handleGenerate = () => {
+    if (selectedDivision === null) return;
+
     const text = pmTemplate({
       date,
-      division: selectedDivision,
+      division: selectedDivision.data,
       selectedRank: selectedRank || "",
       medicCredentials: {
         ...medicCredentials,
@@ -121,8 +125,8 @@ export default function Home() {
 
         {/* Rank Select + Generate PM */}
         {selectedDivision && (
-					<div className="mt-6 flex flex-col items-center gap-4">
-						<h3 className="font-bold text-lg">{selectedDivision.label}</h3>
+          <div className="mt-6 flex flex-col items-center gap-4">
+            <h3 className="text-lg font-bold">{selectedDivision.label}</h3>
             {selectedDivision.data?.ranks && (
               <Select
                 onValueChange={(val) => setSelectedRank(val)}
@@ -143,7 +147,7 @@ export default function Home() {
               </Select>
             )}
 
-            {selectedDivision?.ranks === "" ? (
+            {selectedDivision?.data.ranks === "" ? (
               <Button className="cursor-pointer" onClick={handleGenerate}>
                 Generate PM
               </Button>
