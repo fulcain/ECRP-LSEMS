@@ -2,8 +2,32 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+
+const ranks = [
+  "Chief of LSEMS",
+  "Assistant Chief",
+  "Deputy Chief",
+  "Lieutenant",
+  "Commander",
+  "Lead Paramedic",
+  "Senior Paramedic",
+  "Paramedic",
+  "Junior Paramedic",
+  "Master EMT",
+  "EMT-A",
+  "EMT-I",
+  "EMT-B",
+  "EMR"
+];
 
 type Props = {
   medicCredentials: {
@@ -67,15 +91,21 @@ export function MedicCredentials({
         <span className="text-sm text-red-500">{formik.errors.signature}</span>
       )}
 
-      <Input
-        id="rank"
-        name="rank"
-        type="text"
-        placeholder="Enter your rank"
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
+      <Select
         value={formik.values.rank}
-      />
+        onValueChange={(value) => formik.setFieldValue("rank", value)}
+      >
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="Select your rank" />
+        </SelectTrigger>
+        <SelectContent>
+          {ranks.map((rank) => (
+            <SelectItem key={rank} value={rank}>
+              {rank}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
       {formik.touched.rank && formik.errors.rank && (
         <span className="text-sm text-red-500">{formik.errors.rank}</span>
       )}
