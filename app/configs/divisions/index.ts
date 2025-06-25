@@ -5,8 +5,12 @@ import { BLS } from "./bls";
 import { CRU } from "./cru";
 import { FR } from "./f-r";
 import { FOR } from "./for";
+import { FS } from "./fs";
 import { FT } from "./ft";
+import { IA } from "./ia";
+import { LIFEGUARD } from "./lifeguard";
 import { PR } from "./pr";
+import { RED } from "./red";
 
 export type Divisions = {
   label: string;
@@ -27,9 +31,13 @@ export const divisions: Divisions[] = [
   FOR,
   CRU,
   FR,
+  FS,
   FT,
   PR,
   AR,
+  RED,
+  LIFEGUARD,
+  IA,
   General,
 ];
 
