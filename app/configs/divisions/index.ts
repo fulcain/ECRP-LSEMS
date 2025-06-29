@@ -64,7 +64,6 @@ export const pmTemplate = ({
 [divbox=white]
 [fimg=${division.imageSize}]${division.image}[/fimg][aligntable=right,0,0,0,0,0,0][right][font=Arial][b]
 [size=150]${division.divisionName}[/size][/b]
-[size=95]"One Team, One Mission, Saving Lives"[/size][/font]
 [size=115]Subject[/size]
 [size=95]${date}[/size]
 [/right][/aligntable]
