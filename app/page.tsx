@@ -1,6 +1,10 @@
 "use client";
 
-import { Divisions, divisions } from "@/app/configs/divisions/";
+import React, { useState } from "react";
+import Image from "next/image";
+import { Bounce, ToastContainer, toast } from "react-toastify";
+
+import { divisions, Divisions } from "@/app/configs/divisions/";
 import { pmTemplate } from "@/app/configs/divisions/";
 import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
 import { useLocalStorageState } from "@/app/hooks/useLocalStorage";
@@ -13,10 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Image from "next/image";
-import React, { useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
-import { Bounce } from "react-toastify";
 
 export default function Home() {
   const date = getCurrentDateFormatted();
@@ -31,18 +31,14 @@ export default function Home() {
   );
 
   const [showEditForm, setShowEditForm] = useState(false);
-  const [selectedDivision, setSelectedDivision] = useState<Divisions | null>(
-    null,
-  );
+  const [selectedDivision, setSelectedDivision] = useState<Divisions | null>(null);
   const [selectedRank, setSelectedRank] = useState("");
 
   const isCredentialsEmpty =
-    !medicCredentials.name ||
-    !medicCredentials.signature ||
-    !medicCredentials.rank;
+    !medicCredentials.name || !medicCredentials.signature || !medicCredentials.rank;
 
   const handleGenerate = () => {
-    if (selectedDivision === null) return;
+    if (!selectedDivision) return;
 
     const text = pmTemplate({
       date,
@@ -77,6 +73,15 @@ export default function Home() {
 
       <div className="mt-20 flex flex-col items-center justify-center gap-10">
         <h1 className="text-2xl font-bold">LSEMS Division PMs</h1>
+
+        <a
+          href="https://lsems-amu-paperwork.netlify.app/#/"
+          className="text-blue-500 underline"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          AMU Paperwork Generator!
+        </a>
 
         {isCredentialsEmpty || showEditForm ? (
           <MedicCredentials
@@ -124,7 +129,7 @@ export default function Home() {
         </section>
 
         {/* Rank Select + Generate PM */}
-        {selectedDivision !== null && (
+        {selectedDivision && (
           <div className="mt-6 flex flex-col items-center gap-4">
             <h3 className="text-lg font-bold">{selectedDivision.label}</h3>
             {Array.isArray(selectedDivision.data?.ranks) && (
@@ -144,19 +149,13 @@ export default function Home() {
                 </SelectContent>
               </Select>
             )}
-            {!Array.isArray(selectedDivision.data?.ranks) ? (
-              <Button className="cursor-pointer" onClick={handleGenerate}>
-                Generate PM
-              </Button>
-            ) : (
-              <Button
-                className="cursor-pointer"
-                onClick={handleGenerate}
-                disabled={!selectedRank}
-              >
-                Generate PM
-              </Button>
-            )}
+            <Button
+              className="cursor-pointer"
+              onClick={handleGenerate}
+              disabled={Array.isArray(selectedDivision.data?.ranks) && !selectedRank}
+            >
+              Generate PM
+            </Button>
           </div>
         )}
       </div>
