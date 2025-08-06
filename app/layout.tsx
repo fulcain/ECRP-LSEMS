@@ -1,4 +1,5 @@
 import "./globals.css";
+import { Header } from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
 import type { Metadata } from "next";
 
@@ -21,6 +22,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <Header />
           {children}
         </ThemeProvider>
       </body>
