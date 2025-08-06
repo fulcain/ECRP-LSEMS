@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
-import Image from "next/image";
-import { Bounce, ToastContainer, toast } from "react-toastify";
-
-import { divisions, Divisions } from "@/app/configs/divisions/";
+import {
+  divisions,
+  Divisions,
+  generateSignature,
+} from "@/app/configs/divisions/";
 import { pmTemplate } from "@/app/configs/divisions/";
 import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
 import { useLocalStorageState } from "@/app/hooks/useLocalStorage";
@@ -17,6 +17,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Image from "next/image";
+import React, { useState } from "react";
+import { Bounce, ToastContainer, toast } from "react-toastify";
 
 export default function Home() {
   const date = getCurrentDateFormatted();
@@ -31,11 +34,15 @@ export default function Home() {
   );
 
   const [showEditForm, setShowEditForm] = useState(false);
-  const [selectedDivision, setSelectedDivision] = useState<Divisions | null>(null);
+  const [selectedDivision, setSelectedDivision] = useState<Divisions | null>(
+    null,
+  );
   const [selectedRank, setSelectedRank] = useState("");
 
   const isCredentialsEmpty =
-    !medicCredentials.name || !medicCredentials.signature || !medicCredentials.rank;
+    !medicCredentials.name ||
+    !medicCredentials.signature ||
+    !medicCredentials.rank;
 
   const handleGenerate = () => {
     if (!selectedDivision) return;
@@ -51,7 +58,23 @@ export default function Home() {
 
     navigator.clipboard
       .writeText(text)
-      .then(() => toast("Copied!"))
+      .then(() => toast("PM template Copied!"))
+      .catch((err) => console.error("Failed to copy: ", err));
+  };
+
+  const handleGenerateSignature = () => {
+    if (!selectedDivision) return;
+
+    const text = generateSignature({
+      selectedRank: selectedRank || "",
+      medicCredentials: {
+        ...medicCredentials,
+      },
+    }).trim();
+
+    navigator.clipboard
+      .writeText(text)
+      .then(() => toast("Signature Copied!"))
       .catch((err) => console.error("Failed to copy: ", err));
   };
 
@@ -152,9 +175,20 @@ export default function Home() {
             <Button
               className="cursor-pointer"
               onClick={handleGenerate}
-              disabled={Array.isArray(selectedDivision.data?.ranks) && !selectedRank}
+              disabled={
+                Array.isArray(selectedDivision.data?.ranks) && !selectedRank
+              }
             >
               Generate PM
+            </Button>
+            <Button
+              className="cursor-pointer"
+              onClick={handleGenerateSignature}
+              disabled={
+                Array.isArray(selectedDivision.data?.ranks) && !selectedRank
+              }
+            >
+              Generate Signature
             </Button>
           </div>
         )}

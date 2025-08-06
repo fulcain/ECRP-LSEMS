@@ -41,6 +41,12 @@ export const divisions: Divisions[] = [
   General,
 ];
 
+type MedicCredentials = {
+  name: string;
+  signature: string;
+  rank: string;
+};
+
 export const pmTemplate = ({
   date,
   division,
@@ -50,11 +56,7 @@ export const pmTemplate = ({
   date: string;
   division: DivisionData;
   selectedRank: string;
-  medicCredentials: {
-    name: string;
-    signature: string;
-    rank: string;
-  };
+  medicCredentials: MedicCredentials;
 }) => {
   const rankLine = selectedRank
     ? `[b]${medicCredentials.rank} | ${selectedRank}[/b]`
@@ -81,5 +83,22 @@ ${rankLine}
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox]
 [LSEMSfooter][/LSEMSfooter]
+`;
+};
+
+export const generateSignature = ({
+  medicCredentials,
+  selectedRank,
+}: {
+  medicCredentials: MedicCredentials;
+  selectedRank: string;
+}) => {
+  const rankLine = selectedRank
+    ? `[b]${medicCredentials.rank} | ${selectedRank}[/b]`
+    : `[b]${medicCredentials.rank}[/b]`;
+
+  return `[img]https://i.imgur.com/qLrboSu.png[/img]
+[i]${medicCredentials.name}[/i]
+${rankLine}
 `;
 };
