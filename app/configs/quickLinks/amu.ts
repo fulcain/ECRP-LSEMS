@@ -17,7 +17,7 @@ export const AMU = {
       },
       {
         name: "Handbook Rework",
-        url: "https://gov.eclipse-rp.net/viewforum.php?f=2911",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?t=178535",
       },
       {
         name: "Research Papers",
