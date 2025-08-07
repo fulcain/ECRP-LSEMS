@@ -9,25 +9,10 @@ import {
 } from "@/components/ui/accordion";
 import Image from "next/image";
 import Link from "next/link";
-import { Bounce, ToastContainer} from "react-toastify";
 
 export default function Home() {
   return (
     <>
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick={false}
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-        transition={Bounce}
-      />
-
       <div className="mt-20 flex flex-col items-center justify-center gap-10">
         <Accordion
           type="single"

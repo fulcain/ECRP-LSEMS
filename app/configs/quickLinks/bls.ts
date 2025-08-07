@@ -12,19 +12,23 @@ export const BLS = {
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=90093",
       },
       {
-        name: "Handbook formats",
+        name: "Handbook Formats",
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=90093#FORMATS",
       },
       {
-        name: "Command formats",
+        name: "Command Formats",
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=207730",
       },
       {
-        name: "Course reports",
+        name: "Course Reports",
         url: "https://gov.eclipse-rp.net/viewtopic.php?p=573545#p573545",
       },
       {
-        name: "Activity log",
+        name: "BLS Courses",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=578",
+      },
+      {
+        name: "Activity Log",
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=184979",
       },
       {

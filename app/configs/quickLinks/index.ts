@@ -1,12 +1,13 @@
-// import { General } from "../general";
 import { AR } from "./a-r";
-// import { AMU } from "./amu";
+import { AMU } from "./amu";
 import { BLS } from "./bls";
 // import { CRU } from "./cru";
 // import { FR } from "./f-r";
 // import { FOR } from "./for";
 // import { FS } from "./fs";
-// import { FT } from "./ft";
+import { FT } from "./ft";
+import { General } from "./general";
+
 // import { IA } from "./ia";
 // import { LIFEGUARD } from "./lifeguard";
 // import { PR } from "./pr";
@@ -26,17 +27,17 @@ type Links = {
 };
 
 export const links: Links[] = [
+  General,
   BLS,
-  // AMU,
+  FT,
+  AMU,
   // FOR,
   // CRU,
   // FR,
   // FS,
-  // FT,
   // PR,
   AR,
   // RED,
   // LIFEGUARD,
   // IA,
-  // General,
 ];
