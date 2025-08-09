@@ -28,17 +28,17 @@ type DivisionData = {
 export const divisions: Divisions[] = [
   BLS,
   AMU,
-  FOR,
+  General,
+  FT,
+  RED,
   CRU,
+  FOR,
   FR,
   FS,
-  FT,
   PR,
   AR,
-  RED,
   LIFEGUARD,
   IA,
-  General,
 ];
 
 type MedicCredentials = {

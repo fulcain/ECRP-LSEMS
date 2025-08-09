@@ -10,6 +10,7 @@ import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
 import { useLocalStorageState } from "@/app/hooks/useLocalStorage";
 import { MedicCredentials } from "@/components/MedicCredentials";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -26,11 +27,7 @@ export default function Home() {
 
   const [medicCredentials, setMedicCredentials] = useLocalStorageState(
     "medic-credentials",
-    {
-      name: "",
-      signature: "",
-      rank: "",
-    },
+    { name: "", signature: "", rank: "" },
   );
 
   const [showEditForm, setShowEditForm] = useState(false);
@@ -38,11 +35,16 @@ export default function Home() {
     null,
   );
   const [selectedRank, setSelectedRank] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const isCredentialsEmpty =
     !medicCredentials.name ||
     !medicCredentials.signature ||
     !medicCredentials.rank;
+
+  const filteredDivisions = divisions.filter((item) =>
+    item.label.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
 
   const handleGenerate = () => {
     if (!selectedDivision) return;
@@ -51,9 +53,7 @@ export default function Home() {
       date,
       division: selectedDivision.data,
       selectedRank: selectedRank || "",
-      medicCredentials: {
-        ...medicCredentials,
-      },
+      medicCredentials: { ...medicCredentials },
     }).trim();
 
     navigator.clipboard
@@ -67,9 +67,7 @@ export default function Home() {
 
     const text = generateSignature({
       selectedRank: selectedRank || "",
-      medicCredentials: {
-        ...medicCredentials,
-      },
+      medicCredentials: { ...medicCredentials },
     }).trim();
 
     navigator.clipboard
@@ -82,20 +80,13 @@ export default function Home() {
     <>
       <ToastContainer
         position="top-right"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick={false}
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
+        autoClose={2002}
         theme="dark"
         transition={Bounce}
       />
 
-      <div className="mt-20 flex flex-col items-center justify-center gap-10">
-        <h1 className="text-2xl font-bold">LSEMS Division PMs</h1>
+      <div className="mt-20 flex flex-col items-center gap-11 text-white">
+        <h3 className="text-3xl font-semibold">LSEMS Division PMs</h3>
 
         {isCredentialsEmpty || showEditForm ? (
           <MedicCredentials
@@ -106,83 +97,89 @@ export default function Home() {
             }}
           />
         ) : (
-          <div className="flex flex-col items-center gap-2">
-            <Button
-              className="cursor-pointer"
-              variant="outline"
-              onClick={() => setShowEditForm(true)}
-            >
-              Edit Credentials
-            </Button>
-          </div>
+          <Button variant="outline" onClick={() => setShowEditForm(true)}>
+            Edit Credentials
+          </Button>
         )}
 
-        {/* PM Template Buttons */}
-        <section className="flex flex-row flex-wrap justify-center gap-4">
-          {divisions.map((item, idx) => (
-            <div
-              key={idx}
-              className="flex w-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-md bg-red-500 p-3 text-white transition hover:bg-red-600"
-              onClick={() => {
-                setSelectedDivision(item);
-                setSelectedRank("");
-              }}
+        <div className="flex min-h-[36px] items-center justify-center gap-2">
+          {selectedDivision && Array.isArray(selectedDivision.data?.ranks) && (
+            <Select
+              onValueChange={(val) => setSelectedRank(val)}
+              value={selectedRank}
             >
-              <div className="flex h-[100px] w-[100px] items-center justify-center rounded-md">
-                <Image
-                  src={item.image}
-                  alt={item.label}
-                  width={80}
-                  height={80}
-                  className="object-contain"
-                />
-              </div>
-              <span className="text-center text-sm">{item.label}</span>
-            </div>
-          ))}
-        </section>
+              <SelectTrigger className="cursor-pointer">
+                <SelectValue placeholder="Select rank" />
+              </SelectTrigger>
+              <SelectContent>
+                {selectedDivision.data.ranks.map((rank, idx) => (
+                  <SelectItem className="cursor-pointer" key={idx} value={rank}>
+                    {rank}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
 
-        {/* Rank Select + Generate PM */}
-        {selectedDivision && (
-          <div className="mt-6 flex flex-col items-center gap-4">
-            <h3 className="text-lg font-bold">{selectedDivision.label}</h3>
-            {Array.isArray(selectedDivision.data?.ranks) && (
-              <Select
-                onValueChange={(val) => setSelectedRank(val)}
-                value={selectedRank}
-              >
-                <SelectTrigger className="w-64">
-                  <SelectValue placeholder="Select a rank" />
-                </SelectTrigger>
-                <SelectContent>
-                  {selectedDivision.data.ranks.map((rank, idx) => (
-                    <SelectItem key={idx} value={rank}>
-                      {rank}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
+          {/* Action Buttons */}
+          <div className="flex gap-2">
             <Button
+              size="sm"
+              variant="outline"
               className="cursor-pointer"
               onClick={handleGenerate}
               disabled={
-                Array.isArray(selectedDivision.data?.ranks) && !selectedRank
+                !selectedDivision ||
+                (Array.isArray(selectedDivision?.data?.ranks) && !selectedRank)
               }
             >
-              Generate PM
+              PM
             </Button>
             <Button
+              size="sm"
+              variant="outline"
               className="cursor-pointer"
               onClick={handleGenerateSignature}
               disabled={
-                Array.isArray(selectedDivision.data?.ranks) && !selectedRank
+                !selectedDivision ||
+                (Array.isArray(selectedDivision?.data?.ranks) && !selectedRank)
               }
             >
-              Generate Signature
+              Signature
             </Button>
           </div>
-        )}
+        </div>
+
+        {/* Divisions */}
+          <section className="grid w-full max-w-5xl grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-4 p-4">
+            {filteredDivisions.map((item, idx) => (
+              <div
+                key={idx}
+                className="bg-input/30 border-input hover:bg-input/50 flex cursor-pointer items-center gap-3 rounded-md border px-3 py-2 transition"
+                onClick={() => {
+                  setSelectedDivision(item);
+                  setSelectedRank("");
+                }}
+                style={{ minHeight: 48, minWidth: 140 }}
+              >
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center">
+                  <Image
+                    src={item.image}
+                    alt={item.label}
+                    width={40}
+                    height={40}
+                    className="object-contain"
+                  />
+                </div>
+                <span className="text-sm whitespace-nowrap">{item.label}</span>
+              </div>
+            ))}
+            {filteredDivisions.length === 0 && (
+              <p className="col-span-full text-center text-white">
+                No divisions found.
+              </p>
+            )}
+          </section>
       </div>
     </>
   );
