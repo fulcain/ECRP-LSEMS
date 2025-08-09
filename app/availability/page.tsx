@@ -3,20 +3,21 @@
 import React, { useState } from "react";
 import TimezoneSelect from "react-timezone-select";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
 import {
   AvailabilityInput,
   weekdays,
   convertRangeStringToUTC,
 } from "@/app/helpers/timeUtils";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
 export default function Availability() {
   const initialTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const [timezone, setTimezone] = useState<string>(initialTz);
 
+  // Initialize availability with keys as Weekday and empty strings as values
   const [availability, setAvailability] = useState<AvailabilityInput>(
     weekdays.reduce((acc, day) => {
       acc[day] = "";
@@ -25,42 +26,50 @@ export default function Availability() {
   );
 
   const [output, setOutput] = useState<string>("");
+  const [availabilityCopied, setAvailabilityCopied] = useState(false);
 
-  const handleGenerate = () => {
-    const lines = ["AVAILABILITY TIME [ooc]UTC[/ooc]:", ""];
+ const handleGenerate = () => {
+  const utcLines = ["AVAILABILITY TIME [ooc]UTC[/ooc]:", ""];
 
-    for (const day of weekdays) {
-      const input = availability[day].trim();
-      if (!input) {
-        lines.push(`${day}: []`);
-        continue;
-      }
-      const converted = convertRangeStringToUTC(day, input, timezone);
-      lines.push(`${day}: [${converted}]`);
+  for (const day of weekdays) {
+    const input = availability[day].trim();
+    if (!input) {
+      utcLines.push(`${day}: []`);
+      continue;
     }
+    const converted = convertRangeStringToUTC(day, input, timezone);
+    utcLines.push(`${day}: [${converted}]`);
+  }
 
-    setOutput(lines.join("\n"));
-  };
-
+  setOutput(utcLines.join("\n"));
+  setAvailabilityCopied(false);
+};
   const handleCopy = () => {
     if (!output) return;
-    navigator.clipboard.writeText(output);
+    navigator.clipboard.writeText(output).then(() => {
+      setAvailabilityCopied(true);
+      setTimeout(() => setAvailabilityCopied(false), 2000);
+    });
   };
 
+
   return (
-    <div className="text-foreground mx-auto mt-20 flex max-w-2xl flex-col items-center gap-6">
-      <h3 className="text-center text-3xl font-semibold">Time of Availability</h3>
+    <div className="text-foreground mx-auto my-20 flex max-w-2xl flex-col items-center gap-6">
+      <h3 className="text-center text-3xl font-semibold">
+        Time of Availability
+      </h3>
 
       <div className="mb-6 w-full max-w-lg">
-        <Label htmlFor="timezone" className="text-foreground mb-4 font-semibold">
+        <Label
+          htmlFor="timezone"
+          className="text-foreground mb-4 font-semibold"
+        >
           Select your timezone
         </Label>
         <TimezoneSelect
           id="timezone"
           value={{ value: timezone, label: timezone }}
-          onChange={(tz) =>
-            setTimezone(typeof tz === "string" ? tz : tz.value)
-          }
+          onChange={(tz) => setTimezone(typeof tz === "string" ? tz : tz.value)}
           styles={{
             control: (base) => ({
               ...base,
@@ -137,20 +146,25 @@ export default function Availability() {
         >
           Generate
         </Button>
-        <Button
-          onClick={handleCopy}
-          variant="secondary"
-          className="cursor-pointer"
-          disabled={!output}
-        >
-          Copy
-        </Button>
       </div>
 
       {output && (
-        <pre className="border-border bg-card text-card-foreground mt-8 max-w-lg rounded border p-4 whitespace-pre-wrap">
-          {output}
-        </pre>
+        <div className="mt-6 w-full max-w-lg">
+          <div className="mb-2 flex items-center justify-between">
+            <h4 className="text-lg font-semibold">Converted to UTC</h4>
+            <Button
+              onClick={handleCopy}
+              variant="secondary"
+              className="cursor-pointer"
+              disabled={!output}
+            >
+              {availabilityCopied ? "Copied!" : "Copy (UTC)"}
+            </Button>
+          </div>
+          <pre className="border-border bg-card text-card-foreground rounded border p-4 whitespace-pre-wrap">
+            {output}
+          </pre>
+        </div>
       )}
     </div>
   );

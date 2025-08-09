@@ -1,4 +1,4 @@
-const weekdays = [
+export const weekdays = [
   "Monday",
   "Tuesday",
   "Wednesday",
@@ -6,14 +6,21 @@ const weekdays = [
   "Friday",
   "Saturday",
   "Sunday",
-];
+] as const;
 
-export type AvailabilityInput = Record<string, string>;
+export type Weekday = (typeof weekdays)[number];
 
+// More specific typing here: availability keyed by weekdays
+export type AvailabilityInput = Record<Weekday, string>;
+
+/**
+ * Parses a time range string like "08:00 - 12:00"
+ * Returns tuple [start, end] or null if invalid
+ */
 export function parseTimeRange(timeRange: string): [string, string] | null {
   if (!timeRange) return null;
   const parts = timeRange.split("-");
-  if (parts.length !== 2) return null; 
+  if (parts.length !== 2) return null;
 
   const isValid = (t: string) => /^([01]\d|2[0-3]):([0-5]\d)$/.test(t.trim());
   if (!isValid(parts[0]) || !isValid(parts[1])) return null;
@@ -21,6 +28,9 @@ export function parseTimeRange(timeRange: string): [string, string] | null {
   return [parts[0].trim(), parts[1].trim()];
 }
 
+/**
+ * Returns the offset in minutes between target timezone and runtime timezone for given date/time
+ */
 export function getTimezoneOffsetMinutes(date: Date, timeZone: string): number {
   const dtf = new Intl.DateTimeFormat("en-US", {
     hour12: false,
@@ -32,12 +42,15 @@ export function getTimezoneOffsetMinutes(date: Date, timeZone: string): number {
     minute: "2-digit",
     second: "2-digit",
   });
+
   const parts = dtf.formatToParts(date);
   const map: Record<string, string> = {};
   parts.forEach(({ type, value }) => {
     map[type] = value;
   });
-  const asUTC = Date.UTC(
+
+  // Construct a date interpreted as if in the target timezone's local time
+  const tzDate = new Date(
     Number(map.year),
     Number(map.month) - 1,
     Number(map.day),
@@ -45,20 +58,20 @@ export function getTimezoneOffsetMinutes(date: Date, timeZone: string): number {
     Number(map.minute),
     Number(map.second),
   );
-  return (asUTC - date.getTime()) / (60 * 1000);
+
+  // Difference in minutes between target timezone time and local runtime timezone time
+  return (tzDate.getTime() - date.getTime()) / (60 * 1000);
 }
 
 export function convertLocalToUTCDate(
-  day: string,
+  day: Weekday,
   time: string,
   timezone: string,
 ): Date | null {
   if (!time) return null;
 
-  const now = new Date();
-  const todayDayNum = now.getDay();
-
-  const dayToNumMap: Record<string, number> = {
+  // Map weekday names to day numbers (Sunday=0)
+  const dayToNumMap: Record<Weekday | "Sunday", number> = {
     Sunday: 0,
     Monday: 1,
     Tuesday: 2,
@@ -69,48 +82,64 @@ export function convertLocalToUTCDate(
   };
 
   const targetDayNum = dayToNumMap[day];
+
+  const now = new Date();
+  const todayDayNum = now.getDay();
+
+  // Calculate difference in days to get next occurrence of target day
   let diff = targetDayNum - todayDayNum;
   if (diff < 0) diff += 7;
 
+  // Construct a Date object for that upcoming day at 00:00 local runtime timezone
+  const targetDateLocal = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + diff,
+  );
+
+  // Extract hour and minute from "HH:mm"
   const [hour, minute] = time.split(":").map(Number);
 
-  const localDate = new Date(now);
-  localDate.setDate(now.getDate() + diff);
-  localDate.setHours(hour, minute, 0, 0);
+  const localDate = new Date(
+    targetDateLocal.getFullYear(),
+    targetDateLocal.getMonth(),
+    targetDateLocal.getDate(),
+    hour,
+    minute,
+    0,
+    0,
+  );
 
-  const tzOffsetMinutes = -getTimezoneOffsetMinutes(localDate, timezone);
+  const offsetMinutes = getTimezoneOffsetMinutes(localDate, timezone);
 
-  return new Date(localDate.getTime() + tzOffsetMinutes * 60 * 1000);
+  const utcTimestamp = localDate.getTime() - offsetMinutes * 60 * 1000;
+
+  return new Date(utcTimestamp);
 }
 
+/**
+ * Format a Date object as zero-padded HH:mm in UTC
+ */
 export function formatUTC(date: Date): string {
   const h = date.getUTCHours();
   const m = date.getUTCMinutes();
   return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
 }
 
+/**
+ * Convert all times (HH:mm) in the input string from the given timezone to UTC,
+ * preserving all other text and delimiters as-is.
+ */
 export function convertRangeStringToUTC(
-  day: string,
+  day: Weekday,
   input: string,
   timezone: string,
 ): string {
-  const parts = input.split(/(\s+and\s+|\s*and\s*|\s*,\s*|\s+or\s+|\s*or\s*)/i);
+  const timeRegex = /([01]\d|2[0-3]):([0-5]\d)/g;
 
-  return parts
-    .map((part) => {
-      const range = parseTimeRange(part.trim());
-      if (range) {
-        const [startLocal, endLocal] = range;
-        const startUTCDate = convertLocalToUTCDate(day, startLocal, timezone);
-        const endUTCDate = convertLocalToUTCDate(day, endLocal, timezone);
-
-        if (!startUTCDate || !endUTCDate) return part;
-
-        return `${formatUTC(startUTCDate)} – ${formatUTC(endUTCDate)}`;
-      }
-      return part;
-    })
-    .join("");
+  return input.replace(timeRegex, (match) => {
+    const utcDate = convertLocalToUTCDate(day, match, timezone);
+    if (!utcDate) return match;
+    return formatUTC(utcDate);
+  });
 }
-
-export { weekdays };

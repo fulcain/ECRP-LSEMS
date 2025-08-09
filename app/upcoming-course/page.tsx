@@ -26,7 +26,7 @@ export default function Availability() {
   );
 
   const [output, setOutput] = useState<string>("");
-  const [availabilityCopied, setAvailabilityCopied] = useState(false);
+  const [upcomingCopied, setUpcomingCopied] = useState(false);
 
   const parseTimeRange = (timeRange: string): [string, string] | null => {
     if (!timeRange) return null;
@@ -107,14 +107,14 @@ export default function Availability() {
     }
 
     setOutput(lines.join("\n"));
-    setAvailabilityCopied(false);
+    setUpcomingCopied(false);
   };
 
   const handleCopy = () => {
     if (!output) return;
     navigator.clipboard.writeText(output).then(() => {
-      setAvailabilityCopied(true);
-      setTimeout(() => setAvailabilityCopied(false), 2000);
+      setUpcomingCopied(true);
+      setTimeout(() => setUpcomingCopied(false), 2000);
     });
   };
 
@@ -149,7 +149,7 @@ export default function Availability() {
           Generate
         </Button>
         <Button variant="secondary" onClick={handleCopy} disabled={!output}>
-          {availabilityCopied ? "Copied!" : "Copy"}
+          {upcomingCopied ? "Copied!" : "Copy"}
         </Button>
       </div>
 
