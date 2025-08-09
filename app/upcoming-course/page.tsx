@@ -3,241 +3,160 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import React, { useState } from "react";
 
-export default function UpcomingCourse() {
-  const [courseType, setCourseType] = useState<
-    "new" | "reschedule" | "cancelled"
-  >("new");
-  const [datetime, setDatetime] = useState("");
-  const [prevDatetime, setPrevDatetime] = useState("");
-  const [instructor, setInstructor] = useState("");
-  const [output, setOutput] = useState("");
-  const [copied, setCopied] = useState(false);
+const weekdays = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
 
-  const getOrdinal = (n: number) => {
-    if (n > 3 && n < 21) return `${n}th`;
-    switch (n % 10) {
-      case 1:
-        return `${n}st`;
-      case 2:
-        return `${n}nd`;
-      case 3:
-        return `${n}rd`;
-      default:
-        return `${n}th`;
-    }
+type AvailabilityInput = Record<string, string>; // day => "HH:mm-HH:mm"
+
+export default function Availability() {
+  const [availability, setAvailability] = useState<AvailabilityInput>(
+    weekdays.reduce((acc, day) => {
+      acc[day] = "";
+      return acc;
+    }, {} as AvailabilityInput),
+  );
+
+  const [output, setOutput] = useState<string>("");
+  const [availabilityCopied, setAvailabilityCopied] = useState(false);
+
+  const parseTimeRange = (timeRange: string): [string, string] | null => {
+    if (!timeRange) return null;
+    const parts = timeRange.split("-");
+    if (parts.length !== 2) return null;
+
+    const isValid = (t: string) => /^([01]\d|2[0-3]):([0-5]\d)$/.test(t.trim());
+    if (!isValid(parts[0]) || !isValid(parts[1])) return null;
+
+    return [parts[0].trim(), parts[1].trim()];
   };
 
-  const pad = (num: number) => String(num).padStart(2, "0");
+  const convertLocalToUTCDate = (day: string, time: string): Date | null => {
+    if (!time) return null;
 
-  const formatDate = (datetimeStr: string) => {
-    if (!datetimeStr) return null;
-    const d = new Date(datetimeStr + "Z");
-    if (isNaN(d.getTime())) return null;
+    const now = new Date();
+    const todayDayNum = now.getDay();
 
-    const weekday = d.toLocaleString("en-GB", {
-      weekday: "long",
-      timeZone: "UTC",
-    });
-    const dayNum = d.getUTCDate();
-    const dayOrdinal = getOrdinal(dayNum);
-    const month = d.toLocaleString("en-GB", { month: "long", timeZone: "UTC" });
-    const year = d.getUTCFullYear();
-    const hours = pad(d.getUTCHours());
-    const minutes = pad(d.getUTCMinutes());
-
-    const urlDate = `${year}-${pad(d.getUTCMonth() + 1)}-${pad(dayNum)}`;
-
-    return {
-      formatted: `${weekday}, ${dayOrdinal} ${month} ${year} @ ${hours}:${minutes} ((UTC))`,
-      urlDate,
-      hours,
-      minutes,
+    const dayToNumMap: Record<string, number> = {
+      Sunday: 0,
+      Monday: 1,
+      Tuesday: 2,
+      Wednesday: 3,
+      Thursday: 4,
+      Friday: 5,
+      Saturday: 6,
     };
+
+    const targetDayNum = dayToNumMap[day];
+    let diff = targetDayNum - todayDayNum;
+    if (diff < 0) diff += 7;
+
+    const [hour, minute] = time.split(":").map(Number);
+    const targetDate = new Date(now);
+    targetDate.setDate(now.getDate() + diff);
+    targetDate.setHours(hour, minute, 0, 0);
+
+    return targetDate;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const formatUTC = (date: Date): string => {
+    const h = date.getUTCHours();
+    const m = date.getUTCMinutes();
+    return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+  };
 
-    if (courseType === "cancelled") {
-      if (!datetime || !instructor.trim()) {
-        alert("Please fill in date/time and instructor name");
-        return;
+  const convertRangeStringToUTC = (day: string, input: string): string => {
+    const parts = input.split(/(\s+and\s+|\s*,\s*|\s+or\s+)/i);
+
+    return parts
+      .map((part) => {
+        const range = parseTimeRange(part.trim());
+        if (range) {
+          const [startLocal, endLocal] = range;
+          const startUTCDate = convertLocalToUTCDate(day, startLocal);
+          const endUTCDate = convertLocalToUTCDate(day, endLocal);
+
+          if (!startUTCDate || !endUTCDate) return part;
+
+          return `${formatUTC(startUTCDate)} – ${formatUTC(endUTCDate)}`;
+        }
+        return part;
+      })
+      .join("");
+  };
+
+  const handleGenerate = () => {
+    const lines = ["AVAILABILITY TIME [ooc]UTC[/ooc]:", ""];
+
+    for (const day of weekdays) {
+      const input = availability[day].trim();
+      if (!input) {
+        lines.push(`${day}: []`);
+        continue;
       }
-    } else if (courseType === "reschedule") {
-      if (!datetime || !prevDatetime || !instructor.trim()) {
-        alert("Please fill in all fields for reschedule");
-        return;
-      }
-    } else {
-      // new
-      if (!datetime || !instructor.trim()) {
-        alert("Please fill in date/time and instructor name");
-        return;
-      }
+      const converted = convertRangeStringToUTC(day, input);
+      lines.push(`${day}: [${converted}]`);
     }
 
-    const newDateInfo = formatDate(datetime);
-    if (!newDateInfo) {
-      alert("Invalid new date/time");
-      return;
-    }
-
-    const instructorName = instructor.trim();
-
-    let result = "";
-
-    if (courseType === "new") {
-      result = `
-[hr][/hr]
-[b]${newDateInfo.formatted} - ${instructorName}[/b]
-[img]https://www.inyourowntime.zone/${newDateInfo.urlDate}_${newDateInfo.hours}.${newDateInfo.minutes}_UTC.png[/img]
-[hr][/hr]
-      `.trim();
-    } else if (courseType === "cancelled") {
-      result = `
-[hr][/hr]
-[b][size=110][color=red]Class cancelled[/color][/size][/b]
-[b][s]${newDateInfo.formatted} - ${instructorName}[/s][/b]
-[img]https://www.inyourowntime.zone/${newDateInfo.urlDate}_${newDateInfo.hours}.${newDateInfo.minutes}_UTC.png[/img]
-[hr][/hr]
-      `.trim();
-    } else if (courseType === "reschedule") {
-      const prevDateInfo = formatDate(prevDatetime);
-      if (!prevDateInfo) {
-        alert("Invalid previous date/time");
-        return;
-      }
-
-      result = `
-[hr][/hr]
-[b][size=110][color=darkorange]Class rescheduled[/color][/size][/b]
-[b][s]${prevDateInfo.formatted} - ${instructorName}[/s][/b]
-[b]${newDateInfo.formatted} - ${instructorName}[/b]
-[img]https://www.inyourowntime.zone/${newDateInfo.urlDate}_${newDateInfo.hours}.${newDateInfo.minutes}_UTC.png[/img]
-[hr][/hr]
-      `.trim();
-    }
-
-    setOutput(result);
-    setCopied(false);
+    setOutput(lines.join("\n"));
+    setAvailabilityCopied(false);
   };
 
   const handleCopy = () => {
     if (!output) return;
     navigator.clipboard.writeText(output).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setAvailabilityCopied(true);
+      setTimeout(() => setAvailabilityCopied(false), 2000);
     });
   };
 
-  const handleClear = () => {
-    setCourseType("new");
-    setDatetime("");
-    setPrevDatetime("");
-    setInstructor("");
-    setOutput("");
-    setCopied(false);
-  };
-
   return (
-    <div className="text-foreground mx-auto mt-20 max-w-xl">
-      <h3 className="mb-10 text-center text-3xl font-semibold">
-        Upcoming Course
+    <div className="text-foreground mx-auto mt-18 max-w-xl">
+      <h3 className="mb-2 text-center text-3xl font-semibold">
+        Time of Availability
       </h3>
+      <p className="text-muted-foreground mb-6 text-center text-sm">
+        Format: 08:00-12:00 and 14:00-22:00
+      </p>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-        <div className="flex flex-col gap-3">
-          <Label htmlFor="courseType">Course Type:</Label>
-          <Select
-            value={courseType}
-            onValueChange={(value) => setCourseType(value as typeof courseType)}
-          >
-            <SelectTrigger id="courseType" className="w-full">
-              <SelectValue placeholder="Select course type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="new">New</SelectItem>
-              <SelectItem value="reschedule">Reschedule</SelectItem>
-              <SelectItem value="cancelled">Cancelled</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {(courseType === "new" ||
-          courseType === "cancelled" ||
-          courseType === "reschedule") && (
-          <div className="flex flex-col gap-3">
-            <Label htmlFor="datetime">Course Date & Time (UTC):</Label>
+      <div className="grid grid-cols-2 gap-6">
+        {weekdays.map((day) => (
+          <div key={day} className="flex flex-col gap-1">
+            <Label htmlFor={day}>{day}</Label>
             <Input
-              id="datetime"
-              type="datetime-local"
-              value={datetime}
-              onChange={(e) => setDatetime(e.target.value)}
-              required
+              id={day}
+              placeholder="08:00 - 12:00 and 14:00 - 22:00"
+              value={availability[day]}
+              onChange={(e) =>
+                setAvailability((prev) => ({ ...prev, [day]: e.target.value }))
+              }
+              className="text-sm"
             />
           </div>
-        )}
+        ))}
+      </div>
 
-        {courseType === "reschedule" && (
-          <div className="flex flex-col gap-3">
-            <Label htmlFor="prevDatetime">Previous Date & Time (UTC):</Label>
-            <Input
-              id="prevDatetime"
-              type="datetime-local"
-              value={prevDatetime}
-              onChange={(e) => setPrevDatetime(e.target.value)}
-              required
-            />
-          </div>
-        )}
-
-        {(courseType !== "cancelled" || courseType === "cancelled") && (
-          <div className="flex flex-col gap-3">
-            <Label htmlFor="instructor">Instructor Name:</Label>
-            <Input
-              id="instructor"
-              type="text"
-              value={instructor}
-              onChange={(e) => setInstructor(e.target.value)}
-              placeholder="First Last"
-              required
-            />
-          </div>
-        )}
-
-        <div className="flex gap-4">
-          <Button variant="outline" type="submit" className="cursor-pointer">
-            Generate
-          </Button>
-          <Button
-            variant="secondary"
-            type="button"
-            className="cursor-pointer"
-            onClick={handleClear}
-          >
-            Clear
-          </Button>
-        </div>
-      </form>
+      <div className="mt-6 flex justify-center gap-3">
+        <Button variant="outline" onClick={handleGenerate}>
+          Generate
+        </Button>
+        <Button variant="secondary" onClick={handleCopy} disabled={!output}>
+          {availabilityCopied ? "Copied!" : "Copy"}
+        </Button>
+      </div>
 
       {output && (
-        <>
-          <pre className="mt-6 rounded border border-gray-600 bg-gray-900 p-4 whitespace-pre-wrap text-white">
-            {output}
-          </pre>
-          <Button onClick={handleCopy} variant="secondary" className="mt-2">
-            {copied ? "Copied!" : "Copy"}
-          </Button>
-        </>
+        <pre className="mt-6 max-w-xl rounded border border-gray-600 bg-gray-900 p-4 whitespace-pre-wrap text-white">
+          {output}
+        </pre>
       )}
     </div>
   );

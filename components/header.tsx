@@ -29,6 +29,11 @@ export function Header() {
                 <Link href="/upcoming-course">Upcoming Course</Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <Link href="/availability">Availability</Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
       </div>
