@@ -97,15 +97,6 @@ export default function Home() {
       <div className="mt-20 flex flex-col items-center justify-center gap-10">
         <h1 className="text-2xl font-bold">LSEMS Division PMs</h1>
 
-        <a
-          href="https://lsems-amu-paperwork.netlify.app/#/"
-          className="text-blue-500 underline"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          AMU Paperwork Generator!
-        </a>
-
         {isCredentialsEmpty || showEditForm ? (
           <MedicCredentials
             medicCredentials={medicCredentials}

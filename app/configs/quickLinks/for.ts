@@ -2,17 +2,23 @@ export const FOR = {
   label: "FOR",
   image: "/Division/FOR.png",
   data: {
-    imageSize: "150,150",
-    image: "https://i.imgur.com/ZrbXj3i.png",
-    divisionName: "Forensics Division",
-    ranks: [
-      "Head Of FOR",
-      "Interim Head Of FOR",
-      "Assistant Head Of FOR",
-      "Interim Assistant Head Of FOR",
-      "Serologist",
-      "Pathologist",
-      "Forensics Student",
+    quickLinks: [
+      {
+        name: "Division Index",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=2568",
+      },
+      {
+        name: "Handbook",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?t=164012",
+      },
+      {
+        name: "Reports",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=2577",
+      },
+      {
+        name: "Discussion Board",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=2575",
+      },
     ],
   },
 };
