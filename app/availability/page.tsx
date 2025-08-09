@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import TimezoneSelect from "react-timezone-select";
+import { useLocalStorage } from "@uidotdev/usehooks";
 
 import {
   AvailabilityInput,
@@ -17,33 +18,35 @@ export default function Availability() {
   const initialTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const [timezone, setTimezone] = useState<string>(initialTz);
 
-  // Initialize availability with keys as Weekday and empty strings as values
-  const [availability, setAvailability] = useState<AvailabilityInput>(
+  // Persisted availability state in localStorage
+  const [availability, setAvailability] = useLocalStorage<AvailabilityInput>(
+    "availability",
     weekdays.reduce((acc, day) => {
       acc[day] = "";
       return acc;
-    }, {} as AvailabilityInput),
+    }, {} as AvailabilityInput)
   );
 
   const [output, setOutput] = useState<string>("");
   const [availabilityCopied, setAvailabilityCopied] = useState(false);
 
- const handleGenerate = () => {
-  const utcLines = ["AVAILABILITY TIME [ooc]UTC[/ooc]:", ""];
+  const handleGenerate = () => {
+    const utcLines = ["AVAILABILITY TIME [ooc]UTC[/ooc]:", ""];
 
-  for (const day of weekdays) {
-    const input = availability[day].trim();
-    if (!input) {
-      utcLines.push(`${day}: []`);
-      continue;
+    for (const day of weekdays) {
+      const input = availability[day].trim();
+      if (!input) {
+        utcLines.push(`${day}: []`);
+        continue;
+      }
+      const converted = convertRangeStringToUTC(day, input, timezone);
+      utcLines.push(`${day}: [${converted}]`);
     }
-    const converted = convertRangeStringToUTC(day, input, timezone);
-    utcLines.push(`${day}: [${converted}]`);
-  }
 
-  setOutput(utcLines.join("\n"));
-  setAvailabilityCopied(false);
-};
+    setOutput(utcLines.join("\n"));
+    setAvailabilityCopied(false);
+  };
+
   const handleCopy = () => {
     if (!output) return;
     navigator.clipboard.writeText(output).then(() => {
@@ -52,6 +55,16 @@ export default function Availability() {
     });
   };
 
+  const handleClear = () => {
+    const emptyAvailability = weekdays.reduce((acc, day) => {
+      acc[day] = "";
+      return acc;
+    }, {} as AvailabilityInput);
+
+    setAvailability(emptyAvailability);
+    setOutput("");
+    setAvailabilityCopied(false);
+  };
 
   return (
     <div className="text-foreground mx-auto my-20 flex max-w-2xl flex-col items-center gap-6">
@@ -130,7 +143,10 @@ export default function Availability() {
               placeholder="08:00 - 12:00 and 14:00 - 22:00"
               value={availability[day]}
               onChange={(e) =>
-                setAvailability((prev) => ({ ...prev, [day]: e.target.value }))
+                setAvailability({
+                  ...availability,
+                  [day]: e.target.value,
+                })
               }
               className="bg-background text-foreground placeholder:text-muted-foreground max-w-[300px] text-sm"
             />
@@ -145,6 +161,13 @@ export default function Availability() {
           className="cursor-pointer"
         >
           Generate
+        </Button>
+        <Button
+          onClick={handleClear}
+          variant="destructive"
+          className="cursor-pointer"
+        >
+          Clear
         </Button>
       </div>
 

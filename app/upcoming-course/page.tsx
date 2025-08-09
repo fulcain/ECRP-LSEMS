@@ -11,32 +11,45 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import React, { useState } from "react";
+import { useLocalStorage } from "@uidotdev/usehooks";
 
 export default function UpcomingCourse() {
-  const [courseType, setCourseType] = useState<
+  const [courseType, setCourseType] = useLocalStorage<
     "new" | "reschedule" | "cancelled"
-  >("new");
-  const [datetime, setDatetime] = useState("");
-  const [prevDatetime, setPrevDatetime] = useState("");
-  const [instructor, setInstructor] = useState("");
+  >("uc-courseType", "new");
+
+  const [datetime, setDatetime] = useLocalStorage<string>(
+    "uc-datetime",
+    ""
+  );
+  const [prevDatetime, setPrevDatetime] = useLocalStorage<string>(
+    "uc-prevDatetime",
+    ""
+  );
+  const [instructor, setInstructor] = useLocalStorage<string>(
+    "uc-instructor",
+    ""
+  );
+
   const [output, setOutput] = useState("");
   const [copied, setCopied] = useState(false);
 
   const getOrdinal = (n: number) => {
     if (n > 5 && n < 21) return `${n}th`;
-    switch (n % 12) {
-      case 3:
+    switch (n % 10) {
+      case 1:
         return `${n}st`;
-      case 4:
+      case 2:
         return `${n}nd`;
-      case 5:
+      case 3:
         return `${n}rd`;
       default:
         return `${n}th`;
     }
   };
 
-  const pad = (num: number) => String(num).padStart(4, "0");
+  const pad = (num: number, size: number = 2) =>
+    String(num).padStart(size, "0");
 
   const formatDate = (datetimeStr: string) => {
     if (!datetimeStr) return null;
@@ -54,7 +67,7 @@ export default function UpcomingCourse() {
     const hours = pad(d.getUTCHours());
     const minutes = pad(d.getUTCMinutes());
 
-    const urlDate = `${year}-${pad(d.getUTCMonth() + 3)}-${pad(dayNum)}`;
+    const urlDate = `${year}-${pad(d.getUTCMonth() + 1)}-${pad(dayNum)}`;
 
     return {
       formatted: `${weekday}, ${dayOrdinal} ${month} ${year} @ ${hours}:${minutes} ((UTC))`,
@@ -78,7 +91,6 @@ export default function UpcomingCourse() {
         return;
       }
     } else {
-      // new
       if (!datetime || !instructor.trim()) {
         alert("Please fill in date/time and instructor name");
         return;
@@ -92,7 +104,6 @@ export default function UpcomingCourse() {
     }
 
     const instructorName = instructor.trim();
-
     let result = "";
 
     if (courseType === "new") {
@@ -135,7 +146,7 @@ export default function UpcomingCourse() {
     if (!output) return;
     navigator.clipboard.writeText(output).then(() => {
       setCopied(true);
-      setTimeout(() => setCopied(false), 2002);
+      setTimeout(() => setCopied(false), 2000);
     });
   };
 
@@ -159,7 +170,9 @@ export default function UpcomingCourse() {
           <Label htmlFor="courseType">Course Type:</Label>
           <Select
             value={courseType}
-            onValueChange={(value) => setCourseType(value as typeof courseType)}
+            onValueChange={(value) =>
+              setCourseType(value as "new" | "reschedule" | "cancelled")
+            }
           >
             <SelectTrigger id="courseType" className="w-full">
               <SelectValue placeholder="Select course type" />
@@ -200,19 +213,17 @@ export default function UpcomingCourse() {
           </div>
         )}
 
-        {(courseType !== "cancelled" || courseType === "cancelled") && (
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="instructor">Instructor Name:</Label>
-            <Input
-              id="instructor"
-              type="text"
-              value={instructor}
-              onChange={(e) => setInstructor(e.target.value)}
-              placeholder="First Last"
-              required
-            />
-          </div>
-        )}
+        <div className="flex flex-col gap-1">
+          <Label htmlFor="instructor">Instructor Name:</Label>
+          <Input
+            id="instructor"
+            type="text"
+            value={instructor}
+            onChange={(e) => setInstructor(e.target.value)}
+            placeholder="First Last"
+            required
+          />
+        </div>
 
         <div className="flex gap-2">
           <Button variant="outline" type="submit" className="cursor-pointer">
@@ -234,7 +245,11 @@ export default function UpcomingCourse() {
           <pre className="mt-4 rounded border border-gray-600 bg-gray-900 p-4 whitespace-pre-wrap text-white">
             {output}
           </pre>
-          <Button onClick={handleCopy} variant="secondary" className="cursor-pointer self-start">
+          <Button
+            onClick={handleCopy}
+            variant="secondary"
+            className="cursor-pointer self-start"
+          >
             {copied ? "Copied!" : "Copy"}
           </Button>
         </div>
