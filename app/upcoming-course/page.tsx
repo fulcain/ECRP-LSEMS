@@ -234,7 +234,7 @@ export default function UpcomingCourse() {
           <pre className="mt-4 rounded border border-gray-600 bg-gray-900 p-4 whitespace-pre-wrap text-white">
             {output}
           </pre>
-          <Button onClick={handleCopy} variant="secondary" className="mt0">
+          <Button onClick={handleCopy} variant="secondary" className="cursor-pointer self-start">
             {copied ? "Copied!" : "Copy"}
           </Button>
         </div>
