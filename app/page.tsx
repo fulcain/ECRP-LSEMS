@@ -80,7 +80,7 @@ export default function Home() {
       />
 
       <div className="mt-20 flex flex-col items-center gap-11 text-white">
-        <h3 className="text-3xl font-semibold">LSEMS Division PMs</h3>
+        <h3 className="text-3xl font-semibold">Division PMs</h3>
 
         {isCredentialsEmpty || showEditForm ? (
           <MedicCredentials

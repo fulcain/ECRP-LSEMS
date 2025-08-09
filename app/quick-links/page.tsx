@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { links } from "@/app/configs/quickLinks/";
 import {
   Accordion,
@@ -8,20 +7,23 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Input } from "@/components/ui/input"; 
+import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
-export default function Home() {
+export default function QuickLinks() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredLinks = links.filter((item) =>
-    item.label.toLowerCase().includes(searchTerm.toLowerCase())
+    item.label.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
     <>
       <div className="mt-20 flex flex-col items-center justify-center gap-6">
+        <h3 className="text-3xl font-semibold">Quick Links</h3>
+
         {/* Search Bar */}
         <Input
           type="text"
@@ -36,7 +38,6 @@ export default function Home() {
           type="single"
           collapsible
           className="w-full max-w-2xl"
-          defaultValue={filteredLinks[0]?.label || ""}
         >
           {filteredLinks.map((item, index) => (
             <AccordionItem key={index} value={item.label}>
@@ -71,7 +72,7 @@ export default function Home() {
             </AccordionItem>
           ))}
           {filteredLinks.length === 0 && (
-            <p className="text-gray-400 text-center py-4">
+            <p className="py-4 text-center text-gray-400">
               No divisions found.
             </p>
           )}
