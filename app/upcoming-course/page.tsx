@@ -139,6 +139,15 @@ export default function UpcomingCourse() {
     });
   };
 
+  const handleClear = () => {
+    setCourseType("new");
+    setDatetime("");
+    setPrevDatetime("");
+    setInstructor("");
+    setOutput("");
+    setCopied(false);
+  };
+
   return (
     <div className="text-foreground mx-auto mt-20 max-w-xl">
       <h3 className="mb-10 text-center text-3xl font-semibold">
@@ -146,7 +155,7 @@ export default function UpcomingCourse() {
       </h3>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-3">
           <Label htmlFor="courseType">Course Type:</Label>
           <Select
             value={courseType}
@@ -166,7 +175,7 @@ export default function UpcomingCourse() {
         {(courseType === "new" ||
           courseType === "cancelled" ||
           courseType === "reschedule") && (
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-3">
             <Label htmlFor="datetime">Course Date & Time (UTC):</Label>
             <Input
               id="datetime"
@@ -179,7 +188,7 @@ export default function UpcomingCourse() {
         )}
 
         {courseType === "reschedule" && (
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-3">
             <Label htmlFor="prevDatetime">Previous Date & Time (UTC):</Label>
             <Input
               id="prevDatetime"
@@ -191,8 +200,8 @@ export default function UpcomingCourse() {
           </div>
         )}
 
-        {courseType !== "cancelled" && (
-          <div className="flex flex-col gap-1">
+        {(courseType !== "cancelled" || courseType === "cancelled") && (
+          <div className="flex flex-col gap-3">
             <Label htmlFor="instructor">Instructor Name:</Label>
             <Input
               id="instructor"
@@ -205,23 +214,19 @@ export default function UpcomingCourse() {
           </div>
         )}
 
-        {courseType === "cancelled" && (
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="instructor">Instructor Name:</Label>
-            <Input
-              id="instructor"
-              type="text"
-              value={instructor}
-              onChange={(e) => setInstructor(e.target.value)}
-              placeholder="First Last"
-              required
-            />
-          </div>
-        )}
-
-        <Button variant="outline" type="submit" className="cursor-pointer">
-          Generate
-        </Button>
+        <div className="flex gap-4">
+          <Button variant="outline" type="submit" className="cursor-pointer">
+            Generate
+          </Button>
+          <Button
+            variant="secondary"
+            type="button"
+            className="cursor-pointer"
+            onClick={handleClear}
+          >
+            Clear
+          </Button>
+        </div>
       </form>
 
       {output && (
