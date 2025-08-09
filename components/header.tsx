@@ -5,33 +5,30 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import Link from "next/link";
 
 export function Header() {
   return (
-    <div className="mt-5 flex items-center justify-center">
-      <NavigationMenu >
-        <NavigationMenuList >
-          <NavigationMenuItem>
-            <NavigationMenuLink
-              asChild
-              className={navigationMenuTriggerStyle()}
-            >
-              <Link href="/">PMS</Link>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuLink
-              asChild
-              className={navigationMenuTriggerStyle()}
-            >
-              <Link href="/quick-links">Quick Links</Link>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
-    </div>
+    <header
+      className="sticky top-0 z-50 w-full bg-card"
+    >
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <NavigationMenu>
+          <NavigationMenuList className="flex gap-4">
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <Link href="/">PMS</Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <Link href="/quick-links">Quick Links</Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
+      </div>
+    </header>
   );
 }

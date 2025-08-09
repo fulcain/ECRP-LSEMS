@@ -21,8 +21,8 @@ export default function QuickLinks() {
 
   return (
     <>
-      <div className="mt-20 flex flex-col items-center justify-center gap-6">
-        <h3 className="text-3xl font-semibold">Quick Links</h3>
+      <div className="mt-20 flex flex-col items-center justify-center gap-6 p-4">
+        <h3 className="text-3xl font-semibold text-foreground">Quick Links</h3>
 
         {/* Search Bar */}
         <Input
@@ -34,14 +34,10 @@ export default function QuickLinks() {
         />
 
         {/* Accordion */}
-        <Accordion
-          type="single"
-          collapsible
-          className="w-full max-w-2xl"
-        >
+        <Accordion type="single" collapsible className="w-full max-w-2xl">
           {filteredLinks.map((item, index) => (
             <AccordionItem key={index} value={item.label}>
-              <AccordionTrigger className="cursor-pointer text-lg font-semibold">
+              <AccordionTrigger className="cursor-pointer text-lg font-semibold text-foreground">
                 <div className="flex items-center justify-center gap-2">
                   <Image
                     src={item.image}
@@ -53,7 +49,7 @@ export default function QuickLinks() {
                   <div>{item.label}</div>
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="space-y-4 p-4">
+              <AccordionContent className="space-y-4 p-4 text-foreground">
                 <ul className="space-y-2">
                   {item.data.quickLinks.map((link, idx) => (
                     <li key={idx}>
@@ -61,7 +57,7 @@ export default function QuickLinks() {
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-white transition-all hover:text-blue-600 hover:underline"
+                        className="transition-all hover:text-blue-600 hover:underline"
                       >
                         • {link.name}
                       </Link>
@@ -72,7 +68,7 @@ export default function QuickLinks() {
             </AccordionItem>
           ))}
           {filteredLinks.length === 0 && (
-            <p className="py-4 text-center text-gray-400">
+            <p className="py-4 text-center text-muted-foreground">
               No divisions found.
             </p>
           )}

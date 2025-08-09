@@ -79,7 +79,7 @@ export default function Home() {
         transition={Bounce}
       />
 
-      <div className="mt-20 flex flex-col items-center gap-11 text-white">
+      <div className="mt-20 flex flex-col items-center gap-11 text-foreground">
         <h3 className="text-3xl font-semibold">Division PMs</h3>
 
         {isCredentialsEmpty || showEditForm ? (
