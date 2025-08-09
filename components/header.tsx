@@ -10,9 +10,7 @@ import Link from "next/link";
 
 export function Header() {
   return (
-    <header
-      className="sticky top-0 z-50 w-full bg-card"
-    >
+    <header className="bg-card sticky top-0 z-50 w-full">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <NavigationMenu>
           <NavigationMenuList className="flex gap-4">
@@ -24,6 +22,11 @@ export function Header() {
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
                 <Link href="/quick-links">Quick Links</Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <Link href="/upcoming-course">Upcoming Course</Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>
