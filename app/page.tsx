@@ -7,7 +7,7 @@ import {
 } from "@/app/configs/divisions/";
 import { pmTemplate } from "@/app/configs/divisions/";
 import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
-import { useLocalStorageState } from "@/app/hooks/useLocalStorage";
+import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { MedicCredentials } from "@/components/MedicCredentials";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +24,7 @@ import { Bounce, ToastContainer, toast } from "react-toastify";
 export default function Home() {
   const date = getCurrentDateFormatted();
 
-  const [medicCredentials, setMedicCredentials] = useLocalStorageState(
+  const [medicCredentials, setMedicCredentials] = useLocalStorage(
     "medic-credentials",
     { name: "", signature: "", rank: "" },
   );

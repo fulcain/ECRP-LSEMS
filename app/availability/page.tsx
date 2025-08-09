@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import TimezoneSelect from "react-timezone-select";
-import { useLocalStorage } from "@uidotdev/usehooks";
+import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 
 import {
   AvailabilityInput,

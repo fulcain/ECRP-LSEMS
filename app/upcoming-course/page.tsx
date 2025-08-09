@@ -10,10 +10,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import React, { useState } from "react";
-import { useLocalStorage } from "@uidotdev/usehooks";
+import React, { useState, useEffect } from "react";
+import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 
 export default function UpcomingCourse() {
+  const [isClient, setIsClient] = useState(false);
+
+  // Ensure hooks run only in the browser
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const [courseType, setCourseType] = useLocalStorage<
     "new" | "reschedule" | "cancelled"
   >("uc-courseType", "new");
@@ -158,6 +165,8 @@ export default function UpcomingCourse() {
     setOutput("");
     setCopied(false);
   };
+
+  if (!isClient) return null;
 
   return (
     <div className="text-foreground mx-auto mt-18 max-w-xl">

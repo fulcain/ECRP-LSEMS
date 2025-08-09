@@ -8,6 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function QuickLinks() {
   return (
@@ -19,7 +20,7 @@ export default function QuickLinks() {
           <AccordionItem key={index} value={item.label}>
             <AccordionTrigger className="text-md flex cursor-pointer items-center gap-2 py-2 font-semibold">
               <div className="flex items-center gap-2">
-                <img
+                <Image
                   src={item.image}
                   alt={item.label}
                   width={32}
