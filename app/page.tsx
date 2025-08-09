@@ -10,7 +10,6 @@ import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
 import { useLocalStorageState } from "@/app/hooks/useLocalStorage";
 import { MedicCredentials } from "@/components/MedicCredentials";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -35,16 +34,11 @@ export default function Home() {
     null,
   );
   const [selectedRank, setSelectedRank] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
 
   const isCredentialsEmpty =
     !medicCredentials.name ||
     !medicCredentials.signature ||
     !medicCredentials.rank;
-
-  const filteredDivisions = divisions.filter((item) =>
-    item.label.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
 
   const handleGenerate = () => {
     if (!selectedDivision) return;
@@ -151,35 +145,30 @@ export default function Home() {
         </div>
 
         {/* Divisions */}
-          <section className="grid w-full max-w-5xl grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-4 p-4">
-            {filteredDivisions.map((item, idx) => (
-              <div
-                key={idx}
-                className="bg-input/30 border-input hover:bg-input/50 flex cursor-pointer items-center gap-3 rounded-md border px-3 py-2 transition"
-                onClick={() => {
-                  setSelectedDivision(item);
-                  setSelectedRank("");
-                }}
-                style={{ minHeight: 48, minWidth: 140 }}
-              >
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center">
-                  <Image
-                    src={item.image}
-                    alt={item.label}
-                    width={40}
-                    height={40}
-                    className="object-contain"
-                  />
-                </div>
-                <span className="text-sm whitespace-nowrap">{item.label}</span>
+        <section className="grid w-full max-w-5xl grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-4 p-4">
+          {divisions.map((item, idx) => (
+            <div
+              key={idx}
+              className="bg-input/30 border-input hover:bg-input/50 flex cursor-pointer items-center gap-3 rounded-md border px-3 py-2 transition"
+              onClick={() => {
+                setSelectedDivision(item);
+                setSelectedRank("");
+              }}
+              style={{ minHeight: 48, minWidth: 140 }}
+            >
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center">
+                <Image
+                  src={item.image}
+                  alt={item.label}
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                />
               </div>
-            ))}
-            {filteredDivisions.length === 0 && (
-              <p className="col-span-full text-center text-white">
-                No divisions found.
-              </p>
-            )}
-          </section>
+              <span className="text-sm whitespace-nowrap">{item.label}</span>
+            </div>
+          ))}
+        </section>
       </div>
     </>
   );
