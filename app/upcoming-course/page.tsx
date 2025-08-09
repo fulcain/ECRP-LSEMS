@@ -230,14 +230,14 @@ export default function UpcomingCourse() {
       </form>
 
       {output && (
-        <>
+        <div className="flex flex-col gap-2">
           <pre className="mt-4 rounded border border-gray-600 bg-gray-900 p-4 whitespace-pre-wrap text-white">
             {output}
           </pre>
           <Button onClick={handleCopy} variant="secondary" className="mt0">
             {copied ? "Copied!" : "Copy"}
           </Button>
-        </>
+        </div>
       )}
     </div>
   );
