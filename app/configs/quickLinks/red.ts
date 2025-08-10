@@ -26,7 +26,15 @@ export const RED = {
       {
         name: "Feedback Requests Information",
         url: "https://gov.eclipse-rp.net/viewtopic.php?p=456235#p456235",
-      },
+			},
+			{
+				name:"Recruitment Desk",
+				url:"https://gov.eclipse-rp.net/viewforum.php?f=575"
+			},
+			{
+				name:"Reinstatements Desk",
+				url:"https://gov.eclipse-rp.net/viewforum.php?f=576"
+			}
     ],
   },
 };
