@@ -20,6 +20,15 @@ export const BLS = {
         url: "https://gov.eclipse-rp.net/viewtopic.php?p=1055095#p1055095",
       },
       {
+        name: "Command Area",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=1948",
+	  },
+      {
+        name: "Incoming Applications",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=1948",
+	  },
+
+      {
         name: "Course Reports",
         url: "https://gov.eclipse-rp.net/viewtopic.php?p=573545#p573545",
       },
