@@ -77,7 +77,7 @@ export const pmTemplate = ({
 [hr]
 [b]Kind regards,[/b]
 
-[img]https://i.imgur.com/qLrboSu.png[/img]
+[img]${medicCredentials.signature}[/img]
 [i]${medicCredentials.name}[/i]
 ${rankLine}
 [b]Los Santos Emergency Medical Services[/b]
@@ -97,7 +97,7 @@ export const generateSignature = ({
     ? `[b]${medicCredentials.rank} | ${selectedRank}[/b]`
     : `[b]${medicCredentials.rank}[/b]`;
 
-  return `[img]https://i.imgur.com/qLrboSu.png[/img]
+	return `[img]${medicCredentials.signature}[/img]
 [i]${medicCredentials.name}[/i]
 ${rankLine}
 `;
