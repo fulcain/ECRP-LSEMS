@@ -16,7 +16,7 @@ export function Header() {
           <NavigationMenuList className="flex gap-4">
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
-                <Link href="/email-templates">PMS</Link>
+                <Link href="/email-templates">Email Templates</Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
