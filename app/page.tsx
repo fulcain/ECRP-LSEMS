@@ -116,7 +116,7 @@ export default function Home() {
           )}
 
           {/* Action Buttons */}
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2">
             <Button
               size="sm"
               variant="outline"
@@ -127,7 +127,7 @@ export default function Home() {
                 (Array.isArray(selectedDivision?.data?.ranks) && !selectedRank)
               }
             >
-              PM
+              Create Email Template
             </Button>
             <Button
               size="sm"
@@ -139,7 +139,7 @@ export default function Home() {
                 (Array.isArray(selectedDivision?.data?.ranks) && !selectedRank)
               }
             >
-              Signature
+              Create Signature
             </Button>
           </div>
         </div>
