@@ -169,7 +169,7 @@ export default function UpcomingCourse() {
   if (!isClient) return null;
 
   return (
-    <div className="text-foreground mx-auto mt-18 max-w-xl">
+    <main className="text-foreground mx-auto mt-18 max-w-xl">
       <h5 className="mb-10 text-center text-3xl font-semibold">
         Upcoming Course
       </h5>
@@ -263,6 +263,6 @@ export default function UpcomingCourse() {
           </Button>
         </div>
       )}
-    </div>
+    </main>
   );
 }

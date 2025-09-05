@@ -12,7 +12,7 @@ import Image from "next/image";
 
 export default function QuickLinks() {
   return (
-    <div className="text-foreground mx-auto mt-20 flex max-w-2xl flex-col items-center justify-center gap-4">
+    <main className="text-foreground mx-auto mt-20 flex max-w-2xl flex-col items-center justify-center gap-4">
       <h3 className="text-center text-3xl font-semibold">Quick Links</h3>
 
       <Accordion type="single" collapsible className="w-full">
@@ -50,6 +50,6 @@ export default function QuickLinks() {
           </AccordionItem>
         ))}
       </Accordion>
-    </div>
+    </main>
   );
 }

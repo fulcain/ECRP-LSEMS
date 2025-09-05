@@ -67,7 +67,7 @@ export default function Availability() {
   };
 
   return (
-    <div className="text-foreground mx-auto my-20 flex max-w-2xl flex-col items-center gap-6">
+    <main className="text-foreground mx-auto my-20 flex max-w-2xl flex-col items-center gap-6">
       <h3 className="text-center text-3xl font-semibold">
         Time of Availability
       </h3>
@@ -189,6 +189,6 @@ export default function Availability() {
           </pre>
         </div>
       )}
-    </div>
+    </main>
   );
 }
