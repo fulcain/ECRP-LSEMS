@@ -11,6 +11,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar as CalendarIcon, Clock } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import React, { useState, useEffect } from "react";
 
 export default function UpcomingCourse() {
@@ -33,9 +38,24 @@ export default function UpcomingCourse() {
     "",
   );
 
+  const [date, setDate] = useState<Date | undefined>(
+    datetime ? new Date(datetime + "Z") : undefined,
+  );
+  const [time, setTime] = useState<string>(
+    datetime ? format(new Date(datetime + "Z"), "HH:mm") : "",
+  );
+
+  const [prevDate, setPrevDate] = useState<Date | undefined>(
+    prevDatetime ? new Date(prevDatetime + "Z") : undefined,
+  );
+  const [prevTime, setPrevTime] = useState<string>(
+    prevDatetime ? format(new Date(prevDatetime + "Z"), "HH:mm") : "",
+  );
+
   const [output, setOutput] = useState("");
   const [copied, setCopied] = useState(false);
 
+  // Helpers (kept from your original file)
   const getOrdinal = (n: number) => {
     if (n > 5 && n < 21) return `${n}th`;
     switch (n % 10) {
@@ -53,6 +73,7 @@ export default function UpcomingCourse() {
   const pad = (num: number, size: number = 2) =>
     String(num).padStart(size, "0");
 
+  // original formatDate kept as-is; it expects a string like "YYYY-MM-DDTHH:MM"
   const formatDate = (datetimeStr: string) => {
     if (!datetimeStr) return null;
     const d = new Date(datetimeStr + "Z");
@@ -81,27 +102,55 @@ export default function UpcomingCourse() {
     };
   };
 
+  // build string "YYYY-MM-DDTHH:MM" from Date + "HH:MM"
+  const buildDatetimeString = (d: Date | undefined, t: string) => {
+    if (!d || !t) return "";
+    const yyyy = d.getFullYear();
+    const mm = pad(d.getMonth() + 1);
+    const dd = pad(d.getDate());
+    const [hhRaw, miRaw] = t.split(":");
+    const hh = pad(Number(hhRaw || 0));
+    const mi = pad(Number(miRaw || 0));
+    return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
+  };
+
+  // keep local-storage string synced when the UI pickers change
+  useEffect(() => {
+    const s = buildDatetimeString(date, time);
+    if (s) setDatetime(s);
+  }, [date, time]);
+
+  useEffect(() => {
+    const s = buildDatetimeString(prevDate, prevTime);
+    if (s) setPrevDatetime(s);
+  }, [prevDate, prevTime]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Build the strings we need (prefer the UI date/time states; fallback to stored strings)
+    const newDatetimeStr = date && time ? buildDatetimeString(date, time) : datetime;
+    const prevDatetimeStr =
+      prevDate && prevTime ? buildDatetimeString(prevDate, prevTime) : prevDatetime;
+
     if (courseType === "cancelled") {
-      if (!datetime || !instructor.trim()) {
+      if (!newDatetimeStr || !instructor.trim()) {
         alert("Please fill in date/time and instructor name");
         return;
       }
     } else if (courseType === "reschedule") {
-      if (!datetime || !prevDatetime || !instructor.trim()) {
+      if (!newDatetimeStr || !prevDatetimeStr || !instructor.trim()) {
         alert("Please fill in all fields for reschedule");
         return;
       }
     } else {
-      if (!datetime || !instructor.trim()) {
+      if (!newDatetimeStr || !instructor.trim()) {
         alert("Please fill in date/time and instructor name");
         return;
       }
     }
 
-    const newDateInfo = formatDate(datetime);
+    const newDateInfo = formatDate(newDatetimeStr);
     if (!newDateInfo) {
       alert("Invalid new date/time");
       return;
@@ -126,7 +175,7 @@ export default function UpcomingCourse() {
 [hr][/hr]
       `.trim();
     } else if (courseType === "reschedule") {
-      const prevDateInfo = formatDate(prevDatetime);
+      const prevDateInfo = formatDate(prevDatetimeStr);
       if (!prevDateInfo) {
         alert("Invalid previous date/time");
         return;
@@ -158,6 +207,10 @@ export default function UpcomingCourse() {
     setDatetime("");
     setPrevDatetime("");
     setInstructor("");
+    setDate(undefined);
+    setTime("");
+    setPrevDate(undefined);
+    setPrevTime("");
     setOutput("");
     setCopied(false);
   };
@@ -195,26 +248,89 @@ export default function UpcomingCourse() {
           courseType === "reschedule") && (
           <div className="flex flex-col gap-1">
             <Label htmlFor="datetime">Course Date & Time (UTC):</Label>
-            <Input
-              id="datetime"
-              type="datetime-local"
-              value={datetime}
-              onChange={(e) => setDatetime(e.target.value)}
-              required
-            />
+
+            <div className="flex gap-2 items-center">
+              {/* Date picker */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-[260px] justify-start text-left font-normal",
+                      !date && !datetime && "text-muted-foreground",
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date
+                      ? format(date, "PPP")
+                      : datetime
+                      ? format(new Date(datetime + "Z"), "PPP")
+                      : "Pick a date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={(d) => setDate(d)}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+
+              {/* Time input */}
+              <div className="flex items-center gap-2">
+                <Input
+                  type="time"
+                  value={time || (datetime ? format(new Date(datetime + "Z"), "HH:mm") : "")}
+                  onChange={(e) => setTime(e.target.value)}
+                />
+              </div>
+            </div>
           </div>
         )}
 
         {courseType === "reschedule" && (
           <div className="flex flex-col gap-1">
             <Label htmlFor="prevDatetime">Previous Date & Time (UTC):</Label>
-            <Input
-              id="prevDatetime"
-              type="datetime-local"
-              value={prevDatetime}
-              onChange={(e) => setPrevDatetime(e.target.value)}
-              required
-            />
+
+            <div className="flex gap-2 items-center">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-[260px] justify-start text-left font-normal",
+                      !prevDate && !prevDatetime && "text-muted-foreground",
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {prevDate
+                      ? format(prevDate, "PPP")
+                      : prevDatetime
+                      ? format(new Date(prevDatetime + "Z"), "PPP")
+                      : "Pick a date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={prevDate}
+                    onSelect={(d) => setPrevDate(d)}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+
+              <div className="flex items-center gap-2">
+                {/* <Clock className="h-4 w-4 text-muted-foreground" /> */}
+                <Input
+                  type="time"
+                  value={prevTime || (prevDatetime ? format(new Date(prevDatetime + "Z"), "HH:mm") : "")}
+                  onChange={(e) => setPrevTime(e.target.value)}
+                />
+              </div>
+            </div>
           </div>
         )}
 
@@ -231,11 +347,7 @@ export default function UpcomingCourse() {
         </div>
 
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            type="submit"
-            className="cursor-pointer"
-          >
+          <Button variant="outline" type="submit" className="cursor-pointer">
             Generate
           </Button>
           <Button
