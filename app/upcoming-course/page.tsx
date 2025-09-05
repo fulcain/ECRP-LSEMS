@@ -15,8 +15,9 @@ import React, { useState, useEffect } from "react";
 
 export default function UpcomingCourse() {
   const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => setIsClient(true), []);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const [courseType, setCourseType] = useLocalStorage<
     "new" | "reschedule" | "cancelled"
@@ -35,33 +36,153 @@ export default function UpcomingCourse() {
   const [output, setOutput] = useState("");
   const [copied, setCopied] = useState(false);
 
+  const getOrdinal = (n: number) => {
+    if (n > 5 && n < 21) return `${n}th`;
+    switch (n % 10) {
+      case 1:
+        return `${n}st`;
+      case 2:
+        return `${n}nd`;
+      case 3:
+        return `${n}rd`;
+      default:
+        return `${n}th`;
+    }
+  };
+
+  const pad = (num: number, size: number = 2) =>
+    String(num).padStart(size, "0");
+
+  const formatDate = (datetimeStr: string) => {
+    if (!datetimeStr) return null;
+    const d = new Date(datetimeStr + "Z");
+    if (isNaN(d.getTime())) return null;
+
+    const weekday = d.toLocaleString("en-GB", {
+      weekday: "long",
+      timeZone: "UTC",
+    });
+    const dayNum = d.getUTCDate();
+    const dayOrdinal = getOrdinal(dayNum);
+    const month = d.toLocaleString("en-GB", {
+      month: "long",
+      timeZone: "UTC",
+    });
+    const year = d.getUTCFullYear();
+    const hours = pad(d.getUTCHours());
+    const minutes = pad(d.getUTCMinutes());
+    const urlDate = `${year}-${pad(d.getUTCMonth() + 1)}-${pad(dayNum)}`;
+
+    return {
+      formatted: `${weekday}, ${dayOrdinal} ${month} ${year} @ ${hours}:${minutes} ((UTC))`,
+      urlDate,
+      hours,
+      minutes,
+    };
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (courseType === "cancelled") {
+      if (!datetime || !instructor.trim()) {
+        alert("Please fill in date/time and instructor name");
+        return;
+      }
+    } else if (courseType === "reschedule") {
+      if (!datetime || !prevDatetime || !instructor.trim()) {
+        alert("Please fill in all fields for reschedule");
+        return;
+      }
+    } else {
+      if (!datetime || !instructor.trim()) {
+        alert("Please fill in date/time and instructor name");
+        return;
+      }
+    }
+
+    const newDateInfo = formatDate(datetime);
+    if (!newDateInfo) {
+      alert("Invalid new date/time");
+      return;
+    }
+
+    const instructorName = instructor.trim();
+    let result = "";
+
+    if (courseType === "new") {
+      result = `
+[hr][/hr]
+[b]${newDateInfo.formatted} - ${instructorName}[/b]
+[img]https://www.inyourowntime.zone/${newDateInfo.urlDate}_${newDateInfo.hours}.${newDateInfo.minutes}_UTC.png[/img]
+[hr][/hr]
+      `.trim();
+    } else if (courseType === "cancelled") {
+      result = `
+[hr][/hr]
+[b][size=112][color=red]Class cancelled[/color][/size][/b]
+[b][s]${newDateInfo.formatted} - ${instructorName}[/s][/b]
+[img]https://www.inyourowntime.zone/${newDateInfo.urlDate}_${newDateInfo.hours}.${newDateInfo.minutes}_UTC.png[/img]
+[hr][/hr]
+      `.trim();
+    } else if (courseType === "reschedule") {
+      const prevDateInfo = formatDate(prevDatetime);
+      if (!prevDateInfo) {
+        alert("Invalid previous date/time");
+        return;
+      }
+      result = `
+[hr][/hr]
+[b][size=112][color=darkorange]Class rescheduled[/color][/size][/b]
+[b][s]${prevDateInfo.formatted} - ${instructorName}[/s][/b]
+[b]${newDateInfo.formatted} - ${instructorName}[/b]
+[img]https://www.inyourowntime.zone/${newDateInfo.urlDate}_${newDateInfo.hours}.${newDateInfo.minutes}_UTC.png[/img]
+[hr][/hr]
+      `.trim();
+    }
+
+    setOutput(result);
+    setCopied(false);
+  };
+
+  const handleCopy = () => {
+    if (!output) return;
+    navigator.clipboard.writeText(output).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  const handleClear = () => {
+    setCourseType("new");
+    setDatetime("");
+    setPrevDatetime("");
+    setInstructor("");
+    setOutput("");
+    setCopied(false);
+  };
+
   if (!isClient) return null;
 
   return (
-    <main className="mx-auto min-h-screen max-w-xl px-4 py-8 text-white sm:px-6 lg:px-8">
-      <div className="mb-10 text-center">
-        <h1 className="mb-2 text-3xl font-bold text-white sm:text-4xl">
-          Upcoming Course
-        </h1>
-        <p className="text-slate-400">
-          Create, Edit and Cancel an Upcoming BLS Course
-        </p>
-      </div>
+    <main className="text-foreground mx-auto mt-18 max-w-xl min-h-screen">
+      <h5 className="mb-10 text-center text-3xl font-semibold">
+        Upcoming Course
+      </h5>
 
-      <form className="flex flex-col gap-6">
-        {/* Course Type */}
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="courseType">Course Type</Label>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1">
+          <Label htmlFor="courseType">Course Type:</Label>
           <Select
             value={courseType}
             onValueChange={(value) =>
               setCourseType(value as "new" | "reschedule" | "cancelled")
             }
           >
-            <SelectTrigger id="courseType" className="w-full bg-slate-700">
+            <SelectTrigger id="courseType" className="w-full">
               <SelectValue placeholder="Select course type" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 text-white">
+            <SelectContent>
               <SelectItem value="new">New</SelectItem>
               <SelectItem value="reschedule">Reschedule</SelectItem>
               <SelectItem value="cancelled">Cancelled</SelectItem>
@@ -69,60 +190,59 @@ export default function UpcomingCourse() {
           </Select>
         </div>
 
-        {/* Course Date */}
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="datetime">Course Date & Time (UTC)</Label>
-          <Input
-            id="datetime"
-            type="datetime-local"
-            value={datetime}
-            onChange={(e) => setDatetime(e.target.value)}
-            className="bg-slate-700 text-white"
-          />
-        </div>
+        {(courseType === "new" ||
+          courseType === "cancelled" ||
+          courseType === "reschedule") && (
+          <div className="flex flex-col gap-1">
+            <Label htmlFor="datetime">Course Date & Time (UTC):</Label>
+            <Input
+              id="datetime"
+              type="datetime-local"
+              value={datetime}
+              onChange={(e) => setDatetime(e.target.value)}
+              required
+            />
+          </div>
+        )}
 
-        {/* Previous Date for Reschedule */}
         {courseType === "reschedule" && (
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="prevDatetime">Previous Date & Time (UTC)</Label>
+          <div className="flex flex-col gap-1">
+            <Label htmlFor="prevDatetime">Previous Date & Time (UTC):</Label>
             <Input
               id="prevDatetime"
               type="datetime-local"
               value={prevDatetime}
               onChange={(e) => setPrevDatetime(e.target.value)}
-              className="bg-slate-700 text-white"
+              required
             />
           </div>
         )}
 
-        {/* Instructor Name */}
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="instructor">Instructor Name</Label>
+        <div className="flex flex-col gap-1">
+          <Label htmlFor="instructor">Instructor Name:</Label>
           <Input
             id="instructor"
             type="text"
             value={instructor}
             onChange={(e) => setInstructor(e.target.value)}
             placeholder="First Last"
-            className="bg-slate-700 text-white"
+            required
           />
         </div>
 
-        {/* Actions */}
-        <div className="flex gap-4">
-          <Button variant="secondary" type="submit">
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            type="submit"
+            className="cursor-pointer"
+          >
             Generate
           </Button>
           <Button
             variant="destructive"
             type="button"
-            onClick={() => {
-              setCourseType("new");
-              setDatetime("");
-              setPrevDatetime("");
-              setInstructor("");
-              setOutput("");
-            }}
+            className="cursor-pointer"
+            onClick={handleClear}
           >
             Clear
           </Button>
@@ -130,18 +250,14 @@ export default function UpcomingCourse() {
       </form>
 
       {output && (
-        <div className="mt-6">
-          <pre className="rounded-lg bg-slate-900 p-4 whitespace-pre-wrap text-white">
+        <div className="flex flex-col gap-2">
+          <pre className="mt-4 rounded border border-gray-600 bg-gray-900 p-4 whitespace-pre-wrap text-white">
             {output}
           </pre>
           <Button
-            className="mt-2"
+            onClick={handleCopy}
+            className="cursor-pointer self-start"
             variant="secondary"
-            onClick={() => {
-              navigator.clipboard.writeText(output);
-              setCopied(true);
-              setTimeout(() => setCopied(false), 2000);
-            }}
           >
             {copied ? "Copied!" : "Copy"}
           </Button>
