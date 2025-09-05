@@ -16,46 +16,38 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 export default function UpcomingCourse() {
   const [isClient, setIsClient] = useState(false);
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  useEffect(() => setIsClient(true), []);
 
-  const [courseType, setCourseType] = useLocalStorage<
-    "new" | "reschedule" | "cancelled"
-  >("uc-courseType", "new");
+  const [courseType, setCourseType] = useLocalStorage<"new" | "reschedule" | "cancelled">(
+    "uc-courseType",
+    "new"
+  );
 
   const [datetime, setDatetime] = useLocalStorage<string>("uc-datetime", "");
-  const [prevDatetime, setPrevDatetime] = useLocalStorage<string>(
-    "uc-prevDatetime",
-    "",
-  );
-  const [instructor, setInstructor] = useLocalStorage<string>(
-    "uc-instructor",
-    "",
-  );
+  const [prevDatetime, setPrevDatetime] = useLocalStorage<string>("uc-prevDatetime", "");
+  const [instructor, setInstructor] = useLocalStorage<string>("uc-instructor", "");
 
   const [date, setDate] = useState<Date | undefined>(
-    datetime ? new Date(datetime + "Z") : undefined,
+    datetime ? new Date(datetime + "Z") : undefined
   );
   const [time, setTime] = useState<string>(
-    datetime ? format(new Date(datetime + "Z"), "HH:mm") : "",
+    datetime ? format(new Date(datetime + "Z"), "HH:mm") : ""
   );
 
   const [prevDate, setPrevDate] = useState<Date | undefined>(
-    prevDatetime ? new Date(prevDatetime + "Z") : undefined,
+    prevDatetime ? new Date(prevDatetime + "Z") : undefined
   );
   const [prevTime, setPrevTime] = useState<string>(
-    prevDatetime ? format(new Date(prevDatetime + "Z"), "HH:mm") : "",
+    prevDatetime ? format(new Date(prevDatetime + "Z"), "HH:mm") : ""
   );
 
   const [output, setOutput] = useState("");
   const [copied, setCopied] = useState(false);
 
-  // Helpers (kept from your original file)
   const getOrdinal = (n: number) => {
     if (n > 5 && n < 21) return `${n}th`;
     switch (n % 10) {
@@ -73,22 +65,15 @@ export default function UpcomingCourse() {
   const pad = (num: number, size: number = 2) =>
     String(num).padStart(size, "0");
 
-  // original formatDate kept as-is; it expects a string like "YYYY-MM-DDTHH:MM"
   const formatDate = (datetimeStr: string) => {
     if (!datetimeStr) return null;
     const d = new Date(datetimeStr + "Z");
     if (isNaN(d.getTime())) return null;
 
-    const weekday = d.toLocaleString("en-GB", {
-      weekday: "long",
-      timeZone: "UTC",
-    });
+    const weekday = d.toLocaleString("en-GB", { weekday: "long", timeZone: "UTC" });
     const dayNum = d.getUTCDate();
     const dayOrdinal = getOrdinal(dayNum);
-    const month = d.toLocaleString("en-GB", {
-      month: "long",
-      timeZone: "UTC",
-    });
+    const month = d.toLocaleString("en-GB", { month: "long", timeZone: "UTC" });
     const year = d.getUTCFullYear();
     const hours = pad(d.getUTCHours());
     const minutes = pad(d.getUTCMinutes());
@@ -102,52 +87,45 @@ export default function UpcomingCourse() {
     };
   };
 
-  // build string "YYYY-MM-DDTHH:MM" from Date + "HH:MM"
-  const buildDatetimeString = (d: Date | undefined, t: string) => {
-    if (!d || !t) return "";
-    const yyyy = d.getFullYear();
-    const mm = pad(d.getMonth() + 1);
-    const dd = pad(d.getDate());
-    const [hhRaw, miRaw] = t.split(":");
-    const hh = pad(Number(hhRaw || 0));
-    const mi = pad(Number(miRaw || 0));
-    return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
-  };
+  const buildDatetimeString = useCallback(
+    (d: Date | undefined, t: string) => {
+      if (!d || !t) return "";
+      const yyyy = d.getFullYear();
+      const mm = pad(d.getMonth() + 1);
+      const dd = pad(d.getDate());
+      const [hhRaw, miRaw] = t.split(":");
+      const hh = pad(Number(hhRaw || 0));
+      const mi = pad(Number(miRaw || 0));
+      return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
+    },
+    [pad]
+  );
 
-  // keep local-storage string synced when the UI pickers change
+  // Sync local storage with UI pickers
   useEffect(() => {
     const s = buildDatetimeString(date, time);
     if (s) setDatetime(s);
-  }, [date, time]);
+  }, [date, time, buildDatetimeString, setDatetime]);
 
   useEffect(() => {
     const s = buildDatetimeString(prevDate, prevTime);
     if (s) setPrevDatetime(s);
-  }, [prevDate, prevTime]);
+  }, [prevDate, prevTime, buildDatetimeString, setPrevDatetime]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Build the strings we need (prefer the UI date/time states; fallback to stored strings)
     const newDatetimeStr = date && time ? buildDatetimeString(date, time) : datetime;
     const prevDatetimeStr =
       prevDate && prevTime ? buildDatetimeString(prevDate, prevTime) : prevDatetime;
 
-    if (courseType === "cancelled") {
-      if (!newDatetimeStr || !instructor.trim()) {
-        alert("Please fill in date/time and instructor name");
-        return;
-      }
-    } else if (courseType === "reschedule") {
-      if (!newDatetimeStr || !prevDatetimeStr || !instructor.trim()) {
-        alert("Please fill in all fields for reschedule");
-        return;
-      }
-    } else {
-      if (!newDatetimeStr || !instructor.trim()) {
-        alert("Please fill in date/time and instructor name");
-        return;
-      }
+    if (
+      (courseType === "cancelled" && (!newDatetimeStr || !instructor.trim())) ||
+      (courseType === "reschedule" && (!newDatetimeStr || !prevDatetimeStr || !instructor.trim())) ||
+      (courseType === "new" && (!newDatetimeStr || !instructor.trim()))
+    ) {
+      alert("Please fill in all required fields.");
+      return;
     }
 
     const newDateInfo = formatDate(newDatetimeStr);
@@ -160,34 +138,28 @@ export default function UpcomingCourse() {
     let result = "";
 
     if (courseType === "new") {
-      result = `
-[hr][/hr]
+      result = `[hr][/hr]
 [b]${newDateInfo.formatted} - ${instructorName}[/b]
 [img]https://www.inyourowntime.zone/${newDateInfo.urlDate}_${newDateInfo.hours}.${newDateInfo.minutes}_UTC.png[/img]
-[hr][/hr]
-      `.trim();
+[hr][/hr]`.trim();
     } else if (courseType === "cancelled") {
-      result = `
-[hr][/hr]
+      result = `[hr][/hr]
 [b][size=112][color=red]Class cancelled[/color][/size][/b]
 [b][s]${newDateInfo.formatted} - ${instructorName}[/s][/b]
 [img]https://www.inyourowntime.zone/${newDateInfo.urlDate}_${newDateInfo.hours}.${newDateInfo.minutes}_UTC.png[/img]
-[hr][/hr]
-      `.trim();
+[hr][/hr]`.trim();
     } else if (courseType === "reschedule") {
       const prevDateInfo = formatDate(prevDatetimeStr);
       if (!prevDateInfo) {
         alert("Invalid previous date/time");
         return;
       }
-      result = `
-[hr][/hr]
+      result = `[hr][/hr]
 [b][size=112][color=darkorange]Class rescheduled[/color][/size][/b]
 [b][s]${prevDateInfo.formatted} - ${instructorName}[/s][/b]
 [b]${newDateInfo.formatted} - ${instructorName}[/b]
 [img]https://www.inyourowntime.zone/${newDateInfo.urlDate}_${newDateInfo.hours}.${newDateInfo.minutes}_UTC.png[/img]
-[hr][/hr]
-      `.trim();
+[hr][/hr]`.trim();
     }
 
     setOutput(result);
@@ -257,7 +229,7 @@ export default function UpcomingCourse() {
                     variant="outline"
                     className={cn(
                       "w-[260px] justify-start text-left font-normal",
-                      !date && !datetime && "text-muted-foreground",
+                      !date && !datetime && "text-muted-foreground"
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
@@ -279,13 +251,11 @@ export default function UpcomingCourse() {
               </Popover>
 
               {/* Time input */}
-              <div className="flex items-center gap-2">
-                <Input
-                  type="time"
-                  value={time || (datetime ? format(new Date(datetime + "Z"), "HH:mm") : "")}
-                  onChange={(e) => setTime(e.target.value)}
-                />
-              </div>
+              <Input
+                type="time"
+                value={time || (datetime ? format(new Date(datetime + "Z"), "HH:mm") : "")}
+                onChange={(e) => setTime(e.target.value)}
+              />
             </div>
           </div>
         )}
@@ -301,7 +271,7 @@ export default function UpcomingCourse() {
                     variant="outline"
                     className={cn(
                       "w-[260px] justify-start text-left font-normal",
-                      !prevDate && !prevDatetime && "text-muted-foreground",
+                      !prevDate && !prevDatetime && "text-muted-foreground"
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
@@ -322,14 +292,13 @@ export default function UpcomingCourse() {
                 </PopoverContent>
               </Popover>
 
-              <div className="flex items-center gap-2">
-                {/* <Clock className="h-4 w-4 text-muted-foreground" /> */}
-                <Input
-                  type="time"
-                  value={prevTime || (prevDatetime ? format(new Date(prevDatetime + "Z"), "HH:mm") : "")}
-                  onChange={(e) => setPrevTime(e.target.value)}
-                />
-              </div>
+              <Input
+                type="time"
+                value={
+                  prevTime || (prevDatetime ? format(new Date(prevDatetime + "Z"), "HH:mm") : "")
+                }
+                onChange={(e) => setPrevTime(e.target.value)}
+              />
             </div>
           </div>
         )}
@@ -347,15 +316,10 @@ export default function UpcomingCourse() {
         </div>
 
         <div className="flex gap-2">
-          <Button variant="outline" type="submit" className="cursor-pointer">
+          <Button variant="outline" type="submit">
             Generate
           </Button>
-          <Button
-            variant="destructive"
-            type="button"
-            className="cursor-pointer"
-            onClick={handleClear}
-          >
+          <Button variant="destructive" type="button" onClick={handleClear}>
             Clear
           </Button>
         </div>
@@ -366,11 +330,7 @@ export default function UpcomingCourse() {
           <pre className="mt-4 rounded border border-gray-600 bg-gray-900 p-4 whitespace-pre-wrap text-white">
             {output}
           </pre>
-          <Button
-            onClick={handleCopy}
-            className="cursor-pointer self-start"
-            variant="secondary"
-          >
+          <Button onClick={handleCopy} variant="secondary">
             {copied ? "Copied!" : "Copy"}
           </Button>
         </div>
