@@ -1,13 +1,17 @@
 "use client";
 
 import { getCurrentDateFormatted } from "../helpers/getCurrentDateFormatted";
+import {
+  Divisions,
+  generateSignature,
+  pmTemplate,
+} from "@/app/configs/divisions/";
 import DivisionSelector from "@/app/email-templates/components/DivisionSelector";
 import TemplateOptions from "@/app/email-templates/components/TemplateOptions";
-import { Divisions, generateSignature, pmTemplate } from "@/app/configs/divisions/";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { MedicCredentials } from "@/components/MedicCredentials";
 import { Button } from "@/components/ui/button";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 
 export default function Home() {
@@ -28,6 +32,23 @@ export default function Home() {
     !medicCredentials.signature ||
     !medicCredentials.rank;
 
+  // Memoized signature string for clipboard generation
+  const medicSignatureText = useMemo(() => {
+    if (!selectedDivision || isCredentialsEmpty) return "";
+    return generateSignature({
+      selectedRank: selectedRank || "",
+      medicCredentials: { ...medicCredentials },
+    }).trim();
+  }, [selectedDivision, selectedRank, medicCredentials, isCredentialsEmpty]);
+
+  const handleGenerateSignature = () => {
+    if (!selectedDivision || !medicSignatureText) return;
+
+    navigator.clipboard
+      .writeText(medicSignatureText)
+      .then(() => toast.success("Signature Copied!"))
+      .catch((err) => console.error("Failed to copy: ", err));
+  };
   const handleGenerate = () => {
     if (!selectedDivision) return;
 
@@ -42,20 +63,6 @@ export default function Home() {
     navigator.clipboard
       .writeText(text)
       .then(() => toast.success("PM template Copied!"))
-      .catch((err) => console.error("Failed to copy: ", err));
-  };
-
-  const handleGenerateSignature = () => {
-    if (!selectedDivision) return;
-
-    const text = generateSignature({
-      selectedRank: selectedRank || "",
-      medicCredentials: { ...medicCredentials },
-    }).trim();
-
-    navigator.clipboard
-      .writeText(text)
-      .then(() => toast.success("Signature Copied!"))
       .catch((err) => console.error("Failed to copy: ", err));
   };
 
@@ -79,18 +86,32 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Credentials Section */}
           <div className="mb-8 rounded-lg bg-slate-800 p-6 shadow-lg">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h2 className="mb-1 text-xl font-semibold text-white">
-                  Medic Credentials
-                </h2>
-                {!isCredentialsEmpty && !showEditForm && (
-                  <p className="text-sm text-slate-400">
-                    {medicCredentials.rank} {medicCredentials.name}
-                  </p>
-                )}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
+                <div className="flex flex-col">
+                  <h2 className="mb-1 text-xl font-semibold text-white">
+                    Medic Credentials
+                  </h2>
+                  {!isCredentialsEmpty && !showEditForm && (
+                    <p className="text-sm text-slate-400">
+                      {medicCredentials.rank} {medicCredentials.name}
+                    </p>
+                  )}
+                </div>
+
+                {/* Display Signature Image */}
+                {!isCredentialsEmpty &&
+                  medicCredentials.signature &&
+                  !showEditForm && (
+                    <div className="mt-2 flex items-center rounded bg-slate-700 p-2 sm:mt-0">
+                      <img
+                        src={medicCredentials.signature}
+                        alt={`${medicCredentials.name} signature`}
+                        className="h-16 w-auto object-contain"
+                      />
+                    </div>
+                  )}
               </div>
 
               {isCredentialsEmpty || showEditForm ? (
@@ -127,9 +148,9 @@ export default function Home() {
               selectedRank={selectedRank}
               setSelectedRank={setSelectedRank}
               subject={subject}
+              handleGenerateSignature={handleGenerateSignature}
               setSubject={setSubject}
               handleGenerate={handleGenerate}
-              handleGenerateSignature={handleGenerateSignature}
             />
           </div>
         </div>
