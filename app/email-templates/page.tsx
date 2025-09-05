@@ -79,8 +79,10 @@ export default function Home() {
         transition={Bounce}
       />
 
-      <div className="text-foreground mt-20 flex flex-col items-center gap-11">
-        <h3 className="text-center text-3xl font-semibold">Division Email Templates</h3>
+      <main className="text-foreground mt-20 flex flex-col items-center gap-11">
+        <h3 className="text-center text-3xl font-semibold">
+          Division Email Templates
+        </h3>
 
         {isCredentialsEmpty || showEditForm ? (
           <MedicCredentials
@@ -96,80 +98,89 @@ export default function Home() {
           </Button>
         )}
 
-        <div className="flex min-h-[36px] items-center justify-center gap-2">
-          {selectedDivision && Array.isArray(selectedDivision.data?.ranks) && (
-            <Select
-              onValueChange={(val) => setSelectedRank(val)}
-              value={selectedRank}
-            >
-              <SelectTrigger className="cursor-pointer">
-                <SelectValue placeholder="Select rank" />
-              </SelectTrigger>
-              <SelectContent>
-                {selectedDivision.data.ranks.map((rank, idx) => (
-                  <SelectItem className="cursor-pointer" key={idx} value={rank}>
-                    {rank}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
+        <section className="flex flex-col items-center justify-center gap-6">
+          <div className="flex min-h-[36px] w-full max-w-xs flex-col items-center justify-center gap-2">
+            {selectedDivision &&
+              Array.isArray(selectedDivision.data?.ranks) && (
+                <Select
+                  onValueChange={(val) => setSelectedRank(val)}
+                  value={selectedRank}
+                >
+                  <SelectTrigger className="w-full cursor-pointer">
+                    <SelectValue placeholder="Select rank" />
+                  </SelectTrigger>
+                  <SelectContent className="w-full">
+                    {selectedDivision.data.ranks.map((rank, idx) => (
+                      <SelectItem
+                        className="w-full cursor-pointer"
+                        key={idx}
+                        value={rank}
+                      >
+                        {rank}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
 
-          {/* Action Buttons */}
-          <div className="flex flex-col gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              className="cursor-pointer"
-              onClick={handleGenerate}
-              disabled={
-                !selectedDivision ||
-                (Array.isArray(selectedDivision?.data?.ranks) && !selectedRank)
-              }
-            >
-              Create Email Template
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              className="cursor-pointer"
-              onClick={handleGenerateSignature}
-              disabled={
-                !selectedDivision ||
-                (Array.isArray(selectedDivision?.data?.ranks) && !selectedRank)
-              }
-            >
-              Create Signature
-            </Button>
-          </div>
-        </div>
-
-        {/* Divisions */}
-        <section className="grid w-full max-w-5xl grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-4 p-4">
-          {divisions.map((item, idx) => (
-            <div
-              key={idx}
-              className="bg-input/30 border-input hover:bg-input/50 flex cursor-pointer items-center gap-3 rounded-md border px-3 py-2 transition"
-              onClick={() => {
-                setSelectedDivision(item);
-                setSelectedRank("");
-              }}
-              style={{ minHeight: 48, minWidth: 140 }}
-            >
-              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center">
-                <Image
-                  src={item.image}
-                  alt={item.label}
-                  width={40}
-                  height={40}
-                  className="object-contain"
-                />
-              </div>
-              <span className="text-sm whitespace-nowrap">{item.label}</span>
+            {/* Action Buttons */}
+            <div className="flex w-full flex-row gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                className="flex-1 cursor-pointer"
+                onClick={handleGenerate}
+                disabled={
+                  !selectedDivision ||
+                  (Array.isArray(selectedDivision?.data?.ranks) &&
+                    !selectedRank)
+                }
+              >
+                Create Email Template
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="flex-1 cursor-pointer"
+                onClick={handleGenerateSignature}
+                disabled={
+                  !selectedDivision ||
+                  (Array.isArray(selectedDivision?.data?.ranks) &&
+                    !selectedRank)
+                }
+              >
+                Create Signature
+              </Button>
             </div>
-          ))}
+          </div>
+
+          {/* Divisions */}
+          <div className="grid w-full max-w-5xl grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-4 p-4">
+            {divisions.map((item, idx) => (
+              <div
+                key={idx}
+                className="bg-input/30 border-input hover:bg-input/50 flex cursor-pointer items-center gap-3 rounded-md border px-3 py-2 transition"
+                onClick={() => {
+                  setSelectedDivision(item);
+                  setSelectedRank("");
+                }}
+                style={{ minHeight: 48, minWidth: 140 }}
+              >
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center">
+                  <Image
+                    src={item.image}
+                    alt={item.label}
+                    width={40}
+                    height={40}
+                    className="object-contain"
+                  />
+                </div>
+                <span className="text-sm whitespace-nowrap">{item.label}</span>
+              </div>
+            ))}
+          </div>
         </section>
-      </div>
+      </main>
     </>
   );
 }
