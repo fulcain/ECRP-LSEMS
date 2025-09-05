@@ -26,15 +26,17 @@ const ranks = [
   "EMT-A",
   "EMT-I",
   "EMT-B",
-  "EMR"
+  "EMR",
 ];
 
+export type MedicCredentialsType = {
+  name: string;
+  signature: string;
+  rank: string;
+};
+
 type Props = {
-  medicCredentials: {
-    name: string;
-    signature: string;
-    rank: string;
-  };
+  medicCredentials: MedicCredentialsType;
   setMedicCredentialsAction: React.Dispatch<
     React.SetStateAction<{
       name: string;
