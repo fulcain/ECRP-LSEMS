@@ -7,23 +7,33 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function QuickLinks() {
   return (
-    <div className="text-foreground mx-auto mt-20 flex max-w-2xl flex-col items-center justify-center gap-4">
-      <h3 className="text-center text-3xl font-semibold">Quick Links</h3>
+    <main className="mx-auto min-h-screen max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mb-10 text-center">
+        <h1 className="mb-2 text-3xl font-bold text-white sm:text-4xl">
+          Quick Links
+        </h1>
+        <p className="text-slate-400">Browse and access all your quick links</p>
+      </div>
 
-      <Accordion type="single" collapsible className="w-full">
+      <Accordion type="single" collapsible className="w-full space-y-4">
         {links.map((item, index) => (
-          <AccordionItem key={index} value={item.label}>
-            <AccordionTrigger className="text-md flex cursor-pointer items-center gap-2 py-2 font-semibold">
-              <div className="flex items-center gap-2">
+          <AccordionItem
+            key={index}
+            value={item.label}
+            className="overflow-hidden rounded-lg border border-slate-700 bg-slate-800 shadow-sm"
+          >
+            <AccordionTrigger className="flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-lg font-semibold text-white transition-colors duration-200 hover:bg-slate-700 focus:bg-slate-600 focus:text-white">
+              <div className="flex flex-row items-center justify-center gap-2">
                 <Image
                   src={item.image}
                   alt={item.label}
-                  width={32}
+                  width={33}
                   height={32}
                   className="rounded-sm object-cover"
                 />
@@ -31,17 +41,19 @@ export default function QuickLinks() {
               </div>
             </AccordionTrigger>
 
-            <AccordionContent className="p-4">
-              <ul className="grid grid-cols-2 gap-2 text-sm">
+            <AccordionContent className="border-t border-slate-700 bg-slate-900 p-4">
+              <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {item.data.quickLinks.map((link, idx) => (
                   <li key={idx}>
                     <Link
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-foreground hover:text-blue-600 hover:underline"
+                      className="block rounded-md px-3 py-2 text-white transition-colors duration-200 hover:bg-slate-700 hover:text-blue-400"
                     >
-                      • {link.name}
+                      <div className="flex flex-row items-center justify-start gap-2">
+                        <ChevronRight /> {link.name}
+                      </div>
                     </Link>
                   </li>
                 ))}
@@ -50,6 +62,6 @@ export default function QuickLinks() {
           </AccordionItem>
         ))}
       </Accordion>
-    </div>
+    </main>
   );
 }

@@ -1,84 +1,43 @@
 "use client";
 
-import React, { useState } from "react";
-import TimezoneSelect from "react-timezone-select";
-import { useLocalStorage } from "@/app/hooks/useLocalStorage";
-
 import {
   AvailabilityInput,
   weekdays,
   convertRangeStringToUTC,
 } from "@/app/helpers/timeUtils";
-
+import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import React, { useState } from "react";
+import TimezoneSelect from "react-timezone-select";
 
 export default function Availability() {
   const initialTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const [timezone, setTimezone] = useState<string>(initialTz);
-
-  // Persisted availability state in localStorage
   const [availability, setAvailability] = useLocalStorage<AvailabilityInput>(
     "availability",
-    weekdays.reduce((acc, day) => {
-      acc[day] = "";
-      return acc;
-    }, {} as AvailabilityInput)
+    weekdays.reduce(
+      (acc, day) => ({ ...acc, [day]: "" }),
+      {} as AvailabilityInput,
+    ),
   );
-
-  const [output, setOutput] = useState<string>("");
-  const [availabilityCopied, setAvailabilityCopied] = useState(false);
-
-  const handleGenerate = () => {
-    const utcLines = ["AVAILABILITY TIME [ooc]UTC[/ooc]:", ""];
-
-    for (const day of weekdays) {
-      const input = availability[day].trim();
-      if (!input) {
-        utcLines.push(`${day}: []`);
-        continue;
-      }
-      const converted = convertRangeStringToUTC(day, input, timezone);
-      utcLines.push(`${day}: [${converted}]`);
-    }
-
-    setOutput(utcLines.join("\n"));
-    setAvailabilityCopied(false);
-  };
-
-  const handleCopy = () => {
-    if (!output) return;
-    navigator.clipboard.writeText(output).then(() => {
-      setAvailabilityCopied(true);
-      setTimeout(() => setAvailabilityCopied(false), 2000);
-    });
-  };
-
-  const handleClear = () => {
-    const emptyAvailability = weekdays.reduce((acc, day) => {
-      acc[day] = "";
-      return acc;
-    }, {} as AvailabilityInput);
-
-    setAvailability(emptyAvailability);
-    setOutput("");
-    setAvailabilityCopied(false);
-  };
+  const [output, setOutput] = useState("");
+  const [copied, setCopied] = useState(false);
 
   return (
-    <div className="text-foreground mx-auto my-20 flex max-w-2xl flex-col items-center gap-6">
-      <h3 className="text-center text-3xl font-semibold">
-        Time of Availability
-      </h3>
+    <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-4 py-8 text-white sm:px-6 lg:px-8">
+      <div className="mb-10 text-center">
+        <h1 className="mb-2 text-3xl font-bold text-white sm:text-4xl">
+          Time of Availability
+        </h1>
+        <p className="text-slate-400">Create your time of availability by writing your time and converting it to UTC time</p>
+      </div>
 
-      <div className="mb-6 w-full max-w-lg">
-        <Label
-          htmlFor="timezone"
-          className="text-foreground mb-4 font-semibold"
-        >
-          Select your timezone
-        </Label>
+
+      {/* Timezone Selector */}
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="timezone">Select your timezone</Label>
         <TimezoneSelect
           id="timezone"
           value={{ value: timezone, label: timezone }}
@@ -86,109 +45,102 @@ export default function Availability() {
           styles={{
             control: (base) => ({
               ...base,
-              backgroundColor: "var(--background)",
-              borderColor: "var(--border)",
-              color: "var(--foreground)",
-              boxShadow: "none",
+              backgroundColor: "#1e293b",
+              color: "#fff",
               minHeight: 40,
             }),
             menu: (base) => ({
               ...base,
-              backgroundColor: "var(--background)",
-              color: "var(--foreground)",
+              backgroundColor: "#1e293b",
+              color: "#fff",
             }),
-            singleValue: (base) => ({
-              ...base,
-              color: "var(--foreground)",
-            }),
+            singleValue: (base) => ({ ...base, color: "#fff" }),
             option: (base, state) => ({
               ...base,
-              backgroundColor: state.isFocused
-                ? "var(--muted)"
-                : "var(--background)",
-              color: "var(--foreground)",
+              backgroundColor: state.isFocused ? "#374151" : "#1e293b",
+              color: "#fff",
               cursor: "pointer",
-            }),
-            input: (base) => ({
-              ...base,
-              color: "var(--foreground)",
-            }),
-            placeholder: (base) => ({
-              ...base,
-              color: "var(--muted-foreground)",
-            }),
-            dropdownIndicator: (base) => ({
-              ...base,
-              color: "var(--foreground)",
-            }),
-            indicatorSeparator: (base) => ({
-              ...base,
-              backgroundColor: "var(--border)",
             }),
           }}
         />
       </div>
 
-      <div className="grid w-full max-w-lg grid-cols-2 gap-6">
+      {/* Weekdays Inputs */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {weekdays.map((day) => (
           <div
             key={day}
-            className="border-border flex flex-col gap-2 rounded border p-3"
+            className="flex flex-col gap-2 rounded bg-slate-800 p-3"
           >
-            <Label htmlFor={day} className="text-foreground font-semibold">
-              {day}
-            </Label>
+            <Label htmlFor={day}>{day}</Label>
             <Input
               id={day}
-              placeholder="08:00 - 12:00 and 14:00 - 22:00"
               value={availability[day]}
               onChange={(e) =>
-                setAvailability({
-                  ...availability,
-                  [day]: e.target.value,
-                })
+                setAvailability({ ...availability, [day]: e.target.value })
               }
-              className="bg-background text-foreground placeholder:text-muted-foreground max-w-[300px] text-sm"
+              placeholder="08:00 - 12:00 and 14:00 - 22:00"
+              className="bg-slate-700 text-white"
             />
           </div>
         ))}
       </div>
 
-      <div className="flex gap-3">
+      {/* Actions */}
+      <div className="flex gap-4">
         <Button
-          onClick={handleGenerate}
           variant="secondary"
-          className="cursor-pointer"
+          onClick={() => {
+            const utcLines = ["AVAILABILITY TIME [ooc]UTC[/ooc]:", ""];
+            weekdays.forEach((day) => {
+              const val = availability[day].trim();
+              utcLines.push(
+                `${day}: [${val ? convertRangeStringToUTC(day, val, timezone) : ""}]`,
+              );
+            });
+            setOutput(utcLines.join("\n"));
+            setCopied(false);
+          }}
         >
           Generate
         </Button>
         <Button
-          onClick={handleClear}
           variant="destructive"
-          className="cursor-pointer"
+          onClick={() => {
+            const empty = weekdays.reduce(
+              (acc, day) => ({ ...acc, [day]: "" }),
+              {} as AvailabilityInput,
+            );
+            setAvailability(empty);
+            setOutput("");
+            setCopied(false);
+          }}
         >
           Clear
         </Button>
       </div>
 
+      {/* Output */}
       {output && (
-        <div className="mt-6 w-full max-w-lg">
+        <div className="mt-4">
           <div className="mb-2 flex items-center justify-between">
-            <h4 className="text-lg font-semibold">Converted to UTC</h4>
+            <h2 className="text-lg font-semibold">Converted to UTC</h2>
             <Button
-              onClick={handleCopy}
               variant="secondary"
-              className="cursor-pointer"
-              disabled={!output}
+              onClick={() => {
+                navigator.clipboard.writeText(output);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              }}
             >
-              {availabilityCopied ? "Copied!" : "Copy (UTC)"}
+              {copied ? "Copied!" : "Copy (UTC)"}
             </Button>
           </div>
-          <pre className="border-border bg-card text-card-foreground rounded border p-4 whitespace-pre-wrap">
+          <pre className="rounded bg-slate-900 p-4 whitespace-pre-wrap text-white">
             {output}
           </pre>
         </div>
       )}
-    </div>
+    </main>
   );
 }
