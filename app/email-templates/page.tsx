@@ -1,20 +1,29 @@
 "use client";
 
-import { getCurrentDateFormatted } from "../helpers/getCurrentDateFormatted";
 import {
+  divisions,
   Divisions,
   generateSignature,
-  pmTemplate,
 } from "@/app/configs/divisions/";
-import DivisionSelector from "@/app/email-templates/components/DivisionSelector";
-import TemplateOptions from "@/app/email-templates/components/TemplateOptions";
+import { pmTemplate } from "@/app/configs/divisions/";
+import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { MedicCredentials } from "@/components/MedicCredentials";
 import { Button } from "@/components/ui/button";
-import React, { useMemo, useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import Image from "next/image";
+import React, { useState } from "react";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 
 export default function Home() {
+  const date = getCurrentDateFormatted();
+
   const [medicCredentials, setMedicCredentials] = useLocalStorage(
     "medic-credentials",
     { name: "", signature: "", rank: "" },
@@ -25,44 +34,39 @@ export default function Home() {
     null,
   );
   const [selectedRank, setSelectedRank] = useState("");
-  const [subject, setSubject] = useState("");
 
   const isCredentialsEmpty =
     !medicCredentials.name ||
     !medicCredentials.signature ||
     !medicCredentials.rank;
 
-  // Memoized signature string for clipboard generation
-  const medicSignatureText = useMemo(() => {
-    if (!selectedDivision || isCredentialsEmpty) return "";
-    return generateSignature({
-      selectedRank: selectedRank || "",
-      medicCredentials: { ...medicCredentials },
-    }).trim();
-  }, [selectedDivision, selectedRank, medicCredentials, isCredentialsEmpty]);
-
-  const handleGenerateSignature = () => {
-    if (!selectedDivision || !medicSignatureText) return;
-
-    navigator.clipboard
-      .writeText(medicSignatureText)
-      .then(() => toast.success("Signature Copied!"))
-      .catch((err) => console.error("Failed to copy: ", err));
-  };
   const handleGenerate = () => {
     if (!selectedDivision) return;
 
     const text = pmTemplate({
-      date: getCurrentDateFormatted(),
+      date,
       division: selectedDivision.data,
       selectedRank: selectedRank || "",
       medicCredentials: { ...medicCredentials },
-      subject: subject || "Subject",
     }).trim();
 
     navigator.clipboard
       .writeText(text)
-      .then(() => toast.success("PM template Copied!"))
+      .then(() => toast("PM template Copied!"))
+      .catch((err) => console.error("Failed to copy: ", err));
+  };
+
+  const handleGenerateSignature = () => {
+    if (!selectedDivision) return;
+
+    const text = generateSignature({
+      selectedRank: selectedRank || "",
+      medicCredentials: { ...medicCredentials },
+    }).trim();
+
+    navigator.clipboard
+      .writeText(text)
+      .then(() => toast("Signature Copied!"))
       .catch((err) => console.error("Failed to copy: ", err));
   };
 
@@ -70,91 +74,102 @@ export default function Home() {
     <>
       <ToastContainer
         position="top-right"
-        autoClose={2000}
+        autoClose={2002}
         theme="dark"
         transition={Bounce}
       />
 
-      <main className="text-foreground min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-10 text-center">
-            <h1 className="mb-2 text-3xl font-bold text-white sm:text-4xl">
-              Division Email Templates
-            </h1>
-            <p className="text-slate-400">
-              Select a division and create email templates or signatures
-            </p>
-          </div>
+      <div className="text-foreground mt-20 flex flex-col items-center gap-11">
+        <h3 className="text-center text-3xl font-semibold">Division Email Templates</h3>
 
-          <div className="mb-8 rounded-lg bg-slate-800 p-6 shadow-lg">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                <div className="flex flex-col">
-                  <h2 className="mb-1 text-xl font-semibold text-white">
-                    Medic Credentials
-                  </h2>
-                  {!isCredentialsEmpty && !showEditForm && (
-                    <p className="text-sm text-slate-400">
-                      {medicCredentials.rank} {medicCredentials.name}
-                    </p>
-                  )}
-                </div>
+        {isCredentialsEmpty || showEditForm ? (
+          <MedicCredentials
+            medicCredentials={medicCredentials}
+            setMedicCredentialsAction={(values) => {
+              setMedicCredentials(values);
+              setShowEditForm(false);
+            }}
+          />
+        ) : (
+          <Button variant="outline" onClick={() => setShowEditForm(true)}>
+            Edit Credentials
+          </Button>
+        )}
 
-                {/* Display Signature Image */}
-                {!isCredentialsEmpty &&
-                  medicCredentials.signature &&
-                  !showEditForm && (
-                    <div className="mt-2 flex items-center rounded bg-slate-700 p-2 sm:mt-0">
-                      <img
-                        src={medicCredentials.signature}
-                        alt={`${medicCredentials.name} signature`}
-                        className="h-16 w-auto object-contain"
-                      />
-                    </div>
-                  )}
-              </div>
+        <div className="flex min-h-[36px] items-center justify-center gap-2">
+          {selectedDivision && Array.isArray(selectedDivision.data?.ranks) && (
+            <Select
+              onValueChange={(val) => setSelectedRank(val)}
+              value={selectedRank}
+            >
+              <SelectTrigger className="cursor-pointer">
+                <SelectValue placeholder="Select rank" />
+              </SelectTrigger>
+              <SelectContent>
+                {selectedDivision.data.ranks.map((rank, idx) => (
+                  <SelectItem className="cursor-pointer" key={idx} value={rank}>
+                    {rank}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
 
-              {isCredentialsEmpty || showEditForm ? (
-                <MedicCredentials
-                  medicCredentials={medicCredentials}
-                  setMedicCredentialsAction={(values) => {
-                    setMedicCredentials(values);
-                    setShowEditForm(false);
-                  }}
-                />
-              ) : (
-                <Button
-                  variant="outline"
-                  onClick={() => setShowEditForm(true)}
-                  className="whitespace-nowrap"
-                >
-                  Edit Credentials
-                </Button>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-            {/* Division Selection Panel */}
-            <DivisionSelector
-              selectedDivision={selectedDivision}
-              setSelectedDivision={setSelectedDivision}
-              setSelectedRank={setSelectedRank}
-            />
-
-            {/* Template Options Panel */}
-            <TemplateOptions
-              selectedDivision={selectedDivision}
-              selectedRank={selectedRank}
-              setSelectedRank={setSelectedRank}
-              subject={subject}
-              handleGenerateSignature={handleGenerateSignature}
-              setSubject={setSubject}
-              handleGenerate={handleGenerate}
-            />
+          {/* Action Buttons */}
+          <div className="flex flex-col gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="cursor-pointer"
+              onClick={handleGenerate}
+              disabled={
+                !selectedDivision ||
+                (Array.isArray(selectedDivision?.data?.ranks) && !selectedRank)
+              }
+            >
+              Create Email Template
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="cursor-pointer"
+              onClick={handleGenerateSignature}
+              disabled={
+                !selectedDivision ||
+                (Array.isArray(selectedDivision?.data?.ranks) && !selectedRank)
+              }
+            >
+              Create Signature
+            </Button>
           </div>
         </div>
-      </main>
+
+        {/* Divisions */}
+        <section className="grid w-full max-w-5xl grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-4 p-4">
+          {divisions.map((item, idx) => (
+            <div
+              key={idx}
+              className="bg-input/30 border-input hover:bg-input/50 flex cursor-pointer items-center gap-3 rounded-md border px-3 py-2 transition"
+              onClick={() => {
+                setSelectedDivision(item);
+                setSelectedRank("");
+              }}
+              style={{ minHeight: 48, minWidth: 140 }}
+            >
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center">
+                <Image
+                  src={item.image}
+                  alt={item.label}
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                />
+              </div>
+              <span className="text-sm whitespace-nowrap">{item.label}</span>
+            </div>
+          ))}
+        </section>
+      </div>
     </>
   );
 }

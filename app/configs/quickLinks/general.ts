@@ -50,13 +50,7 @@ export const General = {
       {
         name: "Employee Adjustments",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=573",
-	  },
-
-      {
-        name: "Service Firearm",
-        url: "https://gov.eclipse-rp.net/viewtopic.php?t=106075#11",
-	  },
-
+      },
     ],
   },
 };

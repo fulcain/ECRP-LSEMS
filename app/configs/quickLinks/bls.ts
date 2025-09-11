@@ -12,10 +12,6 @@ export const BLS = {
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=90093",
       },
       {
-        name: "Handbook Formats",
-        url: "https://gov.eclipse-rp.net/viewtopic.php?t=90093#FORMATS",
-      },
-      {
         name: "Command Handbook",
         url: "https://gov.eclipse-rp.net/viewtopic.php?p=1055095#p1055095",
       },

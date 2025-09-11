@@ -52,13 +52,11 @@ export const pmTemplate = ({
   division,
   medicCredentials,
   selectedRank,
-  subject,
 }: {
   date: string;
   division: DivisionData;
   selectedRank: string;
   medicCredentials: MedicCredentials;
-  subject: string;
 }) => {
   const rankLine = selectedRank
     ? `[b]${medicCredentials.rank} | ${selectedRank}[/b]`
@@ -68,7 +66,7 @@ export const pmTemplate = ({
 [divbox=white]
 [fimg=${division.imageSize}]${division.image}[/fimg][aligntable=right,0,0,0,0,0,0][right][font=Arial][b]
 [size=150]${division.divisionName}[/size][/b]
-[size=115]${subject}[/size]
+[size=115]Subject[/size]
 [size=95]${date}[/size]
 [/right][/aligntable]
 
@@ -99,7 +97,7 @@ export const generateSignature = ({
     ? `[b]${medicCredentials.rank} | ${selectedRank}[/b]`
     : `[b]${medicCredentials.rank}[/b]`;
 
-  return `[img]${medicCredentials.signature}[/img]
+	return `[img]${medicCredentials.signature}[/img]
 [i]${medicCredentials.name}[/i]
 ${rankLine}
 `;
