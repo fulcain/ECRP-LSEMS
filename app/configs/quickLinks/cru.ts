@@ -18,6 +18,23 @@ export const CRU = {
       {
         name: "Internal Referrals",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=4079",
+	  },
+	  {
+        name: "Incoming Applications",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=2289",
+      },
+
+      {
+        name: "Command Area",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=1941",
+      },
+      {
+        name: "CRU Public Requests",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=3643",
+      },
+      {
+        name: "CRU Student Profiles",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=1943",
       },
     ],
   },
