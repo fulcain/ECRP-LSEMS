@@ -17,6 +17,8 @@ interface TemplateOptionsProps {
   setSelectedRank: (rank: string) => void;
   subject: string;
   setSubject: (subject: string) => void;
+  recipient: string;
+  setRecipient: (recipient: string) => void;
   handleGenerate: () => void;
   handleGenerateSignature: () => void;
 }
@@ -27,6 +29,8 @@ export default function TemplateOptions({
   setSelectedRank,
   subject,
   setSubject,
+  recipient,
+  setRecipient,
   handleGenerate,
   handleGenerateSignature,
 }: TemplateOptionsProps) {
@@ -88,6 +92,19 @@ export default function TemplateOptions({
 
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-300">
+                Recipient
+              </label>
+              <Input
+                placeholder="Enter recipient"
+                value={recipient}
+                name="recipient"
+                onChange={(e) => setRecipient(e.target.value)}
+                className="w-full border-slate-600 bg-slate-700 text-white"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-300">
                 Email Subject
               </label>
               <Input
@@ -108,7 +125,8 @@ export default function TemplateOptions({
                   !selectedDivision ||
                   (Array.isArray(selectedDivision?.data?.ranks) &&
                     !selectedRank) ||
-                  !subject.trim()
+                  !subject.trim() ||
+                  !recipient.trim()
                 }
               >
                 Create Email Template

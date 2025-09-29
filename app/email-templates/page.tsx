@@ -21,18 +21,16 @@ export default function Home() {
   );
 
   const [showEditForm, setShowEditForm] = useState(false);
-  const [selectedDivision, setSelectedDivision] = useState<Divisions | null>(
-    null,
-  );
+  const [selectedDivision, setSelectedDivision] = useState<Divisions | null>(null);
   const [selectedRank, setSelectedRank] = useState("");
   const [subject, setSubject] = useState("");
+  const [recipient, setRecipient] = useState("");
 
   const isCredentialsEmpty =
     !medicCredentials.name ||
     !medicCredentials.signature ||
     !medicCredentials.rank;
 
-  // Memoized signature string for clipboard generation
   const medicSignatureText = useMemo(() => {
     if (!selectedDivision || isCredentialsEmpty) return "";
     return generateSignature({
@@ -49,6 +47,7 @@ export default function Home() {
       .then(() => toast.success("Signature Copied!"))
       .catch((err) => console.error("Failed to copy: ", err));
   };
+
   const handleGenerate = () => {
     if (!selectedDivision) return;
 
@@ -58,6 +57,7 @@ export default function Home() {
       selectedRank: selectedRank || "",
       medicCredentials: { ...medicCredentials },
       subject: subject || "Subject",
+      recipient: recipient || "Recipient",
     }).trim();
 
     navigator.clipboard
@@ -100,7 +100,6 @@ export default function Home() {
                   )}
                 </div>
 
-                {/* Display Signature Image */}
                 {!isCredentialsEmpty &&
                   medicCredentials.signature &&
                   !showEditForm && (
@@ -135,21 +134,21 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-            {/* Division Selection Panel */}
             <DivisionSelector
               selectedDivision={selectedDivision}
               setSelectedDivision={setSelectedDivision}
               setSelectedRank={setSelectedRank}
             />
 
-            {/* Template Options Panel */}
             <TemplateOptions
               selectedDivision={selectedDivision}
               selectedRank={selectedRank}
               setSelectedRank={setSelectedRank}
               subject={subject}
-              handleGenerateSignature={handleGenerateSignature}
               setSubject={setSubject}
+              recipient={recipient}
+              setRecipient={setRecipient}
+              handleGenerateSignature={handleGenerateSignature}
               handleGenerate={handleGenerate}
             />
           </div>

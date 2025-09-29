@@ -53,12 +53,14 @@ export const pmTemplate = ({
   medicCredentials,
   selectedRank,
   subject,
+  recipient
 }: {
   date: string;
   division: DivisionData;
   selectedRank: string;
   medicCredentials: MedicCredentials;
   subject: string;
+  recipient:string;
 }) => {
   const rankLine = selectedRank
     ? `[b]${medicCredentials.rank} | ${selectedRank}[/b]`
@@ -74,7 +76,7 @@ export const pmTemplate = ({
 
 [hr]
 
-[b]Dear [/b],
+[b]Dear ${recipient}[/b],
 
 [hr]
 [b]Kind regards,[/b]
