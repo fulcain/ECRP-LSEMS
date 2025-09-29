@@ -40,8 +40,18 @@ export default function Home() {
     if (selectedDivision) {
       const saved = divisionRanks[selectedDivision.label];
       if (saved) setSelectedRank(saved);
+      else setSelectedRank("");
     }
   }, [selectedDivision, divisionRanks]);
+
+  useEffect(() => {
+    if (selectedDivision && selectedRank) {
+      setDivisionRanks({
+        ...divisionRanks,
+        [selectedDivision.label]: selectedRank,
+      });
+    }
+  }, [selectedRank, selectedDivision]);
 
   const medicSignatureText = useMemo(() => {
     if (!selectedDivision || isCredentialsEmpty) return "";
@@ -51,21 +61,14 @@ export default function Home() {
     }).trim();
   }, [selectedDivision, selectedRank, medicCredentials, isCredentialsEmpty]);
 
-	const handleGenerateSignature = () => {
-	  if (!selectedDivision || !medicSignatureText) return;
+  const handleGenerateSignature = () => {
+    if (!selectedDivision || !medicSignatureText) return;
 
-	  navigator.clipboard
-		.writeText(medicSignatureText)
-		.then(() => toast.success("Signature Copied!"))
-		.catch((err) => console.error("Failed to copy: ", err));
-
-	  if (selectedRank) {
-		setDivisionRanks({
-		  ...divisionRanks,
-		  [selectedDivision.label]: selectedRank,
-		});
-	  }
-	};
+    navigator.clipboard
+      .writeText(medicSignatureText)
+      .then(() => toast.success("Signature Copied!"))
+      .catch((err) => console.error("Failed to copy: ", err));
+  };
 
   const handleGenerate = () => {
     if (!selectedDivision) return;
@@ -83,13 +86,6 @@ export default function Home() {
       .writeText(text)
       .then(() => toast.success("PM template Copied!"))
       .catch((err) => console.error("Failed to copy: ", err));
-
-    if (selectedRank) {
-      setDivisionRanks({
-        ...divisionRanks,
-        [selectedDivision.label]: selectedRank,
-      });
-    }
   };
 
   return (
@@ -163,7 +159,7 @@ export default function Home() {
             <DivisionSelector
               selectedDivision={selectedDivision}
               setSelectedDivision={setSelectedDivision}
-              setSelectedRank={setSelectedRank}
+              setSelectedRank={setSelectedRank} 
             />
 
             <TemplateOptions
