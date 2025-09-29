@@ -11,13 +11,18 @@ import TemplateOptions from "@/app/email-templates/components/TemplateOptions";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { MedicCredentials } from "@/components/MedicCredentials";
 import { Button } from "@/components/ui/button";
-import React, { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 
 export default function Home() {
   const [medicCredentials, setMedicCredentials] = useLocalStorage(
     "medic-credentials",
     { name: "", signature: "", rank: "" },
+  );
+
+  const [divisionRanks, setDivisionRanks] = useLocalStorage<Record<string, string>>(
+    "division-ranks",
+    {}
   );
 
   const [showEditForm, setShowEditForm] = useState(false);
@@ -31,6 +36,13 @@ export default function Home() {
     !medicCredentials.signature ||
     !medicCredentials.rank;
 
+  useEffect(() => {
+    if (selectedDivision) {
+      const saved = divisionRanks[selectedDivision.label];
+      if (saved) setSelectedRank(saved);
+    }
+  }, [selectedDivision, divisionRanks]);
+
   const medicSignatureText = useMemo(() => {
     if (!selectedDivision || isCredentialsEmpty) return "";
     return generateSignature({
@@ -39,14 +51,21 @@ export default function Home() {
     }).trim();
   }, [selectedDivision, selectedRank, medicCredentials, isCredentialsEmpty]);
 
-  const handleGenerateSignature = () => {
-    if (!selectedDivision || !medicSignatureText) return;
+	const handleGenerateSignature = () => {
+	  if (!selectedDivision || !medicSignatureText) return;
 
-    navigator.clipboard
-      .writeText(medicSignatureText)
-      .then(() => toast.success("Signature Copied!"))
-      .catch((err) => console.error("Failed to copy: ", err));
-  };
+	  navigator.clipboard
+		.writeText(medicSignatureText)
+		.then(() => toast.success("Signature Copied!"))
+		.catch((err) => console.error("Failed to copy: ", err));
+
+	  if (selectedRank) {
+		setDivisionRanks({
+		  ...divisionRanks,
+		  [selectedDivision.label]: selectedRank,
+		});
+	  }
+	};
 
   const handleGenerate = () => {
     if (!selectedDivision) return;
@@ -64,6 +83,13 @@ export default function Home() {
       .writeText(text)
       .then(() => toast.success("PM template Copied!"))
       .catch((err) => console.error("Failed to copy: ", err));
+
+    if (selectedRank) {
+      setDivisionRanks({
+        ...divisionRanks,
+        [selectedDivision.label]: selectedRank,
+      });
+    }
   };
 
   return (
