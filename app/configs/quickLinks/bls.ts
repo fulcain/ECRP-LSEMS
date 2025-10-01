@@ -22,15 +22,15 @@ export const BLS = {
       {
         name: "Command Area",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=1948",
-	  },
+      },
       {
         name: "Discussion Board",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=1889",
-	  },
+      },
       {
         name: "Incoming Applications",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=1948",
-	  },
+      },
 
       {
         name: "Course Reports",
@@ -51,6 +51,10 @@ export const BLS = {
       {
         name: "Private Roaster",
         url: "https://gov.eclipse-rp.net/viewtopic.php?p=863079#p863079",
+      },
+      {
+        name: "Student Profiles",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=1694",
       },
     ],
   },
