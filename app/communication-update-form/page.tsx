@@ -4,6 +4,7 @@ import { communicationUpdate, Divisions } from "@/app/configs/divisions";
 import { useMedic } from "@/app/context/MedicContext";
 import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
 import { getCurrentUTCTime } from "@/app/helpers/timeUtils";
+import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,30 +16,32 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+interface FormData {
+  patientName: string;
+  contactType: string;
+  contactDetails: string;
+  divisionLabel: string;
+  rank: string;
+}
 
 export default function CommunicationUpdateForm() {
   const { medicCredentials, divisionRanks, setDivisionRanks } = useMedic();
 
-  const [patientName, setPatientName] = useState("");
-  const [contactType, setContactType] = useState("");
-  const [contactDetails, setContactDetails] = useState("");
+  const [formData, setFormData] = useLocalStorage<FormData>("commUpdateForm", {
+    patientName: "",
+    contactType: "",
+    contactDetails: "",
+    divisionLabel: "",
+    rank: "",
+  });
 
-  const [selectedDivision, setSelectedDivision] = useState<Divisions | null>(
-    null,
-  );
-  const [selectedRank, setSelectedRank] = useState("");
-
-  useEffect(() => {
-    if (selectedDivision) {
-      const savedRank = divisionRanks[selectedDivision.label] || "";
-      setSelectedRank(savedRank);
-    } else {
-      setSelectedRank("");
-    }
-  }, [selectedDivision]);
+  const selectedDivision =
+    communicationUpdate.find((d) => d.label === formData.divisionLabel) || null;
+  const selectedRank = formData.rank;
 
   useEffect(() => {
     if (
@@ -53,11 +56,15 @@ export default function CommunicationUpdateForm() {
     }
   }, [selectedRank, selectedDivision]);
 
+  const handleChange = (key: keyof FormData, value: string) => {
+    setFormData({ ...formData, [key]: value });
+  };
+
   const handleSubmit = () => {
     if (
-      !patientName ||
-      !contactType ||
-      !contactDetails ||
+      !formData.patientName ||
+      !formData.contactType ||
+      !formData.contactDetails ||
       !selectedDivision ||
       !selectedRank
     ) {
@@ -70,13 +77,13 @@ export default function CommunicationUpdateForm() {
     const text = `[img]https://i.imgur.com/Wxpv58D.png[/img]
 [divbox=white]
 [hr]
-[b]Patient Name:[/b] ${patientName}
+[b]Patient Name:[/b] ${formData.patientName}
 [hr]
 [b]Date / Time:[/b] ${getCurrentDateFormatted()} - ${utcDate}
 [hr]
-[b]Contact Method:[/b] ${contactType}
+[b]Contact Method:[/b] ${formData.contactType}
 [hr]
-[b]Details:[/b] ${contactDetails}
+[b]Details:[/b] ${formData.contactDetails}
 [hr]
 [/divbox]
 [divbox=white]
@@ -118,12 +125,8 @@ export default function CommunicationUpdateForm() {
               Select Division
             </Label>
             <Select
-              onValueChange={(val) => {
-                const div =
-                  communicationUpdate.find((d) => d.label === val) || null;
-                setSelectedDivision(div);
-              }}
-              value={selectedDivision?.label || ""}
+              onValueChange={(val) => handleChange("divisionLabel", val)}
+              value={formData.divisionLabel || ""}
             >
               <SelectTrigger id="divisionSelect">
                 <SelectValue placeholder="Select Division" />
@@ -145,8 +148,8 @@ export default function CommunicationUpdateForm() {
                 Select Rank
               </Label>
               <Select
-                onValueChange={(val) => setSelectedRank(val)}
-                value={selectedRank}
+                onValueChange={(val) => handleChange("rank", val)}
+                value={formData.rank || ""}
               >
                 <SelectTrigger id="rankSelect">
                   <SelectValue placeholder="Choose your rank" />
@@ -171,8 +174,8 @@ export default function CommunicationUpdateForm() {
               <Input
                 id="patientName"
                 placeholder="Enter patient's name"
-                value={patientName}
-                onChange={(e) => setPatientName(e.target.value)}
+                value={formData.patientName}
+                onChange={(e) => handleChange("patientName", e.target.value)}
               />
             </div>
 
@@ -183,8 +186,8 @@ export default function CommunicationUpdateForm() {
               <Input
                 id="contactType"
                 placeholder="Phone, Email, etc."
-                value={contactType}
-                onChange={(e) => setContactType(e.target.value)}
+                value={formData.contactType}
+                onChange={(e) => handleChange("contactType", e.target.value)}
               />
             </div>
 
@@ -195,13 +198,25 @@ export default function CommunicationUpdateForm() {
               <Textarea
                 id="contactDetails"
                 placeholder="Enter contact details"
-                value={contactDetails}
-                onChange={(e) => setContactDetails(e.target.value)}
+                value={formData.contactDetails}
+                onChange={(e) =>
+                  handleChange("contactDetails", e.target.value)
+                }
                 rows={4}
               />
             </div>
 
-            <Button onClick={handleSubmit} className="mt-2 cursor-pointer">
+            <Button
+              onClick={handleSubmit}
+              className="mt-2 cursor-pointer"
+              disabled={
+                !formData.patientName ||
+                !formData.contactType ||
+                !formData.contactDetails ||
+                !selectedDivision ||
+                !selectedRank
+              }
+            >
               Copy Form
             </Button>
           </div>
