@@ -1,6 +1,6 @@
 "use client";
 
-import { communicationUpdate, Divisions } from "@/app/configs/divisions";
+import { communicationUpdate } from "@/app/configs/divisions";
 import { useMedic } from "@/app/context/MedicContext";
 import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
 import { getCurrentUTCTime } from "@/app/helpers/timeUtils";
