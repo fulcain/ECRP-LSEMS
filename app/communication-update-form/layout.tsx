@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "ECRP LSEMS | Email Templates",
-  description: "Division Email Templates",
+  description: "Communication Update Form",
 };
 
 export default function RootLayout({

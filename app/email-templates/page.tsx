@@ -2,31 +2,31 @@
 
 import { getCurrentDateFormatted } from "../helpers/getCurrentDateFormatted";
 import {
+  divisions,
   Divisions,
   generateSignature,
   pmTemplate,
 } from "@/app/configs/divisions/";
+import { useMedic } from "@/app/context/MedicContext";
 import DivisionSelector from "@/app/email-templates/components/DivisionSelector";
 import TemplateOptions from "@/app/email-templates/components/TemplateOptions";
-import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { MedicCredentials } from "@/components/MedicCredentials";
 import { Button } from "@/components/ui/button";
 import { useMemo, useState, useEffect } from "react";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 
 export default function Home() {
-  const [medicCredentials, setMedicCredentials] = useLocalStorage(
-    "medic-credentials",
-    { name: "", signature: "", rank: "" },
-  );
-
-  const [divisionRanks, setDivisionRanks] = useLocalStorage<Record<string, string>>(
-    "division-ranks",
-    {}
-  );
+  const {
+    medicCredentials,
+    setMedicCredentials,
+    divisionRanks,
+    setDivisionRanks,
+  } = useMedic();
 
   const [showEditForm, setShowEditForm] = useState(false);
-  const [selectedDivision, setSelectedDivision] = useState<Divisions | null>(null);
+  const [selectedDivision, setSelectedDivision] = useState<Divisions | null>(
+    null,
+  );
   const [selectedRank, setSelectedRank] = useState("");
   const [subject, setSubject] = useState("");
   const [recipient, setRecipient] = useState("");
@@ -159,7 +159,8 @@ export default function Home() {
             <DivisionSelector
               selectedDivision={selectedDivision}
               setSelectedDivision={setSelectedDivision}
-              setSelectedRank={setSelectedRank} 
+              setSelectedRank={setSelectedRank}
+              ArrayToLoop={divisions}
             />
 
             <TemplateOptions

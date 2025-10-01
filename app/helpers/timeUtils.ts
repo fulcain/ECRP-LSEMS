@@ -143,3 +143,14 @@ export function convertRangeStringToUTC(
     return formatUTC(utcDate);
   });
 }
+
+/**
+ * Returns the current date and time in UTC as "HH:mm"
+ */
+export function getCurrentUTCTime(): string {
+  const now = new Date();
+  const hours = now.getUTCHours().toString().padStart(2, "0");
+  const minutes = now.getUTCMinutes().toString().padStart(2, "0");
+
+  return `${hours}:${minutes}`;
+}

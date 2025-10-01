@@ -41,6 +41,8 @@ export const divisions: Divisions[] = [
   IA,
 ];
 
+export const communicationUpdate: Divisions[] = [CRU, AMU];
+
 type MedicCredentials = {
   name: string;
   signature: string;
@@ -53,14 +55,14 @@ export const pmTemplate = ({
   medicCredentials,
   selectedRank,
   subject,
-  recipient
+  recipient,
 }: {
   date: string;
   division: DivisionData;
   selectedRank: string;
   medicCredentials: MedicCredentials;
   subject: string;
-  recipient:string;
+  recipient: string;
 }) => {
   const rankLine = selectedRank
     ? `[b]${medicCredentials.rank} | ${selectedRank}[/b]`
