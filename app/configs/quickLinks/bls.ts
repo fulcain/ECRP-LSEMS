@@ -9,7 +9,7 @@ export const BLS = {
       },
       {
         name: "Handbook",
-        url: "https://gov.eclipse-rp.net/viewtopic.php?t=90093",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?t=214677",
       },
       {
         name: "Handbook Formats",
