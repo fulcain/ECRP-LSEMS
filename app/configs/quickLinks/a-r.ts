@@ -24,13 +24,17 @@ export const AR = {
         url: "https://gov.eclipse-rp.net/viewforum.php?f=926",
       },
       {
+        name: "Ability Course ",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?t=211472",
+	  },
+      {
         name: "Instructor Area",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=3545",
       },
       {
         name: "Discussion Board",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=1886",
-      },
+	  },
     ],
   },
 };
