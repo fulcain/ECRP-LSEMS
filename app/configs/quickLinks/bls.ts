@@ -13,7 +13,7 @@ export const BLS = {
       },
       {
         name: "Handbook Formats",
-        url: "https://gov.eclipse-rp.net/viewtopic.php?t=90093#FORMATS",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?t=214677#FORMATS",
       },
       {
         name: "Command Handbook",
