@@ -51,7 +51,14 @@ export const AMU = {
         name: "Communication Update Form",
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=167625",
       },
+      {
+        name: "Command Area",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=1955",
+      },
+      {
+        name: "Incoming Applications",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=2293",
+      },
     ],
   },
 };
-
