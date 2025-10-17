@@ -13,10 +13,6 @@ export const AMU = {
       },
       {
         name: "Handbook",
-        url: "https://gov.eclipse-rp.net/viewforum.php?f=3120",
-      },
-      {
-        name: "Handbook Rework",
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=178535",
       },
       {
@@ -24,7 +20,7 @@ export const AMU = {
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=63193",
       },
       {
-        name: "Senior Doctor Area",
+        name: "Attending Physician Area",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=3808",
       },
       {
