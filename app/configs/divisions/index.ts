@@ -61,26 +61,31 @@ export const pmTemplate = ({
   division: DivisionData;
   selectedRank: string;
   medicCredentials: MedicCredentials;
-  subject: string;
-  recipient: string;
+  subject?: string;
+  recipient?: string;
 }) => {
   const rankLine = selectedRank
     ? `[b]${medicCredentials.rank} | ${selectedRank}[/b]`
     : `[b]${medicCredentials.rank}[/b]`;
 
+  const subjectLine = subject && subject.trim() !== ""
+    ? `[size=115]${subject}[/size]\n`
+    : "";
+
+  const recipientLine = recipient && recipient.trim() !== ""
+    ? `[b]Dear ${recipient}[/b],\n\n`
+    : "";
+
   return `[LSEMSfooter][/LSEMSfooter]
 [divbox=white]
 [fimg=${division.imageSize}]${division.image}[/fimg][aligntable=right,0,0,0,0,0,0][right][font=Arial][b]
 [size=150]${division.divisionName}[/size][/b]
-[size=115]${subject}[/size]
-[size=95]${date}[/size]
+${subjectLine}[size=95]${date}[/size]
 [/right][/aligntable]
 
 [hr]
 
-[b]Dear ${recipient}[/b],
-
-[hr]
+${recipientLine}[hr]
 [b]Kind regards,[/b]
 
 [img]${medicCredentials.signature}[/img]

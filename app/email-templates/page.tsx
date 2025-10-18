@@ -70,23 +70,23 @@ export default function Home() {
       .catch((err) => console.error("Failed to copy: ", err));
   };
 
-  const handleGenerate = () => {
-    if (!selectedDivision) return;
+const handleGenerate = () => {
+  if (!selectedDivision) return;
 
-    const text = pmTemplate({
-      date: getCurrentDateFormatted(),
-      division: selectedDivision.data,
-      selectedRank: selectedRank || "",
-      medicCredentials: { ...medicCredentials },
-      subject: subject || "Subject",
-      recipient: recipient || "Recipient",
-    }).trim();
+  const text = pmTemplate({
+    date: getCurrentDateFormatted(),
+    division: selectedDivision.data,
+    selectedRank: selectedRank || "",
+    medicCredentials: { ...medicCredentials },
+    subject: subject.trim(),
+    recipient: recipient.trim(),
+  }).trim();
 
-    navigator.clipboard
-      .writeText(text)
-      .then(() => toast.success("PM template Copied!"))
-      .catch((err) => console.error("Failed to copy: ", err));
-  };
+  navigator.clipboard
+    .writeText(text)
+    .then(() => toast.success("PM template Copied!"))
+    .catch((err) => console.error("Failed to copy: ", err));
+};
 
   return (
     <>

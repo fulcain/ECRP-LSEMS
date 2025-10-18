@@ -43,6 +43,7 @@ export default function TemplateOptions({
 
         {selectedDivision ? (
           <div className="space-y-6">
+            {/* Division Info */}
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-300">
                 Division Selected
@@ -63,6 +64,7 @@ export default function TemplateOptions({
               </div>
             </div>
 
+            {/* Rank Selector */}
             {Array.isArray(selectedDivision.data?.ranks) && (
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-300">
@@ -90,12 +92,13 @@ export default function TemplateOptions({
               </div>
             )}
 
+            {/* Recipient Input */}
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-300">
                 Recipient
               </label>
               <Input
-                placeholder="Enter recipient"
+                placeholder="Enter recipient (optional)"
                 value={recipient}
                 name="recipient"
                 onChange={(e) => setRecipient(e.target.value)}
@@ -103,12 +106,13 @@ export default function TemplateOptions({
               />
             </div>
 
+            {/* Subject Input */}
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-300">
                 Email Subject
               </label>
               <Input
-                placeholder="Enter email subject"
+                placeholder="Enter email subject (optional)"
                 value={subject}
                 name="subject"
                 onChange={(e) => setSubject(e.target.value)}
@@ -116,6 +120,7 @@ export default function TemplateOptions({
               />
             </div>
 
+            {/* Buttons */}
             <div className="grid grid-cols-1 gap-3 pt-2 sm:grid-cols-2">
               <Button
                 size="lg"
@@ -124,9 +129,7 @@ export default function TemplateOptions({
                 disabled={
                   !selectedDivision ||
                   (Array.isArray(selectedDivision?.data?.ranks) &&
-                    !selectedRank) ||
-                  !subject.trim() ||
-                  !recipient.trim()
+                    !selectedRank)
                 }
               >
                 Create Email Template
@@ -147,6 +150,7 @@ export default function TemplateOptions({
             </div>
           </div>
         ) : (
+          // State when no division selected
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-700">
               <Ambulance />
