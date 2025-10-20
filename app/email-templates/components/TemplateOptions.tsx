@@ -21,6 +21,7 @@ interface TemplateOptionsProps {
   setRecipient: (recipient: string) => void;
   handleGenerate: () => void;
   handleGenerateSignature: () => void;
+  handleGenerateNewTemplate: () => void;
 }
 
 export default function TemplateOptions({
@@ -33,6 +34,7 @@ export default function TemplateOptions({
   setRecipient,
   handleGenerate,
   handleGenerateSignature,
+  handleGenerateNewTemplate,
 }: TemplateOptionsProps) {
   return (
     <div className="lg:col-span-2">
@@ -43,7 +45,6 @@ export default function TemplateOptions({
 
         {selectedDivision ? (
           <div className="space-y-6">
-            {/* Division Info */}
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-300">
                 Division Selected
@@ -64,7 +65,6 @@ export default function TemplateOptions({
               </div>
             </div>
 
-            {/* Rank Selector */}
             {Array.isArray(selectedDivision.data?.ranks) && (
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-300">
@@ -92,7 +92,6 @@ export default function TemplateOptions({
               </div>
             )}
 
-            {/* Recipient Input */}
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-300">
                 Recipient
@@ -100,13 +99,11 @@ export default function TemplateOptions({
               <Input
                 placeholder="Enter recipient (optional)"
                 value={recipient}
-                name="recipient"
                 onChange={(e) => setRecipient(e.target.value)}
                 className="w-full border-slate-600 bg-slate-700 text-white"
               />
             </div>
 
-            {/* Subject Input */}
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-300">
                 Email Subject
@@ -114,14 +111,12 @@ export default function TemplateOptions({
               <Input
                 placeholder="Enter email subject (optional)"
                 value={subject}
-                name="subject"
                 onChange={(e) => setSubject(e.target.value)}
                 className="w-full border-slate-600 bg-slate-700 text-white"
               />
             </div>
 
-            {/* Buttons */}
-            <div className="grid grid-cols-1 gap-3 pt-2 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 pt-2 sm:grid-cols-3">
               <Button
                 size="lg"
                 className="w-full cursor-pointer bg-blue-600 hover:bg-blue-700"
@@ -134,6 +129,20 @@ export default function TemplateOptions({
               >
                 Create Email Template
               </Button>
+
+              <Button
+                size="lg"
+                className="w-full cursor-pointer bg-red-600 hover:bg-red-700"
+                onClick={handleGenerateNewTemplate}
+                disabled={
+                  !selectedDivision ||
+                  (Array.isArray(selectedDivision?.data?.ranks) &&
+                    !selectedRank)
+                }
+              >
+                Create New Template
+              </Button>
+
               <Button
                 size="lg"
                 variant="outline"
@@ -150,7 +159,6 @@ export default function TemplateOptions({
             </div>
           </div>
         ) : (
-          // State when no division selected
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-700">
               <Ambulance />

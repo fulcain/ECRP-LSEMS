@@ -6,6 +6,7 @@ import {
   Divisions,
   generateSignature,
   pmTemplate,
+  generateNewTemplate,
 } from "@/app/configs/divisions/";
 import { useMedic } from "@/app/context/MedicContext";
 import DivisionSelector from "@/app/email-templates/components/DivisionSelector";
@@ -39,8 +40,7 @@ export default function Home() {
   useEffect(() => {
     if (selectedDivision) {
       const saved = divisionRanks[selectedDivision.label];
-      if (saved) setSelectedRank(saved);
-      else setSelectedRank("");
+      setSelectedRank(saved || "");
     }
   }, [selectedDivision, divisionRanks]);
 
@@ -56,37 +56,54 @@ export default function Home() {
   const medicSignatureText = useMemo(() => {
     if (!selectedDivision || isCredentialsEmpty) return "";
     return generateSignature({
-      selectedRank: selectedRank || "",
+      selectedRank,
       medicCredentials: { ...medicCredentials },
     }).trim();
   }, [selectedDivision, selectedRank, medicCredentials, isCredentialsEmpty]);
 
   const handleGenerateSignature = () => {
     if (!selectedDivision || !medicSignatureText) return;
-
     navigator.clipboard
       .writeText(medicSignatureText)
       .then(() => toast.success("Signature Copied!"))
       .catch((err) => console.error("Failed to copy: ", err));
   };
 
-const handleGenerate = () => {
-  if (!selectedDivision) return;
+  const handleGenerate = () => {
+    if (!selectedDivision) return;
 
-  const text = pmTemplate({
-    date: getCurrentDateFormatted(),
-    division: selectedDivision.data,
-    selectedRank: selectedRank || "",
-    medicCredentials: { ...medicCredentials },
-    subject: subject.trim(),
-    recipient: recipient.trim(),
-  }).trim();
+    const text = pmTemplate({
+      date: getCurrentDateFormatted(),
+      division: selectedDivision.data,
+      selectedRank: selectedRank || "",
+      medicCredentials: { ...medicCredentials },
+      subject: subject.trim(),
+      recipient: recipient.trim(),
+    }).trim();
 
-  navigator.clipboard
-    .writeText(text)
-    .then(() => toast.success("PM template Copied!"))
-    .catch((err) => console.error("Failed to copy: ", err));
-};
+    navigator.clipboard
+      .writeText(text)
+      .then(() => toast.success("PM Template Copied!"))
+      .catch((err) => console.error("Failed to copy: ", err));
+  };
+
+  const handleGenerateNewTemplate = () => {
+    if (!selectedDivision) return;
+
+    const bbcode = generateNewTemplate({
+      medicCredentials: { ...medicCredentials },
+      selectedRank: selectedRank || "",
+      division: selectedDivision.data,
+      subject: subject.trim(),
+      recipient: recipient.trim(),
+      date: getCurrentDateFormatted(),
+    });
+
+    navigator.clipboard
+      .writeText(bbcode)
+      .then(() => toast.success("BBCode Template Copied!"))
+      .catch((err) => console.error("Failed to copy: ", err));
+  };
 
   return (
     <>
@@ -104,7 +121,8 @@ const handleGenerate = () => {
               Division Email Templates
             </h1>
             <p className="text-slate-400">
-              Select a division and create email templates or signatures
+              Select a division and create email templates, signatures, or
+              BBCode posts
             </p>
           </div>
 
@@ -173,6 +191,7 @@ const handleGenerate = () => {
               setRecipient={setRecipient}
               handleGenerateSignature={handleGenerateSignature}
               handleGenerate={handleGenerate}
+              handleGenerateNewTemplate={handleGenerateNewTemplate}
             />
           </div>
         </div>

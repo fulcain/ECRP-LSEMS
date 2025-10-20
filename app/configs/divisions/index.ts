@@ -68,13 +68,11 @@ export const pmTemplate = ({
     ? `[b]${medicCredentials.rank} | ${selectedRank}[/b]`
     : `[b]${medicCredentials.rank}[/b]`;
 
-  const subjectLine = subject && subject.trim() !== ""
-    ? `[size=115]${subject}[/size]\n`
-    : "";
+  const subjectLine =
+    subject && subject.trim() !== "" ? `[size=115]${subject}[/size]` : "";
 
-  const recipientLine = recipient && recipient.trim() !== ""
-    ? `[b]Dear ${recipient}[/b],\n\n`
-    : "";
+  const recipientLine =
+    recipient && recipient.trim() !== "" ? `[b]Dear ${recipient}[/b],` : "";
 
   return `[LSEMSfooter][/LSEMSfooter]
 [divbox=white]
@@ -112,4 +110,83 @@ export const generateSignature = ({
 [i]${medicCredentials.name}[/i]
 ${rankLine}
 `;
+};
+
+export const generateNewTemplate = ({
+  medicCredentials,
+  selectedRank,
+  subject,
+  recipient,
+  date,
+  division,
+}: {
+  medicCredentials: MedicCredentials;
+  selectedRank: string;
+  subject?: string;
+  date: string;
+  recipient: string;
+  division?: DivisionData;
+}) => {
+  const rankLine = selectedRank
+    ? `${medicCredentials.rank} | ${selectedRank}`
+    : `${medicCredentials.rank}`;
+
+  const subjectLine =
+    subject && subject.trim() !== ""
+      ? `[b][size=110]${subject}[/size][/b]`
+      : `[b][size=110]Subject[/size][/b]`;
+
+  const formattedDate = `[size=95]${date}[/size]`;
+
+  const isGeneralDivision =
+    division?.divisionName?.trim().toLowerCase() ===
+    "los santos emergency medical services".toLowerCase();
+
+  const divisionImage =
+    !isGeneralDivision && division?.image
+      ? `[float=right][fimg=${division.imageSize || "150,150"}]${division.image}[/fimg][/float]`
+      : "";
+
+  const divisionTitle =
+    !isGeneralDivision &&
+    division?.divisionName &&
+    division.divisionName.trim() !== ""
+      ? `[font=Arial][b][size=150]${division.divisionName}[/size][/b][/font]\n`
+      : "";
+
+  const recipientLine =
+    recipient && recipient.trim() !== "" ? `[b]Dear ${recipient}[/b],\n` : "";
+
+  // Only add separator if the division section actually exists
+  const divisionSection =
+    !isGeneralDivision && (divisionImage || divisionTitle)
+      ? `${divisionImage}${divisionTitle}[hr][/hr]\n`
+      : "";
+
+  return `[mdheader 
+title="" 
+location="Pillbox Hill Medical Center" 
+date=" | Paleto Bay Medical Center"
+department="One Team, One Mission, Saving Lives"][/mdheader]
+
+[divbox4=eeeeee]
+${divisionSection}[b]${subjectLine}
+${formattedDate}[/b]
+
+[hr][/hr]
+${recipientLine}MESSAGE TEXT GOES HERE
+
+[hr][/hr]
+
+[/divbox4]
+
+[divbox4=eeeeee]
+Kind regards,
+
+[anchor][/anchor]
+
+[mdsig name="${medicCredentials.name || "Name"}" role="${rankLine}" img=${
+    medicCredentials.signature || "https://i.imgur.com/7flpkan.png"
+  } height=38]
+[/divbox4]`;
 };
