@@ -160,17 +160,20 @@ export const generateNewTemplate = ({
   // Only add separator if the division section actually exists
   const divisionSection =
     !isGeneralDivision && (divisionImage || divisionTitle)
-      ? `${divisionImage}${divisionTitle}[hr][/hr]\n`
+      ? `${divisionImage}${divisionTitle}`
       : "";
 
-  return `[mdheader 
-title="" 
-location="Pillbox Hill Medical Center" 
+  return `[mdheader
+title=""
+location="Pillbox Hill Medical Center"
 date=" | Paleto Bay Medical Center"
 department="One Team, One Mission, Saving Lives"][/mdheader]
 
 [divbox4=eeeeee]
-${divisionSection}[b]${subjectLine}
+${divisionSection}[b]
+[/divbox4]
+[divbox4=eeeeee]
+${subjectLine}
 ${formattedDate}[/b]
 
 [hr][/hr]
@@ -179,6 +182,8 @@ ${recipientLine}MESSAGE TEXT GOES HERE
 [hr][/hr]
 
 [/divbox4]
+
+[divbox=#8d1717][color=transparent]hello[/color][/divbox]
 
 [divbox4=eeeeee]
 Kind regards,
