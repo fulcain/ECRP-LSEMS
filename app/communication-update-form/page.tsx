@@ -18,7 +18,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useMemo, useState } from "react";
 import { Bounce, ToastContainer, toast } from "react-toastify";
-// @ts-expect-error CSS import has no type declarations
 import "react-toastify/dist/ReactToastify.css";
 
 export default function CommunicationUpdateForm() {
