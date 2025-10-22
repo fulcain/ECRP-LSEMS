@@ -3,7 +3,7 @@ export const BLS = {
   image: "/Division/BLS.png",
   data: {
     imageSize: "150,150",
-    image: "https://i.imgur.com/Cdzl6Gz.png",
+    image: "https://i.vgy.me/5Mkn7G.png",
     divisionName: "LSEMS Basic Life Support Division",
     ranks: [
       "Head Of BLS",

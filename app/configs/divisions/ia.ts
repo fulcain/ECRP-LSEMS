@@ -3,7 +3,7 @@ export const IA = {
   image: "/Division/IA.png",
   data: {
     imageSize: "150,150",
-    image: "https://i.imgur.com/AUL0fIU.png",
+    image: "https://i.vgy.me/B2897L.png",
     divisionName: "Internal Affairs Division",
     ranks: [
       "Head Of IA",

@@ -3,7 +3,7 @@ export const FS = {
   image: "/Division/FS.png",
   data: {
     imageSize: "150,150",
-    image: "https://i.imgur.com/BkYqUmd.png",
+    image: "https://i.vgy.me/rs0ORy.png",
     divisionName: "Fire Safety",
     ranks: [
       "Head Of F&R",

@@ -3,7 +3,7 @@ export const AR = {
   image: "/Division/A&R.png",
   data: {
     imageSize: "235,150",
-    image: "https://i.imgur.com/6EvtIgR.png",
+    image: "https://i.vgy.me/2bdgwx.png",
     divisionName: "Air and Rescue Division",
     ranks: [
       "Head Of A&R",
