@@ -3,7 +3,7 @@ export const RED = {
   image: "/Division/RED.png",
   data: {
     imageSize: "150,150",
-    image: "https://i.imgur.com/6gM4XOl.png",
+    image: "https://i.vgy.me/lybSum.png",
     divisionName: "Recruitment and Employment Division",
     ranks: [
       "Head Of RED",

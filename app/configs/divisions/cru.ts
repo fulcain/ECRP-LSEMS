@@ -3,7 +3,7 @@ export const CRU = {
   image: "/Division/CRU.png",
   data: {
     imageSize: "150,150",
-    image: "https://i.imgur.com/IJN82Yd.png",
+    image: "https://i.vgy.me/MdkSzB.png",
     divisionName: "Crisis Response Unit Division",
     ranks: [
       "Head Of CRU",

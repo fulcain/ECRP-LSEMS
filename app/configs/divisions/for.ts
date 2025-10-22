@@ -3,7 +3,7 @@ export const FOR = {
   image: "/Division/FOR.png",
   data: {
     imageSize: "150,150",
-    image: "https://i.imgur.com/ZrbXj3i.png",
+    image: "https://i.vgy.me/kKRB7S.png",
     divisionName: "Forensics Division",
     ranks: [
       "Head Of FOR",

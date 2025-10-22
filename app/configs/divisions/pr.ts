@@ -3,7 +3,7 @@ export const PR = {
   image: "/Division/PR.png",
   data: {
     imageSize: "150,150",
-    image: "https://i.imgur.com/0Yw1ykW.png",
+    image: "https://i.vgy.me/fRFYsK.png",
     divisionName: "Public Relations Division",
     ranks: [
       "Head Of PR",

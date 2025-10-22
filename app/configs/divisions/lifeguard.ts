@@ -3,7 +3,7 @@ export const LIFEGUARD = {
   image: "/Division/LG.png",
   data: {
     imageSize: "150,150",
-    image: "https://i.imgur.com/iOVtXnI.png",
+    image: "https://i.vgy.me/x7lwCB.png",
     divisionName: "Lifeguard Division",
     ranks: [
       "Head Of Lifeguard",
