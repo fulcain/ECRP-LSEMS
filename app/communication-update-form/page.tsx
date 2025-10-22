@@ -44,16 +44,16 @@ export default function CommunicationUpdateForm() {
     } else {
       setSelectedRank("");
     }
-  }, [divisionLabel, divisionRanks]);
+  }, [divisionLabel, divisionRanks, setSelectedDivision, setSelectedRank]);
 
   useEffect(() => {
     if (selectedDivision && selectedRank) {
-      setDivisionRanks({
-        ...divisionRanks,
+      setDivisionRanks((prev) => ({
+        ...prev,
         [selectedDivision.label]: selectedRank,
-      });
+      }));
     }
-  }, [selectedRank, selectedDivision]);
+  }, [selectedRank, selectedDivision, setDivisionRanks]);
 
   // Memoized BBCode
   const bbCodeText = useMemo(() => {
@@ -77,15 +77,45 @@ export default function CommunicationUpdateForm() {
 [b]${selectedRank} | ${medicCredentials.rank}[/b]
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox][img]https://i.imgur.com/HNP4ksW.png[/img]`.trim();
-  }, [patientName, contactType, contactDetails, selectedDivision, selectedRank, medicCredentials]);
+  }, [
+    patientName,
+    contactType,
+    contactDetails,
+    selectedDivision,
+    selectedRank,
+    medicCredentials,
+  ]);
 
   const handleSubmit = () => {
     if (!bbCodeText) {
       toast.error("Please fill all fields and select a division and rank!");
       return;
     }
-    navigator.clipboard.writeText(bbCodeText)
-      .then(() => toast.success("BBCode copied to clipboard!"))
+    navigator.clipboard
+      .writeText(bbCodeText)
+      .then(() => {
+        toast.success("BBCode copied to clipboard!");
+        // open correct URL based on division
+        if (selectedDivision?.label === "AMU") {
+          window.open("https://gov.eclipse-rp.net/viewforum.php?f=3641", "_blank");
+        } else if (selectedDivision?.label === "CRU") {
+          window.open("https://gov.eclipse-rp.net/viewforum.php?f=3643", "_blank");
+        }
+      })
+      .catch(() => toast.error("Failed to copy!"));
+  };
+
+  const handleCombinedSubmit = () => {
+    if (!bbCodeText) {
+      toast.error("Please fill all fields and select a division and rank!");
+      return;
+    }
+    navigator.clipboard
+      .writeText(bbCodeText)
+      .then(() => {
+        toast.success("BBCode copied! Opening combined section...");
+        window.open("https://gov.eclipse-rp.net/viewforum.php?f=2390", "_blank");
+      })
       .catch(() => toast.error("Failed to copy!"));
   };
 
@@ -95,8 +125,12 @@ export default function CommunicationUpdateForm() {
       <main className="text-foreground min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <div className="mb-10 text-center">
-            <h1 className="mb-2 text-3xl font-bold text-white sm:text-4xl">Communication Update Form</h1>
-            <p className="text-slate-400">Fill in patient info, contact details, select division and rank</p>
+            <h1 className="mb-2 text-3xl font-bold text-white sm:text-4xl">
+              Communication Update Form
+            </h1>
+            <p className="text-slate-400">
+              Fill in patient info, contact details, select division and rank
+            </p>
           </div>
 
           {/* Division Selector */}
@@ -148,9 +182,14 @@ export default function CommunicationUpdateForm() {
               <Textarea value={contactDetails} onChange={(e) => setContactDetails(e.target.value)} placeholder="Enter contact details" rows={4} />
             </div>
 
-            <Button onClick={handleSubmit} className="mt-2" disabled={!bbCodeText}>
-              Copy Form
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 mt-4">
+              <Button onClick={handleSubmit} disabled={!bbCodeText} className="flex-1">
+                Copy & Open Division Public Section
+              </Button>
+              <Button onClick={handleCombinedSubmit} disabled={!bbCodeText} className="flex-1 bg-blue-600 hover:bg-blue-700">
+                Copy & Open Combined Section
+              </Button>
+            </div>
           </div>
         </div>
       </main>

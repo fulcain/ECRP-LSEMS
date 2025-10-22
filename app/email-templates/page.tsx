@@ -13,6 +13,7 @@ import DivisionSelector from "@/app/email-templates/components/DivisionSelector"
 import TemplateOptions from "@/app/email-templates/components/TemplateOptions";
 import { MedicCredentials } from "@/components/MedicCredentials";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import { useMemo, useState, useEffect } from "react";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 
@@ -42,16 +43,16 @@ export default function Home() {
       const saved = divisionRanks[selectedDivision.label];
       setSelectedRank(saved || "");
     }
-  }, [selectedDivision, divisionRanks]);
+  }, [selectedDivision, divisionRanks, setSelectedRank]);
 
   useEffect(() => {
     if (selectedDivision && selectedRank) {
-      setDivisionRanks({
-        ...divisionRanks,
+      setDivisionRanks((prev) => ({
+        ...prev,
         [selectedDivision.label]: selectedRank,
-      });
+      }));
     }
-  }, [selectedRank, selectedDivision]);
+  }, [selectedRank, selectedDivision, setDivisionRanks]);
 
   const medicSignatureText = useMemo(() => {
     if (!selectedDivision || isCredentialsEmpty) return "";
@@ -144,9 +145,12 @@ export default function Home() {
                   medicCredentials.signature &&
                   !showEditForm && (
                     <div className="mt-2 flex items-center rounded bg-slate-700 p-2 sm:mt-0">
-                      <img
+                      <Image
                         src={medicCredentials.signature}
                         alt={`${medicCredentials.name} signature`}
+                        width={200}
+                        height={64}
+                        style={{ objectFit: "contain", height: "auto" }}
                         className="h-16 w-auto object-contain"
                       />
                     </div>

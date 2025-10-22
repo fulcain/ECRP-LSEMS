@@ -2,8 +2,14 @@
 
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -11,38 +17,44 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar as CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
 import React, { useState, useEffect, useCallback } from "react";
 
 export default function UpcomingCourse() {
   const [isClient, setIsClient] = useState(false);
   useEffect(() => setIsClient(true), []);
 
-  const [courseType, setCourseType] = useLocalStorage<"new" | "reschedule" | "cancelled">(
-    "uc-courseType",
-    "new"
-  );
+  const pad = (num: number, size: number = 2) =>
+    String(num).padStart(size, "0");
+
+  const [courseType, setCourseType] = useLocalStorage<
+    "new" | "reschedule" | "cancelled"
+  >("uc-courseType", "new");
 
   const [datetime, setDatetime] = useLocalStorage<string>("uc-datetime", "");
-  const [prevDatetime, setPrevDatetime] = useLocalStorage<string>("uc-prevDatetime", "");
-  const [instructor, setInstructor] = useLocalStorage<string>("uc-instructor", "");
+  const [prevDatetime, setPrevDatetime] = useLocalStorage<string>(
+    "uc-prevDatetime",
+    "",
+  );
+  const [instructor, setInstructor] = useLocalStorage<string>(
+    "uc-instructor",
+    "",
+  );
 
   const [date, setDate] = useState<Date | undefined>(
-    datetime ? new Date(datetime + "Z") : undefined
+    datetime ? new Date(datetime + "Z") : undefined,
   );
   const [time, setTime] = useState<string>(
-    datetime ? format(new Date(datetime + "Z"), "HH:mm") : ""
+    datetime ? format(new Date(datetime + "Z"), "HH:mm") : "",
   );
 
   const [prevDate, setPrevDate] = useState<Date | undefined>(
-    prevDatetime ? new Date(prevDatetime + "Z") : undefined
+    prevDatetime ? new Date(prevDatetime + "Z") : undefined,
   );
   const [prevTime, setPrevTime] = useState<string>(
-    prevDatetime ? format(new Date(prevDatetime + "Z"), "HH:mm") : ""
+    prevDatetime ? format(new Date(prevDatetime + "Z"), "HH:mm") : "",
   );
 
   const [output, setOutput] = useState("");
@@ -62,15 +74,15 @@ export default function UpcomingCourse() {
     }
   };
 
-  const pad = (num: number, size: number = 2) =>
-    String(num).padStart(size, "0");
-
   const formatDate = (datetimeStr: string) => {
     if (!datetimeStr) return null;
     const d = new Date(datetimeStr + "Z");
     if (isNaN(d.getTime())) return null;
 
-    const weekday = d.toLocaleString("en-GB", { weekday: "long", timeZone: "UTC" });
+    const weekday = d.toLocaleString("en-GB", {
+      weekday: "long",
+      timeZone: "UTC",
+    });
     const dayNum = d.getUTCDate();
     const dayOrdinal = getOrdinal(dayNum);
     const month = d.toLocaleString("en-GB", { month: "long", timeZone: "UTC" });
@@ -87,19 +99,16 @@ export default function UpcomingCourse() {
     };
   };
 
-  const buildDatetimeString = useCallback(
-    (d: Date | undefined, t: string) => {
-      if (!d || !t) return "";
-      const yyyy = d.getFullYear();
-      const mm = pad(d.getMonth() + 1);
-      const dd = pad(d.getDate());
-      const [hhRaw, miRaw] = t.split(":");
-      const hh = pad(Number(hhRaw || 0));
-      const mi = pad(Number(miRaw || 0));
-      return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
-    },
-    [pad]
-  );
+  const buildDatetimeString = useCallback((d: Date | undefined, t: string) => {
+    if (!d || !t) return "";
+    const yyyy = d.getFullYear();
+    const mm = pad(d.getMonth() + 1);
+    const dd = pad(d.getDate());
+    const [hhRaw, miRaw] = t.split(":");
+    const hh = pad(Number(hhRaw || 0));
+    const mi = pad(Number(miRaw || 0));
+    return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
+  }, []);
 
   // Sync local storage with UI pickers
   useEffect(() => {
@@ -115,13 +124,17 @@ export default function UpcomingCourse() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newDatetimeStr = date && time ? buildDatetimeString(date, time) : datetime;
+    const newDatetimeStr =
+      date && time ? buildDatetimeString(date, time) : datetime;
     const prevDatetimeStr =
-      prevDate && prevTime ? buildDatetimeString(prevDate, prevTime) : prevDatetime;
+      prevDate && prevTime
+        ? buildDatetimeString(prevDate, prevTime)
+        : prevDatetime;
 
     if (
       (courseType === "cancelled" && (!newDatetimeStr || !instructor.trim())) ||
-      (courseType === "reschedule" && (!newDatetimeStr || !prevDatetimeStr || !instructor.trim())) ||
+      (courseType === "reschedule" &&
+        (!newDatetimeStr || !prevDatetimeStr || !instructor.trim())) ||
       (courseType === "new" && (!newDatetimeStr || !instructor.trim()))
     ) {
       alert("Please fill in all required fields.");
@@ -190,7 +203,7 @@ export default function UpcomingCourse() {
   if (!isClient) return null;
 
   return (
-    <main className="text-foreground mx-auto mt-18 max-w-xl min-h-screen">
+    <main className="text-foreground mx-auto mt-18 min-h-screen max-w-xl">
       <h5 className="mb-10 text-center text-3xl font-semibold">
         Upcoming Course
       </h5>
@@ -221,7 +234,7 @@ export default function UpcomingCourse() {
           <div className="flex flex-col gap-1">
             <Label htmlFor="datetime">Course Date & Time (UTC):</Label>
 
-            <div className="flex gap-2 items-center">
+            <div className="flex items-center gap-2">
               {/* Date picker */}
               <Popover>
                 <PopoverTrigger asChild>
@@ -229,15 +242,15 @@ export default function UpcomingCourse() {
                     variant="outline"
                     className={cn(
                       "w-[260px] justify-start text-left font-normal",
-                      !date && !datetime && "text-muted-foreground"
+                      !date && !datetime && "text-muted-foreground",
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {date
                       ? format(date, "PPP")
                       : datetime
-                      ? format(new Date(datetime + "Z"), "PPP")
-                      : "Pick a date"}
+                        ? format(new Date(datetime + "Z"), "PPP")
+                        : "Pick a date"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -253,7 +266,10 @@ export default function UpcomingCourse() {
               {/* Time input */}
               <Input
                 type="time"
-                value={time || (datetime ? format(new Date(datetime + "Z"), "HH:mm") : "")}
+                value={
+                  time ||
+                  (datetime ? format(new Date(datetime + "Z"), "HH:mm") : "")
+                }
                 onChange={(e) => setTime(e.target.value)}
               />
             </div>
@@ -264,22 +280,22 @@ export default function UpcomingCourse() {
           <div className="flex flex-col gap-1">
             <Label htmlFor="prevDatetime">Previous Date & Time (UTC):</Label>
 
-            <div className="flex gap-2 items-center">
+            <div className="flex items-center gap-2">
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     className={cn(
                       "w-[260px] justify-start text-left font-normal",
-                      !prevDate && !prevDatetime && "text-muted-foreground"
+                      !prevDate && !prevDatetime && "text-muted-foreground",
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {prevDate
                       ? format(prevDate, "PPP")
                       : prevDatetime
-                      ? format(new Date(prevDatetime + "Z"), "PPP")
-                      : "Pick a date"}
+                        ? format(new Date(prevDatetime + "Z"), "PPP")
+                        : "Pick a date"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -295,7 +311,10 @@ export default function UpcomingCourse() {
               <Input
                 type="time"
                 value={
-                  prevTime || (prevDatetime ? format(new Date(prevDatetime + "Z"), "HH:mm") : "")
+                  prevTime ||
+                  (prevDatetime
+                    ? format(new Date(prevDatetime + "Z"), "HH:mm")
+                    : "")
                 }
                 onChange={(e) => setPrevTime(e.target.value)}
               />
