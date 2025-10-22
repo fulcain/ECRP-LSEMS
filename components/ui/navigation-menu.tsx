@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
 import { ChevronDownIcon } from "lucide-react";
 import Link from "next/link";
@@ -166,8 +167,9 @@ function NavigationMenuLink({
   asChild,
   ...props
 }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { asChild?: boolean }) {
+  const Comp = asChild ? Slot : "a";
   return (
-    <a
+    <Comp
       data-slot="navigation-menu-link"
       className={cn(
         "flex flex-col gap-1 rounded-sm p-2 text-sm transition-all outline-none",
