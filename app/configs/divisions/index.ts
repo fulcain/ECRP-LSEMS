@@ -82,8 +82,9 @@ ${subjectLine}[size=95]${date}[/size]
 [/right][/aligntable]
 
 [hr]
+${recipientLine}
 
-${recipientLine}[hr]
+[hr]
 [b]Kind regards,[/b]
 
 [img]${medicCredentials.signature}[/img]
@@ -157,10 +158,9 @@ export const generateNewTemplate = ({
   const recipientLine =
     recipient && recipient.trim() !== "" ? `[b]Dear ${recipient}[/b],\n` : "";
 
-  // Only add separator if the division section actually exists
   const divisionSection =
     !isGeneralDivision && (divisionImage || divisionTitle)
-      ? `${divisionImage}${divisionTitle}[hr][/hr]\n`
+      ? `${divisionImage}${divisionTitle}\n`
       : "";
 
   return `[mdheader 
@@ -169,8 +169,12 @@ location="Pillbox Hill Medical Center"
 date=" | Paleto Bay Medical Center"
 department="One Team, One Mission, Saving Lives"][/mdheader]
 
+[divbox4=eeeee]
+${divisionSection}
+[/divbox4]
+
 [divbox4=eeeeee]
-${divisionSection}[b]${subjectLine}
+[b]${subjectLine}
 ${formattedDate}[/b]
 
 [hr][/hr]
@@ -179,11 +183,8 @@ ${recipientLine}MESSAGE TEXT GOES HERE
 [hr][/hr]
 
 [/divbox4]
-
+[divbox=#8d1717][color=transparent]UwU[/color][/divbox]
 [divbox4=eeeeee]
-Kind regards,
-
-[anchor][/anchor]
 
 [mdsig name="${medicCredentials.name || "Name"}" role="${rankLine}" img=${
     medicCredentials.signature || "https://i.imgur.com/7flpkan.png"
