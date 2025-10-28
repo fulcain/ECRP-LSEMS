@@ -42,10 +42,16 @@ export function Header() {
             {headerLinks.map((item) =>
               item.children ? (
                 <NavigationMenuItem key={item.label}>
-                  <NavigationMenuTrigger className="cursor-pointer rounded-md bg-slate-800 px-3 py-2 text-white transition-colors duration-200 hover:bg-slate-700 focus:bg-slate-800 data-[state=open]:!bg-slate-700">
+                  <NavigationMenuTrigger
+                    value={item.label} 
+                    className="cursor-pointer rounded-md bg-slate-800 px-3 py-2 text-white transition-colors duration-200 hover:bg-slate-700 focus:bg-slate-800 data-[state=open]:!bg-slate-700"
+                  >
                     {item.label}
                   </NavigationMenuTrigger>
-                  <NavigationMenuContent className="rounded-md bg-slate-700 p-2 shadow-lg data-[state=open]:bg-slate-800">
+                  <NavigationMenuContent
+                    value={item.label}
+                    className="rounded-md bg-slate-700 p-2 shadow-lg data-[state=open]:bg-slate-800"
+                  >
                     <ul className="grid gap-2">
                       {item.children.map((child) => (
                         <li key={child.href}>
