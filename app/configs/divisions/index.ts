@@ -137,7 +137,7 @@ export const generateNewTemplate = ({
       ? `[b][size=110]${subject}[/size][/b]`
       : `[b][size=110]Subject[/size][/b]`;
 
-  const formattedDate = `[size=95]${date}[/size]`;
+	const formattedDate = `[b][size=95]${date}[/size][/b]`;
 
   const isGeneralDivision =
     division?.divisionName?.trim().toLowerCase() ===
@@ -160,7 +160,7 @@ export const generateNewTemplate = ({
 
   const divisionSection =
     !isGeneralDivision && (divisionImage || divisionTitle)
-      ? `${divisionImage}${divisionTitle}\n`
+      ? `[divbox4=eeeeee]${divisionImage}${divisionTitle}[/divbox4]\n`
       : "";
 
   return `[mdheader 
@@ -168,26 +168,14 @@ title=""
 location="Pillbox Hill Medical Center" 
 date=" | Paleto Bay Medical Center"
 department="One Team, One Mission, Saving Lives"][/mdheader]
-
-[divbox4=eeeee]
-${divisionSection}
-[/divbox4]
-
-[divbox4=eeeeee]
-[b]${subjectLine}
-${formattedDate}[/b]
-
+${divisionSection}[divbox4=eeeeee]
+${subjectLine} 
+${formattedDate}
 [hr][/hr]
 ${recipientLine}MESSAGE TEXT GOES HERE
-
 [hr][/hr]
-
 [/divbox4]
-[divbox=#8d1717][color=transparent]UwU[/color][/divbox]
-[divbox4=eeeeee]
-
-[mdsig name="${medicCredentials.name || "Name"}" role="${rankLine}" img=${
-    medicCredentials.signature || "https://i.imgur.com/7flpkan.png"
-  } height=38]
+[divbox=#8d1717][color=transparent]UwU[/color][/divbox][divbox4=eeeeee]
+[mdsig name="${medicCredentials.name || "Name"}" role="${rankLine}" img=${medicCredentials.signature || "https://i.imgur.com/7flpkan.png"} height=38]
 [/divbox4]`;
 };
