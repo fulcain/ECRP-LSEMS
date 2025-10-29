@@ -1,7 +1,7 @@
 import "./globals.css";
+import { MedicProvider } from "@/app/context/MedicContext";
 import { Header } from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
-import { MedicProvider } from "@/app/context/MedicContext";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

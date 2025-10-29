@@ -1,7 +1,7 @@
 "use client";
 
-import  { createContext, useContext } from "react";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import { createContext, useContext } from "react";
 import { Dispatch, SetStateAction } from "react";
 
 type MedicCredentials = {
@@ -9,7 +9,6 @@ type MedicCredentials = {
   signature: string;
   rank: string;
 };
-
 
 type MedicContextType = {
   medicCredentials: MedicCredentials;
@@ -20,20 +19,28 @@ type MedicContextType = {
 
 const MedicContext = createContext<MedicContextType | undefined>(undefined);
 
-export const MedicProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [medicCredentials, setMedicCredentials] = useLocalStorage<MedicCredentials>(
-    "medic-credentials",
-    { name: "", signature: "", rank: "" }
-  );
+export const MedicProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [medicCredentials, setMedicCredentials] =
+    useLocalStorage<MedicCredentials>("medic-credentials", {
+      name: "",
+      signature: "",
+      rank: "",
+    });
 
-  const [divisionRanks, setDivisionRanks] = useLocalStorage<Record<string, string>>(
-    "division-ranks",
-    {}
-  );
+  const [divisionRanks, setDivisionRanks] = useLocalStorage<
+    Record<string, string>
+  >("division-ranks", {});
 
   return (
     <MedicContext.Provider
-      value={{ medicCredentials, setMedicCredentials, divisionRanks, setDivisionRanks }}
+      value={{
+        medicCredentials,
+        setMedicCredentials,
+        divisionRanks,
+        setDivisionRanks,
+      }}
     >
       {children}
     </MedicContext.Provider>

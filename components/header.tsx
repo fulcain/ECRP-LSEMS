@@ -43,7 +43,7 @@ export function Header() {
               item.children ? (
                 <NavigationMenuItem key={item.label}>
                   <NavigationMenuTrigger
-                    value={item.label} 
+                    value={item.label}
                     className="cursor-pointer rounded-md bg-slate-800 px-3 py-2 text-white transition-colors duration-200 hover:bg-slate-700 focus:bg-slate-800 data-[state=open]:!bg-slate-700"
                   >
                     {item.label}

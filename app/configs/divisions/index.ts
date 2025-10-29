@@ -137,7 +137,7 @@ export const generateNewTemplate = ({
       ? `[b][size=110]${subject}[/size][/b]`
       : `[b][size=110]Subject[/size][/b]`;
 
-	const formattedDate = `[b][size=95]${date}[/size][/b]`;
+  const formattedDate = `[b][size=95]${date}[/size][/b]`;
 
   const isGeneralDivision =
     division?.divisionName?.trim().toLowerCase() ===

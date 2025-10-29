@@ -61,6 +61,18 @@ export const General = {
         name: "Financial Requests",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=2230",
       },
+      {
+        name: "LSEMS Hours Sheet",
+        url: "https://docs.google.com/spreadsheets/d/1GxWLb11Txy39o7DKtaAL22hvfgLYi8aIj3rCgHL-WGs/edit?gid=762392556#gid=762392556",
+      },
+      {
+        name: "Divisional Personnel Files",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=4155",
+      },
+      {
+        name: "Personnel Files",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=605",
+      },
     ],
   },
 };

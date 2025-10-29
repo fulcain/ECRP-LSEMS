@@ -31,9 +31,11 @@ export default function Availability() {
         <h1 className="mb-2 text-3xl font-bold text-white sm:text-4xl">
           Time of Availability
         </h1>
-        <p className="text-slate-400">Create your time of availability by writing your time and converting it to UTC time</p>
+        <p className="text-slate-400">
+          Create your time of availability by writing your time and converting
+          it to UTC time
+        </p>
       </div>
-
 
       {/* Timezone Selector */}
       <div className="flex flex-col gap-2">

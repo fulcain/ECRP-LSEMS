@@ -23,18 +23,31 @@ import "react-toastify/dist/ReactToastify.css";
 export default function CommunicationUpdateForm() {
   const { medicCredentials, divisionRanks, setDivisionRanks } = useMedic();
 
-  const [patientName, setPatientName] = useLocalStorage("commUpdate_patientName", "");
-  const [contactType, setContactType] = useLocalStorage("commUpdate_contactType", "");
-  const [contactDetails, setContactDetails] = useLocalStorage("commUpdate_contactDetails", "");
-  const [divisionLabel, setDivisionLabel] = useLocalStorage("commUpdate_divisionLabel", "");
+  const [patientName, setPatientName] = useLocalStorage(
+    "commUpdate_patientName",
+    "",
+  );
+  const [contactType, setContactType] = useLocalStorage(
+    "commUpdate_contactType",
+    "",
+  );
+  const [contactDetails, setContactDetails] = useLocalStorage(
+    "commUpdate_contactDetails",
+    "",
+  );
+  const [divisionLabel, setDivisionLabel] = useLocalStorage(
+    "commUpdate_divisionLabel",
+    "",
+  );
 
   const [selectedDivision, setSelectedDivision] = useState(
-    communicationUpdate.find((d) => d.label === divisionLabel) || null
+    communicationUpdate.find((d) => d.label === divisionLabel) || null,
   );
   const [selectedRank, setSelectedRank] = useState("");
 
   useEffect(() => {
-    const div = communicationUpdate.find((d) => d.label === divisionLabel) || null;
+    const div =
+      communicationUpdate.find((d) => d.label === divisionLabel) || null;
     setSelectedDivision(div);
 
     if (div) {
@@ -97,9 +110,15 @@ export default function CommunicationUpdateForm() {
         toast.success("BBCode copied to clipboard!");
         // open correct URL based on division
         if (selectedDivision?.label === "AMU") {
-          window.open("https://gov.eclipse-rp.net/viewforum.php?f=3641", "_blank");
+          window.open(
+            "https://gov.eclipse-rp.net/viewforum.php?f=3641",
+            "_blank",
+          );
         } else if (selectedDivision?.label === "CRU") {
-          window.open("https://gov.eclipse-rp.net/viewforum.php?f=3643", "_blank");
+          window.open(
+            "https://gov.eclipse-rp.net/viewforum.php?f=3643",
+            "_blank",
+          );
         }
       })
       .catch(() => toast.error("Failed to copy!"));
@@ -114,14 +133,22 @@ export default function CommunicationUpdateForm() {
       .writeText(bbCodeText)
       .then(() => {
         toast.success("BBCode copied! Opening combined section...");
-        window.open("https://gov.eclipse-rp.net/viewforum.php?f=2390", "_blank");
+        window.open(
+          "https://gov.eclipse-rp.net/viewforum.php?f=2390",
+          "_blank",
+        );
       })
       .catch(() => toast.error("Failed to copy!"));
   };
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={2000} theme="dark" transition={Bounce} />
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        theme="dark"
+        transition={Bounce}
+      />
       <main className="text-foreground min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <div className="mb-10 text-center">
@@ -135,14 +162,21 @@ export default function CommunicationUpdateForm() {
 
           {/* Division Selector */}
           <div className="mb-6 flex flex-col gap-2">
-            <Label htmlFor="divisionSelect" className="text-white">Select Division</Label>
-            <Select value={divisionLabel || ""} onValueChange={setDivisionLabel}>
+            <Label htmlFor="divisionSelect" className="text-white">
+              Select Division
+            </Label>
+            <Select
+              value={divisionLabel || ""}
+              onValueChange={setDivisionLabel}
+            >
               <SelectTrigger id="divisionSelect">
                 <SelectValue placeholder="Select Division" />
               </SelectTrigger>
               <SelectContent>
                 {communicationUpdate.map((div) => (
-                  <SelectItem key={div.label} value={div.label}>{div.label}</SelectItem>
+                  <SelectItem key={div.label} value={div.label}>
+                    {div.label}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -151,14 +185,21 @@ export default function CommunicationUpdateForm() {
           {/* Rank Selector */}
           {selectedDivision && Array.isArray(selectedDivision.data?.ranks) && (
             <div className="mb-6 flex flex-col gap-2">
-              <Label htmlFor="rankSelect" className="text-white">Select Rank</Label>
-              <Select value={selectedRank || ""} onValueChange={setSelectedRank}>
+              <Label htmlFor="rankSelect" className="text-white">
+                Select Rank
+              </Label>
+              <Select
+                value={selectedRank || ""}
+                onValueChange={setSelectedRank}
+              >
                 <SelectTrigger id="rankSelect">
                   <SelectValue placeholder="Choose your rank" />
                 </SelectTrigger>
                 <SelectContent>
                   {selectedDivision.data.ranks.map((r, idx) => (
-                    <SelectItem key={idx} value={r}>{r}</SelectItem>
+                    <SelectItem key={idx} value={r}>
+                      {r}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -168,25 +209,52 @@ export default function CommunicationUpdateForm() {
           {/* Inputs */}
           <div className="mb-8 flex flex-col gap-4 rounded-lg bg-slate-800 p-6 shadow-lg">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="patientName" className="text-white">Patient Name</Label>
-              <Input value={patientName} onChange={(e) => setPatientName(e.target.value)} placeholder="Enter patient's name" />
+              <Label htmlFor="patientName" className="text-white">
+                Patient Name
+              </Label>
+              <Input
+                value={patientName}
+                onChange={(e) => setPatientName(e.target.value)}
+                placeholder="Enter patient's name"
+              />
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="contactType" className="text-white">Contact Type</Label>
-              <Input value={contactType} onChange={(e) => setContactType(e.target.value)} placeholder="Phone, Email, etc." />
+              <Label htmlFor="contactType" className="text-white">
+                Contact Type
+              </Label>
+              <Input
+                value={contactType}
+                onChange={(e) => setContactType(e.target.value)}
+                placeholder="Phone, Email, etc."
+              />
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="contactDetails" className="text-white">Contact Details</Label>
-              <Textarea value={contactDetails} onChange={(e) => setContactDetails(e.target.value)} placeholder="Enter contact details" rows={4} />
+              <Label htmlFor="contactDetails" className="text-white">
+                Contact Details
+              </Label>
+              <Textarea
+                value={contactDetails}
+                onChange={(e) => setContactDetails(e.target.value)}
+                placeholder="Enter contact details"
+                rows={4}
+              />
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 mt-4">
-              <Button onClick={handleSubmit} disabled={!bbCodeText} className="flex-1">
+            <div className="mt-4 flex flex-col gap-4 sm:flex-row">
+              <Button
+                onClick={handleSubmit}
+                disabled={!bbCodeText}
+                className="flex-1"
+              >
                 Copy & Open Division Public Section
               </Button>
-              <Button onClick={handleCombinedSubmit} disabled={!bbCodeText} className="flex-1 bg-blue-600 hover:bg-blue-700">
+              <Button
+                onClick={handleCombinedSubmit}
+                disabled={!bbCodeText}
+                className="flex-1 bg-blue-600 hover:bg-blue-700"
+              >
                 Copy & Open Combined Section
               </Button>
             </div>

@@ -18,8 +18,8 @@ export const CRU = {
       {
         name: "Internal Referrals",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=4079",
-	  },
-	  {
+      },
+      {
         name: "Incoming Applications",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=2289",
       },

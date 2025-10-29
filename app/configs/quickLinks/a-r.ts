@@ -18,15 +18,15 @@ export const AR = {
       {
         name: "Mountain Rescue Student Profiles",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=1675",
-	  },
-	  {
+      },
+      {
         name: "Pilot Student Profiles",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=926",
       },
       {
         name: "Ability Course ",
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=211472",
-	  },
+      },
       {
         name: "Instructor Area",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=3545",
@@ -34,7 +34,7 @@ export const AR = {
       {
         name: "Discussion Board",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=1886",
-	  },
+      },
     ],
   },
 };
