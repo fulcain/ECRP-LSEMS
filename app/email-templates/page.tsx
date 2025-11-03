@@ -5,7 +5,6 @@ import {
   divisions,
   Divisions,
   generateSignature,
-  pmTemplate,
   generateNewTemplate,
 } from "@/app/configs/divisions/";
 import { useMedic } from "@/app/context/MedicContext";
@@ -67,24 +66,6 @@ export default function Home() {
     navigator.clipboard
       .writeText(medicSignatureText)
       .then(() => toast.success("Signature Copied!"))
-      .catch((err) => console.error("Failed to copy: ", err));
-  };
-
-  const handleGenerate = () => {
-    if (!selectedDivision) return;
-
-    const text = pmTemplate({
-      date: getCurrentDateFormatted(),
-      division: selectedDivision.data,
-      selectedRank: selectedRank || "",
-      medicCredentials: { ...medicCredentials },
-      subject: subject.trim(),
-      recipient: recipient.trim(),
-    }).trim();
-
-    navigator.clipboard
-      .writeText(text)
-      .then(() => toast.success("PM Template Copied!"))
       .catch((err) => console.error("Failed to copy: ", err));
   };
 
@@ -194,7 +175,6 @@ export default function Home() {
               recipient={recipient}
               setRecipient={setRecipient}
               handleGenerateSignature={handleGenerateSignature}
-              handleGenerate={handleGenerate}
               handleGenerateNewTemplate={handleGenerateNewTemplate}
             />
           </div>

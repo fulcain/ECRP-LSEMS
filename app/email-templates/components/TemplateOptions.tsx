@@ -19,7 +19,6 @@ interface TemplateOptionsProps {
   setSubject: (subject: string) => void;
   recipient: string;
   setRecipient: (recipient: string) => void;
-  handleGenerate: () => void;
   handleGenerateSignature: () => void;
   handleGenerateNewTemplate: () => void;
 }
@@ -32,7 +31,6 @@ export default function TemplateOptions({
   setSubject,
   recipient,
   setRecipient,
-  handleGenerate,
   handleGenerateSignature,
   handleGenerateNewTemplate,
 }: TemplateOptionsProps) {
@@ -119,19 +117,6 @@ export default function TemplateOptions({
             <div className="grid grid-cols-1 gap-3 pt-2 sm:grid-cols-3">
               <Button
                 size="lg"
-                className="w-full cursor-pointer bg-blue-600 hover:bg-blue-700"
-                onClick={handleGenerate}
-                disabled={
-                  !selectedDivision ||
-                  (Array.isArray(selectedDivision?.data?.ranks) &&
-                    !selectedRank)
-                }
-              >
-                Create Email Template
-              </Button>
-
-              <Button
-                size="lg"
                 className="w-full cursor-pointer bg-red-600 hover:bg-red-700"
                 onClick={handleGenerateNewTemplate}
                 disabled={
@@ -140,7 +125,7 @@ export default function TemplateOptions({
                     !selectedRank)
                 }
               >
-                Create New Template
+                Create Template
               </Button>
 
               <Button

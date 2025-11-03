@@ -4,7 +4,7 @@ export const AMU = {
   data: {
     imageSize: "150,150",
     image: "https://i.vgy.me/58UddL.png",
-    divisionName: "Advanced Medicine Division",
+    divisionName: "Advanced Medicine Unit",
     ranks: [
       "Head Of AMU",
       "Interim Head Of AMU",
