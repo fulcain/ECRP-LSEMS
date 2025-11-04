@@ -10,6 +10,7 @@ import {
 import { useMedic } from "@/app/context/MedicContext";
 import DivisionSelector from "@/app/email-templates/components/DivisionSelector";
 import TemplateOptions from "@/app/email-templates/components/TemplateOptions";
+import { BodyAndMainTitle } from "@/components/BodyMainAndTitle/BodyMainAndTitle";
 import { MedicCredentials } from "@/components/MedicCredentials";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -88,7 +89,12 @@ export default function Home() {
   };
 
   return (
-    <>
+    <BodyAndMainTitle
+      description="Select a division and create email templates, signatures, or
+              BBCode posts
+"
+      title="Division Email Templates"
+    >
       <ToastContainer
         position="top-right"
         autoClose={2000}
@@ -96,90 +102,76 @@ export default function Home() {
         transition={Bounce}
       />
 
-      <main className="text-foreground min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-10 text-center">
-            <h1 className="mb-2 text-3xl font-bold text-white sm:text-4xl">
-              Division Email Templates
-            </h1>
-            <p className="text-slate-400">
-              Select a division and create email templates, signatures, or
-              BBCode posts
-            </p>
-          </div>
-
-          <div className="mb-8 rounded-lg bg-slate-800 p-6 shadow-lg">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                <div className="flex flex-col">
-                  <h2 className="mb-1 text-xl font-semibold text-white">
-                    Medic Credentials
-                  </h2>
-                  {!isCredentialsEmpty && !showEditForm && (
-                    <p className="text-sm text-slate-400">
-                      {medicCredentials.rank} {medicCredentials.name}
-                    </p>
-                  )}
-                </div>
-
-                {!isCredentialsEmpty &&
-                  medicCredentials.signature &&
-                  !showEditForm && (
-                    <div className="mt-2 flex items-center rounded bg-slate-700 p-2 sm:mt-0">
-                      <Image
-                        src={medicCredentials.signature}
-                        alt={`${medicCredentials.name} signature`}
-                        width={200}
-                        height={64}
-                        style={{ objectFit: "contain", height: "auto" }}
-                        className="h-16 w-auto object-contain"
-                      />
-                    </div>
-                  )}
-              </div>
-
-              {isCredentialsEmpty || showEditForm ? (
-                <MedicCredentials
-                  medicCredentials={medicCredentials}
-                  setMedicCredentialsAction={(values) => {
-                    setMedicCredentials(values);
-                    setShowEditForm(false);
-                  }}
-                />
-              ) : (
-                <Button
-                  variant="outline"
-                  onClick={() => setShowEditForm(true)}
-                  className="whitespace-nowrap"
-                >
-                  Edit Credentials
-                </Button>
+      <div className="mb-8 rounded-lg bg-slate-800 p-6 shadow-lg">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
+            <div className="flex flex-col">
+              <h2 className="mb-1 text-xl font-semibold text-white">
+                Medic Credentials
+              </h2>
+              {!isCredentialsEmpty && !showEditForm && (
+                <p className="text-sm text-slate-400">
+                  {medicCredentials.rank} {medicCredentials.name}
+                </p>
               )}
             </div>
+
+            {!isCredentialsEmpty &&
+              medicCredentials.signature &&
+              !showEditForm && (
+                <div className="mt-2 flex items-center rounded bg-slate-700 p-2 sm:mt-0">
+                  <Image
+                    src={medicCredentials.signature}
+                    alt={`${medicCredentials.name} signature`}
+                    width={200}
+                    height={64}
+                    style={{ objectFit: "contain", height: "auto" }}
+                    className="h-16 w-auto object-contain"
+                  />
+                </div>
+              )}
           </div>
 
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-            <DivisionSelector
-              selectedDivision={selectedDivision}
-              setSelectedDivision={setSelectedDivision}
-              setSelectedRank={setSelectedRank}
-              ArrayToLoop={divisions}
+          {isCredentialsEmpty || showEditForm ? (
+            <MedicCredentials
+              medicCredentials={medicCredentials}
+              setMedicCredentialsAction={(values) => {
+                setMedicCredentials(values);
+                setShowEditForm(false);
+              }}
             />
-
-            <TemplateOptions
-              selectedDivision={selectedDivision}
-              selectedRank={selectedRank}
-              setSelectedRank={setSelectedRank}
-              subject={subject}
-              setSubject={setSubject}
-              recipient={recipient}
-              setRecipient={setRecipient}
-              handleGenerateSignature={handleGenerateSignature}
-              handleGenerateNewTemplate={handleGenerateNewTemplate}
-            />
-          </div>
+          ) : (
+            <Button
+              variant="outline"
+              onClick={() => setShowEditForm(true)}
+              className="whitespace-nowrap"
+            >
+              Edit Credentials
+            </Button>
+          )}
         </div>
-      </main>
-    </>
+      </div>
+
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <DivisionSelector
+          selectedDivision={selectedDivision}
+          setSelectedDivision={setSelectedDivision}
+          setSelectedRank={setSelectedRank}
+          ArrayToLoop={divisions}
+        />
+
+        <TemplateOptions
+          selectedDivision={selectedDivision}
+          selectedRank={selectedRank}
+          setSelectedRank={setSelectedRank}
+          subject={subject}
+          setSubject={setSubject}
+          recipient={recipient}
+          setRecipient={setRecipient}
+          handleGenerateSignature={handleGenerateSignature}
+          handleGenerateNewTemplate={handleGenerateNewTemplate}
+        />
+      </div>
+    </BodyAndMainTitle>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { links } from "@/app/configs/quickLinks/";
+import { BodyAndMainTitle } from "@/components/BodyMainAndTitle/BodyMainAndTitle";
 import {
   Accordion,
   AccordionContent,
@@ -13,14 +14,10 @@ import Link from "next/link";
 
 export default function QuickLinks() {
   return (
-    <main className="mx-auto min-h-screen max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-10 text-center">
-        <h1 className="mb-2 text-3xl font-bold text-white sm:text-4xl">
-          Quick Links
-        </h1>
-        <p className="text-slate-400">Browse and access all your quick links</p>
-      </div>
-
+    <BodyAndMainTitle
+      title="Quick Links"
+      description="Browse and access all your quick links"
+    >
       <Accordion type="single" collapsible className="w-full space-y-4">
         {links.map((item, index) => (
           <AccordionItem
@@ -62,6 +59,6 @@ export default function QuickLinks() {
           </AccordionItem>
         ))}
       </Accordion>
-    </main>
+    </BodyAndMainTitle>
   );
 }

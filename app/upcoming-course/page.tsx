@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import { BodyAndMainTitle } from "@/components/BodyMainAndTitle/BodyMainAndTitle";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
@@ -209,17 +210,12 @@ export default function UpcomingCourse() {
   if (!isClient) return null;
 
   return (
-    <main className="mx-auto min-h-screen max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+    <BodyAndMainTitle
+      title="Upcoming Course"
+      description="Generate BBCode for upcoming courses that are new, rescheduled, or
+          cancelled, using UTC time."
+    >
       <ToastContainer position="top-right" autoClose={2500} theme="dark" />
-      <div className="mb-10 text-center">
-        <h1 className="mb-2 text-3xl font-bold text-white sm:text-4xl">
-          Upcoming Course
-        </h1>
-        <p className="text-slate-400">
-          Generate BBCode for upcoming courses that are new, rescheduled, or
-          cancelled, using UTC time.
-        </p>
-      </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
@@ -362,6 +358,6 @@ export default function UpcomingCourse() {
           </Button>
         </div>
       )}
-    </main>
+    </BodyAndMainTitle>
   );
 }

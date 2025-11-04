@@ -6,6 +6,7 @@ import {
   convertRangeStringToUTC,
 } from "@/app/helpers/timeUtils";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import { BodyAndMainTitle } from "@/components/BodyMainAndTitle/BodyMainAndTitle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,17 +27,11 @@ export default function Availability() {
   const [copied, setCopied] = useState(false);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-4 py-8 text-white sm:px-6 lg:px-8">
-      <div className="mb-10 text-center">
-        <h1 className="mb-2 text-3xl font-bold text-white sm:text-4xl">
-          Time of Availability
-        </h1>
-        <p className="text-slate-400">
-          Create your time of availability by writing your time and converting
-          it to UTC time
-        </p>
-      </div>
-
+    <BodyAndMainTitle
+      title="Time of Availability"
+      description="Create your time of availability by writing your time and converting
+          it to UTC time"
+    >
       {/* Timezone Selector */}
       <div className="flex flex-col gap-2">
         <Label htmlFor="timezone">Select your timezone</Label>
@@ -143,6 +138,6 @@ export default function Availability() {
           </pre>
         </div>
       )}
-    </main>
+    </BodyAndMainTitle>
   );
 }
