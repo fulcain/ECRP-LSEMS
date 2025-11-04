@@ -1,13 +1,14 @@
 {
-  "name": "lsesm-signatures",
-  "version": "0.1.0",
+  "name": "ecrp-lsems",
+  "version": "2.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "deploy": "npm run build && vercel deploy --prod",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy": "npm run build && vercel deploy --prod",
+    "release": "node scripts/release.ts"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.11",
