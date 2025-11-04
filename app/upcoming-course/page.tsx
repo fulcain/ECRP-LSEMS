@@ -21,6 +21,8 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import React, { useState, useEffect, useCallback } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function UpcomingCourse() {
   const [isClient, setIsClient] = useState(false);
@@ -92,7 +94,7 @@ export default function UpcomingCourse() {
     const urlDate = `${year}-${pad(d.getUTCMonth() + 1)}-${pad(dayNum)}`;
 
     return {
-      formatted: `${weekday}, ${dayOrdinal} ${month} ${year} @ ${hours}:${minutes} ((UTC))`,
+      formatted: `${weekday}, ${dayOrdinal} ${month} ${year} @ ${hours}:${minutes} (UTC)`,
       urlDate,
       hours,
       minutes,
@@ -131,19 +133,20 @@ export default function UpcomingCourse() {
         ? buildDatetimeString(prevDate, prevTime)
         : prevDatetime;
 
+    // Validation
     if (
       (courseType === "cancelled" && (!newDatetimeStr || !instructor.trim())) ||
       (courseType === "reschedule" &&
         (!newDatetimeStr || !prevDatetimeStr || !instructor.trim())) ||
       (courseType === "new" && (!newDatetimeStr || !instructor.trim()))
     ) {
-      alert("Please fill in all required fields.");
+      toast.error("Please fill in all required fields.");
       return;
     }
 
     const newDateInfo = formatDate(newDatetimeStr);
     if (!newDateInfo) {
-      alert("Invalid new date/time");
+      toast.error("Invalid new date/time.");
       return;
     }
 
@@ -164,7 +167,7 @@ export default function UpcomingCourse() {
     } else if (courseType === "reschedule") {
       const prevDateInfo = formatDate(prevDatetimeStr);
       if (!prevDateInfo) {
-        alert("Invalid previous date/time");
+        toast.error("Invalid previous date/time.");
         return;
       }
       result = `[hr][/hr]
@@ -177,12 +180,14 @@ export default function UpcomingCourse() {
 
     setOutput(result);
     setCopied(false);
+    toast.success("Course post generated successfully!");
   };
 
   const handleCopy = () => {
     if (!output) return;
     navigator.clipboard.writeText(output).then(() => {
       setCopied(true);
+      toast.success("Copied to clipboard!");
       setTimeout(() => setCopied(false), 2000);
     });
   };
@@ -198,15 +203,23 @@ export default function UpcomingCourse() {
     setPrevTime("");
     setOutput("");
     setCopied(false);
+    toast.info("Form cleared.");
   };
 
   if (!isClient) return null;
 
   return (
-    <main className="text-foreground mx-auto mt-18 min-h-screen max-w-xl">
-      <h5 className="mb-10 text-center text-3xl font-semibold">
-        Upcoming Course
-      </h5>
+    <main className="mx-auto min-h-screen max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+      <ToastContainer position="top-right" autoClose={2500} theme="dark" />
+      <div className="mb-10 text-center">
+        <h1 className="mb-2 text-3xl font-bold text-white sm:text-4xl">
+          Upcoming Course
+        </h1>
+        <p className="text-slate-400">
+          Generate BBCode for upcoming courses that are new, rescheduled, or
+          cancelled, using UTC time.
+        </p>
+      </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
@@ -233,9 +246,7 @@ export default function UpcomingCourse() {
           courseType === "reschedule") && (
           <div className="flex flex-col gap-1">
             <Label htmlFor="datetime">Course Date & Time (UTC):</Label>
-
             <div className="flex items-center gap-2">
-              {/* Date picker */}
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -263,7 +274,6 @@ export default function UpcomingCourse() {
                 </PopoverContent>
               </Popover>
 
-              {/* Time input */}
               <Input
                 type="time"
                 value={
@@ -279,7 +289,6 @@ export default function UpcomingCourse() {
         {courseType === "reschedule" && (
           <div className="flex flex-col gap-1">
             <Label htmlFor="prevDatetime">Previous Date & Time (UTC):</Label>
-
             <div className="flex items-center gap-2">
               <Popover>
                 <PopoverTrigger asChild>
@@ -307,7 +316,6 @@ export default function UpcomingCourse() {
                   />
                 </PopoverContent>
               </Popover>
-
               <Input
                 type="time"
                 value={
