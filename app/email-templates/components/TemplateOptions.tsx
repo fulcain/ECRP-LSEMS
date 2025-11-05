@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Ambulance } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface TemplateOptionsProps {
   selectedDivision: Divisions | null;
@@ -117,7 +118,7 @@ export default function TemplateOptions({
             <div className="grid grid-cols-1 gap-3 pt-2 sm:grid-cols-3">
               <Button
                 size="lg"
-                className="w-full cursor-pointer bg-red-600 hover:bg-red-700"
+                className="w-full cursor-pointer"
                 onClick={handleGenerateNewTemplate}
                 disabled={
                   !selectedDivision ||
@@ -127,6 +128,25 @@ export default function TemplateOptions({
               >
                 Create Template
               </Button>
+
+              <Link
+                href="https://gov.eclipse-rp.net/ucp.php?i=pm&mode=compose"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button
+                  size="lg"
+                  className="w-full cursor-pointer"
+                  onClick={handleGenerateNewTemplate}
+                  disabled={
+                    !selectedDivision ||
+                    (Array.isArray(selectedDivision?.data?.ranks) &&
+                      !selectedRank)
+                  }
+                >
+                  Copy to GOV
+                </Button>
+              </Link>
 
               <Button
                 size="lg"
