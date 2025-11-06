@@ -45,14 +45,6 @@ export const BLS = {
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=184979",
       },
       {
-        name: "Public Roaster",
-        url: "https://gov.eclipse-rp.net/viewtopic.php?t=55728",
-      },
-      {
-        name: "Private Roaster",
-        url: "https://gov.eclipse-rp.net/viewtopic.php?p=863079#p863079",
-      },
-      {
         name: "Student Profiles",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=1694",
       },

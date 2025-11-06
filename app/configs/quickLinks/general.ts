@@ -73,6 +73,14 @@ export const General = {
         name: "Personnel Files",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=605",
       },
+      {
+        name: "Public Roaster",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?t=55728",
+      },
+      {
+        name: "Private Roaster",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?p=863079#p863079",
+      },
     ],
   },
 };
