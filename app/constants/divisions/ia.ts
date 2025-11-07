@@ -14,5 +14,6 @@ export const IA = {
       "Investigator",
       "Junior Investigator",
     ],
+    quickLinks: [],
   },
 };

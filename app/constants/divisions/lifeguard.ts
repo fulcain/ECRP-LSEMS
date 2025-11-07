@@ -14,5 +14,6 @@ export const LIFEGUARD = {
       "Lifeguard",
       "Lifeguard Student",
     ],
+    quickLinks: [],
   },
 };

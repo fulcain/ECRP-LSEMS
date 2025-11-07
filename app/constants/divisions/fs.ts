@@ -14,5 +14,6 @@ export const FS = {
       "Fire Safety Inspector",
       "Trainee Fire Safety Inspector",
     ],
+    quickLinks: [],
   },
 };
