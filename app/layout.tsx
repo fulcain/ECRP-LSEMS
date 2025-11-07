@@ -1,6 +1,6 @@
 import "./global.css"
 import { MedicProvider } from "@/app/context/MedicContext";
-import { Header } from "@/components/layout/header/Header";
+import { Header } from "@/components/layout/header/header";
 import { ThemeProvider } from "@/components/theme-provider";
 import type { Metadata } from "next";
 

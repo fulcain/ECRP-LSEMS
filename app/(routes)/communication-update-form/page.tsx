@@ -68,6 +68,7 @@ export default function CommunicationUpdateForm() {
     }
   }, [selectedRank, selectedDivision, setDivisionRanks]);
 
+	// TODO: move this
   // Memoized BBCode
   const bbCodeText = useMemo(() => {
     if (!selectedDivision || !selectedRank) return "";
@@ -148,7 +149,9 @@ export default function CommunicationUpdateForm() {
         autoClose={2000}
         theme="dark"
         transition={Bounce}
-      />
+			/>
+
+			{/* TODO: change body  */}
       <main className="text-foreground min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <div className="mb-10 text-center">

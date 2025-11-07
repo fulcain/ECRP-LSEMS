@@ -10,7 +10,7 @@ import { generateEmailTemplate } from "@/app/templates/general/division-emails";
 import { useMedic } from "@/app/context/MedicContext";
 import DivisionSelector from "@/app/(routes)/email-templates/components/DivisionSelector";
 import TemplateOptions from "@/app/(routes)/email-templates/components/TemplateOptions";
-import { BodyAndMainTitle } from "@/components/layout/BodyMainAndTitle";
+import { BodyAndMainTitle } from "@/components/layout/main-and-title";
 import { MedicCredentials } from "@/app/(routes)/email-templates/components/MedicCredentials";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";

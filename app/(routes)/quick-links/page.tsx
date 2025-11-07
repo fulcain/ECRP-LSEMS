@@ -1,7 +1,7 @@
 "use client";
 
 import { links } from "@/app/constants/divisions";
-import { BodyAndMainTitle } from "@/components/layout/BodyMainAndTitle";
+import { BodyAndMainTitle } from "@/components/layout/main-and-title";
 import {
   Accordion,
   AccordionContent,

@@ -1,7 +1,7 @@
 "use client";
 
-import { HeaderDesktop } from "@/components/layout/header/components/HeaderDesktop";
-import { HeaderMobile } from "@/components/layout/header/components/HeaderMobile";
+import { HeaderMobile } from "./components/header-mobile";
+import { HeaderDesktop } from "./components/header-desktop";
 import { headerLinks } from "@/components/layout/header/configs/HeaderLinks";
 import Image from "next/image";
 import Link from "next/link";
