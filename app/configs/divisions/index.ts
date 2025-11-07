@@ -82,16 +82,16 @@ export const generateNewTemplate = ({
   division?: DivisionData;
 }) => {
   const rankLine = selectedRank
-		? `${selectedRank} / ${medicCredentials.rank}`
+    ? `${selectedRank} / ${medicCredentials.rank}`
     : `${medicCredentials.rank}`;
-
 
   const isGeneralDivision =
     division?.divisionName?.trim().toLowerCase() ===
-			"los santos emergency medical services".toLowerCase();
+    "los santos emergency medical services".toLowerCase();
 
-	const locationParam = isGeneralDivision ? "Pillbox Hill Medical Center | Paleto Bay Medical Center" : division?.divisionName
-
+  const locationParam = isGeneralDivision
+    ? "Pillbox Hill Medical Center | Paleto Bay Medical Center"
+    : division?.divisionName;
 
   return `[mdheader2
 title="${subject || "Subject"} | ${date}"

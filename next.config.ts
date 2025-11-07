@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
-    domains: ["i.imgur.com", "i.vgy.me","i.ibb.co"],
+    domains: ["i.imgur.com", "i.vgy.me", "i.ibb.co"],
   },
 };
 
