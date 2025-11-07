@@ -6,7 +6,7 @@ import {
   convertRangeStringToUTC,
 } from "@/app/helpers/timeUtils";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
-import { BodyAndMainTitle } from "@/components/BodyMainAndTitle/BodyMainAndTitle";
+import { BodyAndMainTitle } from "@/components/layout/BodyMainAndTitle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

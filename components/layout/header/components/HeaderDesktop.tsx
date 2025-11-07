@@ -1,6 +1,6 @@
 "use client";
 
-import type { HeaderLink } from "@/components/Header/configs/HeaderLinks";
+import type { HeaderLink } from "@/components/layout/header/configs/HeaderLinks";
 import {
   NavigationMenu,
   NavigationMenuContent,

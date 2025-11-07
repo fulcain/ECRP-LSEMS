@@ -1,6 +1,6 @@
 "use client";
 
-import type { HeaderLink } from "@/components/Header/configs/HeaderLinks";
+import type { HeaderLink } from "@/components/layout/header/configs/HeaderLinks";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {

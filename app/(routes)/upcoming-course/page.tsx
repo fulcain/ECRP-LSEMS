@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
-import { BodyAndMainTitle } from "@/components/BodyMainAndTitle/BodyMainAndTitle";
+import { BodyAndMainTitle } from "@/components/layout/BodyMainAndTitle";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";

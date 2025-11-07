@@ -1,6 +1,6 @@
 "use client";
 
-import { getCurrentDateFormatted } from "../helpers/getCurrentDateFormatted";
+import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
 import {
   divisions,
   Divisions,
@@ -8,10 +8,10 @@ import {
   generateNewTemplate,
 } from "@/app/configs/divisions/";
 import { useMedic } from "@/app/context/MedicContext";
-import DivisionSelector from "@/app/email-templates/components/DivisionSelector";
-import TemplateOptions from "@/app/email-templates/components/TemplateOptions";
-import { BodyAndMainTitle } from "@/components/BodyMainAndTitle/BodyMainAndTitle";
-import { MedicCredentials } from "@/components/MedicCredentials";
+import DivisionSelector from "@/app/(routes)/email-templates/components/DivisionSelector";
+import TemplateOptions from "@/app/(routes)/email-templates/components/TemplateOptions";
+import { BodyAndMainTitle } from "@/components/layout/BodyMainAndTitle";
+import { MedicCredentials } from "@/app/(routes)/email-templates/components/MedicCredentials";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useMemo, useState, useEffect } from "react";
