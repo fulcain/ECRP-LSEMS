@@ -1,4 +1,4 @@
-import { Divisions } from "@/app/configs/divisions/";
+import { Divisions } from "@/app/constants/divisions";
 import Image from "next/image";
 
 interface DivisionSelectorProps {

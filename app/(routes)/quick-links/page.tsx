@@ -1,6 +1,6 @@
 "use client";
 
-import { links } from "@/app/configs/quick-links";
+import { links } from "@/app/constants/quick-links";
 import { BodyAndMainTitle } from "@/components/layout/BodyMainAndTitle";
 import {
   Accordion,

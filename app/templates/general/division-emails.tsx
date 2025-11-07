@@ -1,72 +1,7 @@
-import { General } from "../general";
-import { AR } from "./a-r";
-import { AMU } from "./amu";
-import { BLS } from "./bls";
-import { CRU } from "./cru";
-import { FR } from "./f-r";
-import { FOR } from "./for";
-import { FS } from "./fs";
-import { FT } from "./ft";
-import { IA } from "./ia";
-import { LIFEGUARD } from "./lifeguard";
-import { PR } from "./pr";
-import { RED } from "./red";
+import { MedicCredentials } from "@/app/(routes)/email-templates/components/MedicCredentials";
+import { DivisionData } from "@/app/constants/divisions";
 
-export type Divisions = {
-  label: string;
-  image: string;
-  data: DivisionData;
-};
-
-type DivisionData = {
-  image: string;
-  imageSize: string;
-  divisionName: string;
-  ranks: string[] | string;
-};
-
-export const divisions: Divisions[] = [
-  BLS,
-  AMU,
-  General,
-  FT,
-  RED,
-  CRU,
-  FOR,
-  FR,
-  FS,
-  PR,
-  AR,
-  LIFEGUARD,
-  IA,
-];
-
-export const communicationUpdate: Divisions[] = [CRU, AMU];
-
-type MedicCredentials = {
-  name: string;
-  signature: string;
-  rank: string;
-};
-
-export const generateSignature = ({
-  medicCredentials,
-  selectedRank,
-}: {
-  medicCredentials: MedicCredentials;
-  selectedRank: string;
-}) => {
-  const rankLine = selectedRank
-    ? `[b]${medicCredentials.rank} | ${selectedRank}[/b]`
-    : `[b]${medicCredentials.rank}[/b]`;
-
-  return `[img]${medicCredentials.signature}[/img]
-[i]${medicCredentials.name}[/i]
-${rankLine}
-`;
-};
-
-export const generateNewTemplate = ({
+export const generateEmailTemplate = ({
   medicCredentials,
   selectedRank,
   subject,

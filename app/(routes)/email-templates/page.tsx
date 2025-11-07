@@ -4,9 +4,9 @@ import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
 import {
   divisions,
   Divisions,
-  generateSignature,
-  generateNewTemplate,
-} from "@/app/configs/divisions/";
+} from "@/app/constants/divisions";
+import { generateSignature } from "@/app/templates/general/signature";
+import { generateEmailTemplate } from "@/app/templates/general/division-emails";
 import { useMedic } from "@/app/context/MedicContext";
 import DivisionSelector from "@/app/(routes)/email-templates/components/DivisionSelector";
 import TemplateOptions from "@/app/(routes)/email-templates/components/TemplateOptions";
@@ -73,7 +73,7 @@ export default function Home() {
   const handleGenerateNewTemplate = () => {
     if (!selectedDivision) return;
 
-    const bbcode = generateNewTemplate({
+    const bbcode = generateEmailTemplate({
       medicCredentials: { ...medicCredentials },
       selectedRank: selectedRank || "",
       division: selectedDivision.data,

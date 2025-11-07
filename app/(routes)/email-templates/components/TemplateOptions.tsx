@@ -1,4 +1,4 @@
-import { Divisions } from "@/app/configs/divisions/";
+import { Divisions } from "@/app/constants/divisions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
