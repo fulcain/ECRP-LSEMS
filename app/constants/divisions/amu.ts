@@ -53,7 +53,7 @@ export const AMU = {
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=49218",
       },
       {
-        name: "Public Requests",
+        name: "AMU Public Requests",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=3641",
       },
       {

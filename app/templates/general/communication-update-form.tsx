@@ -38,7 +38,7 @@ export const generateCommunicationUpdateForm = ({
 [divbox=white]
 [img]${medicCredentials.signature}[/img]
 [i]${medicCredentials.name}[/i]
-[b]${selectedRank} | ${medicCredentials.rank}[/b]
+[b]${selectedRank} / ${medicCredentials.rank}[/b]
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox][img]https://i.imgur.com/HNP4ksW.png[/img]`.trim();
 };

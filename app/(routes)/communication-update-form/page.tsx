@@ -1,7 +1,10 @@
 "use client";
 
 import { communicationUpdate } from "@/app/constants/divisions";
+import { AMU } from "@/app/constants/divisions/amu";
+import { CRU } from "@/app/constants/divisions/cru";
 import { useMedic } from "@/app/context/MedicContext";
+import { copyBBCode } from "@/app/helpers/copyBBCode";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { generateCommunicationUpdateForm } from "@/app/templates/general/communication-update-form";
@@ -101,12 +104,12 @@ export default function CommunicationUpdateForm() {
         // open correct URL based on division
         if (selectedDivision?.label === "AMU") {
           window.open(
-            "https://gov.eclipse-rp.net/viewforum.php?f=3641",
+            `${AMU.data.quickLinks.find((d) => d.name === "AMU Public Requests")?.url ?? ""}`,
             "_blank",
           );
         } else if (selectedDivision?.label === "CRU") {
           window.open(
-            "https://gov.eclipse-rp.net/viewforum.php?f=3643",
+            `${CRU.data.quickLinks.find((d) => d.name === "CRU Public Requests")?.url ?? ""}`,
             "_blank",
           );
         }
@@ -209,7 +212,7 @@ export default function CommunicationUpdateForm() {
               disabled={!bbCodeText}
               className="flex-1"
             >
-              Copy & Open Division Public Section
+              Copy & Open Division Public Request
             </Button>
             <Button
               onClick={() =>
@@ -222,6 +225,17 @@ export default function CommunicationUpdateForm() {
               className="flex-1 bg-blue-600 hover:bg-blue-700"
             >
               Copy & Open Combined Section
+            </Button>
+            <Button
+              onClick={() =>
+                copyBBCode({
+                  bbCodeText,
+                })
+              }
+              disabled={!bbCodeText}
+              className="flex-1 bg-blue-600 hover:bg-blue-700"
+            >
+              Copy 
             </Button>
           </div>
         </div>

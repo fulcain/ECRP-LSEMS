@@ -13,6 +13,7 @@ export const CRU = {
       "Senior Therapist",
       "Therapist",
       "Therapist In Training",
+      "Senior First Responder",
       "First Responder",
       "Crisis Response Recruit",
     ],

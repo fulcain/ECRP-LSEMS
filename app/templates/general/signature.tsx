@@ -8,7 +8,7 @@ export const generateSignature = ({
   selectedRank: string;
 }) => {
   const rankLine = selectedRank
-    ? `[b]${medicCredentials.rank} | ${selectedRank}[/b]`
+    ? `[b]${medicCredentials.rank} / ${selectedRank}[/b]`
     : `[b]${medicCredentials.rank}[/b]`;
 
   return `[img]${medicCredentials.signature}[/img]
