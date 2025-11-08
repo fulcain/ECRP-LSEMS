@@ -1,5 +1,6 @@
 "use client";
 
+import { ranks } from "@/app/constants/general/LSEMSRanks";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,23 +12,6 @@ import {
 } from "@/components/ui/select";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-
-const ranks = [
-  "Chief of LSEMS",
-  "Assistant Chief",
-  "Deputy Chief",
-  "Lieutenant",
-  "Commander",
-  "Lead Paramedic",
-  "Senior Paramedic",
-  "Paramedic",
-  "Junior Paramedic",
-  "Master EMT",
-  "EMT-A",
-  "EMT-I",
-  "EMT-B",
-  "EMR",
-];
 
 export type MedicCredentials = {
   name: string;

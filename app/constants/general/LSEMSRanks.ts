@@ -1,0 +1,16 @@
+export const ranks = [
+  "Chief of LSEMS",
+  "Assistant Chief",
+  "Deputy Chief",
+  "Lieutenant",
+  "Commander",
+  "Lead Paramedic",
+  "Senior Paramedic",
+  "Paramedic",
+  "Junior Paramedic",
+  "Master EMT",
+  "EMT-A",
+  "EMT-I",
+  "EMT-B",
+  "EMR",
+];
