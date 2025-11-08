@@ -89,7 +89,7 @@ export default function CommunicationUpdateForm() {
     ],
   );
 
-  const handleSubmit = () => {
+  const handleSubmitAndOpenCombinedSection = () => {
     if (!bbCodeText) {
       toast.error("Please fill all fields and select a division and rank!");
       return;
@@ -205,7 +205,7 @@ export default function CommunicationUpdateForm() {
 
           <div className="mt-4 flex flex-col gap-4 sm:flex-row">
             <Button
-              onClick={handleSubmit}
+              onClick={handleSubmitAndOpenCombinedSection}
               disabled={!bbCodeText}
               className="flex-1"
             >
