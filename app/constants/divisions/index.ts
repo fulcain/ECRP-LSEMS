@@ -56,9 +56,9 @@ export const links: Links[] = [
 ];
 
 export const divisions: Divisions[] = [
+  General,
   BLS,
   AMU,
-  General,
   FT,
   RED,
   CRU,
