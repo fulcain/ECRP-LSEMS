@@ -6,14 +6,8 @@ export type HeaderLink = {
 
 export const headerLinks: HeaderLink[] = [
   {
-    label: "Email Templates",
-    children: [
-      { label: "Division Templates", href: "/email-templates" },
-      {
-        label: "Communication Update Form",
-        href: "/communication-update-form",
-      },
-    ],
+    label: "Division Templates",
+    href: "/email-templates",
   },
   { label: "Quick Links", href: "/quick-links" },
   { label: "Upcoming Course", href: "/upcoming-course" },
