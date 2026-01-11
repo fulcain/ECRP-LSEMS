@@ -29,14 +29,14 @@ export const generateEmailTemplate = ({
     : division?.divisionName;
 
   return `[mdheader2
-title="${subject || "Subject"} | ${date}"
+title="${subject ? `${subject} | ${date}` : `${date}`}"
 location="${locationParam}"
 date=""
 logo="${division?.image || "https://i.imgur.com/QYXPM0p.png"}"
 department="One Team, One Mission, Saving Lives"
 ][/mdheader2]
 [divbox4=eeeeee]
-[b]${recipient ? `Dear ${recipient}` : "Recipient"}[/b],
+${recipient ? `[b]Dear ${recipient}[/b],` : ""}
 
 MESSAGE TEXT GOES HERE
 
