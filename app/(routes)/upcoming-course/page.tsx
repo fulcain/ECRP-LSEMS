@@ -95,7 +95,7 @@ export default function UpcomingCourse() {
     const urlDate = `${year}-${pad(d.getUTCMonth() + 1)}-${pad(dayNum)}`;
 
     return {
-      formatted: `${weekday}, ${dayOrdinal} ${month} ${year} @ ${hours}:${minutes} (UTC)`,
+	  formatted: `${weekday}, ${dayOrdinal} ${month} ${year} @ ${hours}:${minutes} [ooc]UTC[/ooc]`,
       urlDate,
       hours,
       minutes,
