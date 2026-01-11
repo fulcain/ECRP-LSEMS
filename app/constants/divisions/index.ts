@@ -61,7 +61,7 @@ export const divisions: Divisions[] = [
   AMU,
   FT,
   RED,
-  CRU,
+  // CRU,
   FOR,
   FR,
   FS,
@@ -70,5 +70,3 @@ export const divisions: Divisions[] = [
   LIFEGUARD,
   IA,
 ];
-
-export const communicationUpdate: Divisions[] = [CRU, AMU];
