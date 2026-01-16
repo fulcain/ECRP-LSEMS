@@ -16,10 +16,6 @@ export const General = {
         url: "https://gov.eclipse-rp.net/viewforum.php?f=569",
       },
       {
-        name: "Department Roaster",
-        url: "https://gov.eclipse-rp.net/viewtopic.php?t=9497",
-      },
-      {
         name: "Leave Of Absence",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=613",
       },
@@ -78,12 +74,12 @@ export const General = {
         url: "https://gov.eclipse-rp.net/viewforum.php?f=605",
       },
       {
-        name: "Public Roaster",
+        name: "Public Roaster (BLS)",
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=55728",
       },
       {
         name: "Private Roaster",
-        url: "https://gov.eclipse-rp.net/viewtopic.php?p=863079#p863079",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?p=863079",
       },
     ],
   },
