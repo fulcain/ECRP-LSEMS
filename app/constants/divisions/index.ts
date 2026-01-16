@@ -1,7 +1,7 @@
 import { AR } from "./a-r";
 import { AMU } from "./amu";
 import { BLS } from "./bls";
-import { CRU } from "./cru";
+// import { CRU } from "./cru";
 import { FR } from "./f-r";
 import { FOR } from "./for";
 import { FS } from "./fs";
@@ -46,10 +46,10 @@ export const links: Links[] = [
   AMU,
   RED,
   PR,
-  CRU,
   FR,
   FOR,
   AR,
+  // CRU,
   // FS,
   // LIFEGUARD,
   // IA,
@@ -61,7 +61,6 @@ export const divisions: Divisions[] = [
   AMU,
   FT,
   RED,
-  // CRU,
   FOR,
   FR,
   FS,
@@ -69,4 +68,5 @@ export const divisions: Divisions[] = [
   AR,
   LIFEGUARD,
   IA,
+  // CRU,
 ];
