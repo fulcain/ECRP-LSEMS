@@ -36,11 +36,9 @@ export default function UpcomingCourse() {
     "new" | "reschedule" | "cancelled"
   >("uc-courseType", "new");
 
-  const [datetime, setDatetime] = useLocalStorage<string>("uc-datetime", "");
-  const [prevDatetime, setPrevDatetime] = useLocalStorage<string>(
-    "uc-prevDatetime",
-    "",
-  );
+  const [datetime, setDatetime] = useState<string>("");
+  const [prevDatetime, setPrevDatetime] = useState<string>("");
+
   const [instructor, setInstructor] = useLocalStorage<string>(
     "uc-instructor",
     "",
