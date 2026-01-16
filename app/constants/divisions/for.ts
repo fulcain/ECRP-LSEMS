@@ -1,5 +1,5 @@
 export const FOR = {
-  label: "FOR",
+  label: "Forensics",
   image: "/Division/FOR.png",
   data: {
     imageSize: "150,150",
@@ -25,14 +25,13 @@ export const FOR = {
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=164012",
       },
       {
-        name: "Serologist Training Guide",
+        name: "Serologist Training Guide (Instructor+)",
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=112252",
       },
       {
-        name: "Student Profiles",
+        name: "Student Profiles (Instructor+)",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=1959",
       },
-
       {
         name: "Reports",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=2577",

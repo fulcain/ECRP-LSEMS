@@ -1,5 +1,5 @@
 export const BLS = {
-  label: "BLS",
+  label: "Basic Life Support",
   image: "/Division/BLS.png",
   data: {
     imageSize: "150,150",
@@ -24,26 +24,30 @@ export const BLS = {
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=214677",
       },
       {
-        name: "Handbook Formats",
-        url: "https://gov.eclipse-rp.net/viewtopic.php?t=214677#FORMATS",
+        name: "Incoming Applications (Division Command+)",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=1948",
       },
       {
-        name: "Command Handbook",
+        name: "Activity Log (Division Command+)",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?t=184979",
+      },
+
+      {
+        name: "Command Handbook (Division Command+)",
         url: "https://gov.eclipse-rp.net/viewtopic.php?p=1055095#p1055095",
       },
       {
-        name: "Command Area",
+        name: "Command Area (Division Command+)",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=1948",
+      },
+      {
+        name: "Student Profiles (Senior BLS Instructors+)",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=1694",
       },
       {
         name: "Discussion Board",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=1889",
       },
-      {
-        name: "Incoming Applications",
-        url: "https://gov.eclipse-rp.net/viewforum.php?f=1948",
-      },
-
       {
         name: "Course Reports",
         url: "https://gov.eclipse-rp.net/viewtopic.php?p=573545#p573545",
@@ -51,14 +55,6 @@ export const BLS = {
       {
         name: "BLS Courses",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=578",
-      },
-      {
-        name: "Activity Log",
-        url: "https://gov.eclipse-rp.net/viewtopic.php?t=184979",
-      },
-      {
-        name: "Student Profiles",
-        url: "https://gov.eclipse-rp.net/viewforum.php?f=1694",
       },
     ],
   },

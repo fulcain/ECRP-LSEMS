@@ -1,5 +1,5 @@
 export const PR = {
-  label: "PR",
+  label: "Public Relations",
   image: "/Division/PR.png",
   data: {
     imageSize: "150,150",

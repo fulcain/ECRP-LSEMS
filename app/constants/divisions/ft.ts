@@ -1,5 +1,5 @@
 export const FT = {
-  label: "FTD",
+  label: "Field Training",
   image: "/Division/FT.png",
   data: {
     imageSize: "150,150",
@@ -24,12 +24,20 @@ export const FT = {
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=87381",
       },
       {
-        name: "FTO Student Profiles",
+        name: "FTO Student Profiles (Field Training Instructor+)",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=1161",
       },
       {
-        name: "EMR Training Time Reminder",
+        name: "EMR Training Time Reminder (Field Training Instructor+)",
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=178482",
+      },
+      {
+        name: "FTD App",
+        url: "https://ecrp-ftd.vercel.app/",
+      },
+      {
+        name: "FT Session Reports",
+        url: "https://docs.google.com/forms/d/e/1FAIpQLSdRDNSsxhEgMgegEoDdd1NURAB84RgPKwaK34nD2emK2k24sg/viewform",
       },
       {
         name: "Student Area",
@@ -38,10 +46,6 @@ export const FT = {
       {
         name: "EMR Profiles",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=617",
-      },
-      {
-        name: "FT Session Reports",
-        url: "https://docs.google.com/forms/d/e/1FAIpQLSdRDNSsxhEgMgegEoDdd1NURAB84RgPKwaK34nD2emK2k24sg/viewform",
       },
       {
         name: "Reinstatement Training Program",

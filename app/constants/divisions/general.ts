@@ -16,20 +16,21 @@ export const General = {
         url: "https://gov.eclipse-rp.net/viewforum.php?f=569",
       },
       {
+        name: "Public Roaster (BLS)",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?t=55728",
+      },
+      {
+        name: "Private Roaster",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?p=863079",
+      },
+
+      {
         name: "Leave Of Absence",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=613",
       },
       {
         name: "Medical Prescriptions",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=2710",
-      },
-      {
-        name: "Medical Prescriptions formats",
-        url: "https://gov.eclipse-rp.net/viewtopic.php?t=113049",
-      },
-      {
-        name: "Methadone Ban List",
-        url: "https://gov.eclipse-rp.net/viewtopic.php?t=193052",
       },
       {
         name: "Financial Requests",
@@ -44,7 +45,7 @@ export const General = {
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=99538",
       },
       {
-        name: "LSEMS Handbook",
+        name: "General Handbook",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=804",
       },
       {
@@ -62,7 +63,7 @@ export const General = {
         url: "https://gov.eclipse-rp.net/viewforum.php?f=2230",
       },
       {
-        name: "LSEMS Hours Sheet",
+        name: "Hours Sheet (Supervisors+)",
         url: "https://docs.google.com/spreadsheets/d/1GxWLb11Txy39o7DKtaAL22hvfgLYi8aIj3rCgHL-WGs/edit?gid=762392556#gid=762392556",
       },
       {
@@ -70,16 +71,8 @@ export const General = {
         url: "https://gov.eclipse-rp.net/viewforum.php?f=4155",
       },
       {
-        name: "Personnel Files",
+        name: "Personnel Files (Supervisors+)",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=605",
-      },
-      {
-        name: "Public Roaster (BLS)",
-        url: "https://gov.eclipse-rp.net/viewtopic.php?t=55728",
-      },
-      {
-        name: "Private Roaster",
-        url: "https://gov.eclipse-rp.net/viewtopic.php?p=863079",
       },
     ],
   },

@@ -29,16 +29,24 @@ export const AMU = {
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=178535",
       },
       {
-        name: "Research Papers",
-        url: "https://gov.eclipse-rp.net/viewtopic.php?t=63193",
+        name: "Command Area (Division Command+)",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=1955",
       },
       {
-        name: "Attending Physician Area",
+        name: "Incoming Applications (Division Command+)",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=2293",
+      },
+      {
+        name: "Attending Physician Area (Attending Physician+)",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=3808",
       },
       {
-        name: "Student Profiles",
+        name: "Student Profiles (Attending Physician+)",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=1224",
+      },
+      {
+        name: "Research Papers",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?t=63193",
       },
       {
         name: "Discussion Board",
@@ -59,14 +67,6 @@ export const AMU = {
       {
         name: "Communication Update Form",
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=167625",
-      },
-      {
-        name: "Command Area",
-        url: "https://gov.eclipse-rp.net/viewforum.php?f=1955",
-      },
-      {
-        name: "Incoming Applications",
-        url: "https://gov.eclipse-rp.net/viewforum.php?f=2293",
       },
     ],
   },

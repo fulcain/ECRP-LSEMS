@@ -1,5 +1,5 @@
 export const AR = {
-  label: "A&R",
+  label: "Air & Rescue",
   image: "/Division/A&R.png",
   data: {
     imageSize: "235,150",
@@ -34,21 +34,22 @@ export const AR = {
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=174011",
       },
       {
-        name: "Mountain Rescue Student Profiles",
+        name: "Mountain Rescue Student Profiles (Instructor+)",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=1675",
       },
       {
-        name: "Pilot Student Profiles",
+        name: "Pilot Student Profiles (Instructor+)",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=926",
       },
       {
-        name: "Ability Course ",
+        name: "Ability Course (Instructor+)",
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=211472",
       },
       {
-        name: "Instructor Area",
+        name: "Instructor Area (Instructor+)",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=3545",
       },
+
       {
         name: "Discussion Board",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=1886",

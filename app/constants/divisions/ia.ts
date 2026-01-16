@@ -1,5 +1,5 @@
 export const IA = {
-  label: "IA",
+  label: "Internal Affairs",
   image: "/Division/IA.png",
   data: {
     imageSize: "150,150",
