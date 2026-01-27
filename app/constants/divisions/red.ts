@@ -47,6 +47,14 @@ export const RED = {
         name: "Reinstatements Desk",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=576",
       },
+      {
+        name: "Student Profiles (Senior Handler+)",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=2520",
+      },
+      {
+        name: "Training Reports (Senior Handler+)",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=3723",
+      },
     ],
   },
 };
