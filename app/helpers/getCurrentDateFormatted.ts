@@ -1,6 +1,6 @@
 export const getCurrentDateFormatted = (): string => {
   const now = new Date();
-  const day = now.getUTCDate().toString().padStart(2, "0");
+  const day = now.getUTCDate().toString()
   const monthNames = [
     "January",
     "February",
