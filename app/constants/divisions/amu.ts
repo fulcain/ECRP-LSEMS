@@ -27,6 +27,10 @@ export const AMU = {
       {
         name: "Handbook",
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=178535",
+	  },
+	  {
+        name: "Command Handbook (Division Command+)",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?t=215347",
       },
       {
         name: "Command Area (Division Command+)",
