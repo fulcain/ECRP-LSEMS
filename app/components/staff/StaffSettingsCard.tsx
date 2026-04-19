@@ -133,11 +133,14 @@ export function StaffSettingsCard({
                   </SelectTrigger>
                   <SelectContent className="border-slate-700 bg-slate-800 text-white">
                     <SelectItem value={NONE_DIVISION_RANK}>None</SelectItem>
-                    {division.data.ranks.map((rank) => (
-                      <SelectItem key={rank} value={rank}>
-                        {rank}
-                      </SelectItem>
-                    ))}
+
+                    {Array.isArray(division.data.ranks) &&
+                      division.data.ranks.map((rank) => (
+                        <SelectItem key={rank} value={rank}>
+                          {rank}
+                        </SelectItem>
+                      ))}
+
                   </SelectContent>
                 </Select>
               </div>

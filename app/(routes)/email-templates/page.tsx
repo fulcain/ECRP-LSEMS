@@ -98,7 +98,6 @@ export default function Home() {
           selectedDivision={selectedDivision}
           setSelectedDivision={setSelectedDivision}
           setSelectedRank={setSelectedRank}
-          divisionRanks={divisionRanks}
           ArrayToLoop={divisions}
         />
 
