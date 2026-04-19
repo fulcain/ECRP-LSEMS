@@ -1,6 +1,7 @@
 import "./global.css"
 import { MedicProvider } from "@/app/context/MedicContext";
 import { Header } from "@/components/layout/header/header";
+import { StaffSettingsIndicator } from "@/components/layout/staff-settings-indicator";
 import { ThemeProvider } from "@/components/theme-provider";
 import type { Metadata } from "next";
 import "react-toastify/dist/ReactToastify.css";
@@ -26,6 +27,7 @@ export default function RootLayout({
         >
           <MedicProvider>
             <Header />
+            <StaffSettingsIndicator />
             {children}
           </MedicProvider>
         </ThemeProvider>

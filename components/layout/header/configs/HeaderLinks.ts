@@ -6,6 +6,10 @@ export type HeaderLink = {
 
 export const headerLinks: HeaderLink[] = [
   {
+    label: "Staff Page",
+    href: "/staff",
+  },
+  {
     label: "Division Templates",
     href: "/email-templates",
   },

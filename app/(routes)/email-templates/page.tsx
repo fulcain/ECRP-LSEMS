@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 
 import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
 import {
@@ -11,21 +12,11 @@ import { useMedic } from "@/app/context/MedicContext";
 import DivisionSelector from "@/app/(routes)/email-templates/components/DivisionSelector";
 import TemplateOptions from "@/app/(routes)/email-templates/components/TemplateOptions";
 import { BodyAndMainTitle } from "@/components/layout/main-and-title";
-import { MedicCredentials } from "@/app/(routes)/email-templates/components/MedicCredentials";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useEffect } from "react";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 
 export default function Home() {
-  const {
-    medicCredentials,
-    setMedicCredentials,
-    divisionRanks,
-    setDivisionRanks,
-  } = useMedic();
-
-  const [showEditForm, setShowEditForm] = useState(false);
+  const { medicCredentials, divisionRanks, setDivisionRanks } = useMedic();
   const [selectedDivision, setSelectedDivision] = useState<Divisions | null>(
     null,
   );
@@ -101,56 +92,6 @@ export default function Home() {
         theme="dark"
         transition={Bounce}
       />
-
-      <div className="mb-8 rounded-lg bg-slate-800 p-6 shadow-lg">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-            <div className="flex flex-col">
-              <h2 className="mb-1 text-xl font-semibold text-white">
-                Medic Credentials
-              </h2>
-              {!isCredentialsEmpty && !showEditForm && (
-                <p className="text-sm text-slate-400">
-                  {medicCredentials.rank} {medicCredentials.name}
-                </p>
-              )}
-            </div>
-
-            {!isCredentialsEmpty &&
-              medicCredentials.signature &&
-              !showEditForm && (
-                <div className="mt-2 flex items-center rounded bg-slate-700 p-2 sm:mt-0">
-                  <Image
-                    src={medicCredentials.signature}
-                    alt={`${medicCredentials.name} signature`}
-                    width={200}
-                    height={64}
-                    style={{ objectFit: "contain", height: "auto" }}
-                    className="h-16 w-auto object-contain"
-                  />
-                </div>
-              )}
-          </div>
-
-          {isCredentialsEmpty || showEditForm ? (
-            <MedicCredentials
-              medicCredentials={medicCredentials}
-              setMedicCredentialsAction={(values) => {
-                setMedicCredentials(values);
-                setShowEditForm(false);
-              }}
-            />
-          ) : (
-            <Button
-              variant="outline"
-              onClick={() => setShowEditForm(true)}
-              className="whitespace-nowrap"
-            >
-              Edit Credentials
-            </Button>
-          )}
-        </div>
-      </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <DivisionSelector
