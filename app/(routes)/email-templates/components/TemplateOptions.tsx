@@ -1,13 +1,6 @@
 import { Divisions } from "@/app/constants/divisions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Ambulance } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,7 +8,6 @@ import Link from "next/link";
 interface TemplateOptionsProps {
   selectedDivision: Divisions | null;
   selectedRank: string;
-  setSelectedRank: (rank: string) => void;
   subject: string;
   setSubject: (subject: string) => void;
   recipient: string;
@@ -27,7 +19,6 @@ interface TemplateOptionsProps {
 export default function TemplateOptions({
   selectedDivision,
   selectedRank,
-  setSelectedRank,
   subject,
   setSubject,
   recipient,
@@ -66,28 +57,20 @@ export default function TemplateOptions({
 
             {Array.isArray(selectedDivision.data?.ranks) && (
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-300">
-                  Select Rank
-                </label>
-                <Select
-                  onValueChange={(val) => setSelectedRank(val)}
-                  value={selectedRank}
-                >
-                  <SelectTrigger className="w-full cursor-pointer border-slate-600 bg-slate-700">
-                    <SelectValue placeholder="Choose your rank" />
-                  </SelectTrigger>
-                  <SelectContent className="w-full border-slate-700 bg-slate-800">
-                    {selectedDivision.data.ranks.map((rank, idx) => (
-                      <SelectItem
-                        className="w-full cursor-pointer focus:bg-slate-700"
-                        key={idx}
-                        value={rank}
-                      >
-                        {rank}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <label className="block text-sm font-medium text-slate-300">
+                    Selected Rank
+                  </label>
+                  <Button asChild size="sm" variant="outline">
+                    <Link href="/staff">Set in Staff Page</Link>
+                  </Button>
+                </div>
+
+                <div className="rounded-md border border-slate-700 bg-slate-700/40 p-3 text-slate-300 opacity-80">
+                  <p className="text-sm">
+                    {selectedRank || "No saved division rank selected yet."}
+                  </p>
+                </div>
               </div>
             )}
 
