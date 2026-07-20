@@ -1,0 +1,38 @@
+import "./global.css";
+import { MedicProvider } from "@/app/context/MedicContext";
+import { SidebarLayout } from "@/components/layout/sidebar/sidebar-layout";
+import { StaffSettingsIndicator } from "@/components/layout/staff-settings-indicator";
+import { ThemeProvider } from "@/components/theme-provider";
+import type { Metadata } from "next";
+import "react-toastify/dist/ReactToastify.css";
+
+export const metadata: Metadata = {
+  title: "ECRP LSEMS",
+  description: "Application for ECRP LSEMS",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <MedicProvider>
+            <SidebarLayout>
+              <StaffSettingsIndicator />
+              {children}
+            </SidebarLayout>
+          </MedicProvider>
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}

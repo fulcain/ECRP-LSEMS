@@ -1,0 +1,83 @@
+export const General = {
+  label: "General",
+  image: "/General.png",
+  data: {
+    imageSize: "150,150",
+    image: "https://i.ibb.co/dsKf0v2p/C6b52lr.png",
+    divisionName: "Los Santos Emergency Medical Services",
+    ranks: "",
+    quickLinks: [
+      {
+        name: "Department Internal Index",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=570",
+      },
+      {
+        name: "Department Public Index",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=569",
+      },
+      {
+        name: "Public Roster (BLS)",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?t=55728",
+      },
+      {
+        name: "Private Roster",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?p=863079",
+      },
+
+      {
+        name: "Leave Of Absence",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=613",
+      },
+      {
+        name: "Medical Prescriptions",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=2710",
+      },
+      {
+        name: "Financial Requests",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=2230",
+      },
+      {
+        name: "Ride Along Program",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=577",
+      },
+      {
+        name: "Ride Along Program Formats",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?t=99538",
+      },
+      {
+        name: "General Handbook",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=804",
+      },
+      {
+        name: "Employee Adjustments",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=573",
+      },
+
+      {
+        name: "Service Firearm",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?t=106075#11",
+      },
+
+      {
+        name: "Financial Requests",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=2230",
+      },
+      {
+        name: "Hours Sheet (Supervisors+)",
+        url: "https://docs.google.com/spreadsheets/d/1GxWLb11Txy39o7DKtaAL22hvfgLYi8aIj3rCgHL-WGs/edit?gid=762392556#gid=762392556",
+      },
+      {
+        name: "Divisional Personnel Files",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=4155",
+      },
+      {
+        name: "Personnel Files (Supervisors+)",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=605",
+      },
+      {
+        name: "Supervisor Handbook (Supervisors+)",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?t=216104",
+      },
+    ],
+  },
+};
