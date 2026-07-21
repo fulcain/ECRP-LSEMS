@@ -1,5 +1,5 @@
-import { RefreshCcw, Stethoscope, UserPlus } from "lucide-react";
-import type { ContractTab, ContractWorkflow } from "../types";
+import { UserPlus } from "lucide-react";
+import type { ContractWorkflow } from "../types";
 import { DASHBOARD_URL } from "../constants";
 
 
