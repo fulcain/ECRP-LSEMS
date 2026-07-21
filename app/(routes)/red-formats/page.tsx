@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import Image from "next/image";
 import {
   Check,
@@ -81,8 +82,17 @@ export default function REDFormatsPage() {
     };
   }, []);
   const [reasons, setReasons] = useState<string[]>([""]);
-  const [denialType, setDenialType] = useState<"IC" | "OOC">("OOC");
-  const [weeks, setWeeks] = useState(2);
+  const [denialType, setDenialType] = useLocalStorage<"IC" | "OOC">(
+    "red-formats:denialType",
+    "OOC",
+  );
+  const [applyOtherChar, setApplyOtherChar] = useLocalStorage<
+    "may" | "may not"
+  >("red-formats:applyOtherChar", "may");
+  const [weeks, setWeeks] = useLocalStorage<number>(
+    "red-formats:weeks",
+    2,
+  );
   const [employeeName] = useState("");
   const [interviewDate, setInterviewDate] = useState("");
   const [interviewTime, setInterviewTime] = useState("");
@@ -113,6 +123,7 @@ export default function REDFormatsPage() {
       medicRank,
       medicSignature: medicCredentials.signature || undefined,
       denialType,
+      applyOtherChar,
       weeks,
       employeeName: employeeName || undefined,
       interviewDate: interviewDate || undefined,
@@ -128,6 +139,7 @@ export default function REDFormatsPage() {
     medicCredentials.signature,
     redRank,
     denialType,
+    applyOtherChar,
     weeks,
     employeeName,
     interviewDate,
@@ -461,13 +473,40 @@ export default function REDFormatsPage() {
                           </SelectTrigger>
                           <SelectContent className="border-slate-700 bg-slate-900 text-white">
                             <SelectItem value="IC">
-                              IC — In Character
+                              IC - In Character
                             </SelectItem>
                             <SelectItem value="OOC">
-                              OOC — Out of Character
+                              OOC - Out of Character
                             </SelectItem>
                           </SelectContent>
                         </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="apply-other-char">
+                          Apply on another character
+                        </Label>
+                        <Select
+                          value={applyOtherChar}
+                          onValueChange={(value) =>
+                            setApplyOtherChar(value as "may" | "may not")
+                          }
+                        >
+                          <SelectTrigger
+                            id="apply-other-char"
+                            className="w-full border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-red-500/50"
+                          >
+                            <SelectValue placeholder="Select permission" />
+                          </SelectTrigger>
+                          <SelectContent className="border-slate-700 bg-slate-900 text-white">
+                            <SelectItem value="may">May</SelectItem>
+                            <SelectItem value="may not">May not</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-slate-500">
+                          Choose whether the applicant can reapply on another
+                          character during the cooldown.
+                        </p>
                       </div>
 
                       <div className="space-y-2">

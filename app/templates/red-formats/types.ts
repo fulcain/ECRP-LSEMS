@@ -5,6 +5,7 @@ export type REDTemplateContext = {
   medicRank?: string;
   medicSignature?: string;
   denialType?: "IC" | "OOC";
+  applyOtherChar?: "may" | "may not";
   weeks?: number;
   employeeName?: string;
   interviewDate?: string;

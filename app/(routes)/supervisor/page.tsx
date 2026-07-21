@@ -2,14 +2,24 @@
 
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { BodyAndMainTitle } from "@/components/layout/main-and-title";
+import { ContractSigningProcessor } from "./components/ContractSigningProcessor";
 import { LOAProcessor } from "./components/LOAProcessor";
 import { MeetingAgendaProcessor } from "./components/MeetingAgendaProcessor";
-import { CalendarClock, FileText } from "lucide-react";
+import {
+  CalendarClock,
+  FileSignature,
+  FileText,
+} from "lucide-react";
 import React from "react";
 
-type SupervisorTab = "loa" | "meetings";
+type SupervisorTab = "loa" | "meetings" | "contract";
 
-const tabs: { value: SupervisorTab; label: string; icon: React.ReactNode; accent: string }[] = [
+const tabs: {
+  value: SupervisorTab;
+  label: string;
+  icon: React.ReactNode;
+  accent: string;
+}[] = [
   {
     value: "loa",
     label: "LOA Processing",
@@ -22,6 +32,12 @@ const tabs: { value: SupervisorTab; label: string; icon: React.ReactNode; accent
     icon: <CalendarClock className="h-4 w-4" />,
     accent: "border-indigo-400/40 bg-indigo-500/20 text-indigo-300",
   },
+  {
+    value: "contract",
+    label: "Contract Signing",
+    icon: <FileSignature className="h-4 w-4" />,
+    accent: "border-sky-400/40 bg-sky-500/20 text-sky-300",
+  },
 ];
 
 export default function SupervisorPage() {
@@ -33,7 +49,7 @@ export default function SupervisorPage() {
   return (
     <BodyAndMainTitle
       title="Supervisor Tools"
-      description="Manage LOA processing, meeting agendas, and supervisor tasks"
+      description="Manage LOA processing, meeting agendas, contract signings, and supervisor tasks"
     >
       {/* Tab Selector */}
       <div className="mb-8">
@@ -59,6 +75,7 @@ export default function SupervisorPage() {
       {/* Tab Content */}
       {activeTab === "loa" && <LOAProcessor />}
       {activeTab === "meetings" && <MeetingAgendaProcessor />}
+      {activeTab === "contract" && <ContractSigningProcessor />}
     </BodyAndMainTitle>
   );
 }

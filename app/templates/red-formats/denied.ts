@@ -14,6 +14,7 @@ export const deniedTemplate: REDTemplateDefinition = {
     medicRank,
     medicSignature,
     denialType,
+    applyOtherChar,
     weeks,
   }) => {
     const signatureImg = medicSignature
@@ -22,7 +23,7 @@ export const deniedTemplate: REDTemplateDefinition = {
     const nameLine = medicName || "[i]Your Name[/i]";
     const rankLine = medicRank || "Rank, Recruitment Division";
     const denialTypeLabel = denialType || "OOC";
-    const canReapplyOtherChar = denialType === "IC" ? "may not" : "may";
+    const canReapplyOtherChar = applyOtherChar || "may";
     const weeksNum = weeks || 2;
 
     return `[img]https://i.ibb.co/W1VmKfh/nxi-E8Ho.png[/img]
