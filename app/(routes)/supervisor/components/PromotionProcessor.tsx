@@ -167,7 +167,8 @@ export function PromotionProcessor() {
     if (emailTemplate) {
       steps.push({ id: "email", label: "Send the promotion email", copyText: emailBBCode, icon: Mail });
     }
-    steps.push({ id: "personnel-post", label: "Post promotion format and update Personnel File (Title, Rank, Operational Adjustments)", copyText: personnelBBCode, secondaryCopyText: operationalAdjustmentCopyText, secondaryCopyLabel: "Copy Operational Adjustments", icon: FileText });
+    steps.push({ id: "personnel-post", label: "Post promotion format and update Personnel File (Title, Rank)", copyText: personnelBBCode, icon: FileText });
+    steps.push({ id: "operationalAdjustments", label: "Update Operational Adjustments in Personnel File", copyText: operationalAdjustmentCopyText, icon: FileText, action: { label: "Open Personnel Files", url: "https://gov.eclipse-rp.net/viewforum.php?f=605" } });
     steps.push({ id: "employeeAdjustments", label: "Post Employee Adjustment under Employee Adjustments", copyText: rankAdjustmentBBCode, titleText: `Rank Adjustment | ${personnelName}`, icon: ClipboardCheck, action: { label: "Open Employee Adjustments", url: "https://gov.eclipse-rp.net/posting.php?mode=post&f=573" } });
     steps.push({ id: "rosterUpdate", label: "Adjust their rank on the Staff Roster", copyText: "", icon: Users, action: { label: "Open Staff Roster", url: "https://gov.eclipse-rp.net/viewtopic.php?t=9497" } });
     steps.push({ id: "dashboardSheets", label: "Use the 'Promote Employee' section on the Dashboard to update the sheets", copyText: "", icon: Globe, action: { label: "Open Dashboard", url: "https://ecrplsems.com/" } });
@@ -288,16 +289,6 @@ export function PromotionProcessor() {
 
       {/* Procedure Checklist */}
       <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
-        {/* Personnel File URL Input */}
-        <div className="mb-4">
-          <Label className="mb-1 block text-xs text-slate-500">Personnel File Topic URL (for Operational Adjustments)</Label>
-          <Input
-            value={personnelFileUrl}
-            onChange={(e) => setPersonnelFileUrl(e.target.value)}
-            placeholder="https://gov.eclipse-rp.net/viewtopic.php?p=..."
-            className="border-slate-800 bg-slate-950 text-white placeholder:text-slate-600"
-          />
-        </div>
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <ListChecks className="h-4 w-4 text-slate-400" />
@@ -340,8 +331,16 @@ export function PromotionProcessor() {
                     >
                       {step.label}
                     </p>
-                    {(step.copyText.length > 0 || step.action) && !isDone && (
+                    {(step.copyText.length > 0 || step.action || step.id === "operationalAdjustments") && !isDone && (
                       <div className="mt-2 flex flex-wrap gap-2">
+                        {step.id === "operationalAdjustments" && (
+                          <Input
+                            value={personnelFileUrl}
+                            onChange={(e) => setPersonnelFileUrl(e.target.value)}
+                            placeholder="Personnel File Topic URL"
+                            className="h-7 w-64 border-slate-800 bg-slate-950 text-xs text-white placeholder:text-slate-600"
+                          />
+                        )}
                         {step.copyText.length > 0 && (
                           <button
                             onClick={() => copyBBCode({ bbCodeText: step.copyText })}
