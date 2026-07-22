@@ -6,7 +6,7 @@ export const expiredLOATemplate: LOATemplateDefinition = {
   accent: "from-slate-500/25 via-gray-500/15 to-transparent",
   border: "border-slate-400/30",
   badge: "bg-slate-500/20 text-slate-100 ring-1 ring-slate-400/40",
-  bannerImg: "https://i.imgur.com/fcCdBSU.png",
+  bannerImg: "https://i.ibb.co/4ZQ1dPv2/fc-Cd-BSU.png",
   divboxColor: "black",
   renderBody: ({
     personnelName,

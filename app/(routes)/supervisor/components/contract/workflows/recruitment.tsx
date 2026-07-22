@@ -57,7 +57,7 @@ export const recruitmentWorkflow: ContractWorkflow = {
           label: "Copy Introduction Email",
           description:
             "Copy the full introduction email BBCode to your clipboard.",
-          copyText: `[img]https://i.imgur.com/CMVEkE1.png[/img]
+          copyText: `[img]https://i.ibb.co/TBb1HVWP/CMVEk-E1.png[/img]
 
 [lsemssubtitle]Introduction[/lsemssubtitle]
 
@@ -184,9 +184,9 @@ You can get the basic signature instructions [url=https://gov.eclipse-rp.net/vie
 
 [spoiler=Email Format]
 [code]
-[img]https://i.imgur.com/rLIJtNZ.png[/img]
+[img]https://i.ibb.co/cXr7XYkS/HNP4ks-W.png[/img]
 [divbox=white]
-[img]https://i.imgur.com/9uGiPqF.png[/img][aligntable=right,0,0,0,0,0,0][right][font=Arial][b]
+[img]https://i.ibb.co/TMRZzNYb/9u-Gi-Pq-F.png[/img][aligntable=right,0,0,0,0,0,0][right][font=Arial][b]
 [size=150]Los Santos Emergency Medical Services[/size][/b]
 [size=95]"One Team, One Mission, Saving Lives"[/size][/font]
 [size=115]Subject[/size]
@@ -213,14 +213,14 @@ We have also written an email guide that explains how to send an email on the go
 [divbox=white]
 
 [b][size=125]Step 1. Creating a new email[/size][/b]
-[img]https://i.imgur.com/hVyQV6i.png[/img]
+[img]https://i.ibb.co/S7X8QFCW/h-Vy-QV6i.png[/img]
 
 Click either the "Compose Message" or "New PM" button. This will lead you to the creation interface.
 
 [hr]
 [b][size=125]Step 2. Adding the recipient(s)[/size][/b]
 
-[img]https://i.imgur.com/2VoZdha.png[/img]
+[img]https://i.ibb.co/CKcpK4XJ/2Vo-Zdha.png[/img]
 
 When adding individual people to the list of recipients, you simply input their name, then click it when it pops up. After that, you need to click "Add" for the name to be attached to the list of recipients. [b]If you do not click add, the person will not get the email![/b]
 
@@ -231,7 +231,7 @@ On the right, you can also see groups present. These have specific use cases and
 [hr]
 [b][size=125]Step 3. Verifying the list[/size][/b]
 
-[img]https://i.imgur.com/3Q2INrs.png[/img]
+[img]https://i.ibb.co/Pz6yWQXR/3Q2INrs.png[/img]
 
 As you can see, the name(s) will show if you've done it correctly.
 
@@ -299,7 +299,7 @@ If you would like to resign from LSEMS, as sad as it'll be to see you go, please
           {
           label: "Field Training Profile BBCode",
           description: "Field Training Program profiles BBCode",
-          copyText:`[img]https://i.imgur.com/fSVDi7f.png[/img]
+          copyText:`[img]https://i.ibb.co/0R8458jJ/f-SVDi7f.png[/img]
 [lsemssubtitle]STUDENT INFORMATION[/lsemssubtitle]
 [divbox=white]
 [b]Student Name:[/b] {{applicantName}}
@@ -439,7 +439,7 @@ Inform the EMR that anything acquired from this vending machine is for [b]LSEMS 
 [color=transparent]spacer[/color]
 [spoiler=Paperwork]
 [code]
-[img]https://i.imgur.com/9fbJGt0.png[/img]
+[img]https://i.ibb.co/0y2snnsR/9fb-JGt0.png[/img]
 [lsemssubtitle]SESSION DETAILS:[/lsemssubtitle]
 [divbox=white]
 [list]
@@ -642,7 +642,7 @@ Rank
 [color=transparent]spacer[/color]
 [spoiler=Paperwork]
 [code]
-[img]https://i.imgur.com/15qKtOb.png[/img]
+[img]https://i.ibb.co/bRbp2f8y/15q-Kt-Ob.png[/img]
 [lsemssubtitle]SESSION DETAILS:[/lsemssubtitle]
 [divbox=white]
 
@@ -783,7 +783,7 @@ Explain time management to the EMR which means choosing the closest hospital, tr
 [color=transparent]spacer[/color]
 [spoiler=Paperwork]
 [code]
-[img]https://i.imgur.com/WNwxLGs.png[/img]
+[img]https://i.ibb.co/qMNGR7x5/WNwx-LGs.png[/img]
 [lsemssubtitle]SESSION DETAILS:[/lsemssubtitle]
 [divbox=white]
 
@@ -849,7 +849,7 @@ Rank
 [*]Explain that the GPS system, while functional, may not give the best routing to calls.
 [list=none]
 [i]Example - Call from Burgershot while stationed at the ambulance bay:[/i]
-[spoil][img]https://i.imgur.com/i5etN3F.png[/img]
+[spoil][img]https://i.ibb.co/Fkw0kJwt/i5et-N3F.png[/img]
 [/spoil]
 The GPS routing provided, while functional, is inefficient. Going straight to Legion Square and turning from there instead, is going to be more efficient.
 [/list][/list]
@@ -868,10 +868,10 @@ The third is on [i]asphalt[/i].
 [/list]
 [*]Instruct the EMR to drive to The Observatory, specifically get the EMR to use [c]1 East Galileo Ave[/c] on their GPS. [ooc][c]/setgps 1 east galileo ave[/c][/ooc]
 [spoiler=Map Location of The Observatory]
-[img]https://i.imgur.com/8Hw38YV.png[/img]
+[img]https://i.ibb.co/pvQ3YH9y/8Hw38YV.png[/img]
 [/spoiler]
 [*]Take over, then show the EMR how to drive along the first course, course [b](1)[/b] in the image below. After showing them, have them do a few laps to get a grasp of how the ambulance handles dirt. [i]Encourage them to stay in control of the vehicle.[/i]
-[spoiler=Observatory Courses][img]https://i.imgur.com/lcxzHCq.jpeg[/img][/spoiler]
+[spoiler=Observatory Courses][img]https://i.ibb.co/xSsVtxh6/lcxz-HCq.jpg[/img][/spoiler]
 [*]Explain the next course [b](2)[/b] to the EMR, A quick way to explain it is simply "keep turning left". Again, [b]take over[/b], [b]do one lap[/b], then have the EMR do it!
 [*]Their first lap will be [b]Code 4[/b] (regular driving). Instruct them to stop at the start, then repeat the lap [b]Code 3[/b].
 [*]Then have the EMR do the course two more times, in reverse (as in, turn the ambulance around, don't have them literally driving in reverse). The "keep turning left" now becomes "keep turning right".
@@ -879,7 +879,7 @@ The third is on [i]asphalt[/i].
 Second reverse lap [b]Code 3[/b]
 [/list]
 [*]Finally, have the EMR drive to the Sandy Firestation ([c]27 Panorama Dr[/c]), [b]Code 3[/b].
-[spoiler=Map Location of Sandy Firestation][img]https://i.imgur.com/Rm51qYX.png[/img][/spoiler]
+[spoiler=Map Location of Sandy Firestation][img]https://i.ibb.co/ksfhDpcv/Rm51q-YX.png[/img][/spoiler]
 [*]If they need more practice, have them redo any of the courses at the end of the session.
 [/list]
 [color=transparent]spacer[/color]
@@ -899,7 +899,7 @@ Second reverse lap [b]Code 3[/b]
 [*]Terminal/Harbor ((Credit Store))
 [*]Dead-end road close to Clothing Store 4/17
 [spoiler=Location of road close to Clothing Store 4/17]
-[img]https://i.imgur.com/UBq8bRR.png[/img]
+[img]https://i.ibb.co/9HNv0Ncx/UBq8b-RR.png[/img]
 [/list][/spoiler]
 [*]Inform the EMR of the blockades we have and make sure to explain the correct use for each. 
 [ooc][c]arrow, barrier, barrier2, cone, stretcher, backboard, tent, bls[/c][/ooc]

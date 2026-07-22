@@ -68,7 +68,7 @@ export const emtpWorkflow: ContractWorkflow = {
           label: "Copy Promotion Paperwork",
           description:
             "Copy the rank adjustment template to paste into the Emplpoyees's personnel file.",
-          copyText: `[img]https://i.imgur.com/FimCeol.png[/img]
+          copyText: `[img]https://i.ibb.co/7Nj9qvT5/Fim-Ceol.png[/img]
 [divbox=white]
 
 [b]NAME:[/b]

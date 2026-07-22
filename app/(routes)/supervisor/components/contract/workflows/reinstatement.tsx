@@ -70,7 +70,7 @@ export const reinstatementWorkflow: ContractWorkflow = {
           label: "Copy Reintroduction Email",
           description:
             "Copy the full reintroduction email BBCode to your clipboard.",
-          copyText: `[img]https://i.imgur.com/up3tIuh.png[/img]
+          copyText: `[img]https://i.ibb.co/0xLYT0g/up3t-Iuh.png[/img]
 [lsemssubtitle]Introduction[/lsemssubtitle]
 [divbox=white]
 This re-introduction email aims to give you a clear understanding of where to find important information, as well as an overview of what your training schedule will be consisted of.
@@ -119,9 +119,9 @@ You can get the basic signature instructions [url=https://gov.eclipse-rp.net/vie
 
 [spoiler=Email Format]
 [code]
-[img]https://i.imgur.com/rLIJtNZ.png[/img]
+[img]https://i.ibb.co/cXr7XYkS/HNP4ks-W.png[/img]
 [divbox=white]
-[img]https://i.imgur.com/9uGiPqF.png[/img][aligntable=right,0,0,0,0,0,0][right][font=Arial][b]
+[img]https://i.ibb.co/TMRZzNYb/9u-Gi-Pq-F.png[/img][aligntable=right,0,0,0,0,0,0][right][font=Arial][b]
 [size=150]Los Santos Emergency Medical Services[/size][/b]
 [size=95]"One Team, One Mission, Saving Lives"[/size][/font]
 [size=115]Subject[/size]
@@ -148,14 +148,14 @@ We have also written an email guide that explains how to send an email on the go
 [divbox=white]
 
 [b][size=125]Step 1. Creating a new email[/size][/b]
-[img]https://i.imgur.com/hVyQV6i.png[/img]
+[img]https://i.ibb.co/S7X8QFCW/h-Vy-QV6i.png[/img]
 
 Click either the "Compose Message" or "New PM" button. This will lead you to the creation interface.
 
 [hr]
 [b][size=125]Step 2. Adding the recipient(s)[/size][/b]
 
-[img]https://i.imgur.com/2VoZdha.png[/img]
+[img]https://i.ibb.co/CKcpK4XJ/2Vo-Zdha.png[/img]
 
 When adding individual people to the list of recipients, you simply input their name, then click it when it pops up. After that, you need to click "Add" for the name to be attached to the list of recipients. [b]If you do not click add, the person will not get the email![/b]
 
@@ -166,7 +166,7 @@ On the right, you can also see groups present. These have specific use cases and
 [hr]
 [b][size=125]Step 3. Verifying the list[/size][/b]
 
-[img]https://i.imgur.com/3Q2INrs.png[/img]
+[img]https://i.ibb.co/Pz6yWQXR/3Q2INrs.png[/img]
 
 As you can see, the name(s) will show if you've done it correctly.
 
