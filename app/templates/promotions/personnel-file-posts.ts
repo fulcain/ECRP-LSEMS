@@ -1,4 +1,4 @@
-import type { PersonnelFilePostDefinition, PersonnelFilePostContext } from "./types";
+import type { PersonnelFilePostDefinition } from "./types";
 
 const personnelFilePostDefs: PersonnelFilePostDefinition[] = [
   {
