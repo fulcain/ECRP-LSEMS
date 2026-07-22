@@ -334,12 +334,20 @@ export function PromotionProcessor() {
                     {(step.copyText.length > 0 || step.action || step.id === "operationalAdjustments") && !isDone && (
                       <div className="mt-2 flex flex-wrap gap-2">
                         {step.id === "operationalAdjustments" && (
-                          <Input
-                            value={personnelFileUrl}
-                            onChange={(e) => setPersonnelFileUrl(e.target.value)}
-                            placeholder="Personnel File Topic URL"
-                            className="h-7 w-64 border-slate-800 bg-slate-950 text-xs text-white placeholder:text-slate-600"
-                          />
+                          <>
+                            <Input
+                              value={personnelFileUrl}
+                              onChange={(e) => setPersonnelFileUrl(e.target.value)}
+                              placeholder="Personnel File Topic URL"
+                              className="h-7 w-64 border-slate-800 bg-slate-950 text-xs text-white placeholder:text-slate-600"
+                            />
+                            {(!currentRankInfo?.label || !promotionDate) && (
+                              <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-1 text-[10px] text-amber-400">
+                                <AlertTriangle className="h-3 w-3" />
+                                Fill rank and date to enable copy
+                              </span>
+                            )}
+                          </>
                         )}
                         {step.copyText.length > 0 && (
                           <button
