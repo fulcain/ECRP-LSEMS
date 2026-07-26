@@ -1,4 +1,3 @@
-import { AR } from "./a-r";
 import { AMU } from "./amu";
 import { BLS } from "./bls";
 // import { CRU } from "./cru";
@@ -9,6 +8,8 @@ import { FT } from "./ft";
 import { General } from "./general";
 import { IA } from "./ia";
 import { LIFEGUARD } from "./lifeguard";
+import { MOUNTAIN_RESCUE } from "./mountain-rescue";
+import { PILOT } from "./pilot";
 import { PR } from "./pr";
 import { RED } from "./red";
 
@@ -48,7 +49,8 @@ export const links: Links[] = [
   PR,
   FR,
   FOR,
-  AR,
+  MOUNTAIN_RESCUE,
+  PILOT,
   // CRU,
   // FS,
   // LIFEGUARD,
@@ -65,7 +67,8 @@ export const divisions: Divisions[] = [
   FR,
   FS,
   PR,
-  AR,
+  MOUNTAIN_RESCUE,
+  PILOT,
   LIFEGUARD,
   IA,
   // CRU,
