@@ -11,6 +11,7 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { Menu, X } from "lucide-react";
+import { DiscordContactIndicator } from "@/components/discord-contact-indicator";
 import Link from "next/link";
 import React from "react";
 import { usePathname } from "next/navigation";
@@ -88,9 +89,9 @@ export function SidebarMobile({ headerLinks }: SidebarMobileProps) {
             })}
           </nav>
 
-          {/* Decorative footer */}
-          <div className="mt-8 flex justify-center">
-            <div className="h-1 w-16 rounded-full bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-pink-500/30" />
+          {/* Support indicator */}
+          <div className="mt-8 pt-4 border-t border-white/5">
+            <DiscordContactIndicator handle="@fulcain" />
           </div>
         </SheetContent>
       </Sheet>

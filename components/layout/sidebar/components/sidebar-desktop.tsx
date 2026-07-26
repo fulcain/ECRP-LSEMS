@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "../sidebar-context";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { DiscordContactIndicator } from "@/components/discord-contact-indicator";
 
 type SidebarDesktopProps = {
   headerLinks: HeaderLink[];
@@ -105,12 +106,12 @@ export function SidebarDesktop({ headerLinks }: SidebarDesktopProps) {
           })}
         </nav>
 
-        {/* Bottom decorative element */}
+        {/* Bottom support indicator */}
         <div className="mt-auto pt-6">
-          <div className="h-px bg-white/5" />
-          <div className="mt-4 flex justify-center">
-            <div className="h-1 w-12 rounded-full bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20" />
-          </div>
+          <DiscordContactIndicator
+            handle="@fulcain"
+            variant={collapsed ? "icon" : "pill"}
+          />
         </div>
       </div>
     </aside>
