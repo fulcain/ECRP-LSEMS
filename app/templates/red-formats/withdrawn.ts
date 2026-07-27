@@ -6,7 +6,7 @@ export const withdrawnTemplate: REDTemplateDefinition = {
   accent: "from-slate-600/25 via-zinc-700/15 to-transparent",
   border: "border-slate-500/30",
   badge: "bg-slate-600/20 text-slate-100 ring-1 ring-slate-500/40",
-  titleTag: "[Withdrawn]",
+  titleTag: "[WITHDRAWN] LSEMS Application",
   renderBody: ({ applicant, medicName, medicRank, medicSignature }) => {
     const signatureImg = medicSignature
       ? `[img]${medicSignature}[/img]`

@@ -6,7 +6,7 @@ export const pendingContractTemplate: REDTemplateDefinition = {
   accent: "from-rose-500/25 via-pink-500/15 to-transparent",
   border: "border-rose-400/30",
   badge: "bg-rose-500/20 text-rose-100 ring-1 ring-rose-400/40",
-  titleTag: "[Pending Contract]",
+  titleTag: "[PENDING CONTRACT] LSEMS Application",
   renderBody: ({ applicant, medicName, medicRank, medicSignature }) => {
     const signatureImg = medicSignature
       ? `[img]${medicSignature}[/img]`

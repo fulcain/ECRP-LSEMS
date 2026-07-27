@@ -6,7 +6,7 @@ export const pendingEmployerFeedbackTemplate: REDTemplateDefinition = {
   accent: "from-sky-500/25 via-cyan-500/15 to-transparent",
   border: "border-sky-400/30",
   badge: "bg-sky-500/20 text-sky-100 ring-1 ring-sky-400/40",
-  titleTag: "[Pending Feedback]",
+  titleTag: "[PENDING FEEDBACK] LSEMS Application",
   renderBody: ({ applicant, medicName, medicRank, medicSignature }) => {
     const signatureImg = medicSignature
       ? `[img]${medicSignature}[/img]`

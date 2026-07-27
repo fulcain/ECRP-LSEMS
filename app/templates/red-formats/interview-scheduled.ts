@@ -6,7 +6,7 @@ export const interviewScheduledTemplate: REDTemplateDefinition = {
   accent: "from-teal-500/25 via-cyan-500/15 to-transparent",
   border: "border-teal-400/30",
   badge: "bg-teal-500/20 text-teal-100 ring-1 ring-teal-400/40",
-  titleTag: "[Interview Scheduled]",
+  titleTag: "[INTERVIEW SCHEDULED] LSEMS Application",
   renderBody: ({
     applicant,
     medicName,

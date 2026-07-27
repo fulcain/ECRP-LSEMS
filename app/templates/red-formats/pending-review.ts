@@ -6,7 +6,7 @@ export const pendingReviewTemplate: REDTemplateDefinition = {
   accent: "from-emerald-500/25 via-green-500/15 to-transparent",
   border: "border-emerald-400/30",
   badge: "bg-emerald-500/20 text-emerald-100 ring-1 ring-emerald-400/40",
-  titleTag: "[Pending Review]",
+  titleTag: "[PENDING REVIEW] LSEMS Application",
   renderBody: ({ applicant, medicName, medicRank, medicSignature }) => {
     const signatureImg = medicSignature
       ? `[img]${medicSignature}[/img]`

@@ -6,7 +6,7 @@ export const deniedTemplate: REDTemplateDefinition = {
   accent: "from-red-700/25 via-rose-800/15 to-transparent",
   border: "border-red-600/30",
   badge: "bg-red-700/20 text-red-100 ring-1 ring-red-600/40",
-  titleTag: "[DENIED]",
+  titleTag: "[DENIED] LSEMS Application",
   renderBody: ({
     applicant,
     reasons,

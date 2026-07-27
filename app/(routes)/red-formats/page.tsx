@@ -32,6 +32,29 @@ const COPIED_FLASH_MS = 1800;
 
 const genderOptions = ["Mr.", "Mrs."] as const;
 
+/**
+ * Title-cases a name field used in copyable thread titles.
+ *
+ * Examples:
+ *   "john doe"        → "John Doe"
+ *   "JOHN DOE"        → "John Doe"
+ *   "mary-jane smith" → "Mary-Jane Smith"
+ *   "o'brien"         → "O'Brien"
+ *
+ * Capitalizes the first letter of every word boundary (start of string,
+ * whitespace, hyphen, apostrophe) and lower-cases the rest. Multiple
+ * internal whitespace is collapsed to a single space.
+ */
+function formatTitleCase(input: string): string {
+  return input
+    .toLowerCase()
+    .replace(/(^|[\s\-'])(\p{L})/gu, (_match, prefix: string, ch: string) =>
+      prefix + ch.toUpperCase(),
+    )
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
 /** Maps a format value to a distinct hue for lifecycle styling */
 const formatHue: Record<string, string> = {
   "pending-review": "142",
@@ -108,6 +131,17 @@ export default function REDFormatsPage() {
     redTemplates[0];
   const redRank = divisionRanks.RED ?? "";
 
+  // Build the full thread title: "[STATUS] LSEMS Application - <Applicant Name>".
+  // The status prefix (e.g. "[ACCEPTED] LSEMS Application") is set by the
+  // template; the suffix is the title-cased applicant name. When no name
+  // is entered, only the status prefix is shown — so the pill clearly
+  // signals that the suffix is still missing.
+  const fullTitle = activeFormat.titleTag
+    ? `${activeFormat.titleTag}${
+        applicantName.trim() ? ` - ${formatTitleCase(applicantName)}` : ""
+      }`
+    : null;
+
   const hue = formatHue[activeFormat.value] ?? "0";
   const hsl = `${hue} 70% 55%`;
 
@@ -164,8 +198,8 @@ export default function REDFormatsPage() {
   };
 
   const handleCopyTitleTag = async () => {
-    if (!activeFormat.titleTag) return;
-    await navigator.clipboard.writeText(activeFormat.titleTag);
+    if (!fullTitle) return;
+    await navigator.clipboard.writeText(fullTitle);
     setCopied(false);
     flashCopied(setCopiedTitleTag);
   };
@@ -720,10 +754,10 @@ export default function REDFormatsPage() {
                         Info Topic
                       </Button>
                     )}
-                    {activeFormat.titleTag && (
+                    {fullTitle && (
                       <>
                         <span className="rounded-md border border-slate-700 bg-slate-900/80 px-2.5 py-1 font-mono text-xs tracking-wide text-slate-300 shadow-sm">
-                          {activeFormat.titleTag}
+                          {fullTitle}
                         </span>
                         <Button
                           onClick={handleCopyTitleTag}
@@ -734,7 +768,7 @@ export default function REDFormatsPage() {
                               ? "border-emerald-500/60 bg-emerald-950/30 text-emerald-300"
                               : "border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white"
                           }`}
-                          title={`Copies "${activeFormat.titleTag}" to your clipboard`}
+                          title={`Copies "${fullTitle}" to your clipboard`}
                         >
                           {copiedTitleTag ? (
                             <Check className="animate-check h-3.5 w-3.5" />
