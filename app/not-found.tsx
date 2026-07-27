@@ -2,13 +2,10 @@
 
 import { BodyAndMainTitle } from "@/components/layout/main-and-title";
 import { Button } from "@/components/ui/button";
-import { Home, ArrowLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Home } from "lucide-react";
 import Link from "next/link";
 
 export default function NotFound() {
-  const router = useRouter();
-
   return (
     <BodyAndMainTitle
       title="404 - Page Not Found"

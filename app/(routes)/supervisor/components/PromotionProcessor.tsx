@@ -178,7 +178,7 @@ export function PromotionProcessor() {
       steps.push({ id: "oneToOneList", label: "Update their listing on the 1:1 list, moving it to the DELTA callsign section", copyText: "", icon: Users });
     }
     return steps;
-  }, [emailTemplate, emailBBCode, personnelBBCode, rankAdjustmentBBCode, operationalAdjustmentBBCode, newRank]);
+  }, [emailTemplate, emailBBCode, personnelBBCode, rankAdjustmentBBCode, operationalAdjustmentCopyText, personnelName, newRank]);
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
