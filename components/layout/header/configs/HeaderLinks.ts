@@ -20,6 +20,6 @@ export const headerLinks: HeaderLink[] = [
   { label: "Availability", href: "/availability" },
   {
     label: "Supervisor",
-    href: "/supervisor",
+    href: "/supervisor?tab=loa",
   },
 ];
