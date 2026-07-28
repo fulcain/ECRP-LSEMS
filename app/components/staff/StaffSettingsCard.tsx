@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Crown } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -37,6 +38,10 @@ export function StaffSettingsCard({
     !medicCredentials.signature ||
     !medicCredentials.rank;
 
+  const directorRole = medicCredentials.directorRole;
+  const savedDirectorTitle =
+    directorRole?.enabled && directorRole.title ? directorRole.title : null;
+
   return (
     <div className="relative overflow-hidden rounded-[2rem] border border-violet-500/20 bg-slate-950/80 shadow-2xl shadow-violet-950/30">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(139,92,246,0.15),_transparent_38%),radial-gradient(circle_at_bottom_right,_rgba(124,58,237,0.10),_transparent_34%)]" />
@@ -54,9 +59,17 @@ export function StaffSettingsCard({
               <h2 className="mb-1 text-xl font-semibold text-white">{title}</h2>
               <p className="text-sm text-slate-400">{description}</p>
               {!isCredentialsEmpty && !showEditForm && (
-                <p className="mt-2 text-sm text-slate-400">
-                  {medicCredentials.rank} {medicCredentials.name}
-                </p>
+                <div className="mt-2 flex flex-col gap-1 text-sm text-slate-400">
+                  <p>
+                    {medicCredentials.rank} {medicCredentials.name}
+                  </p>
+                  {savedDirectorTitle && (
+                    <p className="inline-flex items-center gap-1.5 text-violet-300">
+                      <Crown className="h-3.5 w-3.5" />
+                      <span>{savedDirectorTitle}</span>
+                    </p>
+                  )}
+                </div>
               )}
             </div>
 

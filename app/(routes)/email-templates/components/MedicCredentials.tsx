@@ -1,6 +1,12 @@
 "use client";
 
+import {
+  defaultDirectorRole,
+  directorRoleTitles,
+  type DirectorRole,
+} from "@/app/constants/general/directorRoles";
 import { ranks } from "@/app/constants/general/LSEMSRanks";
+import { MedicCredentials as MedicCredentialsShape } from "@/app/context/MedicContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -13,21 +19,20 @@ import {
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
-export type MedicCredentials = {
-  name: string;
-  signature: string;
-  rank: string;
-};
+// Re-exported so existing imports from this file (signature, StaffSettingsCard)
+// keep working without rewrites after the canonical type moved to MedicContext.
+export type MedicCredentials = MedicCredentialsShape;
 
 type Props = {
   medicCredentials: MedicCredentials;
   setMedicCredentialsAction: React.Dispatch<
-    React.SetStateAction<{
-      name: string;
-      signature: string;
-      rank: string;
-    }>
+    React.SetStateAction<MedicCredentials>
   >;
+};
+
+const initialDirectorRole: DirectorRole = {
+  enabled: defaultDirectorRole.enabled,
+  title: defaultDirectorRole.title,
 };
 
 export function MedicCredentials({
@@ -35,17 +40,44 @@ export function MedicCredentials({
   setMedicCredentialsAction,
 }: Props) {
   const formik = useFormik({
-    initialValues: medicCredentials,
+    initialValues: {
+      ...medicCredentials,
+      directorRole: {
+        ...initialDirectorRole,
+        ...medicCredentials.directorRole,
+      },
+    },
     enableReinitialize: true,
     validationSchema: Yup.object({
       name: Yup.string().required("Name is required"),
       signature: Yup.string().required("Signature is required"),
       rank: Yup.string().required("Rank is required"),
+      directorRole: Yup.object({
+        enabled: Yup.boolean(),
+        title: Yup.string().when("enabled", {
+          is: true,
+          then: (schema) => schema.required("Director role is required"),
+          otherwise: (schema) => schema,
+        }),
+      }),
     }),
     onSubmit: (values) => {
-      setMedicCredentialsAction(values);
+      setMedicCredentialsAction({
+        ...values,
+        directorRole: {
+          enabled: values.directorRole.enabled,
+          title: values.directorRole.enabled ? values.directorRole.title : "",
+        },
+      });
     },
   });
+
+  const isDirectorEnabled = formik.values.directorRole.enabled;
+  const directorRoleError = formik.errors.directorRole;
+  const directorTitleError =
+    directorRoleError && typeof directorRoleError === "object"
+      ? directorRoleError.title
+      : undefined;
 
   return (
     <form
@@ -95,6 +127,47 @@ export function MedicCredentials({
       </Select>
       {formik.touched.rank && formik.errors.rank && (
         <span className="text-sm text-red-500">{formik.errors.rank}</span>
+      )}
+
+      <label
+        htmlFor="director-role-checkbox"
+        className="flex w-full cursor-pointer items-center gap-3 rounded-lg border border-white/10 bg-slate-800/60 px-3 py-2 text-sm text-slate-200 transition-all duration-200 hover:border-violet-500/40 hover:bg-violet-950/20"
+      >
+        <input
+          id="director-role-checkbox"
+          type="checkbox"
+          name="directorRole.enabled"
+          checked={isDirectorEnabled}
+          onChange={(e) =>
+            formik.setFieldValue("directorRole.enabled", e.target.checked)
+          }
+        />
+        Director
+      </label>
+
+      {isDirectorEnabled && (
+        <>
+          <Select
+            value={formik.values.directorRole.title}
+            onValueChange={(value) =>
+              formik.setFieldValue("directorRole.title", value)
+            }
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select your director role" />
+            </SelectTrigger>
+            <SelectContent>
+              {directorRoleTitles.map((title) => (
+                <SelectItem key={title} value={title}>
+                  {title}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {formik.touched.directorRole?.title && directorTitleError && (
+            <span className="text-sm text-red-500">{directorTitleError}</span>
+          )}
+        </>
       )}
 
       <Button className="cursor-pointer" variant="outline" type="submit">

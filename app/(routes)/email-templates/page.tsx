@@ -49,6 +49,7 @@ export default function Home() {
     if (!selectedDivision || isCredentialsEmpty) return "";
     return generateSignature({
       selectedRank,
+      selectedDivisionLabel: selectedDivision.label,
       medicCredentials: { ...medicCredentials },
     }).trim();
   }, [selectedDivision, selectedRank, medicCredentials, isCredentialsEmpty]);
