@@ -65,6 +65,31 @@ export default function BLSFormatsPage() {
   const { medicCredentials, divisionRanks } = useMedic();
   const [selectedFormat, setSelectedFormat] =
     useState<(typeof blsTemplates)[number]["value"]>(blsTemplates[0].value);
+
+  // Sync initial format from URL query param
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = params.get("format") as (typeof blsTemplates)[number]["value"] | null;
+    if (fromUrl && blsTemplates.some((t) => t.value === fromUrl)) {
+      setSelectedFormat(fromUrl);
+    }
+  }, []);
+
+  // Sync URL when format changes (skip initial mount)
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    const params = new URLSearchParams(window.location.search);
+    params.set("format", selectedFormat);
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}?${params.toString()}`,
+    );
+  }, [selectedFormat]);
   const [applicantName, setApplicantName] = useState("");
   const [copied, setCopied] = useState(false);
   const [copiedTitleTag, setCopiedTitleTag] = useState(false);

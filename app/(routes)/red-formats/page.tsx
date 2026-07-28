@@ -78,6 +78,31 @@ export default function REDFormatsPage() {
   const [selectedFormat, setSelectedFormat] = useState<
     (typeof redTemplates)[number]["value"]
   >(redTemplates[0].value);
+
+  // Sync initial format from URL query param
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = params.get("format") as (typeof redTemplates)[number]["value"] | null;
+    if (fromUrl && redTemplates.some((t) => t.value === fromUrl)) {
+      setSelectedFormat(fromUrl);
+    }
+  }, []);
+
+  // Sync URL when format changes (skip initial mount)
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    const params = new URLSearchParams(window.location.search);
+    params.set("format", selectedFormat);
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}?${params.toString()}`,
+    );
+  }, [selectedFormat]);
   const [gender, setGender] = useState<(typeof genderOptions)[number]>(
     genderOptions[0],
   );

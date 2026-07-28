@@ -9,7 +9,7 @@ import { WorkflowStepsList } from "./contract/WorkflowStepsList";
 import { TeamSpeakCredentialsCard } from "./TeamSpeakCredentialsCard";
 import type { ContractTab } from "./contract/types";
 import { workflowByValue } from "./contract/workflows";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
 import { Bounce, ToastContainer } from "react-toastify";
 
@@ -30,6 +30,32 @@ export function ContractSigningProcessor() {
     "supervisor-contract-tab",
     "recruitment",
   );
+
+  // Sync initial sub-tab from URL query param (takes priority over localStorage)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = params.get("subTab") as ContractTab | null;
+    if (fromUrl && workflowByValue[fromUrl]) {
+      setActiveTab(fromUrl);
+    }
+  }, []);
+
+  // Sync URL when sub-tab changes (skip initial mount)
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    const params = new URLSearchParams(window.location.search);
+    params.set("subTab", activeTab);
+    params.set("tab", "contract");
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}?${params.toString()}`,
+    );
+  }, [activeTab]);
 
   const [personnelName, setPersonnelName] = useLocalStorage<string>(
     "supervisor-contract-applicant-name",

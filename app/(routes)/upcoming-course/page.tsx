@@ -21,7 +21,7 @@ import {
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { toast, ToastContainer } from "react-toastify";
 
 export default function UpcomingCourse() {
@@ -34,6 +34,32 @@ export default function UpcomingCourse() {
   const [courseType, setCourseType] = useLocalStorage<
     "new" | "reschedule" | "cancelled"
   >("uc-courseType", "new");
+
+  // Sync initial course type from URL query param (takes priority over localStorage)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = params.get("type") as "new" | "reschedule" | "cancelled" | null;
+    if (fromUrl && ["new", "reschedule", "cancelled"].includes(fromUrl)) {
+      setCourseType(fromUrl);
+    }
+  }, []);
+
+  // Sync URL when course type changes (skip initial mount)
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    const params = new URLSearchParams(window.location.search);
+    params.set("type", courseType);
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}?${params.toString()}`,
+    );
+  }, [courseType]);
 
   const [datetime, setDatetime] = useState<string>("");
   const [prevDatetime, setPrevDatetime] = useState<string>("");

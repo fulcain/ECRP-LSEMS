@@ -6,7 +6,6 @@ import { copyBBCode } from "@/app/helpers/copyBBCode";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Bounce, ToastContainer } from "react-toastify";
 import { useMemo, useState } from "react";
 import Link from "next/link";
@@ -21,6 +20,7 @@ import {
   Clock,
   Archive,
   ExternalLink,
+  Plus,
 } from "lucide-react";
 
 const MONTH_MAP: Record<string, number> = {
@@ -58,7 +58,7 @@ export function LOAProcessor() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [startWorkAt, setStartWorkAt] = useState("");
-  const [denialReasons, setDenialReasons] = useState("");
+  const [denialReasons, setDenialReasons] = useState<string[]>([""]);
 
   const isCredentialsEmpty =
     !medicCredentials.name || !medicCredentials.signature || !medicCredentials.rank;
@@ -87,10 +87,7 @@ export function LOAProcessor() {
       medicSignature: medicCredentials.signature,
       denialReasons:
         selectedTemplate === "denied"
-          ? denialReasons
-              .split("\n")
-              .map((r) => r.trim())
-              .filter(Boolean)
+          ? denialReasons.map((r) => r.trim()).filter(Boolean)
           : undefined,
     });
   }, [
@@ -297,16 +294,49 @@ export function LOAProcessor() {
                   Denial Reasons
                 </h3>
               </div>
-              <Textarea
-                value={denialReasons}
-                onChange={(e) => setDenialReasons(e.target.value)}
-                placeholder={"Reason 1\nReason 2\nReason 3"}
-                rows={4}
-                className="border-white/10 bg-slate-800/50 text-white placeholder:text-slate-500 focus:border-red-500/50"
-              />
-              <p className="mt-1.5 text-[10px] text-slate-500">
-                Enter one reason per line
-              </p>
+
+              <div className="space-y-2">
+                {denialReasons.map((reason, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <Input
+                      value={reason}
+                      onChange={(e) => {
+                        const next = [...denialReasons];
+                        next[index] = e.target.value;
+                        setDenialReasons(next);
+                      }}
+                      placeholder={`Reason ${index + 1}`}
+                      className="flex-1 border-white/10 bg-slate-800/50 text-white placeholder:text-slate-500 focus:border-red-500/50"
+                    />
+                    {denialReasons.length > 1 && (
+                      <Button
+                        type="button"
+                        onClick={() =>
+                          setDenialReasons((prev) =>
+                            prev.filter((_, i) => i !== index),
+                          )
+                        }
+                        size="icon"
+                        variant="ghost"
+                        className="h-10 w-10 shrink-0 text-red-400 transition-all duration-200 hover:scale-110 hover:bg-red-950/40 hover:text-red-300"
+                      >
+                        <XCircle className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <Button
+                type="button"
+                onClick={() => setDenialReasons((prev) => [...prev, ""])}
+                variant="outline"
+                size="sm"
+                className="mt-3 border-slate-600 text-slate-300 transition-all duration-200 hover:scale-[1.02] hover:border-red-500/40 hover:bg-red-950/20 hover:text-red-200"
+              >
+                <Plus className="mr-1.5 h-3.5 w-3.5" />
+                Add reason
+              </Button>
             </div>
           )}
 
