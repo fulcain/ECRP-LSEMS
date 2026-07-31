@@ -21,6 +21,7 @@ import {
   Archive,
   ExternalLink,
   Plus,
+  Check,
 } from "lucide-react";
 
 const MONTH_MAP: Record<string, number> = {
@@ -59,6 +60,8 @@ export function LOAProcessor() {
   const [endDate, setEndDate] = useState("");
   const [startWorkAt, setStartWorkAt] = useState("");
   const [denialReasons, setDenialReasons] = useState<string[]>([""]);
+  const [loaType, setLoaType] = useState<"LOA" | "ROH">("LOA");
+  const [loaLink, setLoaLink] = useState("");
 
   const isCredentialsEmpty =
     !medicCredentials.name || !medicCredentials.signature || !medicCredentials.rank;
@@ -72,6 +75,37 @@ export function LOAProcessor() {
     () => loaTemplates.find((t) => t.value === selectedTemplate),
     [selectedTemplate],
   );
+
+  const personnelSnippet = useMemo(() => {
+    const link = loaLink.trim();
+    const start = startDate.trim();
+    const end = endDate.trim();
+    if (!link || !start || !end) return "";
+    return `[url=${link}]${loaType} -> ${start} to ${end}[/url]`;
+  }, [loaLink, loaType, startDate, endDate]);
+
+  const snippetStatus = useMemo(() => {
+    const link = loaLink.trim();
+    const start = startDate.trim();
+    const end = endDate.trim();
+    if (!link)
+      return {
+        ready: false,
+        title: "Personnel profile LOA section: link required",
+        hint: "Paste the request form link and fill the leave dates to generate the spoiler content.",
+      };
+    if (!start || !end)
+      return {
+        ready: false,
+        title: "Personnel profile LOA section: dates required",
+        hint: "Fill in the Leave Dates above to complete the snippet.",
+      };
+    return {
+      ready: true,
+      title: "Personnel profile LOA section ready",
+      hint: 'Paste the snippet into the spoiler tagged "LOA/ROH" in the personnel file.',
+    };
+  }, [loaLink, startDate, endDate]);
 
   const generatedBBCode = useMemo(() => {
     if (!activeTemplate) return "";
@@ -89,6 +123,8 @@ export function LOAProcessor() {
         selectedTemplate === "denied"
           ? denialReasons.map((r) => r.trim()).filter(Boolean)
           : undefined,
+      loaType,
+      loaLink: loaLink.trim(),
     });
   }, [
     activeTemplate,
@@ -101,10 +137,16 @@ export function LOAProcessor() {
     medicCredentials,
     selectedTemplate,
     denialReasons,
+    loaType,
+    loaLink,
   ]);
 
   const handleCopy = () => {
     copyBBCode({ bbCodeText: generatedBBCode });
+  };
+
+  const handleCopySnippet = () => {
+    copyBBCode({ bbCodeText: personnelSnippet });
   };
 
   const templateIcons: Record<string, React.ReactNode> = {
@@ -362,30 +404,152 @@ export function LOAProcessor() {
             </div>
           )}
 
-          {/* Personnel File Link */}
-          <div className="rounded-2xl border border-blue-500/20 bg-blue-500/10 p-4">
-            <div className="flex items-start gap-3">
-              <FileText className="mt-0.5 h-5 w-5 shrink-0 text-blue-400" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-blue-300">
+          {/* Personnel File Section (LOA Approved only) */}
+          {selectedTemplate === "approved" && (
+            <div className="rounded-2xl border border-blue-500/20 bg-slate-900/60 p-5 backdrop-blur-md">
+              <div className="mb-4 flex items-center gap-2">
+                <FileText className="h-4 w-4 text-blue-400" />
+                <h3 className="text-sm font-semibold text-white">
                   Personnel File Section
-                </p>
-                <p className="mt-1 text-xs text-blue-400/70">
-                  Update the personnel file by editing the spoiler tagged
-                  &quot;LOA/ROH&quot; with the request form link.
-                </p>
+                </h3>
+              </div>
+
+              {/* Leave Type checkboxes */}
+              <div>
+                <Label className="mb-2 block text-xs text-slate-400">
+                  Leave Type
+                </Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {(["LOA", "ROH"] as const).map((type) => {
+                    const isSelected = loaType === type;
+                    return (
+                      <button
+                        key={type}
+                        type="button"
+                        onClick={() => setLoaType(type)}
+                        className={`flex items-center gap-2.5 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
+                          isSelected
+                            ? type === "LOA"
+                              ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-300"
+                              : "border-blue-500/50 bg-blue-500/15 text-blue-300"
+                            : "border-white/10 bg-slate-800/50 text-slate-400 hover:border-white/20 hover:bg-slate-800 hover:text-white"
+                        }`}
+                      >
+                        <span
+                          className={`flex h-4 w-4 items-center justify-center rounded border transition-all duration-200 ${
+                            isSelected
+                              ? type === "LOA"
+                                ? "border-emerald-400 bg-emerald-400 text-slate-950"
+                                : "border-blue-400 bg-blue-400 text-slate-950"
+                              : "border-slate-600 bg-slate-800/50 text-transparent"
+                          }`}
+                        >
+                          <Check className="h-3 w-3" strokeWidth={3} />
+                        </span>
+                        {type}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Request Form Link */}
+              <div className="mt-4">
+                <Label className="mb-1.5 block text-xs text-slate-400">
+                  Request Form Link
+                </Label>
+                <Input
+                  value={loaLink}
+                  onChange={(e) => setLoaLink(e.target.value)}
+                  placeholder="Paste the request form URL (e.g. https://gov.eclipse-rp.net/viewtopic.php?t=12345)"
+                  className="border-white/10 bg-slate-800/50 text-white placeholder:text-slate-500 focus:border-blue-500/50"
+                />
+              </div>
+
+              {/* Status Indicator */}
+              <div
+                className={`mt-4 flex items-center gap-2.5 rounded-xl border p-3 transition-colors duration-300 ${
+                  snippetStatus.ready
+                    ? "border-emerald-500/20 bg-emerald-500/10"
+                    : "border-amber-500/20 bg-amber-500/10"
+                }`}
+              >
+                {snippetStatus.ready ? (
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
+                ) : (
+                  <AlertTriangle className="h-4 w-4 shrink-0 text-amber-400" />
+                )}
+                <div className="min-w-0">
+                  <p
+                    className={`text-xs font-medium ${snippetStatus.ready ? "text-emerald-300" : "text-amber-300"}`}
+                  >
+                    {snippetStatus.title}
+                  </p>
+                  <p className="mt-0.5 text-[10px] text-slate-400/80">
+                    {snippetStatus.hint}
+                  </p>
+                </div>
+              </div>
+
+              {/* Snippet Preview */}
+              {personnelSnippet && (
+                <div className="mt-3 rounded-xl border border-white/5 bg-slate-950/50 p-3">
+                  <pre className="whitespace-pre-wrap break-all font-mono text-xs leading-relaxed text-emerald-200/90">
+                    {personnelSnippet}
+                  </pre>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="mt-4 flex gap-2">
+                <Button
+                  type="button"
+                  onClick={handleCopySnippet}
+                  disabled={!personnelSnippet}
+                  className="flex-1 rounded-xl border border-blue-500/30 bg-blue-500/15 px-4 py-2.5 text-sm font-medium text-blue-300 transition-all duration-200 hover:scale-[1.01] hover:border-blue-500/50 hover:bg-blue-500/25 hover:text-blue-200 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Copy className="mr-2 h-4 w-4" />
+                  Copy Snippet
+                </Button>
+                <a
+                  href="https://gov.eclipse-rp.net/viewforum.php?f=605"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-slate-800/50 px-4 py-2.5 text-sm font-medium text-slate-300 transition-all duration-200 hover:scale-[1.01] hover:border-white/20 hover:bg-slate-800 hover:text-white active:scale-[0.99]"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Personnel Files
+                </a>
               </div>
             </div>
-            <a
-              href="https://gov.eclipse-rp.net/viewforum.php?f=605"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-blue-500/30 bg-blue-500/15 px-4 py-2.5 text-sm font-medium text-blue-300 transition-all duration-200 hover:border-blue-500/50 hover:bg-blue-500/25 hover:text-blue-200 hover:scale-[1.01] active:scale-[0.99]"
-            >
-              <ExternalLink className="h-4 w-4" />
-              Open Personnel Files
-            </a>
-          </div>
+          )}
+
+          {/* Personnel File Hint (other templates) */}
+          {selectedTemplate !== "approved" && (
+            <div className="rounded-2xl border border-blue-500/20 bg-blue-500/10 p-4">
+              <div className="flex items-start gap-3">
+                <FileText className="mt-0.5 h-5 w-5 shrink-0 text-blue-400" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-blue-300">
+                    Personnel File Section
+                  </p>
+                  <p className="mt-1 text-xs text-blue-400/70">
+                    Update the personnel file by editing the spoiler tagged
+                    &quot;LOA/ROH&quot; with the request form link.
+                  </p>
+                </div>
+              </div>
+              <a
+                href="https://gov.eclipse-rp.net/viewforum.php?f=605"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-blue-500/30 bg-blue-500/15 px-4 py-2.5 text-sm font-medium text-blue-300 transition-all duration-200 hover:border-blue-500/50 hover:bg-blue-500/25 hover:text-blue-200 hover:scale-[1.01] active:scale-[0.99]"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Open Personnel Files
+              </a>
+            </div>
+          )}
 
           {/* Copy Button */}
           <Button

@@ -17,6 +17,8 @@ export const approvedLOATemplate: LOATemplateDefinition = {
     medicName,
     medicRank,
     medicSignature,
+    loaType,
+    loaLink,
   }) => {
     const signatureImg = medicSignature
       ? `[img]${medicSignature}[/img]`
@@ -24,6 +26,10 @@ export const approvedLOATemplate: LOATemplateDefinition = {
     const nameLine = medicName || "[i]Your Name[/i]";
     const rankLine = medicRank || "Operational Rank";
     const displayName = personnelName || "[i]NAME[/i]";
+    const personnelSnippet =
+      loaLink && startDate && endDate
+        ? `\n\n[url=${loaLink}]${loaType ?? "LOA"} -> ${startDate} to ${endDate}[/url]`
+        : "";
 
     return `[img]${approvedLOATemplate.bannerImg}[/img]
 
@@ -41,6 +47,6 @@ ${signatureImg}
 [size=110][b]${rankLine}[/b][/size]
 [i][b]Los Santos Emergency Medical Services[/b][/i]
 [/divbox]
-[LSEMSfooter][/LSEMSfooter]`;
+[LSEMSfooter][/LSEMSfooter]${personnelSnippet}`;
   },
 };
