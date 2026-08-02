@@ -56,6 +56,22 @@ export const BLS = {
         name: "BLS Courses",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=578",
       },
+      {
+        name: "LSPD LSEMS Joint Section Index",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=4277",
+      },
+      {
+        name: "Police Cadet Roster",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?t=223266",
+      },
+      {
+        name: "Joint BLS Course Reports",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?t=222067",
+      },
+      {
+        name: "Cadets & BLS Instructors",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=4278",
+      },
     ],
   },
 };
