@@ -13,6 +13,26 @@ export type ChangeLogEntry = {
 
 export const changeLog: ChangeLogEntry[] = [
   {
+    date: "Aug 3, 2026",
+    changes: [
+      {
+        type: "feature",
+        description:
+          "Added Course Reports (Joint, Normal, On the Spot) and Upcoming Course builders as new tabs on the BLS page.",
+      },
+      {
+        type: "change",
+        description:
+          "Moved the Upcoming Course page into the BLS page.",
+      },
+      {
+        type: "feature",
+        description:
+          "Added a BLS Quick Guide format, plus guide links on Course Reports (Joint opens the topic, Normal & On the Spot open the guide).",
+      },
+    ],
+  },
+  {
     date: "Jul 31, 2026",
     changes: [
       {

@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
 import {
   Check,
   ClipboardCopy,
+  CalendarClock,
+  ClipboardList,
   ExternalLink,
+  FileText,
   Plus,
   ShieldCheck,
   Signature,
@@ -13,8 +16,11 @@ import {
   X,
 } from "lucide-react";
 import { useMedic } from "@/app/context/MedicContext";
+import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { blsTemplates } from "@/app/templates/bls-formats";
 import { BodyAndMainTitle } from "@/components/layout/main-and-title";
+import { CourseReportsProcessor } from "./components/CourseReportsProcessor";
+import { UpcomingCourseProcessor } from "./components/UpcomingCourseProcessor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -59,10 +65,71 @@ const formatHue: Record<string, string> = {
   expired: "30",
   "on-hold": "45",
   "upcoming-class": "210",
+  "quick-guide": "345",
 };
+
+type BLSPageTab = "formats" | "course-reports" | "upcoming-course";
+
+const pageTabs: {
+  value: BLSPageTab;
+  label: string;
+  icon: ReactNode;
+  accent: string;
+}[] = [
+  {
+    value: "formats",
+    label: "Formats",
+    icon: <FileText className="h-4 w-4" />,
+    accent: "border-emerald-400/40 bg-emerald-500/20 text-emerald-300",
+  },
+  {
+    value: "course-reports",
+    label: "Course Reports",
+    icon: <ClipboardList className="h-4 w-4" />,
+    accent: "border-cyan-400/40 bg-cyan-500/20 text-cyan-300",
+  },
+  {
+    value: "upcoming-course",
+    label: "Upcoming Course",
+    icon: <CalendarClock className="h-4 w-4" />,
+    accent: "border-amber-400/40 bg-amber-500/20 text-amber-300",
+  },
+];
 
 export default function BLSFormatsPage() {
   const { medicCredentials, divisionRanks } = useMedic();
+  const [activeTab, setActiveTab] = useLocalStorage<BLSPageTab>(
+    "bls-tab",
+    "formats",
+  );
+
+  // Sync initial tab from URL query param (takes priority over localStorage)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = params.get("tab") as BLSPageTab | null;
+    if (fromUrl && pageTabs.some((t) => t.value === fromUrl)) {
+      setActiveTab(fromUrl);
+    }
+  }, []);
+
+  // Sync URL when tab changes (skip initial mount)
+  const tabFirstRender = useRef(true);
+  useEffect(() => {
+    if (tabFirstRender.current) {
+      tabFirstRender.current = false;
+      return;
+    }
+    const params = new URLSearchParams(window.location.search);
+    params.delete("format");
+    params.delete("type");
+    params.set("tab", activeTab);
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}?${params.toString()}`,
+    );
+  }, [activeTab]);
+
   const [selectedFormat, setSelectedFormat] =
     useState<(typeof blsTemplates)[number]["value"]>(blsTemplates[0].value);
 
@@ -75,21 +142,44 @@ export default function BLSFormatsPage() {
     }
   }, []);
 
-  // Sync URL when format changes (skip initial mount)
+  // Sync URL when format changes - the format param belongs only to the Formats tab
   const isFirstRender = useRef(true);
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
     }
+    if (activeTab !== "formats") return;
     const params = new URLSearchParams(window.location.search);
+    params.delete("type");
     params.set("format", selectedFormat);
     window.history.replaceState(
       null,
       "",
       `${window.location.pathname}?${params.toString()}`,
     );
-  }, [selectedFormat]);
+  }, [activeTab, selectedFormat]);
+
+  // Keep the URL clean per tab: ?format= only on Formats, ?type= only on
+  // Course Reports / Upcoming Course, and strip the legacy ?report= param.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const onFormatsTab = params.get("tab") === "formats";
+    if (
+      params.has("report") ||
+      (!onFormatsTab && params.has("format")) ||
+      (onFormatsTab && params.has("type"))
+    ) {
+      if (!onFormatsTab) params.delete("format");
+      if (onFormatsTab) params.delete("type");
+      params.delete("report");
+      window.history.replaceState(
+        null,
+        "",
+        `${window.location.pathname}?${params.toString()}`,
+      );
+    }
+  }, []);
   const [applicantName, setApplicantName] = useState("");
   const [copied, setCopied] = useState(false);
   const [copiedTitleTag, setCopiedTitleTag] = useState(false);
@@ -252,6 +342,32 @@ export default function BLSFormatsPage() {
         title="BLS Formats"
         description="Build BLS application responses with the applicant's name and saved staff credentials."
       >
+        {/* Tab Selector */}
+        <div className="mb-8">
+          <div className="flex flex-wrap gap-2">
+            {pageTabs.map((tab) => (
+              <button
+                key={tab.value}
+                onClick={() => setActiveTab(tab.value)}
+                className={`flex items-center gap-2 rounded-xl border px-5 py-3 text-sm font-semibold transition-all duration-200 ${
+                  activeTab === tab.value
+                    ? `${tab.accent} scale-[1.03] shadow-lg`
+                    : "border-white/10 bg-slate-900/60 text-slate-400 hover:border-white/20 hover:bg-slate-800 hover:text-white"
+                }`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          <div className="mt-4 h-px bg-gradient-to-r from-white/10 via-white/5 to-transparent" />
+        </div>
+
+        {activeTab === "course-reports" && <CourseReportsProcessor />}
+
+        {activeTab === "upcoming-course" && <UpcomingCourseProcessor />}
+
+        {activeTab === "formats" && (
         <div
           key={animKey}
           className="animate-glow relative overflow-hidden rounded-[2rem] border backdrop-blur-sm transition-all duration-700"
@@ -689,6 +805,7 @@ export default function BLSFormatsPage() {
             </section>
           </div>
         </div>
+        )}
       </BodyAndMainTitle>
     </>
   );

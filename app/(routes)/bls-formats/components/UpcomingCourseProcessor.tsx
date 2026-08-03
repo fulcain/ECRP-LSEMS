@@ -1,7 +1,6 @@
 "use client";
 
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
-import { BodyAndMainTitle } from "@/components/layout/main-and-title";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
@@ -24,23 +23,35 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { toast, ToastContainer } from "react-toastify";
 
-export default function UpcomingCourse() {
+type UpcomingCourseType = "new" | "reschedule" | "cancelled";
+
+const COURSE_TYPE_OPTIONS: {
+  value: UpcomingCourseType;
+  label: string;
+}[] = [
+  { value: "new", label: "New" },
+  { value: "reschedule", label: "Reschedule" },
+  { value: "cancelled", label: "Cancelled" },
+];
+
+export function UpcomingCourseProcessor() {
   const [isClient, setIsClient] = useState(false);
   useEffect(() => setIsClient(true), []);
 
   const pad = (num: number, size: number = 2) =>
     String(num).padStart(size, "0");
 
-  const [courseType, setCourseType] = useLocalStorage<
-    "new" | "reschedule" | "cancelled"
-  >("uc-courseType", "new");
+  const [courseType, setCourseType] = useLocalStorage<UpcomingCourseType>(
+    "uc-courseType",
+    "new",
+  );
 
   // Sync initial course type from URL query param (takes priority over localStorage)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const fromUrl = params.get("type") as "new" | "reschedule" | "cancelled" | null;
-    if (fromUrl && ["new", "reschedule", "cancelled"].includes(fromUrl)) {
+    const fromUrl = params.get("type") as UpcomingCourseType | null;
+    if (fromUrl && COURSE_TYPE_OPTIONS.some((o) => o.value === fromUrl)) {
       setCourseType(fromUrl);
     }
   }, []);
@@ -53,6 +64,7 @@ export default function UpcomingCourse() {
       return;
     }
     const params = new URLSearchParams(window.location.search);
+    params.delete("format");
     params.set("type", courseType);
     window.history.replaceState(
       null,
@@ -118,7 +130,7 @@ export default function UpcomingCourse() {
     const urlDate = `${year}-${pad(d.getUTCMonth() + 1)}-${pad(dayNum)}`;
 
     return {
-	  formatted: `${weekday}, ${dayOrdinal} ${month} ${year} @ ${hours}:${minutes} [ooc]UTC[/ooc]`,
+      formatted: `${weekday}, ${dayOrdinal} ${month} ${year} @ ${hours}:${minutes} [ooc]UTC[/ooc]`,
       urlDate,
       hours,
       minutes,
@@ -233,16 +245,13 @@ export default function UpcomingCourse() {
   if (!isClient) return null;
 
   return (
-    <BodyAndMainTitle
-      title="Upcoming Course"
-      description="Generate BBCode for upcoming courses that are new, rescheduled, or
-          cancelled, using UTC time."
-    >
+    <div className="space-y-6">
       <ToastContainer position="top-right" autoClose={2500} theme="dark" />
 
       <div className="relative overflow-hidden rounded-[2rem] border border-amber-500/20 bg-slate-950/80 shadow-2xl shadow-amber-950/30">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.12),_transparent_38%),radial-gradient(circle_at_bottom_right,_rgba(245,158,11,0.08),_transparent_34%)]" />
-        <div className="pointer-events-none absolute inset-0 opacity-[0.03]"
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.03]"
           style={{
             backgroundImage:
               "linear-gradient(hsla(0,0%,100%,0.1) 1px, transparent 1px), linear-gradient(90deg, hsla(0,0%,100%,0.1) 1px, transparent 1px)",
@@ -254,20 +263,34 @@ export default function UpcomingCourse() {
             <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/70 p-5 backdrop-blur-md transition-all duration-300 hover:border-white/20">
               <div className="space-y-5">
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="courseType" className="text-sm font-medium text-slate-300">Course Type</Label>
+                  <Label
+                    htmlFor="courseType"
+                    className="text-sm font-medium text-slate-300"
+                  >
+                    Course Type
+                  </Label>
                   <Select
                     value={courseType}
                     onValueChange={(value) =>
-                      setCourseType(value as "new" | "reschedule" | "cancelled")
+                      setCourseType(value as UpcomingCourseType)
                     }
                   >
-                    <SelectTrigger id="courseType" className="w-full border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-slate-500">
+                    <SelectTrigger
+                      id="courseType"
+                      className="w-full border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-slate-500"
+                    >
                       <SelectValue placeholder="Select course type" />
                     </SelectTrigger>
                     <SelectContent className="border-slate-700 bg-slate-900 text-white">
-                      <SelectItem value="new" className="transition-all duration-150 hover:bg-slate-700/60">New</SelectItem>
-                      <SelectItem value="reschedule" className="transition-all duration-150 hover:bg-slate-700/60">Reschedule</SelectItem>
-                      <SelectItem value="cancelled" className="transition-all duration-150 hover:bg-slate-700/60">Cancelled</SelectItem>
+                      {COURSE_TYPE_OPTIONS.map((option) => (
+                        <SelectItem
+                          key={option.value}
+                          value={option.value}
+                          className="transition-all duration-150 hover:bg-slate-700/60"
+                        >
+                          {option.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -276,7 +299,12 @@ export default function UpcomingCourse() {
                   courseType === "cancelled" ||
                   courseType === "reschedule") && (
                   <div className="flex flex-col gap-1.5">
-                    <Label htmlFor="datetime" className="text-sm font-medium text-slate-300">Course Date & Time (UTC)</Label>
+                    <Label
+                      htmlFor="datetime"
+                      className="text-sm font-medium text-slate-300"
+                    >
+                      Course Date &amp; Time (UTC)
+                    </Label>
                     <div className="flex flex-wrap items-center gap-2">
                       <Popover>
                         <PopoverTrigger asChild>
@@ -295,7 +323,10 @@ export default function UpcomingCourse() {
                                 : "Pick a date"}
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto border-slate-700 bg-slate-900 p-0" align="start">
+                        <PopoverContent
+                          className="w-auto border-slate-700 bg-slate-900 p-0"
+                          align="start"
+                        >
                           <Calendar
                             mode="single"
                             selected={date}
@@ -309,7 +340,9 @@ export default function UpcomingCourse() {
                         type="time"
                         value={
                           time ||
-                          (datetime ? format(new Date(datetime + "Z"), "HH:mm") : "")
+                          (datetime
+                            ? format(new Date(datetime + "Z"), "HH:mm")
+                            : "")
                         }
                         onChange={(e) => setTime(e.target.value)}
                         className="w-[140px] border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-slate-500 focus-visible:ring-2"
@@ -320,7 +353,12 @@ export default function UpcomingCourse() {
 
                 {courseType === "reschedule" && (
                   <div className="flex flex-col gap-1.5">
-                    <Label htmlFor="prevDatetime" className="text-sm font-medium text-slate-300">Previous Date & Time (UTC)</Label>
+                    <Label
+                      htmlFor="prevDatetime"
+                      className="text-sm font-medium text-slate-300"
+                    >
+                      Previous Date &amp; Time (UTC)
+                    </Label>
                     <div className="flex flex-wrap items-center gap-2">
                       <Popover>
                         <PopoverTrigger asChild>
@@ -339,7 +377,10 @@ export default function UpcomingCourse() {
                                 : "Pick a date"}
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto border-slate-700 bg-slate-900 p-0" align="start">
+                        <PopoverContent
+                          className="w-auto border-slate-700 bg-slate-900 p-0"
+                          align="start"
+                        >
                           <Calendar
                             mode="single"
                             selected={prevDate}
@@ -364,7 +405,12 @@ export default function UpcomingCourse() {
                 )}
 
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="instructor" className="text-sm font-medium text-slate-300">Instructor Name</Label>
+                  <Label
+                    htmlFor="instructor"
+                    className="text-sm font-medium text-slate-300"
+                  >
+                    Instructor Name
+                  </Label>
                   <Input
                     id="instructor"
                     type="text"
@@ -379,10 +425,19 @@ export default function UpcomingCourse() {
             </div>
 
             <div className="flex gap-3">
-              <Button variant="outline" type="submit" className="border-slate-600 text-slate-300 transition-all duration-200 hover:scale-[1.02] hover:border-amber-500/40 hover:bg-amber-950/20 hover:text-amber-200 active:scale-95">
+              <Button
+                variant="outline"
+                type="submit"
+                className="border-slate-600 text-slate-300 transition-all duration-200 hover:scale-[1.02] hover:border-amber-500/40 hover:bg-amber-950/20 hover:text-amber-200 active:scale-95"
+              >
                 Generate
               </Button>
-              <Button variant="destructive" type="button" onClick={handleClear} className="transition-all duration-200 hover:scale-[1.02] active:scale-95">
+              <Button
+                variant="destructive"
+                type="button"
+                onClick={handleClear}
+                className="transition-all duration-200 hover:scale-[1.02] active:scale-95"
+              >
                 Clear
               </Button>
             </div>
@@ -395,12 +450,12 @@ export default function UpcomingCourse() {
                   {output}
                 </pre>
               </div>
-              <Button 
-                onClick={handleCopy} 
+              <Button
+                onClick={handleCopy}
                 variant="secondary"
                 className={`transition-all duration-200 hover:scale-[1.02] active:scale-95 ${
-                  copied 
-                    ? "bg-emerald-600 text-white hover:bg-emerald-500" 
+                  copied
+                    ? "bg-emerald-600 text-white hover:bg-emerald-500"
                     : "bg-slate-700 text-white hover:bg-slate-600"
                 }`}
               >
@@ -410,6 +465,6 @@ export default function UpcomingCourse() {
           )}
         </div>
       </div>
-    </BodyAndMainTitle>
+    </div>
   );
 }

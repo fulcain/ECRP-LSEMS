@@ -16,7 +16,6 @@ export const headerLinks: HeaderLink[] = [
  { label: "RED", href: "/red-formats" },
   { label: "BLS", href: "/bls-formats" },
   { label: "Quick Links", href: "/quick-links" },
-  { label: "Upcoming Course", href: "/upcoming-course" },
   { label: "Availability", href: "/availability" },
   {
     label: "Supervisor",

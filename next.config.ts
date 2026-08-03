@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         destination: "/email-templates",
         permanent: true,
       },
+      {
+        source: "/upcoming-course",
+        destination: "/bls-formats?tab=upcoming-course",
+        permanent: true,
+      },
     ];
   },
   images: {
