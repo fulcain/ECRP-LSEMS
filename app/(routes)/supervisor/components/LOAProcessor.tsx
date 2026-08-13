@@ -81,7 +81,7 @@ export function LOAProcessor() {
     const start = startDate.trim();
     const end = endDate.trim();
     if (!link || !start || !end) return "";
-    return `[url=${link}]${loaType} -> ${start} to ${end}[/url]`;
+    return `[url=${link}]${loaType} -> ${start}-${end}[/url]`;
   }, [loaLink, loaType, startDate, endDate]);
 
   const snippetStatus = useMemo(() => {
