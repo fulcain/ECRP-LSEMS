@@ -15,7 +15,12 @@ export type {
   RankAdjustmentDefinition,
 } from "./types";
 
-export { rankInfo, allRanks } from "./rank-info";
+export {
+  rankInfo,
+  allRanks,
+  rankOrderLowToHigh,
+  rankOrderHighToLow,
+} from "./rank-info";
 
 export const promotionEmailTemplates = [
   emtBEmailTemplate,

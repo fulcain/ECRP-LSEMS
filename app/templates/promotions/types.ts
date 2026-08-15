@@ -1,4 +1,5 @@
 export type PromotionRank =
+  | "emr"
   | "emt-b"
   | "emt-i"
   | "emt-a"

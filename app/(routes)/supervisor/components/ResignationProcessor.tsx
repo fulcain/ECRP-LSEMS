@@ -39,6 +39,9 @@ import {
   playerLogTemplate,
 } from "@/app/templates/resignations";
 import type { DischargeType } from "@/app/templates/resignations";
+import { PromotionRankSelect } from "./PromotionRankSelect";
+import { rankInfo, rankOrderHighToLow } from "@/app/templates/promotions";
+import type { PromotionRank } from "@/app/templates/promotions";
 
 type OocItem = {
   id: string;
@@ -80,9 +83,9 @@ export function ResignationProcessor() {
     "resig-personnel-name",
     "",
   );
-  const [employeeRank, setEmployeeRank] = useLocalStorage(
+  const [employeeRank, setEmployeeRank] = useLocalStorage<PromotionRank>(
     "resig-employee-rank",
-    "",
+    "emt-b",
   );
   const [dischargeType, setDischargeType] = useLocalStorage<DischargeType>(
     "resig-discharge-type",
@@ -121,6 +124,11 @@ export function ResignationProcessor() {
     ? `[Reached out to, ${medicCredentials.name}]`
     : "[Reached out to, YOURNAME]";
 
+  // Older drafts stored a free-text rank; fall back to EMT-B when it isn't a
+  // known rank key so the dropdown always has a valid selection.
+  const employeeRankValue: PromotionRank =
+    employeeRank in rankInfo ? employeeRank : "emt-b";
+
   const personnelFileBBCode = useMemo(
     () =>
       personnelFileDischargeTemplate.renderBody({
@@ -135,7 +143,7 @@ export function ResignationProcessor() {
   const dischargeNoticeBBCode = useMemo(
     () =>
       dischargeNoticeTemplate.renderBody({
-        employeeRank,
+        employeeRank: rankInfo[employeeRankValue].label,
         employeeName: personnelName,
         date: dischargeDate,
         dischargeType,
@@ -144,7 +152,7 @@ export function ResignationProcessor() {
         processedByRank: medicCredentials.rank,
       }),
     [
-      employeeRank,
+      employeeRankValue,
       personnelName,
       dischargeDate,
       dischargeType,
@@ -476,17 +484,7 @@ export function ResignationProcessor() {
               className="border-slate-800 bg-slate-950 text-white placeholder:text-slate-600"
             />
           </div>
-          <div>
-            <Label className="mb-1 block text-xs text-slate-500">
-              Employee rank
-            </Label>
-            <Input
-              value={employeeRank}
-              onChange={(e) => setEmployeeRank(e.target.value)}
-              placeholder="e.g. EMT-B, Paramedic"
-              className="border-slate-800 bg-slate-950 text-white placeholder:text-slate-600"
-            />
-          </div>
+
           <div>
             <Label className="mb-1 block text-xs text-slate-500">
               Discharge type
@@ -555,6 +553,15 @@ export function ResignationProcessor() {
           </div>
         </div>
       </div>
+
+      {/* Employee Rank */}
+      <PromotionRankSelect
+        value={employeeRankValue}
+        onChange={setEmployeeRank}
+        ranks={rankOrderHighToLow}
+        order="high-to-low"
+        label="Employee rank"
+      />
 
       {/* Procedure Checklist */}
       <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">

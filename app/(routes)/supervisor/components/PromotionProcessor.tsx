@@ -21,7 +21,6 @@ import {
   Headphones,
   FileText,
   ClipboardCheck,
-  Award,
   RotateCcw,
   Star,
   Globe,
@@ -33,9 +32,9 @@ import {
   personnelFilePostDefs,
   rankAdjustmentTemplate,
   rankInfo,
-  allRanks,
 } from "@/app/templates/promotions";
 import type { PromotionRank } from "@/app/templates/promotions";
+import { PromotionRankSelect } from "./PromotionRankSelect";
 
 const OOC_ITEMS = [
   { id: "f4Rank", label: "Update their rank in the F4 menu", icon: Shield },
@@ -202,34 +201,7 @@ export function PromotionProcessor() {
       )}
 
       {/* Rank Selector */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
-        <div className="mb-4 flex items-center gap-2">
-          <Award className="h-4 w-4 text-slate-400" />
-          <h3 className="text-sm font-medium text-slate-300">Promotion rank</h3>
-          {currentRankInfo && (
-            <span
-              className={`ml-auto rounded-md px-2 py-0.5 text-[10px] font-medium ring-1 ${currentRankInfo.badge}`}
-            >
-              {currentRankInfo.label}
-            </span>
-          )}
-        </div>
-        <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-5">
-          {allRanks.map((rank) => (
-            <button
-              key={rank}
-              onClick={() => setNewRank(rank)}
-              className={`rounded-md border px-2 py-1.5 text-xs font-medium transition-colors ${
-                newRank === rank
-                  ? `${rankInfo[rank].border} ${rankInfo[rank].badge}`
-                  : "border-slate-800 bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-slate-100"
-              }`}
-            >
-              {rankInfo[rank].shortLabel}
-            </button>
-          ))}
-        </div>
-      </div>
+      <PromotionRankSelect value={newRank} onChange={setNewRank} />
 
       {/* Personnel Info */}
       <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">

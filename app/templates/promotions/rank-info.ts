@@ -12,6 +12,15 @@ export type RankInfo = {
 };
 
 export const rankInfo: Record<PromotionRank, RankInfo> = {
+  emr: {
+    label: "EMR",
+    shortLabel: "EMR",
+    emailImg: "",
+    personnelImg: "",
+    description: "Emergency Medical Responder",
+    border: "border-slate-400/30",
+    badge: "bg-slate-500/20 text-slate-100 ring-1 ring-slate-400/40",
+  },
   "emt-b": {
     label: "EMT-Basic",
     shortLabel: "EMT-B",
@@ -169,4 +178,26 @@ export const allRanks: PromotionRank[] = [
   "deputy-chief",
   "assistant-chief",
   "chief",
+];
+
+// Low → high progression, including EMR below EMT-B.
+export const rankOrderLowToHigh: PromotionRank[] = ["emr", ...allRanks];
+
+// High → low progression, Chief first, EMR last.
+export const rankOrderHighToLow: PromotionRank[] = [
+  "chief",
+  "assistant-chief",
+  "deputy-chief",
+  "commander",
+  "captain",
+  "lieutenant",
+  "lead-paramedic",
+  "senior-paramedic",
+  "paramedic",
+  "junior-paramedic",
+  "master-emt",
+  "emt-a",
+  "emt-i",
+  "emt-b",
+  "emr",
 ];
