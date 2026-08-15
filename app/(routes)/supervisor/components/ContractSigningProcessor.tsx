@@ -160,7 +160,7 @@ export function ContractSigningProcessor() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl space-y-4">
+    <div className="space-y-4">
       <ToastContainer
         position="top-right"
         autoClose={2000}

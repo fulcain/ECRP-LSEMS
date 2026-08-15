@@ -1,3 +1,5 @@
+import { PageContainer } from "./page-container";
+
 type BodyAndMainTitleProps = {
   title: string;
   description: string;
@@ -10,8 +12,8 @@ export function BodyAndMainTitle({
   children,
 }: BodyAndMainTitleProps) {
   return (
-    <main className="min-h-screen px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-6xl">
+    <main className="min-h-screen">
+      <PageContainer>
         <div className="mb-10 text-center">
           <h1 className="mb-2 text-3xl font-bold text-white sm:text-4xl">
             {title}
@@ -20,7 +22,7 @@ export function BodyAndMainTitle({
         </div>
 
         {children}
-      </div>
+      </PageContainer>
     </main>
   );
 }

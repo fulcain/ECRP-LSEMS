@@ -81,7 +81,7 @@ export function ApplicantInfoCard({
           value={title}
           onValueChange={(value) => onTitleChange(value as ApplicantTitle)}
         >
-          <SelectTrigger className="border-slate-700 bg-slate-950 text-white sm:w-[100px] focus-visible:ring-1 focus-visible:ring-slate-500">
+          <SelectTrigger className="w-full border-slate-700 bg-slate-950 text-white focus-visible:ring-1 focus-visible:ring-slate-500 sm:w-[100px]">
             <SelectValue placeholder="Title" />
           </SelectTrigger>
           <SelectContent className="border-slate-700 bg-slate-900 text-white">

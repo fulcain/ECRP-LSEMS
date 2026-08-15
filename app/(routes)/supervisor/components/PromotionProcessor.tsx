@@ -181,7 +181,7 @@ export function PromotionProcessor() {
   }, [emailTemplate, emailBBCode, personnelBBCode, rankAdjustmentBBCode, operationalAdjustmentCopyText, personnelName, newRank]);
 
   return (
-    <div className="mx-auto max-w-3xl space-y-4">
+    <div className="space-y-4">
       <ToastContainer position="top-right" autoClose={2000} theme="dark" transition={Bounce} />
 
       {/* Credentials Warning */}
@@ -339,7 +339,7 @@ export function PromotionProcessor() {
                               value={personnelFileUrl}
                               onChange={(e) => setPersonnelFileUrl(e.target.value)}
                               placeholder="Personnel File Topic URL"
-                              className="h-7 w-64 border-slate-800 bg-slate-950 text-xs text-white placeholder:text-slate-600"
+                              className="h-7 w-full border-slate-800 bg-slate-950 text-xs text-white placeholder:text-slate-600 sm:w-64"
                             />
                             {(!currentRankInfo?.label || !promotionDate) && (
                               <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-1 text-[10px] text-amber-400">
