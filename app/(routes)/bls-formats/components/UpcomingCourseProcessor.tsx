@@ -260,7 +260,7 @@ export function UpcomingCourseProcessor() {
         />
         <div className="relative p-5 lg:p-8">
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-            <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/70 p-5 backdrop-blur-md transition-all duration-300 hover:border-white/20">
+            <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
               <div className="space-y-5">
                 <div className="flex flex-col gap-1.5">
                   <Label
@@ -311,7 +311,7 @@ export function UpcomingCourseProcessor() {
                           <Button
                             variant="outline"
                             className={cn(
-                              "w-[260px] justify-start text-left font-normal border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-slate-500",
+                              "w-full justify-start text-left font-normal border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-slate-500 sm:w-[260px]",
                               !date && !datetime && "text-slate-400",
                             )}
                           >
@@ -365,7 +365,7 @@ export function UpcomingCourseProcessor() {
                           <Button
                             variant="outline"
                             className={cn(
-                              "w-[260px] justify-start text-left font-normal border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-slate-500",
+                              "w-full justify-start text-left font-normal border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-slate-500 sm:w-[260px]",
                               !prevDate && !prevDatetime && "text-slate-400",
                             )}
                           >
@@ -445,7 +445,7 @@ export function UpcomingCourseProcessor() {
 
           {output && (
             <div className="mt-6 space-y-3">
-              <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/70 p-5 backdrop-blur-md transition-all duration-300 hover:border-white/20">
+              <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
                 <pre className="overflow-x-auto whitespace-pre-wrap rounded-xl border border-white/5 bg-slate-950/80 p-4 font-mono text-sm leading-relaxed text-slate-100">
                   {output}
                 </pre>

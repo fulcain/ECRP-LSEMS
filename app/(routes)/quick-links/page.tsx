@@ -45,7 +45,7 @@ function QuickLinksAccordionItem({ item }: QuickLinksAccordionItemProps) {
   return (
     <AccordionItem
       value={item.label}
-      className="overflow-hidden rounded-xl border border-white/10 bg-slate-900/70 shadow-sm backdrop-blur-md transition-all duration-300 hover:border-white/20"
+      className="overflow-hidden rounded-xl border border-white/10 bg-slate-900/90 shadow-sm transition-colors duration-200 hover:border-white/20"
     >
       <AccordionTrigger className="flex w-full cursor-pointer items-center gap-3 px-5 py-4 text-lg font-semibold text-white transition-all duration-200 hover:bg-white/5 [&[data-state=open]]:border-b [&[data-state=open]]:border-white/10">
         <div className="flex flex-row items-center justify-center gap-3">

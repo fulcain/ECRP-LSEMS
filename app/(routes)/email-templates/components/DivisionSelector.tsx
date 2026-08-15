@@ -16,7 +16,7 @@ export default function DivisionSelector({
 }: DivisionSelectorProps) {
   return (
     <div className="lg:col-span-1">
-      <div className="h-full rounded-[1.5rem] border border-white/10 bg-slate-900/70 p-5 backdrop-blur-md transition-all duration-300 hover:border-white/20">
+      <div className="h-full rounded-[1.5rem] border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
         <h2 className="mb-4 text-xl font-semibold text-white">
           Select Division
         </h2>

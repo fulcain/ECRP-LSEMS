@@ -43,7 +43,7 @@ export default function Availability() {
         />
         <div className="relative space-y-6 p-5 lg:p-8">
           {/* Timezone Selector */}
-          <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/70 p-5 backdrop-blur-md transition-all duration-300 hover:border-white/20">
+          <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
             <div className="flex flex-col gap-2">
               <Label htmlFor="timezone" className="text-sm font-medium text-slate-300">Select your timezone</Label>
               <TimezoneSelect
@@ -79,7 +79,7 @@ export default function Availability() {
           </div>
 
           {/* Weekdays Inputs */}
-          <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/70 p-5 backdrop-blur-md transition-all duration-300 hover:border-white/20">
+          <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
             <h3 className="mb-4 text-sm font-semibold text-white">Daily Time Windows</h3>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {weekdays.map((day) => (
@@ -140,7 +140,7 @@ export default function Availability() {
 
           {/* Output */}
           {output && (
-            <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/70 p-5 backdrop-blur-md transition-all duration-300 hover:border-white/20">
+            <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
               <div className="mb-3 flex items-center justify-between">
                 <h2 className="text-sm font-semibold text-white">Converted to UTC</h2>
                 <Button

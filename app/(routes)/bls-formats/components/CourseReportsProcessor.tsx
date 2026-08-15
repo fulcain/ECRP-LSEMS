@@ -326,19 +326,8 @@ export function CourseReportsProcessor() {
 
   return (
     <>
-      {/* ── Self-contained animated background keyframes (cyan) ──
-          Re-declared with a cr- prefix instead of reusing the page-level
-          animate-* classes so the glow always stays cyan even when the
-          Formats tab is showing a different lifecycle hue. */}
+      {/* ── Self-contained one-shot entry animations ── */}
       <style>{`
-        @keyframes crGradientShift {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-        }
-        @keyframes crPulseGlow {
-          0%, 100% { box-shadow: 0 0 20px color-mix(in srgb, hsl(${hsl}) 15%, transparent); }
-          50% { box-shadow: 0 0 40px color-mix(in srgb, hsl(${hsl}) 30%, transparent); }
-        }
         @keyframes crFadeSlideUp {
           from { opacity: 0; transform: translateY(8px); }
           to   { opacity: 1; transform: translateY(0); }
@@ -348,32 +337,11 @@ export function CourseReportsProcessor() {
           60%  { transform: scale(1.25); opacity: 1; }
           100% { transform: scale(1); opacity: 1; }
         }
-        .cr-animate-gradient {
-          background-size: 200% 200%;
-          animation: crGradientShift 12s ease infinite;
-        }
-        .cr-animate-glow {
-          animation: crPulseGlow 3s ease-in-out infinite;
-        }
         .cr-animate-fade-up {
           animation: crFadeSlideUp 0.35s ease-out both;
         }
         .cr-animate-check {
           animation: crCheckPop 0.4s ease-out both;
-        }
-        @keyframes crPriceGlow {
-          0%, 100% { box-shadow: 0 0 24px color-mix(in srgb, hsl(${hsl}) 18%, transparent); }
-          50% { box-shadow: 0 0 48px color-mix(in srgb, hsl(${hsl}) 34%, transparent); }
-        }
-        @keyframes crIconPulse {
-          0%, 100% { box-shadow: 0 0 12px color-mix(in srgb, hsl(${hsl}) 30%, transparent); }
-          50% { box-shadow: 0 0 28px color-mix(in srgb, hsl(${hsl}) 60%, transparent); }
-        }
-        .cr-price-glow {
-          animation: crPriceGlow 3.5s ease-in-out infinite;
-        }
-        .cr-icon-pulse {
-          animation: crIconPulse 2.6s ease-in-out infinite;
         }
       `}</style>
       {/* ── Sub-tab selector (Joint / Normal) ── */}
@@ -402,7 +370,7 @@ export function CourseReportsProcessor() {
 
       {/* ── Course Pricing Guide ── */}
       <div
-        className="cr-price-glow cr-animate-fade-up relative mb-6 overflow-hidden rounded-[1.5rem] border backdrop-blur-md transition-all duration-300"
+        className="cr-animate-fade-up relative mb-6 overflow-hidden rounded-[1.5rem] border transition-colors duration-200"
         style={{
           borderColor: `hsl(${HUE} 70% 55% / 0.4)`,
           background: `linear-gradient(135deg, hsl(${HUE} 65% 8% / 0.9), hsl(${HUE} 50% 3% / 0.95))`,
@@ -410,7 +378,7 @@ export function CourseReportsProcessor() {
       >
         {/* Animated gradient wash */}
         <div
-          className="cr-animate-gradient pointer-events-none absolute inset-0 opacity-50"
+          className="pointer-events-none absolute inset-0 opacity-50"
           style={{
             background: `radial-gradient(circle at 15% 25%, hsl(${hsl} / 0.25) 0%, transparent 50%),
                          radial-gradient(circle at 85% 80%, hsl(${HUE + 40} 70% 55% / 0.15) 0%, transparent 45%)`,
@@ -420,7 +388,7 @@ export function CourseReportsProcessor() {
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div
-                className="cr-icon-pulse flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border shadow-lg"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border shadow-lg"
                 style={{
                   borderColor: `hsl(${hsl} / 0.45)`,
                   backgroundColor: `hsl(${hsl} / 0.18)`,
@@ -455,7 +423,7 @@ export function CourseReportsProcessor() {
       </div>
 
       <div
-        className="cr-animate-glow relative overflow-hidden rounded-[2rem] border backdrop-blur-sm transition-all duration-700"
+        className="relative overflow-hidden rounded-[2rem] border"
         style={{
           borderColor: `hsl(${HUE} 70% 50% / 0.25)`,
           background: `linear-gradient(135deg, hsl(${HUE} 60% 6% / 0.95), hsl(${HUE} 50% 3% / 0.98))`,
@@ -463,7 +431,7 @@ export function CourseReportsProcessor() {
       >
         {/* Animated gradient overlay */}
         <div
-          className="cr-animate-gradient pointer-events-none absolute inset-0 opacity-40"
+          className="pointer-events-none absolute inset-0 opacity-40"
           style={{
             background: `radial-gradient(circle at 20% 30%, hsl(${hsl} / 0.18) 0%, transparent 45%),
                          radial-gradient(circle at 80% 70%, hsl(${HUE + 40} 70% 55% / 0.10) 0%, transparent 40%)`,
@@ -483,7 +451,7 @@ export function CourseReportsProcessor() {
           {/* ════ LEFT COLUMN ════ */}
           <section className="space-y-6">
             {/* ── Course Report Builder ── */}
-            <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/70 p-5 backdrop-blur-md transition-all duration-300 hover:border-white/20">
+            <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
               <div className="mb-4 flex items-center gap-2">
                 <div
                   className="flex h-7 w-7 items-center justify-center rounded-lg"
@@ -683,7 +651,7 @@ export function CourseReportsProcessor() {
                               <SelectTrigger className="h-10 w-[140px] shrink-0 border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-violet-500/50 focus-visible:ring-2 focus-visible:ring-violet-500/30">
                                 <SelectValue placeholder="Company" />
                               </SelectTrigger>
-                              <SelectContent className="border-slate-700/80 bg-slate-900/95 text-white backdrop-blur-xl">
+                              <SelectContent className="border-slate-700/80 bg-slate-900 text-white">
                                 {COMPANY_OPTIONS.map((company) => (
                                   <SelectItem key={company} value={company}>
                                     {company}
@@ -744,7 +712,7 @@ export function CourseReportsProcessor() {
                         <SelectTrigger className="w-full border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-slate-500 focus-visible:ring-2">
                           <SelectValue placeholder="Select a location" />
                         </SelectTrigger>
-                        <SelectContent className="border-slate-700/80 bg-slate-900/95 text-white backdrop-blur-xl">
+                        <SelectContent className="border-slate-700/80 bg-slate-900 text-white">
                           <SelectItem value="Pillbox MD">Pillbox MD</SelectItem>
                           <SelectItem value="Paleto MD">Paleto MD</SelectItem>
                         </SelectContent>
@@ -792,7 +760,7 @@ export function CourseReportsProcessor() {
                                 <SelectTrigger className="h-10 w-[140px] shrink-0 border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-500/30">
                                   <SelectValue placeholder="Company" />
                                 </SelectTrigger>
-                                <SelectContent className="border-slate-700/80 bg-slate-900/95 text-white backdrop-blur-xl">
+                                <SelectContent className="border-slate-700/80 bg-slate-900 text-white">
                                   {COMPANY_OPTIONS.map((company) => (
                                     <SelectItem key={company} value={company}>
                                       {company}
@@ -1010,7 +978,7 @@ export function CourseReportsProcessor() {
           {/* ════ RIGHT COLUMN ════ */}
           <section className="space-y-6">
             {/* ── Generated Output ── */}
-            <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/70 p-5 backdrop-blur-md transition-all duration-300 hover:border-white/20">
+            <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
               <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="text-[10px] font-semibold tracking-[0.28em] text-slate-500 uppercase">

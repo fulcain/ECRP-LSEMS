@@ -297,16 +297,8 @@ export default function BLSFormatsPage() {
 
   return (
     <>
-      {/* ── Animated background keyframes ── */}
+      {/* ── One-shot entry animations (cheap, GPU-friendly) ── */}
       <style>{`
-        @keyframes gradientShift {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-        }
-        @keyframes pulseGlow {
-          0%, 100% { box-shadow: 0 0 20px color-mix(in srgb, hsl(${hsl}) 15%, transparent); }
-          50% { box-shadow: 0 0 40px color-mix(in srgb, hsl(${hsl}) 30%, transparent); }
-        }
         @keyframes fadeSlideUp {
           from { opacity: 0; transform: translateY(8px); }
           to   { opacity: 1; transform: translateY(0); }
@@ -316,25 +308,11 @@ export default function BLSFormatsPage() {
           60%  { transform: scale(1.25); opacity: 1; }
           100% { transform: scale(1); opacity: 1; }
         }
-        @keyframes badgePulse {
-          0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, hsl(${hsl}) 30%, transparent); }
-          50% { box-shadow: 0 0 0 8px color-mix(in srgb, hsl(${hsl}) 0%, transparent); }
-        }
-        .animate-gradient {
-          background-size: 200% 200%;
-          animation: gradientShift 12s ease infinite;
-        }
-        .animate-glow {
-          animation: pulseGlow 3s ease-in-out infinite;
-        }
         .animate-fade-up {
           animation: fadeSlideUp 0.35s ease-out both;
         }
         .animate-check {
           animation: checkPop 0.4s ease-out both;
-        }
-        .animate-badge-pulse {
-          animation: badgePulse 2.5s ease-in-out infinite;
         }
       `}</style>
 
@@ -370,7 +348,7 @@ export default function BLSFormatsPage() {
         {activeTab === "formats" && (
         <div
           key={animKey}
-          className="animate-glow relative overflow-hidden rounded-[2rem] border backdrop-blur-sm transition-all duration-700"
+          className="relative overflow-hidden rounded-[2rem] border"
           style={{
             borderColor: `hsl(${hue} 70% 50% / 0.25)`,
             background: `linear-gradient(135deg, hsl(${hue} 60% 6% / 0.95), hsl(${hue} 50% 3% / 0.98))`,
@@ -378,7 +356,7 @@ export default function BLSFormatsPage() {
         >
           {/* Animated gradient overlay */}
           <div
-            className="animate-gradient pointer-events-none absolute inset-0 opacity-40"
+            className="pointer-events-none absolute inset-0 opacity-40"
             style={{
               background: `radial-gradient(circle at 20% 30%, hsl(${hsl} / 0.18) 0%, transparent 45%),
                            radial-gradient(circle at 80% 70%, hsl(${parseInt(hue) + 40} 70% 55% / 0.10) 0%, transparent 40%)`,
@@ -398,7 +376,7 @@ export default function BLSFormatsPage() {
             {/* ════ LEFT COLUMN ════ */}
             <section className="space-y-6">
               {/* ── Application Builder ── */}
-              <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/70 p-5 backdrop-blur-md transition-all duration-300 hover:border-white/20">
+              <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
                 <div className="mb-4 flex items-center gap-2">
                   <div
                     className="flex h-7 w-7 items-center justify-center rounded-lg"
@@ -434,7 +412,7 @@ export default function BLSFormatsPage() {
                       >
                         <SelectValue placeholder="Select a format" />
                       </SelectTrigger>
-                      <SelectContent className="border-slate-700/80 bg-slate-900/95 text-white backdrop-blur-xl">
+                      <SelectContent className="border-slate-700/80 bg-slate-900 text-white">
                         {blsTemplates.map((option) => {
                           const optHue = formatHue[option.value] ?? "0";
                           return (
@@ -627,12 +605,12 @@ export default function BLSFormatsPage() {
               {/* ── Live Format Card ── */}
               <div>
                 <div
-                  className={`rounded-[1.5rem] border bg-gradient-to-br p-5 transition-all duration-500 ${activeFormat.border} ${activeFormat.accent} hover:brightness-110`}
+                  className={`rounded-[1.5rem] border bg-gradient-to-br p-5 transition-colors duration-200 ${activeFormat.border} ${activeFormat.accent} hover:brightness-110`}
                 >
                   <div className="mb-4 flex items-center justify-between gap-3">
                     <h3 className="font-semibold text-white">Live Format Card</h3>
                     <span
-                      className={`animate-badge-pulse rounded-full px-3 py-1 text-xs font-semibold ${activeFormat.badge}`}
+                      className={`rounded-full px-3 py-1 text-xs font-semibold ${activeFormat.badge}`}
                     >
                       {activeFormat.label}
                     </span>
@@ -654,7 +632,7 @@ export default function BLSFormatsPage() {
                     </div>
 
                     {/* Ranks */}
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div className="rounded-2xl border border-white/10 bg-slate-950/45 p-4 transition-all duration-200 hover:border-white/20 hover:bg-slate-950/60">
                         <p className="mb-1 text-[10px] font-semibold tracking-[0.24em] text-slate-500 uppercase">
                           Saved Rank
@@ -716,7 +694,7 @@ export default function BLSFormatsPage() {
             {/* ════ RIGHT COLUMN ════ */}
             <section className="space-y-6">
               {/* ── Generated Output ── */}
-              <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/70 p-5 backdrop-blur-md transition-all duration-300 hover:border-white/20">
+              <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
                 <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <p className="text-[10px] font-semibold tracking-[0.28em] text-slate-500 uppercase">

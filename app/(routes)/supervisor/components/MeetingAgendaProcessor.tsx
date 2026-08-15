@@ -196,7 +196,7 @@ export function MeetingAgendaProcessor() {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         {/* Meeting Type */}
-        <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5 backdrop-blur-md transition-all duration-300 hover:border-white/20">
+        <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
           <div className="space-y-5">
             <div className="flex flex-col gap-1.5">
               <Label
@@ -296,7 +296,7 @@ export function MeetingAgendaProcessor() {
 
       {/* Step-by-Step Instructions */}
       {activeTemplate && (
-        <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5 backdrop-blur-md transition-all duration-300 hover:border-white/20">
+        <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
           <div className="mb-4 flex items-center gap-2">
             <ListChecks className="h-5 w-5 text-indigo-400" />
             <h3 className="text-sm font-semibold text-white">
@@ -323,7 +323,7 @@ export function MeetingAgendaProcessor() {
       {output && (
         <div className="space-y-3">
           {/* Subject Line */}
-          <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5 backdrop-blur-md transition-all duration-300 hover:border-white/20">
+          <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
             <div className="mb-3 flex items-center gap-2">
               <FileText className="h-4 w-4 text-slate-400" />
               <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
@@ -347,7 +347,7 @@ export function MeetingAgendaProcessor() {
           </div>
 
           {/* BBCode Body */}
-          <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5 backdrop-blur-md transition-all duration-300 hover:border-white/20">
+          <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
             <div className="mb-3 flex items-center gap-2">
               <Clock className="h-4 w-4 text-slate-400" />
               <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">

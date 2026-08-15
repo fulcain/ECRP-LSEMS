@@ -108,7 +108,7 @@ export function StaffSettingsCard({
           )}
         </div>
 
-        <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/70 p-5 backdrop-blur-md transition-all duration-300 hover:border-white/20">
+        <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
           <div className="mb-4">
             <h3 className="text-lg font-semibold text-white">Division Ranks</h3>
             <p className="text-sm text-slate-400">

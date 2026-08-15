@@ -72,7 +72,7 @@ export default function ChangeLogPage() {
                 </span>
 
                 {/* Day card */}
-                <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5 backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:bg-slate-900/80">
+                <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20 hover:bg-slate-900/95">
                   <p className="mb-3 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
                     <CalendarDays className="h-3.5 w-3.5" />
                     {entry.date}

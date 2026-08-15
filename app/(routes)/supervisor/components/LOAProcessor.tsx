@@ -169,7 +169,7 @@ export function LOAProcessor() {
         {/* Left: Form */}
         <div className="space-y-5">
           {/* Template Selector */}
-          <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5 backdrop-blur-md">
+          <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-5">
             <Label className="mb-3 block text-sm font-medium text-slate-300">
               Select LOA Format
             </Label>
@@ -192,7 +192,7 @@ export function LOAProcessor() {
           </div>
 
           {/* Personnel Info */}
-          <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5 backdrop-blur-md">
+          <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-5">
             <div className="mb-4 flex items-center gap-2">
               <Users className="h-4 w-4 text-blue-400" />
               <h3 className="text-sm font-semibold text-white">
@@ -245,7 +245,7 @@ export function LOAProcessor() {
 
           {/* Date Fields (LOA Approved only) */}
           {selectedTemplate === "approved" && (
-            <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5 backdrop-blur-md">
+            <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-5">
               <div className="mb-4 flex items-center gap-2">
                 <CalendarDays className="h-4 w-4 text-green-400" />
                 <h3 className="text-sm font-semibold text-white">Leave Dates</h3>
@@ -307,7 +307,7 @@ export function LOAProcessor() {
 
           {/* Start Work At (LOA Expired only) */}
           {selectedTemplate === "expired" && (
-            <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5 backdrop-blur-md">
+            <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-5">
               <div className="mb-4 flex items-center gap-2">
                 <CalendarDays className="h-4 w-4 text-amber-400" />
                 <h3 className="text-sm font-semibold text-white">Work Schedule</h3>
@@ -329,7 +329,7 @@ export function LOAProcessor() {
 
           {/* Denial Reasons (conditional) */}
           {selectedTemplate === "denied" && (
-            <div className="rounded-2xl border border-red-500/20 bg-slate-900/60 p-5 backdrop-blur-md">
+            <div className="rounded-2xl border border-red-500/20 bg-slate-900/90 p-5">
               <div className="mb-4 flex items-center gap-2">
                 <XCircle className="h-4 w-4 text-red-400" />
                 <h3 className="text-sm font-semibold text-white">
@@ -406,7 +406,7 @@ export function LOAProcessor() {
 
           {/* Personnel File Section (LOA Approved only) */}
           {selectedTemplate === "approved" && (
-            <div className="rounded-2xl border border-blue-500/20 bg-slate-900/60 p-5 backdrop-blur-md">
+            <div className="rounded-2xl border border-blue-500/20 bg-slate-900/90 p-5">
               <div className="mb-4 flex items-center gap-2">
                 <FileText className="h-4 w-4 text-blue-400" />
                 <h3 className="text-sm font-semibold text-white">
@@ -563,7 +563,7 @@ export function LOAProcessor() {
         </div>
 
         {/* Right: Preview */}
-        <div className="rounded-2xl border border-white/10 bg-slate-900/60 backdrop-blur-md">
+        <div className="rounded-2xl border border-white/10 bg-slate-900/90">
           <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
             <div className="flex items-center gap-2">
               <FileText className="h-4 w-4 text-slate-400" />
