@@ -9,6 +9,9 @@ export type LOATemplateContext = {
   medicSignature: string;
   denialReasons?: string[];
   startWorkAt?: string;
+  extendedStartDate?: string;
+  extendedEndDate?: string;
+  extendedNumberOfDays?: number;
   loaType?: "LOA" | "ROH";
   loaLink?: string;
 };

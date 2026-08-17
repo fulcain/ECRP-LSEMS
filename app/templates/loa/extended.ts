@@ -11,9 +11,9 @@ export const extendedLOATemplate: LOATemplateDefinition = {
   renderBody: ({
     personnelName,
     title,
-    startDate,
-    endDate,
-    numberOfDays,
+    extendedStartDate,
+    extendedEndDate,
+    extendedNumberOfDays,
     medicName,
     medicRank,
     medicSignature,
@@ -31,7 +31,7 @@ export const extendedLOATemplate: LOATemplateDefinition = {
 [divbox=white]
 Dear ${title} ${displayName},
 
-We are pleased to inform you that your request for an extension on your leave of absence has been approved for the duration of [b]${numberOfDays}[/b] day(s), from ${startDate} to ${endDate}.
+We are pleased to inform you that your request for an extension on your leave of absence has been approved for the duration of [b]${extendedNumberOfDays}[/b] day(s), from ${extendedStartDate} to ${extendedEndDate}.
 
 
 Sincerely,

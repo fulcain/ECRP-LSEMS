@@ -58,6 +58,8 @@ export function LOAProcessor() {
   const [title, setTitle] = useState<"Mr." | "Ms.">("Mr.");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [extendedStartDate, setExtendedStartDate] = useState("");
+  const [extendedEndDate, setExtendedEndDate] = useState("");
   const [startWorkAt, setStartWorkAt] = useState("");
   const [denialReasons, setDenialReasons] = useState<string[]>([""]);
   const [loaType, setLoaType] = useState<"LOA" | "ROH">("LOA");
@@ -69,6 +71,11 @@ export function LOAProcessor() {
   const numberOfDays = useMemo(
     () => calculateDays(startDate, endDate),
     [startDate, endDate],
+  );
+
+  const extendedNumberOfDays = useMemo(
+    () => calculateDays(extendedStartDate, extendedEndDate),
+    [extendedStartDate, extendedEndDate],
   );
 
   const activeTemplate = useMemo(
@@ -116,6 +123,9 @@ export function LOAProcessor() {
       endDate: endDate.trim(),
       startWorkAt: startWorkAt.trim(),
       numberOfDays,
+      extendedStartDate: extendedStartDate.trim(),
+      extendedEndDate: extendedEndDate.trim(),
+      extendedNumberOfDays,
       medicName: medicCredentials.name,
       medicRank: medicCredentials.rank,
       medicSignature: medicCredentials.signature,
@@ -134,6 +144,9 @@ export function LOAProcessor() {
     endDate,
     startWorkAt,
     numberOfDays,
+    extendedStartDate,
+    extendedEndDate,
+    extendedNumberOfDays,
     medicCredentials,
     selectedTemplate,
     denialReasons,
@@ -293,6 +306,68 @@ export function LOAProcessor() {
                     </p>
                   </div>
                   {numberOfDays > 30 && (
+                    <div className="ml-auto flex items-center gap-1.5 rounded-lg bg-amber-500/20 px-2.5 py-1">
+                      <AlertTriangle className="h-3 w-3 text-amber-400" />
+                      <span className="text-[10px] font-medium text-amber-300">
+                        Requires HC Approval
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Date Fields (LOA Extended only) */}
+          {selectedTemplate === "extended" && (
+            <div className="rounded-2xl border border-orange-500/20 bg-slate-900/90 p-5">
+              <div className="mb-4 flex items-center gap-2">
+                <CalendarDays className="h-4 w-4 text-orange-400" />
+                <h3 className="text-sm font-semibold text-white">Extension Dates</h3>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="mb-1.5 block text-xs text-slate-400">
+                    Start Date
+                  </Label>
+                  <Input
+                    value={extendedStartDate}
+                    onChange={(e) => setExtendedStartDate(e.target.value.toUpperCase())}
+                    placeholder="DD/MMM/YYYY (e.g. 20/JUL/2026)"
+                    className="border-white/10 bg-slate-800/50 font-mono text-white placeholder:text-slate-500 focus:border-orange-500/50"
+                  />
+                </div>
+                <div>
+                  <Label className="mb-1.5 block text-xs text-slate-400">
+                    End Date
+                  </Label>
+                  <Input
+                    value={extendedEndDate}
+                    onChange={(e) => setExtendedEndDate(e.target.value.toUpperCase())}
+                    placeholder="DD/MMM/YYYY (e.g. 20/AUG/2026)"
+                    className="border-white/10 bg-slate-800/50 font-mono text-white placeholder:text-slate-500 focus:border-orange-500/50"
+                  />
+                </div>
+              </div>
+
+              {/* Day Count */}
+              {extendedStartDate && extendedEndDate && (
+                <div className="mt-4 flex items-center gap-3 rounded-xl border border-orange-500/20 bg-orange-500/10 p-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-500/20">
+                    <span className="text-lg font-bold text-orange-400">
+                      {extendedNumberOfDays}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-orange-300">
+                      {extendedNumberOfDays === 1 ? "1 day" : `${extendedNumberOfDays} days`}
+                    </p>
+                    <p className="text-[10px] text-orange-400/60">
+                      Duration automatically calculated
+                    </p>
+                  </div>
+                  {extendedNumberOfDays > 30 && (
                     <div className="ml-auto flex items-center gap-1.5 rounded-lg bg-amber-500/20 px-2.5 py-1">
                       <AlertTriangle className="h-3 w-3 text-amber-400" />
                       <span className="text-[10px] font-medium text-amber-300">
