@@ -4,6 +4,7 @@ export type PromotionRank =
   | "emt-i"
   | "emt-a"
   | "master-emt"
+  | "emt-p"
   | "junior-paramedic"
   | "paramedic"
   | "senior-paramedic"
