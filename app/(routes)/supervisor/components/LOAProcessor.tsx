@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Bounce, ToastContainer } from "react-toastify";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   CalendarDays,
@@ -24,10 +24,20 @@ import {
   Check,
 } from "lucide-react";
 
-const MONTH_MAP: Record<string, number> = {
-  JAN: 0, FEB: 1, MAR: 2, APR: 3, MAY: 4, JUN: 5,
-  JUL: 6, AUG: 7, SEP: 8, OCT: 9, NOV: 10, DEC: 11,
-};
+const MONTH_NAMES = [
+  "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+  "JUL", "AUG", "SEP", "OCT", "NOV", "DEC",
+];
+
+const MONTH_MAP: Record<string, number> = Object.fromEntries(
+  MONTH_NAMES.map((month, index) => [month, index]),
+);
+
+function getTomorrowUTC(): string {
+  const tomorrow = new Date();
+  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+  return `${String(tomorrow.getUTCDate()).padStart(2, "0")}/${MONTH_NAMES[tomorrow.getUTCMonth()]}/${tomorrow.getUTCFullYear()}`;
+}
 
 function parseDate(dateStr: string): Date | null {
   const normalized = dateStr.trim().toUpperCase();
@@ -66,15 +76,42 @@ export function LOAProcessor() {
   const [loaType, setLoaType] = useState<"LOA" | "ROH">("LOA");
   const [loaLink, setLoaLink] = useState("");
   const [quickFill, setQuickFill] = useState("");
+  const [quickFillStatus, setQuickFillStatus] = useState<"idle" | "success" | "error">("idle");
+
+  useEffect(() => {
+    if (selectedTemplate === "expired") {
+      setStartWorkAt(getTomorrowUTC());
+    }
+  }, [selectedTemplate]);
 
   const handleQuickFill = (value: string) => {
-    const match = value.trim().match(/^(.+?)\s+([A-Za-z]+)\s+([A-Za-z]+)\s*\|\s*\[(\d{1,2}\/\d{1,2}\/\d{4})\]\s+to\s+\[(\d{1,2}\/\d{1,2}\/\d{4})\]$/i);
-    if (!match) return;
+    const trimmedValue = value.trim();
+    if (!trimmedValue) {
+      setQuickFillStatus("idle");
+      return;
+    }
+
+    const match = trimmedValue.match(/^(.+?)\s+([A-Za-z]+)\s+([A-Za-z]+)\s*\|\s*[\[\(\{]?\s*(\d{1,2}\/\d{1,2}\/\d{4})\s*[\]\)\}]?\s*(?:to|-)\s*[\[\(\{]?\s*(\d{1,2}\/\d{1,2}\/\d{4})\s*[\]\)\}]?$/i);
+    if (!match) {
+      setQuickFillStatus("error");
+      return;
+    }
 
     const [, , firstName, lastName, start, end] = match;
+    if (!parseDate(start) || !parseDate(end)) {
+      setQuickFillStatus("error");
+      return;
+    }
+
     setPersonnelName(`${firstName} ${lastName}`);
-    setStartDate(start);
-    setEndDate(end);
+    if (selectedTemplate === "extended") {
+      setExtendedStartDate(start);
+      setExtendedEndDate(end);
+    } else {
+      setStartDate(start);
+      setEndDate(end);
+    }
+    setQuickFillStatus("success");
   };
 
   const isCredentialsEmpty =
@@ -232,9 +269,31 @@ export function LOAProcessor() {
                   handleQuickFill(value);
                 }}
                 placeholder="Rank FirstName LastName | [DD/MM/YYYY] to [DD/MM/YYYY]"
-                className="border-white/10 bg-slate-800/50 font-mono text-white placeholder:text-slate-500 focus:border-cyan-500/50"
+                className={`border-white/10 bg-slate-800/50 font-mono text-white placeholder:text-slate-500 focus:border-cyan-500/50 ${
+                  quickFillStatus === "success"
+                    ? "border-emerald-500/50"
+                    : quickFillStatus === "error"
+                      ? "border-red-500/50"
+                      : ""
+                }`}
               />
             </div>
+            {quickFillStatus !== "idle" && (
+              <p
+                className={`mt-2 flex items-center gap-1.5 text-[10px] ${
+                  quickFillStatus === "success" ? "text-emerald-400" : "text-red-400"
+                }`}
+              >
+                {quickFillStatus === "success" ? (
+                  <CheckCircle2 className="h-3 w-3" />
+                ) : (
+                  <AlertTriangle className="h-3 w-3" />
+                )}
+                {quickFillStatus === "success"
+                  ? "LOA fields filled successfully."
+                  : "Format not recognized. Use Rank FirstName LastName | DD/MM/YYYY to DD/MM/YYYY."}
+              </p>
+            )}
             <p className="mt-2 text-[10px] text-slate-500">
               Copy the title of the LOA and paste it all here.
             </p>
