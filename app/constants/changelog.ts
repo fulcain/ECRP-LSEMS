@@ -12,7 +12,22 @@ export type ChangeLogEntry = {
 };
 
 export const changeLog: ChangeLogEntry[] = [
-   {
+  {
+    date: "Aug 26, 2026",
+    changes: [
+      {
+        type: "feature",
+        description:
+          "Added an LSEMS Dashboard button to the LOA personnel-file sections for quick task access.",
+      },
+      {
+        type: "feature",
+        description:
+          "Added automatic field filling for LOA Active and Extended forms from pasted LOA titles.",
+      },
+    ],
+  },
+  {
     date: "Aug 16th, 2026",
     changes: [
       {
