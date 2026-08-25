@@ -30,11 +30,12 @@ const MONTH_MAP: Record<string, number> = {
 };
 
 function parseDate(dateStr: string): Date | null {
-  const match = dateStr.trim().match(/^(\d{1,2})\/([A-Z]{3})\/(\d{4})$/);
+  const normalized = dateStr.trim().toUpperCase();
+  const match = normalized.match(/^(\d{1,2})\/(?:([A-Z]{3})|(\d{1,2}))\/(\d{4})$/);
   if (!match) return null;
-  const [, dayStr, monthStr, yearStr] = match;
-  const month = MONTH_MAP[monthStr.toUpperCase()];
-  if (month === undefined) return null;
+  const [, dayStr, monthName, monthNumber, yearStr] = match;
+  const month = monthName ? MONTH_MAP[monthName] : parseInt(monthNumber, 10) - 1;
+  if (month < 0 || month > 11) return null;
   const day = parseInt(dayStr, 10);
   const year = parseInt(yearStr, 10);
   const d = new Date(Date.UTC(year, month, day));
@@ -64,6 +65,17 @@ export function LOAProcessor() {
   const [denialReasons, setDenialReasons] = useState<string[]>([""]);
   const [loaType, setLoaType] = useState<"LOA" | "ROH">("LOA");
   const [loaLink, setLoaLink] = useState("");
+  const [quickFill, setQuickFill] = useState("");
+
+  const handleQuickFill = (value: string) => {
+    const match = value.trim().match(/^(.+?)\s+([A-Za-z]+)\s+([A-Za-z]+)\s*\|\s*\[(\d{1,2}\/\d{1,2}\/\d{4})\]\s+to\s+\[(\d{1,2}\/\d{1,2}\/\d{4})\]$/i);
+    if (!match) return;
+
+    const [, , firstName, lastName, start, end] = match;
+    setPersonnelName(`${firstName} ${lastName}`);
+    setStartDate(start);
+    setEndDate(end);
+  };
 
   const isCredentialsEmpty =
     !medicCredentials.name || !medicCredentials.signature || !medicCredentials.rank;
@@ -88,7 +100,7 @@ export function LOAProcessor() {
     const start = startDate.trim();
     const end = endDate.trim();
     if (!link || !start || !end) return "";
-    return `[url=${link}]${loaType} -> ${start}-${end}[/url]`;
+    return `[url=${link}]${loaType} -> ${start} - ${end}[/url]`;
   }, [loaLink, loaType, startDate, endDate]);
 
   const snippetStatus = useMemo(() => {
@@ -203,6 +215,31 @@ export function LOAProcessor() {
               ))}
             </div>
           </div>
+
+          {/* Quick Fill (LOA Active and Extended only) */}
+          {(selectedTemplate === "approved" || selectedTemplate === "extended") && (
+          <div className="rounded-2xl border border-cyan-500/20 bg-slate-900/90 p-5">
+            <div className="mb-4 flex items-center gap-2">
+              <FileText className="h-4 w-4 text-cyan-400" />
+              <h3 className="text-sm font-semibold text-white">Quick Fill LOA Fields</h3>
+            </div>
+            <div className="flex gap-2">
+              <Input
+                value={quickFill}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setQuickFill(value);
+                  handleQuickFill(value);
+                }}
+                placeholder="Rank FirstName LastName | [DD/MM/YYYY] to [DD/MM/YYYY]"
+                className="border-white/10 bg-slate-800/50 font-mono text-white placeholder:text-slate-500 focus:border-cyan-500/50"
+              />
+            </div>
+            <p className="mt-2 text-[10px] text-slate-500">
+              Copy the title of the LOA and paste it all here.
+            </p>
+          </div>
+          )}
 
           {/* Personnel Info */}
           <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-5">
@@ -604,6 +641,18 @@ export function LOAProcessor() {
                   <ExternalLink className="h-4 w-4" />
                   Active LOA Section
                 </a>
+                <div className="flex flex-wrap items-center gap-2 rounded-xl border border-purple-500/20 bg-purple-500/10 p-2">
+                  <a
+                    href="https://ecrplsems.com/tasks"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-purple-500/30 bg-purple-500/15 px-4 py-2.5 text-sm font-medium text-purple-300 transition-all duration-200 hover:scale-[1.01] hover:border-purple-500/50 hover:bg-purple-500/25 hover:text-purple-200 active:scale-[0.99]"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    LSEMS Dashboard
+                  </a>
+                  <span className="text-xs text-purple-300/70">Open dashboard and mark the task complete</span>
+                </div>
               </div>
             </div>
           )}
@@ -642,6 +691,18 @@ export function LOAProcessor() {
                   <ExternalLink className="h-4 w-4" />
                   Active LOA Section
                 </a>
+                <div className="flex flex-wrap items-center gap-2 rounded-xl border border-purple-500/20 bg-purple-500/10 p-2">
+                  <a
+                    href="https://ecrplsems.com/tasks"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-purple-500/30 bg-purple-500/15 px-4 py-2.5 text-sm font-medium text-purple-300 transition-all duration-200 hover:scale-[1.01] hover:border-purple-500/50 hover:bg-purple-500/25 hover:text-purple-200 active:scale-[0.99]"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    LSEMS Dashboard
+                  </a>
+                  <span className="text-xs text-purple-300/70">Open dashboard and mark the task complete</span>
+                </div>
               </div>
             </div>
           )}
