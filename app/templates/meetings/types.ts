@@ -1,6 +1,6 @@
 import type React from "react";
 
-export type MeetingType = "supervisor" | "divisional";
+export type MeetingType = "supervisor" | "divisional" | "all-hands";
 
 export type MeetingAgendaContext = {
   meetingDate: string;

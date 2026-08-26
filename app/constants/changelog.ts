@@ -18,6 +18,16 @@ export const changeLog: ChangeLogEntry[] = [
       {
         type: "feature",
         description:
+          "Added an All Hands Meeting template to Supervisor Tools with generated meeting details, signature fields, and posting instructions.",
+      },
+    ],
+  },
+  {
+    date: "Aug 26, 2026",
+    changes: [
+      {
+        type: "feature",
+        description:
           "Added an LSEMS Dashboard button to the LOA personnel-file sections for quick task access.",
       },
       {
