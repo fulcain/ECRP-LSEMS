@@ -159,7 +159,7 @@ export const upcomingClassTemplate: BLSTemplateDefinition = {
     const tzImage = parsed ? buildTzImageUrl(parsed) : "";
 
     return `[LSEMSfooter][/LSEMSfooter][divbox=white]
-[fimg=150,150]https://i.imgur.com/Cdzl6Gz.png[/fimg][aligntable=right,0,0,0,0,0,0][right][font=Arial][b]
+[fimg=150,150]https://i.ibb.co/bMQfhCpG/Cdzl6Gz.png[/fimg][aligntable=right,0,0,0,0,0,0][right][font=Arial][b]
 [size=150]LSEMS Basic Life Support Division[/size][/b]
 [size=120]Upcoming BLS Course[/size]
 [size=95]${dateHeader}[/size][/font][/right][/aligntable]

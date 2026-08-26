@@ -944,7 +944,7 @@ Non-VOIP individuals may use "/dep MD to JTAC-1 [msg]" or "/dep MD to SD/PD [uni
 [/list]
 [spoiler=Paperwork]
 [code]
-[img]https://i.imgur.com/JjD9Y74.png[/img]
+[img]https://i.ibb.co/S7MnGrqs/Jj-D9Y74.png[/img]
 [lsemssubtitle]SESSION DETAILS:[/lsemssubtitle]
 [divbox=white]
 
@@ -1054,7 +1054,7 @@ Did the EMR roam properly and safely?
 
 [spoiler=Paperwork]
 [code]
-[img]https://i.imgur.com/p33kyzm.png[/img]
+[img]https://i.ibb.co/nswT0LJv/p33kyzm.png[/img]
 [lsemssubtitle]SESSION DETAILS:[/lsemssubtitle]
 [divbox=white]
 
@@ -1182,7 +1182,7 @@ The title should read  ->  Rank Adjustment | {{applicantName}}
 [hr][/hr]
 
 [color=transparent]spacer[/color]
-[spoiler=Hippocratic Oath][center][img]https://i.imgur.com/GReHLvT.png[/img]
+[spoiler=Hippocratic Oath][center][img]https://i.ibb.co/Ng5bZKm3/GRe-HLv-T.png[/img]
 [i][b][size=115]I, {{applicantName}}, swear to fulfill, to the best of my ability and judgment, this covenant:[/size][/b][/center]
 
 [size=105]
@@ -1211,7 +1211,7 @@ If I do not violate this oath, may I long experience the joy of healing those wh
 
 [spoiler=Certification Passed Paperwork]
 [code]
-[img]https://i.imgur.com/huDCbJP.png[/img]
+[img]https://i.ibb.co/Sw3DtzQS/hu-DCb-JP.png[/img]
 [lsemssubtitle]SESSION DETAILS:[/lsemssubtitle]
 [divbox=white]
 
@@ -1299,10 +1299,10 @@ Rank
 [/code][/spoiler]
 
 
-[spoiler=Personnel File Post][code][center][img]https://i.imgur.com/GReHLvT.pngp[/img][/center]
+[spoiler=Personnel File Post][code][center][img]https://i.ibb.co/Ng5bZKm3/GRe-HLv-T.png[/img][/center]
 [divbox=white]
 [color=transparent]spacer[/color]
-[center][img]https://i.imgur.com/GkqftMR.png[/img][/center]
+[center][img]https://i.ibb.co/N6WZpcJY/Gkqft-MR.png[/img][/center]
 
 [color=transparent]spacer[/color]
 [center][b][size=150]{{applicantName}} has been promoted to EMT-Basic![/size][/b][/center]
@@ -1317,7 +1317,7 @@ Rank
 
 [spoiler=Ride Along Paperwork]
 [code]
-[img]https://i.imgur.com/fV26BWG.png[/img]
+[img]https://i.ibb.co/11jQxhn/f-V26BWG.png[/img]
 [lsemssubtitle]SESSION DETAILS:[/lsemssubtitle]
 [divbox=white]
 
@@ -1373,7 +1373,7 @@ Rank
         {
           label:"Personnel file BBCode",
           "description":"Copy the personnel file BBCode.",
-          copyText:`[img]https://i.imgur.com/nh3xp60.png[/img]
+          copyText:`[img]https://i.ibb.co/FL4nLkwT/nh3xp60.png[/img]
 [lsemssubtitle]EMPLOYEE DETAILS[/lsemssubtitle]
 [divbox=white]
 [b]Full Name:[/b] {{applicantName}}

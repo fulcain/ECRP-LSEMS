@@ -33,7 +33,7 @@ function renderReinstatement({
 [divbox=white]
 ${address}
 [center][b][size=160][color=${color}]${status}[/color][/size][/b]
-[img]https://i.imgur.com/7x0vy1x.png[/img][/center]
+[img]https://i.ibb.co/hJf6jJzZ/7x0vy1x.png[/img][/center]
  
 ${body}
  
@@ -59,7 +59,7 @@ export const reinstatementOnHoldTemplate: REDTemplateDefinition = {
   titleTag: "[ON-HOLD] Reinstatement",
   renderBody: (context) =>
     renderReinstatement({
-      banner: "https://i.imgur.com/t99Kigs.png",
+      banner: "https://i.ibb.co/SwRYyHph/t99Kigs.png",
       status: "ON-HOLD",
       color: "Coral",
       context,
@@ -85,7 +85,7 @@ export const reinstatementReceivedTemplate: REDTemplateDefinition = {
   titleTag: "[RECEIVED] Reinstatement",
   renderBody: (context) =>
     renderReinstatement({
-      banner: "https://i.imgur.com/fXst1fH.png",
+      banner: "https://i.ibb.co/whQ37Rnf/f-Xst1f-H.png",
       status: "REINSTATEMENT RECEIVED",
       color: "Forestgreen",
       context,
@@ -106,7 +106,7 @@ export const reinstatementOfferTemplate: REDTemplateDefinition = {
   titleTag: "[OFFER OF EMPLOYMENT] Reinstatement",
   renderBody: (context) =>
     renderReinstatement({
-      banner: "https://i.imgur.com/T6cDo05.png",
+      banner: "https://i.ibb.co/wNRPqW7p/T6c-Do05.png",
       status: "OFFER OF EMPLOYMENT",
       color: "Darksalmon",
       context,
@@ -136,7 +136,7 @@ export const reinstatementContractTemplate: REDTemplateDefinition = {
   titleTag: "[EMPLOYMENT CONTRACT] Reinstatement",
   renderBody: (context) =>
     renderReinstatement({
-      banner: "https://i.imgur.com/rcifZuQ.png",
+      banner: "https://i.ibb.co/pr9bZWFD/rcif-Zu-Q.png",
       status: "OFFER OF EMPLOYMENT CONTRACT",
       color: "Darksalmon",
       context,
@@ -161,7 +161,7 @@ export const reinstatementAcceptedTemplate: REDTemplateDefinition = {
   titleTag: "[ACCEPTED] Reinstatement",
   renderBody: (context) =>
     renderReinstatement({
-      banner: "https://i.imgur.com/y5fPs5V.png",
+      banner: "https://i.ibb.co/C3t6hphS/y5f-Ps5V.png",
       status: "REINSTATEMENT ACCEPTED",
       color: "Forestgreen",
       context,
@@ -180,7 +180,7 @@ export const reinstatementDeniedTemplate: REDTemplateDefinition = {
   titleTag: "[DENIED] Reinstatement",
   renderBody: (context) =>
     renderReinstatement({
-      banner: "https://i.imgur.com/t49uJPW.png",
+      banner: "https://i.ibb.co/VWJcnHNy/t49u-JPW.png",
       status: "REINSTATEMENT DENIED",
       color: "Firebrick",
       context,
