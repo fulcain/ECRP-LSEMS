@@ -5,50 +5,23 @@ import { HeaderDesktop } from "./components/header-desktop";
 import { headerLinks } from "@/components/layout/header/configs/HeaderLinks";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 w-full">
-      {/* Animated gradient background */}
-      <div className="absolute inset-0 animate-gradient-header bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 pointer-events-none" />
-      
-      {/* Subtle glow line at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 h-px animate-border-glow bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
-      
-      {/* Main content */}
-      <div className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+    <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-xl">
+      <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-10">
         <HeaderDesktop headerLinks={headerLinks} />
         <HeaderMobile headerLinks={headerLinks} />
-        
-        {/* Logo with floating animation and glow */}
-        <Link
-          href="/"
-          className="group relative flex items-center gap-3"
-        >
-          {/* Pulse ring behind logo */}
-          <div className="absolute -inset-2 rounded-full bg-blue-500/20 animate-pulse-ring" />
-          
-          {/* Logo with float and glow */}
-          <div className="relative animate-logo-float">
-            <Image
-              src="https://i.ibb.co/hFgqLTmk/General.png"
-              alt="LSEMS Logo"
-              width={50}
-              height={50}
-              className="transition-transform duration-300 group-hover:scale-110"
-            />
-          </div>
-          
-          {/* Brand text with shimmer effect */}
-          <div className="hidden sm:block">
-            <h1 className="text-xl font-bold animate-shimmer-text">
-              LSEMS
-            </h1>
-            <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400 transition-colors group-hover:text-slate-300">
-              Emergency Medical Services
-            </p>
-          </div>
+
+        <Link href="/" className="group flex shrink-0 items-center gap-2.5">
+          <Image
+            src="https://i.ibb.co/hFgqLTmk/General.png"
+            alt="LSEMS home"
+            width={34}
+            height={34}
+            className="rounded-lg object-contain transition-transform group-hover:scale-105"
+          />
+          <span className="hidden text-sm font-semibold tracking-wide text-slate-200 sm:block">LSEMS</span>
         </Link>
       </div>
     </header>

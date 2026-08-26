@@ -2,7 +2,6 @@
 
 import type { HeaderLink } from "@/components/layout/header/configs/HeaderLinks";
 import Link from "next/link";
-import React from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "../sidebar-context";
@@ -13,6 +12,10 @@ type SidebarDesktopProps = {
   headerLinks: HeaderLink[];
 };
 
+function getLinkPath(href?: string) {
+  return href?.split("?")[0];
+}
+
 export function SidebarDesktop({ headerLinks }: SidebarDesktopProps) {
   const pathname = usePathname();
   const { collapsed, toggleCollapsed } = useSidebar();
@@ -20,98 +23,62 @@ export function SidebarDesktop({ headerLinks }: SidebarDesktopProps) {
   return (
     <aside
       className={cn(
-        "hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:flex lg:flex-col transition-all duration-300 ease-in-out",
-        collapsed ? "lg:w-[72px]" : "lg:w-64",
+        "hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:flex lg:flex-col lg:border-r lg:border-slate-800/80 lg:bg-slate-950/95 lg:backdrop-blur-xl",
+        collapsed ? "lg:w-[76px]" : "lg:w-64",
       )}
     >
-      {/* Background with gradient */}
-      <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-xl" />
-      <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 via-transparent to-purple-500/5" />
-      
-      {/* Subtle right border glow */}
-      <div className="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-blue-500/20 to-transparent" />
-
-      <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden px-3 py-6">
-        {/* Brand + Toggle */}
-        <div className="mb-6 flex items-center gap-2">
+      <div className="flex min-h-0 flex-1 flex-col px-3 py-4">
+        <div className={cn("mb-5 flex items-center gap-2", collapsed ? "justify-center" : "justify-between")}>
           {!collapsed && (
-            <Link
-              href="/"
-              className="group flex items-center gap-3 px-2 flex-1 min-w-0"
-            >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 ring-1 ring-white/10 transition-all duration-300 group-hover:ring-white/20 group-hover:scale-105">
-                <span className="text-lg font-bold text-white">L</span>
-              </div>
-              <div className="min-w-0">
-                <h1 className="text-lg font-bold text-white transition-colors group-hover:text-blue-200 truncate">
-                  LSEMS
-                </h1>
-                <p className="text-[10px] uppercase tracking-widest text-slate-500 transition-colors group-hover:text-slate-400 truncate">
-                  EMS Tools
-                </p>
-              </div>
+            <Link href="/" className="flex min-w-0 items-center gap-3 rounded-xl px-2 py-2">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-500/15 text-sm font-bold text-blue-300 ring-1 ring-blue-400/20">
+                L
+              </span>
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-semibold text-white">LSEMS</span>
+                <span className="block truncate text-[10px] uppercase tracking-[0.18em] text-slate-500">Operations</span>
+              </span>
             </Link>
           )}
-
-          {/* Collapse toggle button */}
           <button
+            type="button"
             onClick={toggleCollapsed}
-            className={cn(
-              "shrink-0 rounded-lg p-1.5 text-slate-400 transition-all duration-200 hover:bg-white/10 hover:text-white",
-              collapsed && "mx-auto mb-2",
-            )}
+            className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-800 hover:text-white"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            {collapsed ? (
-              <PanelLeftOpen className="h-4 w-4" />
-            ) : (
-              <PanelLeftClose className="h-4 w-4" />
-            )}
+            {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
           </button>
         </div>
 
-        {/* Divider */}
-        {!collapsed && <div className="mb-6 h-px bg-white/5" />}
-
-        {/* Navigation */}
-        <nav className="flex-1 space-y-1">
-          {headerLinks.map((item, index) => {
-            const isActive = item.href && pathname === item.href;
+        <div className="mb-4 h-px bg-slate-800/80" />
+        <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto" aria-label="Primary navigation">
+          {headerLinks.map((item) => {
+            const Icon = item.icon;
+            const isActive = getLinkPath(item.href) === pathname;
             return (
               <Link
                 key={item.label}
                 href={item.href || "#"}
                 title={collapsed ? item.label : undefined}
+                aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "group flex items-center gap-3 rounded-xl text-sm font-medium transition-all duration-200 animate-fade-in-up",
-                  collapsed ? "justify-center px-2 py-2.5" : "px-3 py-2.5",
+                  "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
+                  collapsed && "justify-center px-2",
                   isActive
-                    ? "bg-white/10 text-white ring-1 ring-white/10"
-                    : "text-slate-400 hover:bg-white/5 hover:text-white",
+                    ? "bg-blue-500/12 text-blue-200 ring-1 ring-inset ring-blue-400/20"
+                    : "text-slate-400 hover:bg-slate-900 hover:text-slate-100",
                 )}
-                style={{ animationDelay: `${index * 50}ms` }}
               >
-                {/* Active indicator */}
-                <span
-                  className={cn(
-                    "shrink-0 h-1.5 w-1.5 rounded-full transition-all duration-300",
-                    isActive
-                      ? "bg-blue-400 shadow-lg shadow-blue-400/50 scale-125"
-                      : "bg-slate-600 group-hover:bg-slate-400 group-hover:scale-110",
-                  )}
-                />
+                <Icon className={cn("h-4 w-4 shrink-0", isActive ? "text-blue-300" : "text-slate-500 group-hover:text-slate-300")} />
                 {!collapsed && <span className="truncate">{item.label}</span>}
               </Link>
             );
           })}
         </nav>
 
-        {/* Bottom support indicator */}
-        <div className="mt-auto pt-6">
-          <DiscordContactIndicator
-            handle="@fulcain"
-            variant={collapsed ? "icon" : "pill"}
-          />
+        <div className={cn("mt-4 border-t border-slate-800/80 pt-4", collapsed && "flex justify-center") }>
+          <DiscordContactIndicator handle="@fulcain" variant={collapsed ? "icon" : "pill"} />
         </div>
       </div>
     </aside>

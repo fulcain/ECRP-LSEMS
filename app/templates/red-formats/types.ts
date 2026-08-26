@@ -8,6 +8,7 @@ export type REDTemplateContext = {
   applyOtherChar?: "may" | "may not";
   weeks?: number;
   employeeName?: string;
+  employmentRank?: string;
   interviewDate?: string;
   interviewTime?: string;
 };

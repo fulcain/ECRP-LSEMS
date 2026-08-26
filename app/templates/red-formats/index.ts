@@ -10,6 +10,14 @@ import { pendingEditTemplate } from "./pending-edit";
 import { pendingEmployerFeedbackTemplate } from "./pending-employer-feedback";
 import { pendingInterviewTemplate } from "./pending-interview";
 import { pendingReviewTemplate } from "./pending-review";
+import {
+  reinstatementAcceptedTemplate,
+  reinstatementContractTemplate,
+  reinstatementDeniedTemplate,
+  reinstatementOfferTemplate,
+  reinstatementOnHoldTemplate,
+  reinstatementReceivedTemplate,
+} from "./reinstatement";
 import { withdrawnTemplate } from "./withdrawn";
 
 export { type REDTemplateDefinition } from "./types";
@@ -28,4 +36,10 @@ export const redTemplates = [
   frdFeedbackRequestTemplate,    // 8.12 - FRD Feedback Request
   pendingEmployerFeedbackTemplate, // 8.13 - Pending Employer Feedback
   discordInviteTemplate,         // 8.15 - Discord Invite
+  reinstatementOnHoldTemplate,
+  reinstatementReceivedTemplate,
+  reinstatementOfferTemplate,
+  reinstatementContractTemplate,
+  reinstatementAcceptedTemplate,
+  reinstatementDeniedTemplate,
 ] as const;

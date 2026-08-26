@@ -25,6 +25,16 @@ export const changeLog: ChangeLogEntry[] = [
         description:
           "Added automatic field filling for LOA Active and Extended forms from pasted LOA titles.",
       },
+      {
+        type: "feature",
+        description:
+          "Added six RED reinstatement formats, including on-hold, received, employment offer, contract, accepted, and denied responses.",
+      },
+      {
+        type: "change",
+        description:
+          "Refreshed the app UI with a cleaner operations-focused layout, icon navigation, improved mobile controls, and more consistent page headers.",
+      },
     ],
   },
   {

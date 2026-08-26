@@ -1,25 +1,36 @@
+import type { LucideIcon } from "lucide-react";
+import {
+  Activity,
+  BookOpen,
+  ClipboardList,
+  Clock3,
+  Link2,
+  Settings2,
+  Shield,
+  UsersRound,
+} from "lucide-react";
+
 export type HeaderLink = {
   label: string;
   href?: string;
-  children?: { label: string; href: string }[];
+  icon: LucideIcon;
 };
 
 export const headerLinks: HeaderLink[] = [
   {
     label: "Staff Page",
     href: "/staff",
+    icon: Settings2,
   },
   {
     label: "Division Templates",
     href: "/email-templates",
+    icon: UsersRound,
   },
- { label: "RED", href: "/red-formats" },
-  { label: "BLS", href: "/bls-formats" },
-  { label: "Quick Links", href: "/quick-links" },
-  { label: "Availability", href: "/availability" },
-  {
-    label: "Supervisor",
-    href: "/supervisor?tab=loa",
-  },
-  { label: "Change Log", href: "/changelog" },
+  { label: "RED", href: "/red-formats", icon: Shield },
+  { label: "BLS", href: "/bls-formats", icon: Activity },
+  { label: "Quick Links", href: "/quick-links", icon: Link2 },
+  { label: "Availability", href: "/availability", icon: Clock3 },
+  { label: "Supervisor", href: "/supervisor?tab=loa", icon: ClipboardList },
+  { label: "Change Log", href: "/changelog", icon: BookOpen },
 ];

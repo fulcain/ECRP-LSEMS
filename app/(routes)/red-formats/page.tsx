@@ -70,6 +70,12 @@ const formatHue: Record<string, string> = {
   "frd-feedback-request": "250",
   "pending-employer-feedback": "40",
   "discord-invite": "220",
+  "reinstatement-on-hold": "28",
+  "reinstatement-received": "142",
+  "reinstatement-offer": "16",
+  "reinstatement-contract": "16",
+  "reinstatement-accepted": "142",
+  "reinstatement-denied": "0",
 };
 
 
@@ -142,6 +148,7 @@ export default function REDFormatsPage() {
     2,
   );
   const [employeeName] = useState("");
+  const [employmentRank, setEmploymentRank] = useState("");
   const [interviewDate, setInterviewDate] = useState("");
   const [interviewTime, setInterviewTime] = useState("");
 
@@ -155,13 +162,25 @@ export default function REDFormatsPage() {
     redTemplates.find((format) => format.value === selectedFormat) ??
     redTemplates[0];
   const redRank = divisionRanks.RED ?? "";
+  const supportsReasons =
+    selectedFormat === "pending-edit" ||
+    selectedFormat === "reinstatement-on-hold" ||
+    selectedFormat === "reinstatement-denied";
+  const supportsEmploymentRank = selectedFormat === "reinstatement-offer";
+  const isReinstatement = selectedFormat.startsWith("reinstatement-");
+  const reasonSectionLabel =
+    selectedFormat === "reinstatement-denied"
+      ? "Reasons for denial"
+      : selectedFormat === "reinstatement-on-hold"
+        ? "Reinstatement concerns"
+        : "Hold reasons";
 
   // Build the full thread title: "[STATUS] LSEMS Application - <Applicant Name>".
   // The status prefix (e.g. "[ACCEPTED] LSEMS Application") is set by the
   // template; the suffix is the title-cased applicant name. When no name
   // is entered, only the status prefix is shown — so the pill clearly
   // signals that the suffix is still missing.
-  const fullTitle = activeFormat.titleTag
+  const fullTitle = !isReinstatement && activeFormat.titleTag
     ? `${activeFormat.titleTag}${
         applicantName.trim() ? ` - ${formatTitleCase(applicantName)}` : ""
       }`
@@ -185,6 +204,7 @@ export default function REDFormatsPage() {
       applyOtherChar,
       weeks,
       employeeName: employeeName || undefined,
+      employmentRank: employmentRank || undefined,
       interviewDate: interviewDate || undefined,
       interviewTime: interviewTime || undefined,
     });
@@ -201,6 +221,7 @@ export default function REDFormatsPage() {
     applyOtherChar,
     weeks,
     employeeName,
+    employmentRank,
     interviewDate,
     interviewTime,
   ]);
@@ -434,13 +455,34 @@ export default function REDFormatsPage() {
                     </div>
                   )}
 
-                  {selectedFormat === "pending-edit" && (
+                  {supportsEmploymentRank && (
                     <div
-                      key="pending-edit"
+                      key="employment-rank"
+                      className="animate-fade-up space-y-3 rounded-xl border border-white/5 bg-slate-800/40 p-4"
+                    >
+                      <p className="text-xs font-semibold tracking-[0.2em] text-rose-300 uppercase">
+                        Reinstatement offer details
+                      </p>
+                      <div className="space-y-2">
+                        <Label htmlFor="employment-rank">Rank offered</Label>
+                        <Input
+                          id="employment-rank"
+                          value={employmentRank}
+                          onChange={(event) => setEmploymentRank(event.target.value)}
+                          placeholder="Decided Rank"
+                          className="border-slate-700 bg-slate-800 text-white placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-rose-500/30"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {supportsReasons && (
+                    <div
+                      key={selectedFormat}
                       className="animate-fade-up space-y-3 rounded-xl border border-white/5 bg-slate-800/40 p-4"
                     >
                       <p className="text-xs font-semibold tracking-[0.2em] text-amber-300 uppercase">
-                        Hold reasons
+                        {reasonSectionLabel}
                       </p>
                       <div className="space-y-2">
                         {reasons.map((reason, index) => (
