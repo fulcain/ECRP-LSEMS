@@ -13,6 +13,16 @@ export type ChangeLogEntry = {
 
 export const changeLog: ChangeLogEntry[] = [
   {
+    date: "Sep 1, 2026",
+    changes: [
+      {
+        type: "feature",
+        description:
+          "Added a live editable preview to the Division Email Templates Template Options, with edits saved locally.",
+      },
+    ],
+  },
+  {
     date: "Aug 26, 2026",
     changes: [
       {
