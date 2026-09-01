@@ -1,7 +1,8 @@
 import { Divisions } from "@/app/constants/divisions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Ambulance } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Ambulance, RotateCcw } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -14,6 +15,9 @@ interface TemplateOptionsProps {
   setRecipient: (recipient: string) => void;
   handleGenerateSignature: () => void;
   handleGenerateNewTemplate: () => void;
+  previewBody: string;
+  onPreviewChange: (value: string) => void;
+  onPreviewReset: () => void;
 }
 
 export default function TemplateOptions({
@@ -25,6 +29,9 @@ export default function TemplateOptions({
   setRecipient,
   handleGenerateSignature,
   handleGenerateNewTemplate,
+  previewBody,
+  onPreviewChange,
+  onPreviewReset,
 }: TemplateOptionsProps) {
   return (
     <div className="lg:col-span-2">
@@ -100,6 +107,19 @@ export default function TemplateOptions({
               />
             </div>
 
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-300">
+                Preview
+              </label>
+              <Textarea
+                placeholder="Generated template appears here — type to edit; edits are saved locally."
+                value={previewBody}
+                onChange={(e) => onPreviewChange(e.target.value)}
+                rows={12}
+                className="w-full resize-y border-slate-700 bg-slate-800 font-mono text-xs text-slate-200 placeholder:text-slate-500 transition-all duration-200 hover:border-slate-500 focus-visible:ring-2"
+              />
+            </div>
+
             <div className="grid grid-cols-1 gap-3 pt-2 sm:grid-cols-3">
               <Button
                 size="lg"
@@ -133,19 +153,32 @@ export default function TemplateOptions({
                 </Button>
               </Link>
 
-              <Button
-                size="lg"
-                variant="outline"
-                className="w-full cursor-pointer border-slate-600 text-slate-300 transition-all duration-200 hover:scale-[1.02] hover:border-sky-500/40 hover:bg-sky-950/20 hover:text-sky-200 active:scale-95"
-                onClick={handleGenerateSignature}
-                disabled={
-                  !selectedDivision ||
-                  (Array.isArray(selectedDivision?.data?.ranks) &&
-                    !selectedRank)
-                }
-              >
-                Create Signature
-              </Button>
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full cursor-pointer border-slate-600 text-slate-300 transition-all duration-200 hover:scale-[1.02] hover:border-sky-500/40 hover:bg-sky-950/20 hover:text-sky-200 active:scale-95"
+                  onClick={handleGenerateSignature}
+                  disabled={
+                    !selectedDivision ||
+                    (Array.isArray(selectedDivision?.data?.ranks) &&
+                      !selectedRank)
+                  }
+                >
+                  Signature
+                </Button>
+
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full cursor-pointer border-slate-600 text-slate-300 transition-all duration-200 hover:scale-[1.02] hover:border-amber-500/40 hover:bg-amber-950/20 hover:text-amber-200 active:scale-95"
+                  onClick={onPreviewReset}
+                  disabled={!previewBody}
+                >
+                  <RotateCcw className="mr-1 h-4 w-4" />
+                  Reset
+                </Button>
+              </div>
             </div>
           </div>
         ) : (

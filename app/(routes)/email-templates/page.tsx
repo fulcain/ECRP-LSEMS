@@ -12,8 +12,28 @@ import { useMedic } from "@/app/context/MedicContext";
 import DivisionSelector from "@/app/(routes)/email-templates/components/DivisionSelector";
 import TemplateOptions from "@/app/(routes)/email-templates/components/TemplateOptions";
 import { BodyAndMainTitle } from "@/components/layout/main-and-title";
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useRef } from "react";
 import { Bounce, ToastContainer, toast } from "react-toastify";
+
+// Re-inject the live structured fields (subject/recipient) into a preview
+// body while preserving all other user edits.
+const applyLiveFields = (
+  body: string,
+  subject: string,
+  recipient: string,
+  date: string,
+): string => {
+  let out = body;
+  const titleValue = subject ? `${subject} | ${date}` : date;
+  out = out.replace(/(^|\n)title="[^"]*"/, `$1title="${titleValue}"`);
+  const greeting = recipient ? `[b]Dear ${recipient}[/b],` : "";
+  if (/\[b\]Dear [^\n]*\n/.test(out)) {
+    out = out.replace(/\[b\]Dear [^\n]*\n/, greeting ? `${greeting}\n` : "");
+  } else if (greeting) {
+    out = out.replace(/(\[divbox4=eeeeee\]\r?\n)/, `$1${greeting}\n`);
+  }
+  return out;
+};
 
 export default function Home() {
   const { medicCredentials, divisionRanks, setDivisionRanks } = useMedic();
@@ -23,6 +43,8 @@ export default function Home() {
   const [selectedRank, setSelectedRank] = useState("");
   const [subject, setSubject] = useState("");
   const [recipient, setRecipient] = useState("");
+  const [previewBody, setPreviewBody] = useState("");
+  const [previewEdited, setPreviewEdited] = useState(false);
 
   const isCredentialsEmpty =
     !medicCredentials.name ||
@@ -54,18 +76,13 @@ export default function Home() {
     }).trim();
   }, [selectedDivision, selectedRank, medicCredentials, isCredentialsEmpty]);
 
-  const handleGenerateSignature = () => {
-    if (!selectedDivision || !medicSignatureText) return;
-    navigator.clipboard
-      .writeText(medicSignatureText)
-      .then(() => toast.success("Signature Copied!"))
-      .catch((err) => console.error("Failed to copy: ", err));
-  };
+  const canGenerate =
+    selectedDivision !== null &&
+    (!Array.isArray(selectedDivision?.data?.ranks) || !!selectedRank);
 
-  const handleGenerateNewTemplate = () => {
-    if (!selectedDivision) return;
-
-    const bbcode = generateEmailTemplate({
+  const generatedTemplate = useMemo(() => {
+    if (!selectedDivision) return "";
+    return generateEmailTemplate({
       medicCredentials: { ...medicCredentials },
       selectedRank: selectedRank || "",
       division: selectedDivision.data,
@@ -73,11 +90,81 @@ export default function Home() {
       recipient: recipient.trim(),
       date: getCurrentDateFormatted(),
     });
+  }, [selectedDivision, selectedRank, medicCredentials, subject, recipient]);
 
+  // Keep the preview in sync with the generated template until the user edits.
+  useEffect(() => {
+    if (!previewEdited) setPreviewBody(generatedTemplate);
+  }, [generatedTemplate, previewEdited]);
+
+  // Subject/recipient are live fields: re-inject them into the preview even
+  // when the body has manual edits, preserving all other user edits. The ref
+  // adopts the initial values on mount so a hydrated body is not clobbered.
+  const lastLiveFieldsRef = useRef<string | null>(null);
+  useEffect(() => {
+    const key = `${subject.trim()}\u0000${recipient.trim()}`;
+    if (lastLiveFieldsRef.current === null) {
+      lastLiveFieldsRef.current = key;
+      return;
+    }
+    if (lastLiveFieldsRef.current === key) return;
+    lastLiveFieldsRef.current = key;
+    if (!previewEdited) return;
+    setPreviewBody((prev) =>
+      prev
+        ? applyLiveFields(prev, subject.trim(), recipient.trim(), getCurrentDateFormatted())
+        : prev,
+    );
+  }, [subject, recipient, previewEdited]);
+
+  // Hydrate the edited body once after mount so a reload doesn't lose it.
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("email-template-body");
+      if (saved) {
+        setPreviewBody(saved);
+        setPreviewEdited(true);
+      }
+    } catch (error) {
+      console.error("Error reading saved template body:", error);
+    }
+  }, []);
+
+  const handlePreviewChange = (value: string) => {
+    setPreviewBody(value);
+    setPreviewEdited(true);
+    try {
+      localStorage.setItem("email-template-body", value);
+    } catch (error) {
+      console.error("Error saving template body:", error);
+    }
+  };
+
+  const handlePreviewReset = () => {
+    setPreviewEdited(false);
+    setPreviewBody(generatedTemplate);
+    try {
+      localStorage.removeItem("email-template-body");
+    } catch (error) {
+      console.error("Error clearing saved template body:", error);
+    }
+  };
+
+  const copyToClipboard = (text: string, message: string) => {
     navigator.clipboard
-      .writeText(bbcode)
-      .then(() => toast.success("BBCode Template Copied!"))
+      .writeText(text)
+      .then(() => toast.success(message))
       .catch((err) => console.error("Failed to copy: ", err));
+  };
+
+  const handleGenerateSignature = () => {
+    if (!selectedDivision || !medicSignatureText) return;
+    copyToClipboard(medicSignatureText, "Signature Copied!");
+  };
+
+  const handleGenerateNewTemplate = () => {
+    if (!canGenerate) return;
+    copyToClipboard(previewBody || generatedTemplate, "BBCode Template Copied!");
   };
 
   return (
@@ -120,6 +207,9 @@ export default function Home() {
             setRecipient={setRecipient}
             handleGenerateSignature={handleGenerateSignature}
             handleGenerateNewTemplate={handleGenerateNewTemplate}
+            previewBody={previewBody}
+            onPreviewChange={handlePreviewChange}
+            onPreviewReset={handlePreviewReset}
           />
         </div>
       </div>
