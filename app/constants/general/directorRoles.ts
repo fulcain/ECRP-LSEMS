@@ -35,6 +35,13 @@ export const defaultDirectorRole: DirectorRole = {
 
 export type DirectorGuard = DirectorRole | null | undefined;
 
+// Returns the director title whenever the user holds one, regardless of which
+// division is selected (used for department-wide templates).
+export const getDirectorTitle = (directorRole: DirectorGuard): string | null => {
+  if (!directorRole?.enabled || !directorRole.title) return null;
+  return directorRole.title;
+};
+
 // Returns the director title when the user holds one AND that director covers
 // the given division. Otherwise returns null so the caller falls back to the
 // regular divisional rank.
@@ -47,5 +54,17 @@ export const getDirectorTitleForDivision = (
   if (!title) return null;
   const responsibility = directorResponsibility[title as DirectorRoleTitle];
   if (!responsibility) return null;
-  return responsibility.includes(divisionLabel) ? title : null;
+
+  const normalizedDivision = divisionLabel.trim().toLowerCase();
+  return responsibility.some((division) => {
+    const normalizedResponsibility = division.toLowerCase();
+    return (
+      normalizedDivision === normalizedResponsibility ||
+      normalizedDivision.startsWith(`${normalizedResponsibility} `) ||
+      normalizedDivision.includes(` ${normalizedResponsibility} `) ||
+      normalizedDivision.endsWith(` ${normalizedResponsibility}`)
+    );
+  })
+    ? title
+    : null;
 };

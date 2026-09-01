@@ -80,22 +80,43 @@ export default function Home() {
     selectedDivision !== null &&
     (!Array.isArray(selectedDivision?.data?.ranks) || !!selectedRank);
 
+  const effectiveRank = selectedRank || "";
   const generatedTemplate = useMemo(() => {
     if (!selectedDivision) return "";
     return generateEmailTemplate({
       medicCredentials: { ...medicCredentials },
-      selectedRank: selectedRank || "",
+      selectedRank: effectiveRank,
       division: selectedDivision.data,
+      divisionLabel: selectedDivision.label,
       subject: subject.trim(),
       recipient: recipient.trim(),
       date: getCurrentDateFormatted(),
     });
-  }, [selectedDivision, selectedRank, medicCredentials, subject, recipient]);
+  }, [selectedDivision, effectiveRank, medicCredentials, subject, recipient]);
 
   // Keep the preview in sync with the generated template until the user edits.
   useEffect(() => {
     if (!previewEdited) setPreviewBody(generatedTemplate);
   }, [generatedTemplate, previewEdited]);
+
+  // Selecting a different division / division rank / director role always shows
+  // a freshly generated template; clear any saved manual preview so a reload
+  // cannot surface content belonging to an old selection.
+  useEffect(() => {
+    if (!selectedDivision) return;
+    setPreviewBody(generatedTemplate);
+    setPreviewEdited(false);
+    try {
+      localStorage.removeItem("email-template-body");
+    } catch (error) {
+      console.error("Error clearing saved template body:", error);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    selectedDivision?.label,
+    effectiveRank,
+    medicCredentials.directorRole?.title,
+  ]);
 
   // Subject/recipient are live fields: re-inject them into the preview even
   // when the body has manual edits, preserving all other user edits. The ref
@@ -164,7 +185,17 @@ export default function Home() {
 
   const handleGenerateNewTemplate = () => {
     if (!canGenerate) return;
-    copyToClipboard(previewBody || generatedTemplate, "BBCode Template Copied!");
+    // Always regenerate so the current director role and division rank cannot
+    // be hidden by an older locally saved preview.
+    const template = generatedTemplate;
+    setPreviewBody(template);
+    setPreviewEdited(false);
+    try {
+      localStorage.removeItem("email-template-body");
+    } catch (error) {
+      console.error("Error clearing saved template body:", error);
+    }
+    copyToClipboard(template, "BBCode Template Copied!");
   };
 
   return (

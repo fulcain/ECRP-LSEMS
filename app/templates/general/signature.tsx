@@ -1,5 +1,8 @@
 import { MedicCredentials } from "@/app/(routes)/email-templates/components/MedicCredentials";
-import { getDirectorTitleForDivision } from "@/app/constants/general/directorRoles";
+import {
+  getDirectorTitle,
+  getDirectorTitleForDivision,
+} from "@/app/constants/general/directorRoles";
 
 export const generateSignature = ({
   medicCredentials,
@@ -10,15 +13,22 @@ export const generateSignature = ({
   selectedRank: string;
   selectedDivisionLabel?: string | null;
 }) => {
-  const directorTitle = getDirectorTitleForDivision(
-    medicCredentials.directorRole,
-    selectedDivisionLabel,
-  );
+  const isGeneralDivision =
+    selectedDivisionLabel?.trim().toLowerCase() === "general";
+
+  // Department-wide signature: always show the held director title. Division
+  // signatures only show it when the director covers that division.
+  const directorTitle = isGeneralDivision
+    ? getDirectorTitle(medicCredentials.directorRole)
+    : getDirectorTitleForDivision(
+        medicCredentials.directorRole,
+        selectedDivisionLabel,
+      );
 
   const rankLine = directorTitle
-    ? `[b]${medicCredentials.rank} / ${directorTitle}[/b]`
+    ? `[b]${directorTitle} / ${medicCredentials.rank}[/b]`
     : selectedRank
-      ? `[b]${medicCredentials.rank} / ${selectedRank}[/b]`
+      ? `[b]${selectedRank} / ${medicCredentials.rank}[/b]`
       : `[b]${medicCredentials.rank}[/b]`;
 
   return `[img]${medicCredentials.signature}[/img]

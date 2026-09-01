@@ -1,5 +1,9 @@
 import { MedicCredentials } from "@/app/(routes)/email-templates/components/MedicCredentials";
 import { DivisionData } from "@/app/constants/divisions";
+import {
+  getDirectorTitle,
+  getDirectorTitleForDivision,
+} from "@/app/constants/general/directorRoles";
 
 export const generateEmailTemplate = ({
   medicCredentials,
@@ -8,6 +12,7 @@ export const generateEmailTemplate = ({
   recipient,
   date,
   division,
+  divisionLabel,
 }: {
   medicCredentials: MedicCredentials;
   selectedRank: string;
@@ -15,14 +20,20 @@ export const generateEmailTemplate = ({
   date: string;
   recipient: string;
   division?: DivisionData;
+  divisionLabel?: string;
 }) => {
-  const rankLine = selectedRank
-    ? `${selectedRank} / ${medicCredentials.rank}`
-    : `${medicCredentials.rank}`;
+  const isGeneralDivision = divisionLabel?.trim().toLowerCase() === "general";
 
-  const isGeneralDivision =
-    division?.divisionName?.trim().toLowerCase() ===
-    "los santos emergency medical services".toLowerCase();
+  // Department-wide template: always show the held director title. Division
+  // templates only show it when the director covers that division.
+  const directorTitle = isGeneralDivision
+    ? getDirectorTitle(medicCredentials.directorRole)
+    : getDirectorTitleForDivision(medicCredentials.directorRole, divisionLabel);
+  const roleLine = directorTitle
+    ? `${directorTitle} / ${medicCredentials.rank}`
+    : selectedRank
+      ? `${selectedRank} / ${medicCredentials.rank}`
+      : medicCredentials.rank;
 
   const locationParam = isGeneralDivision
     ? "Pillbox Hill Medical Center | Paleto Bay Medical Center"
@@ -47,6 +58,6 @@ Be well,
 [/divbox4]
 [divbox=#8d1717][color=transparent]spacer[/color][/divbox]
 [divbox4=eeeeee]
-[mdsig name="${medicCredentials.name || "Name"}" role="${rankLine}" img="${medicCredentials.signature || "https://i.ibb.co/8DqJghtt/7flpkan.png"}" height=38]
+[mdsig name="${medicCredentials.name || "Name"}" role="${roleLine}" img="${medicCredentials.signature || "https://i.ibb.co/8DqJghtt/7flpkan.png"}" height=38]
 [/divbox4]`;
 };
