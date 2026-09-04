@@ -83,6 +83,15 @@ export function ContractSigningProcessor() {
     "supervisor-contract-file-link",
     "",
   );
+  const badgeNumber = useMemo(() => {
+    try {
+      const url = new URL(personnelFileLink);
+      const u = url.searchParams.get("u");
+      return u ? u : "";
+    } catch {
+      return "";
+    }
+  }, [personnelFileLink]);
   const [dateHired, setDateHired] = useState<Date | undefined>(() => getDefaultDateHired());
   const [manualDate, setManualDate] = useLocalStorage<string>(
     "supervisor-contract-manual-date-string",
@@ -211,6 +220,7 @@ export function ContractSigningProcessor() {
         employeeNumber={employeeNumber}
         employeeProfileLink={employeeProfileLink}
         personnelFileLink={personnelFileLink}
+        badgeNumber={badgeNumber}
       />
 
       <QuickLinksPanel
