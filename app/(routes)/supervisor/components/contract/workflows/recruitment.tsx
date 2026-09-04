@@ -293,8 +293,8 @@ If you would like to resign from LSEMS, as sad as it'll be to see you go, please
       actions: [
         {
           label: "Open FTP Forum",
-          url: "https://gov.eclipse-rp.net/viewforum.php?f=617",
-          description: "Field Training Program profiles sub-forum.",
+          url: "https://gov.eclipse-rp.net/posting.php?mode=post&f=617",
+          description: "Open the posting page for Field Training Program profiles.",
         },
           {
           label: "Field Training Profile BBCode",
@@ -1357,6 +1357,12 @@ Rank
 
 [lsemsfooter][/lsemsfooter]`
         },
+        {
+          label: "Copy FTP Title",
+          description: "Copy the Field Training Program profile title.",
+          requiresName: true,
+          copyText: "[Pending Introduction] {{applicantName}}",
+        },
       ],
     },
     {
@@ -1378,7 +1384,7 @@ Rank
 [divbox=white]
 [b]Full Name:[/b] {{applicantName}}
 [b]Phone:[/b] {{phone}}
-[b]Badge Number:[/b] XXXXXX
+[b]Badge Number:[/b] {{badgeNumber}}
 [b]Callsign:[/b] XXXXX
 [b]Rank:[/b] EMR
 [b]Date Hired:\[/b\] {{dateHired}}
@@ -1443,8 +1449,9 @@ Rank
           label: "Copy Roster Entry",
           description:
             "Copy the standard Staff Roster template to paste into the roster topic.",
+          requiresMetadata: ["employeeProfileLink", "personnelFileLink"],
           copyText:
-            "[b]X[/b] - [url={{employeeProfileLink}}]#{{employeeNumber}}[/url] - [b]EMR[/b] - [url={{personnelFileLink}}]{{applicantName}}[/url]",
+            "[b]X[/b] - [url={{employeeProfileLink}}]#{{personnelFileNumber}}[/url] - [b]EMR[/b] - [url={{personnelFileLink}}]{{applicantName}}[/url]",
         },
       ],
     },

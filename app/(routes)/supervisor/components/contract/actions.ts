@@ -35,6 +35,8 @@ const METADATA_PLACEHOLDERS = [
   "{{employeeNumber}}",
   "{{employeeProfileLink}}",
   "{{personnelFileLink}}",
+  "{{badgeNumber}}",
+  "{{personnelFileNumber}}",
 ] as const;
 
 /**
@@ -45,7 +47,7 @@ const METADATA_PLACEHOLDERS = [
 function interpolatePlaceholders(
   text: string,
   personnelName: string | null,
-  metadata: { dateHired: string | null; phone: string | null; employeeNumber: string | null; employeeProfileLink: string | null; personnelFileLink: string | null },
+  metadata: { dateHired: string | null; phone: string | null; employeeNumber: string | null; employeeProfileLink: string | null; personnelFileLink: string | null; badgeNumber: string | null; personnelFileNumber: string | null },
 ): string {
   let out = text;
   if (personnelName) {
@@ -76,13 +78,13 @@ function interpolatePlaceholders(
 export function handleContractAction(
   action: ExternalLink,
   personnelName: string | null,
-  metadata?: { dateHired?: string | null; phone?: string | null; employeeNumber?: string | null; employeeProfileLink?: string | null; personnelFileLink?: string | null },
+  metadata?: { dateHired?: string | null; phone?: string | null; employeeNumber?: string | null; employeeProfileLink?: string | null; personnelFileLink?: string | null; badgeNumber?: string | null; personnelFileNumber?: string | null },
 ): void {
   if (action.copyText) {
     const interpolated = interpolatePlaceholders(
       action.copyText,
       personnelName,
-      { dateHired: metadata?.dateHired ?? null, phone: metadata?.phone ?? null, employeeNumber: metadata?.employeeNumber ?? null, employeeProfileLink: metadata?.employeeProfileLink ?? null, personnelFileLink: metadata?.personnelFileLink ?? null },
+      { dateHired: metadata?.dateHired ?? null, phone: metadata?.phone ?? null, employeeNumber: metadata?.employeeNumber ?? null, employeeProfileLink: metadata?.employeeProfileLink ?? null, personnelFileLink: metadata?.personnelFileLink ?? null, badgeNumber: metadata?.badgeNumber ?? null, personnelFileNumber: metadata?.personnelFileNumber ?? null },
     );
     if (action.url) {
       copyBBCodeAndOpen({ bbCodeText: interpolated, url: action.url });

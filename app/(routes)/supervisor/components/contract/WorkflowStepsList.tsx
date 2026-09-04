@@ -31,6 +31,7 @@ type WorkflowStepsListProps = {
   employeeNumber: string;
   employeeProfileLink: string;
   personnelFileLink: string;
+  badgeNumber: string;
 };
 
 export function WorkflowStepsList({
@@ -46,6 +47,7 @@ export function WorkflowStepsList({
   employeeNumber,
   employeeProfileLink,
   personnelFileLink,
+  badgeNumber,
 }: WorkflowStepsListProps) {
   return (
     <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
@@ -81,6 +83,7 @@ export function WorkflowStepsList({
             employeeNumber={employeeNumber}
             employeeProfileLink={employeeProfileLink}
             personnelFileLink={personnelFileLink}
+            badgeNumber={badgeNumber}
           />
         ))}
       </ol>
@@ -116,12 +119,20 @@ type StepRowProps = {
   employeeNumber: string;
   employeeProfileLink: string;
   personnelFileLink: string;
+  badgeNumber: string;
 };
 
-function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, employeeNumber, employeeProfileLink, personnelFileLink }: StepRowProps) {
+const METADATA_LABELS: Record<string, string> = {
+  employeeProfileLink: "Employee Profile Link",
+  personnelFileLink: "Personnel File Link",
+  badgeNumber: "Badge Number",
+  personnelFileNumber: "Personnel File Number",
+};
+
+function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, employeeNumber, employeeProfileLink, personnelFileLink, badgeNumber }: StepRowProps) {
   const trimmedName = personnelName.trim();
   const passedName = trimmedName.length > 0 ? trimmedName : null;
-  const metadata = { dateHired: dateHired || null, phone: phone || null, employeeNumber: employeeNumber || null, employeeProfileLink: employeeProfileLink || null, personnelFileLink: personnelFileLink || null };
+  const metadata = { dateHired: dateHired || null, phone: phone || null, employeeNumber: employeeNumber || null, employeeProfileLink: employeeProfileLink || null, personnelFileLink: personnelFileLink || null, badgeNumber: badgeNumber || null, personnelFileNumber: personnelFileLink ? ((() => { try { return new URL(personnelFileLink).searchParams.get('u') ?? null; } catch { return null; } })()) : null };
 
   return (
     <li className="rounded-lg border border-slate-800 bg-slate-950/50 p-4 transition-colors hover:border-slate-700">
@@ -172,13 +183,34 @@ function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, empl
                     </Link>
                   );
                 }
+                const requiredMissing = (action.requiresMetadata ?? []).filter(
+                  (key) => !metadata[key],
+                );
+                const nameMissing = !!(action.requiresName && !passedName);
+                const missingLabels = [
+                  ...(nameMissing ? ["Applicant Name"] : []),
+                  ...requiredMissing.map((key) => METADATA_LABELS[key]),
+                ];
+                const disabled = missingLabels.length > 0;
                 return (
                   <button
                     key={idx}
                     type="button"
-                    onClick={() => handleContractAction(action, passedName, metadata)}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
-                    title={action.description}
+                    disabled={disabled}
+                    onClick={() => {
+                      if (disabled) return;
+                      handleContractAction(action, passedName, metadata);
+                    }}
+                    className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs transition-colors ${
+                      disabled
+                        ? "cursor-not-allowed border-slate-800 bg-slate-950 text-slate-600"
+                        : "border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white"
+                    }`}
+                    title={
+                      disabled
+                        ? `${missingLabels.join(", ")} required to enable`
+                        : action.description
+                    }
                   >
                     {action.copyText ? (
                       <Copy className="h-3 w-3" />
@@ -191,6 +223,26 @@ function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, empl
               })}
             </div>
           )}
+          {(() => {
+            const missingLabels: string[] = [];
+            for (const action of step.actions) {
+              if (action.requiresName && !passedName) {
+                missingLabels.push("Applicant Name");
+              }
+              for (const key of action.requiresMetadata ?? []) {
+                if (!metadata[key]) {
+                  missingLabels.push(METADATA_LABELS[key]);
+                }
+              }
+            }
+            const unique = Array.from(new Set(missingLabels));
+            if (unique.length === 0) return null;
+            return (
+              <p className="mt-2 text-xs text-amber-400/90">
+                Fill in the {unique.join(", ")} to enable copying.
+              </p>
+            );
+          })()}
         </div>
       </div>
     </li>
