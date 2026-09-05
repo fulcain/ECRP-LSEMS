@@ -134,7 +134,7 @@ You can get the basic signature instructions [url=https://gov.eclipse-rp.net/vie
 Kind regards,
 
 [img]SIGNATURE[/img]
-[i]{{applicantName}}[/i]
+[i]Medic Name[/i]
 [b]Rank[/b]
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox]
@@ -323,6 +323,9 @@ If you would like to resign from LSEMS, as sad as it'll be to see you go, please
 [*]Explain to the reinstatee the value of blockades and show them that they do save lives.
 [*]Explain to them that we can also build a tent with supplies found in our vehicles, but that it should only be used for Code 1 situations or when otherwise specified. (( /blockade tent ))
 [*]Show the reinstatee how to block incoming traffic using the ambulance.
+[*]Remind the reinstatee that they should never park the ambulance on train tracks.
+[*]Remind the reinstatee that medics and patients should wear seatbelts in the ambulance whenever possible. Make sure patients are properly secured before transport. If they are on a stretcher, use the stretcher straps.
+[*][ooc]Remind them to RP securing the patient and have the other player press [c]B[/c].[/ooc]
 [*]Take the reinstatee on a public road, park the ambulance, and have them practice doing scene management.
 [/list]
 

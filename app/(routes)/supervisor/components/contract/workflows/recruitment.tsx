@@ -199,7 +199,7 @@ You can get the basic signature instructions [url=https://gov.eclipse-rp.net/vie
 Kind regards,
 
 [img]SIGNATURE[/img]
-[i]{{applicantName}}[/i]
+[i]Medic Name[/i]
 [b]Rank[/b]
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox]
@@ -458,7 +458,7 @@ X
 [lsemssubtitle]SIGNATURE[/lsemssubtitle]
 [divbox=white]
 [img]SIGNATURE[/img]
-[i]{{applicantName}}[/i]
+[i]Medic Name[/i]
 Rank
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox]
@@ -677,7 +677,7 @@ INPUT FEEDBACK HERE
 [lsemssubtitle]SIGNATURE[/lsemssubtitle]
 [divbox=white]
 [img]SIGNATURE[/img]
-[i]{{applicantName}}[/i]
+[i]Medic Name[/i]
 Rank
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox]
@@ -818,7 +818,7 @@ INPUT FEEDBACK HERE
 [lsemssubtitle]SIGNATURE[/lsemssubtitle]
 [divbox=white]
 [img]SIGNATURE[/img]
-[i]{{applicantName}}[/i]
+[i]Medic Name[/i]
 Rank
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox]
@@ -841,9 +841,11 @@ Rank
 [*]There are 25 ambulances for EMRs to use in total. 10 EMT/orange ambulances, 5 Blue ambulances, and 10 large ambulances.
 [*]Inform the EMR that all vehicles are fleet vehicles and we must take care of them for those who use it after you. Before you park, repair and refuel the vehicle. Maintenance of vehicles come from LSEMS treasury.
 [*]Inform the EMR to always keep their ambulance locked. Double-checking is better than not checking.
+[*]Inform the EMR that both medics and patients should have their seatbelts fastened while inside the ambulance whenever possible. [ooc][c]B[/c][/ooc] The medic should make sure the patient is properly secured before beginning transport. If the patient is on a stretcher, make sure they are secured to the stretcher using the appropriate straps. [ooc]Tell them they must RP securing the patient and ask the other player to press [c]B[/c] on their keyboard.[/ooc]
+[*]Remind the EMR that they must not park the ambulance on train tracks.
 [*]Explain to the EMR what the difference between Code 2 and Code 3 is and how to use the lights and sirens.
 [ooc][c]E[/c] = lights & [c]Q[/c] = sirens[/ooc]
-[*][ooc]Explain to EMRs that only under direct permission from a Command+ member are they allowed to change the colour of their vehicles. If found to have changed the colour of their vehicle without permission this will result in IC reprecussions.[ooc]
+[*][ooc]Explain to EMRs that only under direct permission from a Command+ member are they allowed to change the colour of their vehicles. If found to have changed the colour of their vehicle without permission this will result in IC reprecussions.[/ooc]
 [*]Explain to the EMR what Code 4 means in the context of driving (lights and sirens off, driving normally).
 [*]Explain to the EMR that they can get a quick blip to [i][b]Lower Pillbox[/b][/i] from their GPS (( /hospital )).
 [*]Explain that the GPS system, while functional, may not give the best routing to calls.
@@ -979,7 +981,7 @@ INPUT FEEDBACK HERE
 [lsemssubtitle]SIGNATURE[/lsemssubtitle]
 [divbox=white]
 [img]SIGNATURE[/img]
-[i]{{applicantName}}[/i]
+[i]Medic Name[/i]
 Rank
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox]
@@ -1094,7 +1096,7 @@ YES/NO
 [lsemssubtitle]SIGNATURE[/lsemssubtitle]
 [divbox=white]
 [img]SIGNATURE[/img]
-[i]{{applicantName}}[/i]
+[i]Medic Name[/i]
 Rank
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox]
@@ -1243,7 +1245,7 @@ INPUT FEEDBACK HERE
 [lsemssubtitle]SIGNATURE[/lsemssubtitle]
 [divbox=white]
 [img]SIGNATURE[/img]
-[i]{{applicantName}}[/i]
+[i]Medic Name[/i]
 Rank
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox]
@@ -1291,7 +1293,7 @@ INPUT FEEDBACK HERE
 [lsemssubtitle]SIGNATURE[/lsemssubtitle]
 [divbox=white]
 [img]SIGNATURE[/img]
-[i]{{applicantName}}[/i]
+[i]Medic Name[/i]
 Rank
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox]
@@ -1348,7 +1350,7 @@ INPUT HERE
 [lsemssubtitle]SIGNATURE[/lsemssubtitle]
 [divbox=white]
 [img]SIGNATURE[/img]
-[i]{{applicantName}}[/i]
+[i]Medic Name[/i]
 Rank
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox]
