@@ -15,6 +15,7 @@ interface TemplateOptionsProps {
   setRecipient: (recipient: string) => void;
   handleGenerateSignature: () => void;
   handleGenerateNewTemplate: () => void;
+  handleCopyTemplate: () => void;
   previewBody: string;
   onPreviewChange: (value: string) => void;
   onPreviewReset: () => void;
@@ -29,6 +30,7 @@ export default function TemplateOptions({
   setRecipient,
   handleGenerateSignature,
   handleGenerateNewTemplate,
+  handleCopyTemplate,
   previewBody,
   onPreviewChange,
   onPreviewReset,
@@ -120,7 +122,7 @@ export default function TemplateOptions({
               />
             </div>
 
-            <div className="grid grid-cols-1 gap-3 pt-2 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 pt-2 sm:grid-cols-4">
               <Button
                 size="lg"
                 className="w-full cursor-pointer bg-sky-600 text-white transition-all duration-200 hover:scale-[1.02] hover:bg-sky-500 active:scale-95"
@@ -132,6 +134,19 @@ export default function TemplateOptions({
                 }
               >
                 Create Template
+              </Button>
+
+              <Button
+                size="lg"
+                className="w-full cursor-pointer border-emerald-600/50 bg-emerald-600 text-white transition-all duration-200 hover:scale-[1.02] hover:border-emerald-500 hover:bg-emerald-500 active:scale-95"
+                onClick={handleCopyTemplate}
+                disabled={
+                  !selectedDivision ||
+                  (Array.isArray(selectedDivision?.data?.ranks) &&
+                    !selectedRank)
+                }
+              >
+                Copy Template
               </Button>
 
               <Link

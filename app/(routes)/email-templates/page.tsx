@@ -198,6 +198,11 @@ export default function Home() {
     copyToClipboard(template, "BBCode Template Copied!");
   };
 
+  const handleCopyTemplate = () => {
+    if (!previewBody) return;
+    copyToClipboard(previewBody, "BBCode Template Copied!");
+  };
+
   return (
     <BodyAndMainTitle
       description="Select a division and create email templates, signatures, or
@@ -238,6 +243,7 @@ export default function Home() {
             setRecipient={setRecipient}
             handleGenerateSignature={handleGenerateSignature}
             handleGenerateNewTemplate={handleGenerateNewTemplate}
+            handleCopyTemplate={handleCopyTemplate}
             previewBody={previewBody}
             onPreviewChange={handlePreviewChange}
             onPreviewReset={handlePreviewReset}
