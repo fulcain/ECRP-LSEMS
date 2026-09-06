@@ -88,6 +88,40 @@ export async function exchangeCodeForToken(opts: {
   return (await res.json()) as DiscordTokenResponse;
 }
 
+/**
+ * Exchange a stored refresh token for a fresh access token.
+ * Discord refresh tokens don't expire, so this is safe to reuse for
+ * the lifetime of the session unless the user revokes the app.
+ */
+export async function refreshAccessToken(opts: {
+  clientId: string;
+  clientSecret: string;
+  refreshToken: string;
+  redirectUri?: string;
+}): Promise<DiscordTokenResponse> {
+  const body = new URLSearchParams({
+    client_id: opts.clientId,
+    client_secret: opts.clientSecret,
+    grant_type: "refresh_token",
+    refresh_token: opts.refreshToken,
+  });
+  // Required when the original authorization used a redirect_uri, which
+  // ours always does.
+  if (opts.redirectUri) body.set("redirect_uri", opts.redirectUri);
+
+  const res = await fetch(`${DISCORD_API}/oauth2/token`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body,
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Discord refresh token exchange failed: ${res.status} ${text}`);
+  }
+  return (await res.json()) as DiscordTokenResponse;
+}
+
 export async function fetchDiscordUser(
   accessToken: string,
 ): Promise<DiscordUser> {

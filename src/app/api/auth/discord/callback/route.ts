@@ -78,7 +78,9 @@ export async function GET(req: NextRequest) {
       return redirectClearingState(notInGuild);
     }
 
-    // 5 + 6. Sign JWT cookie + redirect.
+    // 5 + 6. Sign JWT cookie + redirect. The refresh token rides along
+    // in the JWT so `/api/auth/me` can silently re-fetch profile/roles
+    // when the session goes stale.
     await signAndSetSessionCookie({
       discordId: user.id,
       username: user.username,
@@ -86,6 +88,7 @@ export async function GET(req: NextRequest) {
       nick: member.nick ?? undefined,
       avatar: user.avatar,
       roles: member.roles,
+      refreshToken: tokenResp.refresh_token,
     });
 
     const dest = req.nextUrl.clone();

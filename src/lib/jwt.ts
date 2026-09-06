@@ -15,6 +15,14 @@ export interface FtdJwtPayload extends JWTPayload {
   nick?: string;
   avatar: string | null;
   roles: string[];
+  /**
+   * Discord OAuth refresh token, minted at login and reused to silently
+   * re-fetch the user's profile/roles when the session goes stale. It
+   * rides inside the same httpOnly cookie as the rest of the JWT, so it
+   * inherits the cookie's protection. Optional because sessions signed
+   * before this field existed must still verify.
+   */
+  refreshToken?: string;
 }
 
 const ALG = "HS256";
