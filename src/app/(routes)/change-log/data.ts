@@ -44,6 +44,11 @@ export const changeLog: ChangeLogDay[] = [
         description:
           "Updated Phase 3 driving capabilities, scene management, and JTAC sections in both the phase notes and spoken scripts.",
       },
+      {
+        type: "changed",
+        description:
+          "Updated Phase 3 Hospitals and Fire Stations section - new Betsy vehicle locations (Sandy Fire Station, Fire Station 7, Central, Mount Zonah, Boat Dock) with updated blip images.",
+      },
     ],
   },
   {
