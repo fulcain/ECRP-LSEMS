@@ -863,25 +863,24 @@ The GPS routing provided, while functional, is inefficient. Going straight to Le
 [color=transparent]spacer[/color]
 [color=transparent]spacer[/color]
 [*][color=#800000][b]Driving Capabilities[/b][/color][list]
-Explain to the EMR that this section will consist of 3 different driving tests. 
-[list=none]First is a [i]dirt [/i]trail;
-Second is a combination of [i]dirt [/i]and [i]asphalt[/i];
-The third is on [i]asphalt[/i].
+Explain to the EMR that this section will consist of 2 different driving tests. 
+[list=none]
+[b]Course 1[/b]: [b]dirt[/b] trail;
+[b]Course 2[/b]: combination of [b]dirt[/b] and [b]asphalt[/b];
 [/list]
-[*]Instruct the EMR to drive to The Observatory, specifically get the EMR to use [c]1 East Galileo Ave[/c] on their GPS. [ooc][c]/setgps 1 east galileo ave[/c][/ooc]
-[spoiler=Map Location of The Observatory]
-[img]https://i.ibb.co/pvQ3YH9y/8Hw38YV.png[/img]
+[*]Instruct the EMR to drive to Senora Road, specifically get the EMR to use [c]2 Senora Rd[/c] on their GPS. [ooc][c]/setgps 2 senora rd[/c][/ooc]
+[spoiler=Course 1 - Redwood Tracks]
+[img]https://i.ibb.co/DDdzBxkP/dirt-phase-3.png[/img]
 [/spoiler]
-[*]Take over, then show the EMR how to drive along the first course, course [b](1)[/b] in the image below. After showing them, have them do a few laps to get a grasp of how the ambulance handles dirt. [i]Encourage them to stay in control of the vehicle.[/i]
-[spoiler=Observatory Courses][img]https://i.ibb.co/xSsVtxh6/lcxz-HCq.jpg[/img][/spoiler]
-[*]Explain the next course [b](2)[/b] to the EMR, A quick way to explain it is simply "keep turning left". Again, [b]take over[/b], [b]do one lap[/b], then have the EMR do it!
-[*]Their first lap will be [b]Code 4[/b] (regular driving). Instruct them to stop at the start, then repeat the lap [b]Code 3[/b].
-[*]Then have the EMR do the course two more times, in reverse (as in, turn the ambulance around, don't have them literally driving in reverse). The "keep turning left" now becomes "keep turning right".
+[*]Take over, then start driving around the Redwood Tracks area. It doesn't have to be a perfect route, but try to cover as much of the area as possible.
+[*]Have the EMR practice in that area as much as they want, allowing them to go as fast as they feel comfortable with.
+[spoiler=Course 2 - Senora Road][img]https://i.ibb.co/7tV3WjRD/phase-3.png[/img][/spoiler]
+[*]Take over and explain the next course by showing them the route above. It will be a mix of dirt and asphalt trails with a good amount of turns, which can be a bit challenging but will definitely be helpful for them. Once you have shown them the route and explained what to expect, have them complete the course themselves.
 [list=none]First reverse lap [b]Code 4[/b]
 Second reverse lap [b]Code 3[/b]
 [/list]
 [*]Finally, have the EMR drive to the Sandy Firestation ([c]27 Panorama Dr[/c]), [b]Code 3[/b].
-[spoiler=Map Location of Sandy Firestation][img]https://i.ibb.co/ksfhDpcv/Rm51q-YX.png[/img][/spoiler]
+[spoiler=Map Location of Sandy Firestation][img]https://i.ibb.co/dwjHb5D8/Rm51q-YX.png[/img][/spoiler]
 [*]If they need more practice, have them redo any of the courses at the end of the session.
 [/list]
 [color=transparent]spacer[/color]
@@ -894,7 +893,7 @@ Second reverse lap [b]Code 3[/b]
 [/list]
 [color=transparent]spacer[/color]
 [color=transparent]spacer[/color]
-[*][b][color=#800000]Scene Mangement[/color][/b][list]
+[*][b][color=#800000]Scene Management[/color][/b][list]
 [*]Instruct the EMR to head to a secluded area. You should use one of the three locations listed below.
 [list=1]
 [*]Abandoned Cul-de-sac in Mirror Park, opposite house at [c]7 East Mirror Dr[/c] ((/setgps))
@@ -913,6 +912,8 @@ Second reverse lap [b]Code 3[/b]
 [*]Engine OFF
 [*]Emergency Lights ON [ooc][c]E[/c][/ooc]
 [*]Step out of ambulance, then [b]ALWAYS[/b] double check if ambulance is locked.
+[*]In the case that the patient is in the middle of the road, move the patient onto the sidewalk immediately when possible while making sure you are NOT causing the patient any harm.
+[*]The ambulance should be parked safely out of the way so it does not block the street, cause any unnecessary obstruction, or create a traffic jam.
 [/list]
 [*]Show the EMR how to position the ambulance when arriving on scene, then allow them to attempt it.
 [*]Have the EMR show you how they should arrive on scene and perform scene management all at once.
@@ -927,7 +928,7 @@ Second reverse lap [b]Code 3[/b]
 [*]Make sure they understand respect and professionalism is [b]utterly[/b] important here.
 [ooc]Make sure you explain and they understand [b]JTAC is IC and they have to use IC VOIP[/b] as well when talking on it.
 Additionally, explain that using the TS VOIP without using in-game VOIP at the same time can lead to a server punishment[/ooc]
-[*][ooc]Inform the EMR that they can bind [c]P[/c] to Push To Talk in Teamspeak. Provided that you are [b]tabbed in[/b] to RageMP, pressing [c]P[/c] will use the "talk on phone" key as JTAC.[/ooc]
+[*][ooc]Inform the EMR that they can bind [c]P[/c] to Push To Talk in Teamspeak. Provided that you are [b]tabbed in[/b] to FiveM, pressing [c]P[/c] will use the "talk on phone" key as JTAC.[/ooc]
 [*][ooc]If the EMR does not use VOIP or do not wish to use VOIP, they [b]are not expected to[/b]; however having someone who can use VOIP who is on duty join JTAC with them would be ideal. 
 Non-VOIP individuals may use "/dep MD to JTAC-1 [msg]" or "/dep MD to SD/PD [unit]" to communicate with JTAC.[/ooc]
 [/list]
