@@ -152,7 +152,7 @@ export function Phase3Notes() {
           </Spoiler>
         </Item>
         <Item>
-          Take over, then start driving around the Redwood Tracks area. It doesn't
+          Take over, then start driving around the Redwood Tracks area. It doesn&apos;t
           have to be a perfect route, but try to cover as much of the area as
           possible.
         </Item>
@@ -196,32 +196,71 @@ export function Phase3Notes() {
       <Category title="Hospitals and Fire Stations of Los Santos" ordered>
         <Item>
           Inform them that they are now at Sandy Fire Station and that they can ask
-          Betsy for vehicles here. Then direct them to Fire Station 7 and show them
-          where to ask Betsy for vehicles there as well.
-        </Item>
-        <Item>
-          Take them to Central and then finally to Mount Zonah and show them how to
-          call Betsy so she can retrieve a vehicle for them.
-        </Item>
-        <Item>
-          <OOC>
-            Pictures will go in here. I just have to get them from above and mark
-            where the points are on the map with blips.
-          </OOC>
-        </Item>
-      </Category>
+          Betsy for vehicles here, then direct them to Fire Station 7 and show them
+          where to ask Betsy for vehicles here as well.
 
+          <Spoiler title="Sandy Fire Station Pictures">
+            <Figure
+              src="https://i.ibb.co/VcLs5V44/sadny-fire-station-blip.png"
+              alt="Sandy Fire Station blip"
+            />
+            <Divider />
+            <Figure
+              src="https://i.ibb.co/CFDZ7hx/sandy-fire-station-location.jpg"
+              alt="Sandy Fire Station location map"
+            />
+          </Spoiler>
 
-      <Category title="Hospitals and Fire Stations of Los Santos" ordered>
-        <Item>
-          Inform them that they are now at Sandy Fire station and that they
-          can ask Betsy for vehicles here and then direct them to Fire
-          Station 7 and show them where to ask Betsy for vehicles here as
-          well.
+          <Spoiler title="Fire Station 7 Pictures">
+            <Figure
+              src="https://i.ibb.co/9mttfq65/fire-station-7-blip.png"
+              alt="Fire Station 7 blip"
+            />
+            <Divider />
+            <Figure
+              src="https://i.ibb.co/yFbgv9QX/fire-station-7-location.jpg"
+              alt="Fire Station 7 location map"
+            />
+          </Spoiler>
         </Item>
         <Item>
-          Take them to Central and then finally to Mount Zonah and show them
-          how to call Betsy so she can retrieve a vehicle for them.
+          Take them to Central, Mount Zonah and then finally to Boat Dock and show them how to call Betsy so she can retrieve a vehicle for them.
+
+          <Spoiler title="Central MD Pictures">
+            <Figure
+              src="https://i.ibb.co/yKN5KFQ/cenrtal-md-blip.png"
+              alt="Central MD blip"
+            />
+            <Divider />
+            <Figure
+              src="https://i.ibb.co/KccPs9hD/cenrtal-md-location.jpg"
+              alt="Central MD location map"
+            />
+          </Spoiler>
+
+          <Spoiler title="Mount Zonah Pictures">
+            <Figure
+              src="https://i.ibb.co/fGGBgBcH/mount-zonah-blip.png"
+              alt="Mount Zonah blip"
+            />
+            <Divider />
+            <Figure
+              src="https://i.ibb.co/gLr1DDGB/mount-zonah-location.jpg"
+              alt="Mount Zonah location map"
+            />
+          </Spoiler>
+
+          <Spoiler title="Boat Dock Pictures">
+            <Figure
+              src="https://i.ibb.co/3ySMgpC4/boat-doc-blip.png"
+              alt="Boat Dock blip"
+            />
+            <Divider />
+            <Figure
+              src="https://i.ibb.co/SX5z3YnX/boat-doc-location.jpg"
+              alt="Boat Dock location map"
+            />
+          </Spoiler>
         </Item>
       </Category>
 
@@ -364,7 +403,7 @@ export function Phase3Notes() {
         <Item>Ask the EMR if they have any concerns.</Item>
         <Item>Question the EMR about radio calls and treatment.</Item>
         <Item>
-          Assign them mandatories if they seem like they&rsquo;re having a
+          Assign them mandatories if they seem like they&apos;re having a
           rough time and remind them that they have the option to do
           optional ride-alongs.
         </Item>
@@ -377,7 +416,7 @@ export function Phase3Notes() {
             be honest and genuine on your report
           </Bold>
         </Em>{" "}
-        - not stating they didn&rsquo;t do well is only harming the
+        - not stating they didn&apos;t do well is only harming the
         EMR as this is their last chance before their Pre-Certification.
       </ImportantNote>
 

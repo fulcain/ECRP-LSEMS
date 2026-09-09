@@ -16,7 +16,7 @@ export const PHASE3_SPOKEN = [
 
   "Lock your ambulance, always. Double-checking is better than not checking.",
 
-  "Seatbelts for both medics and patients whenever possible - make sure the patient is properly secured before beginning transport. On a stretcher, use the stretcher straps. (( You RP securing them, and they press `B` on their keyboard. ))",
+  "Seatbelts for both medics and patients whenever possible - make sure the patient is properly secured before beginning transport. On a stretcher, use the stretcher straps. (( You RP securing them, and they press B on their keyboard. ))",
 
   "Never park the ambulance on train tracks.",
 
@@ -59,7 +59,13 @@ export const PHASE3_SPOKEN = [
 
 "## Hospitals and fire stations of Los Santos",
 
-"You're at Sandy now - Betsy can serve you here as well. Then we'll head to Fire Station 7, Central, and finally Mount Zonah. I'll show you where to call Betsy at each location so she can retrieve a vehicle for you.",
+"Alright, you're at Sandy now - Betsy can serve you here as well, so go ahead and ask her for a vehicle. From there we'll head to Fire Station 7 and I'll show you where to ask Betsy for a vehicle there too.",
+
+"(( Sandy Fire Station pictures - blip and location map. )) (( Fire Station 7 pictures - blip and location map. ))",
+
+"Next stop - Central. From there we go to Mount Zonah, and finally we'll hit Boat Dock. At each of these I'll show you how to call Betsy so she can retrieve a vehicle for you.",
+
+"(( Central MD pictures - blip and location map. )) (( Mount Zonah pictures - blip and location map. )) (( Boat Dock pictures - blip and location map. ))",
 
   "## Scene management",
 
