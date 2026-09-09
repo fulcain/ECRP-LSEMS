@@ -9,15 +9,29 @@ type HeaderDesktopProps = {
   headerLinks: HeaderLink[];
 };
 
+/**
+ * Matches a header link against the current route. `usePathname` returns the
+ * pathname with no query string, so we ignore `?tab=` and any other query
+ * params on both sides — otherwise a link like `/paperwork?tab=normal` would
+ * never highlight when you're at `/paperwork` (or vice versa).
+ */
+function linkMatches(
+  linkHref: string | undefined,
+  pathname: string,
+): boolean {
+  if (!linkHref) return false;
+  const cleanHref = linkHref.split("#")[0].split("?")[0];
+  return pathname === cleanHref || pathname.startsWith(cleanHref + "/");
+}
+
 export function HeaderDesktop({ headerLinks }: HeaderDesktopProps) {
   const pathname = usePathname();
 
   return (
     <nav className="hidden md:flex items-center gap-0.5">
       {headerLinks.map((item) => {
-        const isActive = item.href === "/"
-          ? pathname === "/"
-          : pathname.startsWith(item.href!);
+        const isActive = linkMatches(item.href, pathname);
+
         return (
           <Link
             key={item.label}

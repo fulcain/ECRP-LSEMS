@@ -21,6 +21,15 @@ type HeaderMobileProps = {
   headerLinks: HeaderLink[];
 };
 
+function linkMatches(
+  linkHref: string | undefined,
+  pathname: string,
+): boolean {
+  if (!linkHref) return false;
+  const cleanHref = linkHref.split("#")[0].split("?")[0];
+  return pathname === cleanHref || pathname.startsWith(cleanHref + "/");
+}
+
 export function HeaderMobile({ headerLinks }: HeaderMobileProps) {
   const pathname = usePathname();
 
@@ -58,45 +67,47 @@ export function HeaderMobile({ headerLinks }: HeaderMobileProps) {
 
           <nav className="flex flex-col gap-1">
             {headerLinks.map((item) =>
-              item.children ? (
-                <div key={item.label}>
-                  <p className="mb-1 px-2 text-[11px] font-medium text-muted-foreground">
-                    {item.label}
-                  </p>
-                  <div className="flex flex-col gap-0.5 pl-2">
-                    {item.children.map((child) => (
-                      <SheetClose asChild key={child.href}>
-                        <Link
-                          href={child.href}
-                          className={cn(
-                            "cursor-pointer rounded-lg px-3 py-2 text-sm transition-colors hover:bg-surface-hover",
-                            pathname === child.href
-                              ? "text-foreground font-medium"
-                              : "text-muted-foreground",
-                          )}
-                        >
-                          {child.label}
-                        </Link>
-                      </SheetClose>
-                    ))}
-                  </div>
-                  <Separator className="my-2 bg-border/20" />
-                </div>
-              ) : (
-                <SheetClose asChild key={item.label}>
-                  <Link
-                    href={item.href!}
-                    className={cn(
-                      "cursor-pointer rounded-lg px-3 py-2 text-sm transition-colors hover:bg-surface-hover",
-                      pathname === item.href
-                        ? "text-foreground font-medium"
-                        : "text-muted-foreground",
-                    )}
-                  >
-                    {item.label}
-                  </Link>
-                </SheetClose>
-              ),
+              item.children
+                ? (
+                    <div key={item.label}>
+                      <p className="mb-1 px-2 text-[11px] font-medium text-muted-foreground">
+                        {item.label}
+                      </p>
+                      <div className="flex flex-col gap-0.5 pl-2">
+                        {item.children.map((child) => (
+                          <SheetClose asChild key={child.href}>
+                            <Link
+                              href={child.href}
+                              className={cn(
+                                "cursor-pointer rounded-lg px-3 py-2 text-sm transition-colors hover:bg-surface-hover",
+                                linkMatches(child.href, pathname)
+                                  ? "text-foreground font-medium"
+                                  : "text-muted-foreground",
+                              )}
+                            >
+                              {child.label}
+                            </Link>
+                          </SheetClose>
+                        ))}
+                      </div>
+                      <Separator className="my-2 bg-border/20" />
+                    </div>
+                  )
+                : (
+                    <SheetClose asChild key={item.label}>
+                      <Link
+                        href={item.href!}
+                        className={cn(
+                          "cursor-pointer rounded-lg px-3 py-2 text-sm transition-colors hover:bg-surface-hover",
+                          linkMatches(item.href, pathname)
+                            ? "text-foreground font-medium"
+                            : "text-muted-foreground",
+                        )}
+                      >
+                        {item.label}
+                      </Link>
+                    </SheetClose>
+                  ),
             )}
           </nav>
         </SheetContent>

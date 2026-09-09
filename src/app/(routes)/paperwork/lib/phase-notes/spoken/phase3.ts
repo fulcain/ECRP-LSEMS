@@ -35,28 +35,31 @@ export const PHASE3_SPOKEN = [
 
   "## Driving capabilities",
 
-  "Three driving tests today - first a dirt trail, then dirt and asphalt mixed, then pure asphalt.",
+"Two driving tests today - first a dirt trail, then a combination of dirt and asphalt.",
 
-  "Head to The Observatory - set on the GPS 1 East Galileo Ave. (( `/setgps 1 east galileo ave` )) I'll show you the map spot.",
+"Head to Senora Road - set your GPS to 2 Senora Rd. (( `/setgps 2 senora rd` )) I'll show you the map spot.",
 
-  "{{/me takes out the tablet and airdrops a link to the EMR.}}",
-  "{{/do https://i.ibb.co/rfR2PCGL/lcxz-HCq.jpg}}",
+"{{/me takes out the tablet and airdrops a link to the EMR.}}",
+"{{/do https://i.ibb.co/DDdzBxkP/dirt-phase-3.png}}",
 
-  "I'll take over and show you the first course first, then you do a few laps to get a feel for how the ambulance handles dirt. Stay in control of the vehicle.",
+"I'll take over and start driving around the Redwood Tracks area. It doesn't need to be a perfect route, but I'll try to cover as much of the area as possible so you can see what to expect.",
 
-  "Course two - the easy way to think about it is 'keep turning left'. I do one lap, then it's yours.",
+"Once I've shown you the area, you can practice around the Redwood Tracks as much as you want. Go as fast as you feel comfortable with, but make sure you stay in control of the ambulance.",
 
-  "First lap Code 4 - regular driving. Stop at the start, then repeat the lap Code 3.",
+"{{/me takes out the tablet and airdrops a link to the EMR.}}",
+"{{/do https://i.ibb.co/7tV3WjRD/phase-3.png}}",
 
-  "Then do the course two more times in reverse - turn the rig around, don't literally drive backwards. 'Keep turning left' becomes 'keep turning right'. First reverse lap Code 4, second reverse lap Code 3.",
+"Course two is a mix of dirt and asphalt trails with a good amount of turns. It can be a little challenging, but it's definitely useful practice. I'll take over and show you the route first, then you can complete it yourself.",
 
-  "Finale - drive to Sandy Firestation at 27 Panorama Dr `/setgps 27 Panorama Dr`, Code 3.",
+"Once you've completed the course, do it one more time. Your first lap will be Code 4, then your second lap will be Code 3.",
 
-  "Need more practice? We'll redo any of the courses at the end of the session.",
+"Finale - drive to Sandy Firestation at 27 Panorama Dr `/setgps 27 Panorama Dr`, Code 3.",
 
-  "## Hospitals and fire stations of Los Santos",
+"Need more practice? We'll redo any of the courses at the end of the session.",
 
-  "You're at Sandy now - Betsy can serve you here too. Then we hit Fire Station 7, Central, and finally Mount Zonah, and I'll show you where to call Betsy at each so she can retrieve a vehicle for you.",
+"## Hospitals and fire stations of Los Santos",
+
+"You're at Sandy now - Betsy can serve you here as well. Then we'll head to Fire Station 7, Central, and finally Mount Zonah. I'll show you where to call Betsy at each location so she can retrieve a vehicle for you.",
 
   "## Scene management",
 
@@ -69,6 +72,8 @@ export const PHASE3_SPOKEN = [
   "Your ambulance is one of your biggest blockades - here's how to angle it to block incoming traffic.",
 
   "Arriving on scene, in order - siren OFF, engine OFF, emergency lights ON, step out of the ambulance, then ALWAYS double-check the rig is locked.",
+  "In the case that the patient is in the middle of the road, move the patient onto the sidewalk immediately when possible while making sure you are NOT causing the patient any harm.",
+  "The ambulance should be parked safely out of the way so it does not block the street, cause any unnecessary obstruction, or create a traffic jam.",
 
   "Watch me position once, then you try it. Then show me the whole arrival + scene management routine all at once.",
 
@@ -78,7 +83,7 @@ export const PHASE3_SPOKEN = [
 
   "Respect and professionalism are UTTERLY important here. (( JTAC is IC, so it's in-game VOIP. Using TS VOIP without in-game VOIP at the same time can lead to a server punishment. ))",
 
-  "(( You can bind `P` as push-to-talk in TeamSpeak. Tabbed into RageMP, pressing `P` uses the 'talk on phone' key as JTAC. ))",
+  "(( You can bind `P` as push-to-talk in TeamSpeak. Tabbed into FiveM, pressing `P` uses the 'talk on phone' key as JTAC. ))",
 
   "(( No VOIP? That's fine - not expected. But having someone on duty who can VOIP join JTAC with you is ideal. Otherwise - `/dep MD to JTAC-1 [msg]` or `/dep MD to SD/PD [unit]`. ))",
 

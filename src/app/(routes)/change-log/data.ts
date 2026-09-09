@@ -39,6 +39,11 @@ export const changeLog: ChangeLogDay[] = [
         description:
           "Updated Phase 3 and Reinstatement Phase 1 phase notes & scripts - Phase 3 now covers seatbelt safety and train tracks, and Reinstatement Phase 1 has the new scene management for seatbelts and train tracks.",
       },
+      {
+        type: "changed",
+        description:
+          "Updated Phase 3 driving capabilities, scene management, and JTAC sections in both the phase notes and spoken scripts.",
+      },
     ],
   },
   {

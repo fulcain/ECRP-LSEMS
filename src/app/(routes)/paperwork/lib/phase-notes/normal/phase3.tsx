@@ -129,53 +129,48 @@ export function Phase3Notes() {
 
       <Category title="Driving Capabilities" ordered>
         <Item>
-          Explain to the EMR that this section will consist of 3 different
-          driving tests:
+          Explain to the EMR that this section will consist of 2 different driving
+          tests:
           <ParagraphList>
             <ParaItem>
-              First is a <Em>dirt</Em> trail.
+              <Bold>Course 1</Bold>: <Em>dirt</Em> trail.
             </ParaItem>
             <ParaItem>
-              Second is a combination of <Em>dirt</Em> and <Em>asphalt</Em>.
+              <Bold>Course 2</Bold>: combination of <Em>dirt</Em> and
+              <Em>asphalt</Em>.
             </ParaItem>
-            <ParaItem>The third is on <Em>asphalt</Em>.</ParaItem>
           </ParagraphList>
         </Item>
         <Item>
-          Instruct the EMR to drive to The Observatory, specifically get the
-          EMR to use <Command>1 East Galileo Ave</Command> on their GPS.{" "}
+          Instruct the EMR to drive to Senora Road, specifically get the EMR to use
+          <Command>2 Senora Rd</Command> on their GPS.
           <OOC>
-            <Command>/setgps 1 east galileo ave</Command>
+            <Command>/setgps 2 senora rd</Command>
           </OOC>
-          <Spoiler title="Map location of The Observatory">
-            <Figure src="https://i.ibb.co/zTwYznX9/8Hw38YV.png" />
+          <Spoiler title="Course 1 - Redwood Tracks">
+            <Figure src="https://i.ibb.co/DDdzBxkP/dirt-phase-3.png" />
           </Spoiler>
         </Item>
         <Item>
-          Take over, then show the EMR how to drive along the first course,
-          course <Bold>(1)</Bold> in the image below. After showing them,
-          have them do a few laps to get a grasp of how the ambulance handles
-          dirt. <Em>Encourage them to stay in control of the vehicle.</Em>
-          <Spoiler title="Observatory courses">
-            <Figure src="https://i.ibb.co/rfR2PCGL/lcxz-HCq.jpg" />
+          Take over, then start driving around the Redwood Tracks area. It doesn't
+          have to be a perfect route, but try to cover as much of the area as
+          possible.
+        </Item>
+        <Item>
+          Have the EMR practice in that area as much as they want, allowing them to
+          go as fast as they feel comfortable with.
+        </Item>
+        <Item>
+          <Spoiler title="Course 2 - Senora Road">
+            <Figure src="https://i.ibb.co/7tV3WjRD/phase-3.png" />
           </Spoiler>
         </Item>
         <Item>
-          Explain the next course <Bold>(2)</Bold> to the EMR. A quick way
-          to explain it is simply &ldquo;keep turning left&rdquo;.{" "}
-          <Bold>Again, take over</Bold>, <Bold>do one lap</Bold>, then have
-          the EMR do it!
-        </Item>
-        <Item>
-          Their first lap will be <Bold>Code 4</Bold> (regular driving).
-          Instruct them to stop at the start, then repeat the lap{" "}
-          <Bold>Code 3</Bold>.
-        </Item>
-        <Item>
-          Then have the EMR do the course two more times, in reverse (as in,
-          turn the ambulance around, don&rsquo;t have them literally driving
-          in reverse). The &ldquo;keep turning left&rdquo; now becomes
-          &ldquo;keep turning right&rdquo;.
+          Take over and explain the next course by showing them the route above. It
+          will be a mix of dirt and asphalt trails with a good amount of turns,
+          which can be a bit challenging but will definitely be helpful for them.
+          Once you have shown them the route and explained what to expect, have
+          them complete the course themselves.
           <ParagraphList>
             <ParaItem>
               First reverse lap <Bold>Code 4</Bold>
@@ -186,17 +181,36 @@ export function Phase3Notes() {
           </ParagraphList>
         </Item>
         <Item>
-          Finally, have the EMR drive to the Sandy Firestation (
-          <Command>27 Panorama Dr</Command>), <Bold>Code 3</Bold>.
-          <Spoiler title="Map location of Sandy Firestation">
-            <Figure src="https://i.ibb.co/C5Xgw01h/Rm51q-YX.png" />
+          Finally, have the EMR drive to the Sandy Firestation
+          (<Command>27 Panorama Dr</Command>), <Bold>Code 3</Bold>.
+          <Spoiler title="Map Location of Sandy Firestation">
+            <Figure src="https://i.ibb.co/dwjHb5D8/Rm51q-YX.png" />
           </Spoiler>
         </Item>
         <Item>
-          If they need more practice, have them redo any of the courses at
-          the end of the session.
+          If they need more practice, have them redo any of the courses at the end
+          of the session.
         </Item>
       </Category>
+
+      <Category title="Hospitals and Fire Stations of Los Santos" ordered>
+        <Item>
+          Inform them that they are now at Sandy Fire Station and that they can ask
+          Betsy for vehicles here. Then direct them to Fire Station 7 and show them
+          where to ask Betsy for vehicles there as well.
+        </Item>
+        <Item>
+          Take them to Central and then finally to Mount Zonah and show them how to
+          call Betsy so she can retrieve a vehicle for them.
+        </Item>
+        <Item>
+          <OOC>
+            Pictures will go in here. I just have to get them from above and mark
+            where the points are on the map with blips.
+          </OOC>
+        </Item>
+      </Category>
+
 
       <Category title="Hospitals and Fire Stations of Los Santos" ordered>
         <Item>
@@ -265,6 +279,12 @@ export function Phase3Notes() {
               Step out of ambulance, then <Bold>ALWAYS</Bold> double check if
               ambulance is locked.
             </Item>
+            <Item>
+              In the case that the patient is in the middle of the road, move the patient onto the sidewalk immediately when possible while making sure you are <Bold>NOT</Bold> causing the patient any harm.
+            </Item>
+            <Item>
+              The ambulance should be parked safely out of the way so it does not block the street, cause any unnecessary obstruction, or create a traffic jam.
+            </Item>
           </NumberedList>
         </Item>
         <Item>
@@ -307,7 +327,7 @@ export function Phase3Notes() {
           <OOC>
             Inform the EMR that they can bind <Command>P</Command> to Push To
             Talk in Teamspeak. Provided that you are <Bold>tabbed in</Bold>{" "}
-            to RageMP, pressing <Command>P</Command> will use the
+            to FiveM, pressing <Command>P</Command> will use the
             &ldquo;talk on phone&rdquo; key as JTAC.
           </OOC>
         </Item>
