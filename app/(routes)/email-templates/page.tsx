@@ -12,7 +12,7 @@ import { useMedic } from "@/app/context/MedicContext";
 import DivisionSelector from "@/app/(routes)/email-templates/components/DivisionSelector";
 import TemplateOptions from "@/app/(routes)/email-templates/components/TemplateOptions";
 import { BodyAndMainTitle } from "@/components/layout/main-and-title";
-import { useMemo, useEffect, useRef } from "react";
+import { useMemo, useEffect, useRef, useCallback } from "react";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 
 // Re-inject the live structured fields (subject/recipient) into a preview
@@ -35,6 +35,18 @@ const applyLiveFields = (
   return out;
 };
 
+// The compose session is persisted so an accidental refresh cannot throw away
+// the selected division or the typed preview.
+const SESSION_STORAGE_KEY = "email-template-session";
+
+type PreviewSession = {
+  divisionLabel?: string;
+  subject?: string;
+  recipient?: string;
+  body?: string;
+  edited?: boolean;
+};
+
 export default function Home() {
   const { medicCredentials, divisionRanks, setDivisionRanks } = useMedic();
   const [selectedDivision, setSelectedDivision] = useState<Divisions | null>(
@@ -45,6 +57,33 @@ export default function Home() {
   const [recipient, setRecipient] = useState("");
   const [previewBody, setPreviewBody] = useState("");
   const [previewEdited, setPreviewEdited] = useState(false);
+  const [sessionRestored, setSessionRestored] = useState(false);
+
+  // Division the current preview belongs to; picking another one starts fresh.
+  const previewDivisionRef = useRef<string | null>(null);
+
+  // Kept in sync every render so the unload flush below writes the newest values.
+  const sessionRef = useRef<PreviewSession>({});
+  sessionRef.current = {
+    divisionLabel: selectedDivision?.label,
+    subject,
+    recipient,
+    body: previewBody,
+    edited: previewEdited,
+  };
+
+  // Written synchronously: an effect would not run until after paint, so typing
+  // and immediately refreshing could lose the last keystrokes.
+  const persistSession = useCallback((override?: Partial<PreviewSession>) => {
+    const session: PreviewSession = { ...sessionRef.current, ...override };
+    // Nothing to remember until the tool has actually been used.
+    if (!session.divisionLabel && !session.body) return;
+    try {
+      localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+    } catch (error) {
+      console.error("Error saving template session:", error);
+    }
+  }, []);
 
   const isCredentialsEmpty =
     !medicCredentials.name ||
@@ -95,24 +134,16 @@ export default function Home() {
     if (!previewEdited) setPreviewBody(generatedTemplate);
   }, [generatedTemplate, previewEdited]);
 
-  // Selecting a different division / division rank / director role always shows
-  // a freshly generated template; clear any saved manual preview so a reload
-  // cannot surface content belonging to an old selection.
+  // Picking another division starts from a freshly generated template so
+  // content belonging to a previous division cannot resurface. Rank/role changes
+  // made elsewhere leave manual edits alone — Reset regenerates on demand.
   useEffect(() => {
-    if (!selectedDivision) return;
+    if (!sessionRestored || !selectedDivision) return;
+    if (previewDivisionRef.current === selectedDivision.label) return;
+    previewDivisionRef.current = selectedDivision.label;
     setPreviewBody(generatedTemplate);
     setPreviewEdited(false);
-    try {
-      localStorage.removeItem("email-template-body");
-    } catch (error) {
-      console.error("Error clearing saved template body:", error);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    selectedDivision?.label,
-    effectiveRank,
-    medicCredentials.directorRole?.title,
-  ]);
+  }, [sessionRestored, selectedDivision, generatedTemplate]);
 
   // Subject/recipient are live fields: re-inject them into the preview even
   // when the body has manual edits, preserving all other user edits. The ref
@@ -134,37 +165,73 @@ export default function Home() {
     );
   }, [subject, recipient, previewEdited]);
 
-  // Hydrate the edited body once after mount so a reload doesn't lose it.
+  // Restore the last session once after mount so a refresh lands the user back
+  // on the same division with their typed preview intact.
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("email-template-body");
-      if (saved) {
-        setPreviewBody(saved);
-        setPreviewEdited(true);
+      const raw = localStorage.getItem(SESSION_STORAGE_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as PreviewSession;
+      const division = divisions.find((d) => d.label === saved.divisionLabel);
+      if (division) {
+        setSelectedDivision(division);
+        previewDivisionRef.current = division.label;
       }
+      if (saved.subject) setSubject(saved.subject);
+      if (saved.recipient) setRecipient(saved.recipient);
+      if (saved.body) {
+        setPreviewBody(saved.body);
+        setPreviewEdited(Boolean(saved.edited));
+      }
+      // Adopt the restored fields so the live-field sync below does not rewrite
+      // the restored greeting and title on mount.
+      lastLiveFieldsRef.current = `${(saved.subject ?? "").trim()}\u0000${(
+        saved.recipient ?? ""
+      ).trim()}`;
     } catch (error) {
-      console.error("Error reading saved template body:", error);
+      console.error("Error restoring template session:", error);
+    } finally {
+      setSessionRestored(true);
     }
   }, []);
+
+  // Persist every change so a refresh or a closed tab cannot lose the session.
+  useEffect(() => {
+    if (!sessionRestored) return;
+    persistSession();
+  }, [
+    sessionRestored,
+    persistSession,
+    selectedDivision?.label,
+    subject,
+    recipient,
+    previewBody,
+    previewEdited,
+  ]);
+
+  // Safety net for a reload/close that beats the effect above, and for the
+  // Electron and Android shells being backgrounded.
+  useEffect(() => {
+    if (!sessionRestored) return;
+    const flush = () => persistSession();
+    window.addEventListener("pagehide", flush);
+    document.addEventListener("visibilitychange", flush);
+    return () => {
+      window.removeEventListener("pagehide", flush);
+      document.removeEventListener("visibilitychange", flush);
+    };
+  }, [sessionRestored, persistSession]);
 
   const handlePreviewChange = (value: string) => {
     setPreviewBody(value);
     setPreviewEdited(true);
-    try {
-      localStorage.setItem("email-template-body", value);
-    } catch (error) {
-      console.error("Error saving template body:", error);
-    }
+    persistSession({ body: value, edited: true });
   };
 
   const handlePreviewReset = () => {
     setPreviewEdited(false);
     setPreviewBody(generatedTemplate);
-    try {
-      localStorage.removeItem("email-template-body");
-    } catch (error) {
-      console.error("Error clearing saved template body:", error);
-    }
+    persistSession({ body: generatedTemplate, edited: false });
   };
 
   const copyToClipboard = (text: string, message: string) => {
