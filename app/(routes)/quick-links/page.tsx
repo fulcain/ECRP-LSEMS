@@ -102,6 +102,12 @@ function QuickLinksAccordionItem({ item }: QuickLinksAccordionItemProps) {
 }
 
 export default function QuickLinks() {
+  const [divisionSearch, setDivisionSearch] = useState("");
+
+  const filteredDivisions = links.filter((item) =>
+    item.label.toLowerCase().includes(divisionSearch.trim().toLowerCase()),
+  );
+
   return (
     <BodyAndMainTitle
       title="Quick Links"
@@ -117,11 +123,28 @@ export default function QuickLinks() {
           }}
         />
         <div className="relative p-5 lg:p-8">
-          <Accordion type="single" collapsible className="w-full space-y-4">
-            {links.map((item, index) => (
-              <QuickLinksAccordionItem key={index} item={item} />
-            ))}
-          </Accordion>
+          <div className="relative mb-4">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+            <Input
+              aria-label="Search divisions"
+              placeholder="Search divisions..."
+              value={divisionSearch}
+              onChange={(e) => setDivisionSearch(e.target.value)}
+              className="w-full border-slate-700 bg-slate-800/80 py-2 pl-9 text-white placeholder:text-slate-400 transition-all duration-200 hover:border-slate-500 focus-visible:ring-2"
+            />
+          </div>
+
+          {filteredDivisions.length === 0 ? (
+            <p className="py-8 text-center text-sm text-slate-500">
+              No divisions found for &ldquo;{divisionSearch}&rdquo;
+            </p>
+          ) : (
+            <Accordion type="single" collapsible className="w-full space-y-4">
+              {filteredDivisions.map((item, index) => (
+                <QuickLinksAccordionItem key={index} item={item} />
+              ))}
+            </Accordion>
+          )}
         </div>
       </div>
     </BodyAndMainTitle>
