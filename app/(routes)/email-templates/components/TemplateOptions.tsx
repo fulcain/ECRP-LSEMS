@@ -110,9 +110,22 @@ export default function TemplateOptions({
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-300">
-                Preview
-              </label>
+              <div className="mb-2 flex items-center justify-between gap-3">
+                <label className="block text-sm font-medium text-slate-300">
+                  Preview
+                </label>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  className="cursor-pointer text-slate-300 transition-all duration-200 hover:bg-slate-700/60 hover:text-white active:scale-95"
+                  onClick={onPreviewReset}
+                  disabled={!previewBody}
+                >
+                  <RotateCcw className="mr-1 h-4 w-4" />
+                  Reset
+                </Button>
+              </div>
               <Textarea
                 placeholder="Generated template appears here — type to edit; edits are saved locally."
                 value={previewBody}
@@ -122,20 +135,7 @@ export default function TemplateOptions({
               />
             </div>
 
-            <div className="grid grid-cols-1 gap-3 pt-2 sm:grid-cols-4">
-              <Button
-                size="lg"
-                className="w-full cursor-pointer bg-sky-600 text-white transition-all duration-200 hover:scale-[1.02] hover:bg-sky-500 active:scale-95"
-                onClick={handleGenerateNewTemplate}
-                disabled={
-                  !selectedDivision ||
-                  (Array.isArray(selectedDivision?.data?.ranks) &&
-                    !selectedRank)
-                }
-              >
-                Create Template
-              </Button>
-
+            <div className="grid grid-cols-1 gap-3 pt-2 sm:grid-cols-3">
               <Button
                 size="lg"
                 className="w-full cursor-pointer border-emerald-600/50 bg-emerald-600 text-white transition-all duration-200 hover:scale-[1.02] hover:border-emerald-500 hover:bg-emerald-500 active:scale-95"
@@ -168,32 +168,19 @@ export default function TemplateOptions({
                 </Button>
               </Link>
 
-              <div className="grid grid-cols-2 gap-3">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="w-full cursor-pointer border-slate-600 text-slate-300 transition-all duration-200 hover:scale-[1.02] hover:border-sky-500/40 hover:bg-sky-950/20 hover:text-sky-200 active:scale-95"
-                  onClick={handleGenerateSignature}
-                  disabled={
-                    !selectedDivision ||
-                    (Array.isArray(selectedDivision?.data?.ranks) &&
-                      !selectedRank)
-                  }
-                >
-                  Signature
-                </Button>
-
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="w-full cursor-pointer border-slate-600 text-slate-300 transition-all duration-200 hover:scale-[1.02] hover:border-amber-500/40 hover:bg-amber-950/20 hover:text-amber-200 active:scale-95"
-                  onClick={onPreviewReset}
-                  disabled={!previewBody}
-                >
-                  <RotateCcw className="mr-1 h-4 w-4" />
-                  Reset
-                </Button>
-              </div>
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full cursor-pointer border-slate-600 text-slate-300 transition-all duration-200 hover:scale-[1.02] hover:border-sky-500/40 hover:bg-sky-950/20 hover:text-sky-200 active:scale-95"
+                onClick={handleGenerateSignature}
+                disabled={
+                  !selectedDivision ||
+                  (Array.isArray(selectedDivision?.data?.ranks) &&
+                    !selectedRank)
+                }
+              >
+                Signature
+              </Button>
             </div>
           </div>
         ) : (

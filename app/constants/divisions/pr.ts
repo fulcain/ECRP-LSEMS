@@ -47,6 +47,10 @@ export const PR = {
         name: "Press Releases",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=572",
       },
+      {
+        name: "PR - Training Profiles (Senior+)",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=3602",
+      },
     ],
   },
 };
