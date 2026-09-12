@@ -14,7 +14,6 @@ interface TemplateOptionsProps {
   recipient: string;
   setRecipient: (recipient: string) => void;
   handleGenerateSignature: () => void;
-  handleGenerateNewTemplate: () => void;
   handleCopyTemplate: () => void;
   previewBody: string;
   onPreviewChange: (value: string) => void;
@@ -29,7 +28,6 @@ export default function TemplateOptions({
   recipient,
   setRecipient,
   handleGenerateSignature,
-  handleGenerateNewTemplate,
   handleCopyTemplate,
   previewBody,
   onPreviewChange,
@@ -157,7 +155,7 @@ export default function TemplateOptions({
                 <Button
                   size="lg"
                   className="w-full cursor-pointer border-emerald-600/50 bg-emerald-600 text-white transition-all duration-200 hover:scale-[1.02] hover:border-emerald-500 hover:bg-emerald-500 active:scale-95"
-                  onClick={handleGenerateNewTemplate}
+                  onClick={handleCopyTemplate}
                   disabled={
                     !selectedDivision ||
                     (Array.isArray(selectedDivision?.data?.ranks) &&

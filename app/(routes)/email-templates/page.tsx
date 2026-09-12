@@ -76,10 +76,6 @@ export default function Home() {
     }).trim();
   }, [selectedDivision, selectedRank, medicCredentials, isCredentialsEmpty]);
 
-  const canGenerate =
-    selectedDivision !== null &&
-    (!Array.isArray(selectedDivision?.data?.ranks) || !!selectedRank);
-
   const effectiveRank = selectedRank || "";
   const generatedTemplate = useMemo(() => {
     if (!selectedDivision) return "";
@@ -183,21 +179,6 @@ export default function Home() {
     copyToClipboard(medicSignatureText, "Signature Copied!");
   };
 
-  const handleGenerateNewTemplate = () => {
-    if (!canGenerate) return;
-    // Always regenerate so the current director role and division rank cannot
-    // be hidden by an older locally saved preview.
-    const template = generatedTemplate;
-    setPreviewBody(template);
-    setPreviewEdited(false);
-    try {
-      localStorage.removeItem("email-template-body");
-    } catch (error) {
-      console.error("Error clearing saved template body:", error);
-    }
-    copyToClipboard(template, "BBCode Template Copied!");
-  };
-
   const handleCopyTemplate = () => {
     if (!previewBody) return;
     copyToClipboard(previewBody, "BBCode Template Copied!");
@@ -242,7 +223,6 @@ export default function Home() {
             recipient={recipient}
             setRecipient={setRecipient}
             handleGenerateSignature={handleGenerateSignature}
-            handleGenerateNewTemplate={handleGenerateNewTemplate}
             handleCopyTemplate={handleCopyTemplate}
             previewBody={previewBody}
             onPreviewChange={handlePreviewChange}
