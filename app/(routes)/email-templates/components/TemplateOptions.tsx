@@ -1,7 +1,7 @@
 import { Divisions } from "@/app/constants/divisions";
+import BBCodeEditor from "@/app/(routes)/email-templates/components/BBCodeEditor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Ambulance, RotateCcw } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -124,12 +124,11 @@ export default function TemplateOptions({
                   Reset
                 </Button>
               </div>
-              <Textarea
+              <BBCodeEditor
                 placeholder="Generated template appears here — type to edit; edits are saved locally."
                 value={previewBody}
-                onChange={(e) => onPreviewChange(e.target.value)}
+                onChange={onPreviewChange}
                 rows={12}
-                className="w-full resize-y border-slate-700 bg-slate-800 font-mono text-xs text-slate-200 placeholder:text-slate-500 transition-all duration-200 hover:border-slate-500 focus-visible:ring-2"
               />
             </div>
 
