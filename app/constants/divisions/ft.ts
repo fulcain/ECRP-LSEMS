@@ -59,6 +59,11 @@ export const FT = {
         name: "Discussion Board",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=1882",
       },
+      {
+        name: "FTD - Command Area",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=1928",
+      },
+      
     ],
   },
 };
