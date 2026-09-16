@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { TableDataType } from "@/app/page";
+import { TableDataType } from "@/lib/types";
 
 interface DeleteSessionDialogProps {
   row: TableDataType | null;
@@ -54,7 +54,7 @@ export function DeleteSessionDialog({
 
     if (originalRowNumber == null) {
       toast.error(
-        "Missing sheet row identifier — reload the table so the CSV index re-syncs.",
+        "Missing sheet row identifier - reload the table so the CSV index re-syncs.",
         { theme: "dark" },
       );
       return;
@@ -67,7 +67,7 @@ export function DeleteSessionDialog({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          // Primary row identifier — same logic as the edit flow.
+          // Primary row identifier - same logic as the edit flow.
           originalRowNumber: String(originalRowNumber),
           // Optional sanity check.
           originalTimestamp: String(row["Timestamp"] ?? ""),
@@ -79,7 +79,7 @@ export function DeleteSessionDialog({
       if (result.success) {
         toast.success("FT session deleted", { theme: "dark" });
         // Remove from local state by Timestamp equality. The row's
-        // `__csvIndex` is irrelevant after this — it won't be sent
+        // `__csvIndex` is irrelevant after this - it won't be sent
         // again because the row no longer renders in the table.
         setData((prev) =>
           prev.filter(
@@ -120,26 +120,26 @@ export function DeleteSessionDialog({
             <div className="flex justify-between gap-3">
               <span className="text-muted-foreground">Sheet row</span>
               <span className="font-mono">
-                {originalRowNumber != null ? originalRowNumber : "—"}
+                {originalRowNumber != null ? originalRowNumber : "-"}
               </span>
             </div>
             <div className="flex justify-between gap-3">
               <span className="text-muted-foreground">Filed at</span>
-              <span>{String(row?.["Timestamp"] ?? "—")}</span>
+              <span>{String(row?.["Timestamp"] ?? "-")}</span>
             </div>
             <div className="flex justify-between gap-3">
               <span className="text-muted-foreground">Instructor</span>
               <span className="font-medium">
-                {String(row?.["Your Name"] ?? "—")}
+                {String(row?.["Your Name"] ?? "-")}
               </span>
             </div>
             <div className="flex justify-between gap-3">
               <span className="text-muted-foreground">Date</span>
-              <span>{String(row?.["Date"] ?? "—")}</span>
+              <span>{String(row?.["Date"] ?? "-")}</span>
             </div>
             <div className="flex justify-between gap-3">
               <span className="text-muted-foreground">EMR</span>
-              <span>{String(row?.["EMR's Name"] ?? "—")}</span>
+              <span>{String(row?.["EMR's Name"] ?? "-")}</span>
             </div>
           </div>
 

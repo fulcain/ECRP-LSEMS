@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/table";
 import { monthlySessionStatsColumns } from "@/components/session-stats/columns";
 import { fetchAllData } from "@/components/all-data-table/fetchAllData";
-import { TableDataType } from "@/app/page";
+import { TableDataType } from "@/lib/types";
 
 const MONTHS = [
   "January",

@@ -51,7 +51,7 @@ export const SHARED_SIG_RANK_KEY = "ftd-shared-sig-rank";
 export const SHARED_SIGNATURE_KEY = "ftd-shared-signature";
 export const SHARED_EMAIL_DATE_KEY = "ftd-shared-email-date";
 
-/** The post title that goes in [code] tags — shown in the UI with its own copy button. */
+/** The post title that goes in [code] tags - shown in the UI with its own copy button. */
 export const FTI_PROMOTION_TITLE = "FTD Rank Adjustment";
 
 export interface FtiPromotionValues {

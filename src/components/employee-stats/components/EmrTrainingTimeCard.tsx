@@ -57,7 +57,7 @@ export function EmrTrainingTimeCard() {
       await navigator.clipboard.writeText(content);
       toast.success(`${label} copied to clipboard`, { theme: "dark" });
     } catch {
-      toast.error("Couldn't copy to clipboard — check browser permissions.", { theme: "dark" });
+      toast.error("Couldn't copy to clipboard - check browser permissions.", { theme: "dark" });
     }
   };
 

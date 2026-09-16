@@ -3,8 +3,8 @@ import { Suspense } from "react";
 import { LoginButton } from "@/app/login/LoginButton";
 
 export const metadata: Metadata = {
-  title: "FTD App | Sign in",
-  description: "Sign in with Discord to access the FTD app.",
+  title: "LSEMS | Sign in",
+  description: "Sign in with Discord to access LSEMS.",
 };
 
 export default function LoginPage() {
@@ -14,7 +14,7 @@ export default function LoginPage() {
         <div className="flex flex-col items-center gap-4">
           <div className="space-y-1">
             <h1 className="text-xl font-semibold tracking-tight">
-              FTD App
+              LSEMS
             </h1>
             <p className="text-sm text-muted-foreground">
               Sign in with Discord to continue.

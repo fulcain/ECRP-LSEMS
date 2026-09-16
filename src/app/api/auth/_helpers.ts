@@ -40,7 +40,7 @@ interface OAuthStatePayload extends JWTPayload {
 }
 
 function stateSecret(): Uint8Array {
-  // Reuse the same JWT_SECRET — it's already a high-entropy symmetric key.
+  // Reuse the same JWT_SECRET - it's already a high-entropy symmetric key.
   const secret = process.env.JWT_SECRET;
   if (!secret) throw new Error("JWT_SECRET env var is not set");
   return new TextEncoder().encode(secret);
@@ -48,9 +48,9 @@ function stateSecret(): Uint8Array {
 
 /**
  * Sign the CSRF `state` token we give Discord. Encodes:
- *   • returnTo  — where to send the user after callback
- *   • guildId   — guards against an attacker swapping guild IDs
- *   • nonce     — random per-request value (so identical returnTos differ)
+ *   • returnTo  - where to send the user after callback
+ *   • guildId   - guards against an attacker swapping guild IDs
+ *   • nonce     - random per-request value (so identical returnTos differ)
  * The same string is stored as a short-lived httpOnly cookie so the
  * callback can compare the value Discord echoes back with what we set.
  */
@@ -73,7 +73,7 @@ export async function signOAuthState(
  * if no state cookie, the cookie is missing, or the JWT is invalid.
  *
  * NOTE: callers must still compare the *value* the cookie holds with the
- * `state` query-param Discord sends — by binding BOTH to the same JWT
+ * `state` query-param Discord sends - by binding BOTH to the same JWT
  * we keep the comparison cheap (string equality).
  */
 export async function verifyOAuthState(

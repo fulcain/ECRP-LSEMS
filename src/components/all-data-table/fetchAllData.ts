@@ -1,5 +1,5 @@
 import Papa from "papaparse";
-import { TableDataType } from "@/app/page";
+import { TableDataType } from "@/lib/types";
 
 export async function fetchAllData(): Promise<TableDataType[]> {
   try {

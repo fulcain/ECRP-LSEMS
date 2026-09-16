@@ -66,7 +66,7 @@ export function FtoManagementCard() {
   const [addOpen, setAddOpen] = useState(false);
   const [reinstateOpen, setReinstateOpen] = useState(false);
 
-  // Edit / Remove dialog state — scoped to the active-FTO list since
+  // Edit / Remove dialog state - scoped to the active-FTO list since
   // both actions are only meaningful for active rows.
   const [editRow, setEditRow] = useState<EmployeeStatsSourceRow | null>(null);
   const [editOpen, setEditOpen] = useState(false);
@@ -239,7 +239,7 @@ export function FtoManagementCard() {
                       </TableRow>
                     ) : (
                       filtered.map((row, i) => {
-                        // Ribbon state — read from the same keys the
+                        // Ribbon state - read from the same keys the
                         // read-only EmployeeStatsTable uses (_3.._6,
                         // per mapEmployeeData in columns.tsx).
                         const r15 = String(row["_3"] ?? "") === "TRUE";
@@ -256,7 +256,7 @@ export function FtoManagementCard() {
                               {i + 1}
                             </TableCell>
                             <TableCell>
-                              {String(row["Names"] ?? "").trim() || "—"}
+                              {String(row["Names"] ?? "").trim() || "-"}
                             </TableCell>
                             <TableCell className="text-center tabular-nums font-medium">
                               {sessions.toLocaleString()}

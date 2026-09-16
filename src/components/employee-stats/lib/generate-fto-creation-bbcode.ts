@@ -144,7 +144,7 @@ export const GOV_FTO_CREATION_POST_URL =
 
 /**
  * The gov.eclipse-rp.net URL for editing the FTO Roster post (post 126130).
- * Used by the "Open FT Roster" action bar button — also copies the
+ * Used by the "Open FT Roster" action bar button - also copies the
  * application name on click so the user can paste it straight into the
  * roster editor.
  */
@@ -156,7 +156,7 @@ export interface FtoCreationBBCodeValues {
   applicationName: string;
   /**
    * Date of Application Acceptance in `DD/MMM/YYYY` form (e.g.
-   * `13/Jul/2026`). Whatever the user typed — we don't reformat.
+   * `13/Jul/2026`). Whatever the user typed - we don't reformat.
    */
   applicationDate: string;
 }
@@ -166,13 +166,13 @@ export interface FtoCreationBBCodeValues {
  * Empty fields are emitted as empty `""` strings, NOT literal placeholders,
  * so the post still looks clean for a partial fill.
  *
- * Trainer fields are NOT in the parameter list — they live as literal
+ * Trainer fields are NOT in the parameter list - they live as literal
  * `Rank Lname` / `DD/MMM/YYYY` text in the template and are filled in by
  * the actual certifying FTO on the forum post at certification time.
  *
  * `{FT_ROSTER_URL}` is substituted from `GOV_FT_ROSTER_EDIT_URL` so the
  * rendered forum post and the in-app "Open FT Roster" button stay in sync
- * — change the URL in one place and both update.
+ * - change the URL in one place and both update.
  */
 export function generateFtoCreationBBCode(
   values: FtoCreationBBCodeValues,

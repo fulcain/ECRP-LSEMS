@@ -38,7 +38,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { TableDataType } from "@/app/page";
+import { TableDataType } from "@/lib/types";
 
 
 export function AllDataTable({ canEditFT = false }: { canEditFT?: boolean }) {
@@ -59,7 +59,7 @@ export function AllDataTable({ canEditFT = false }: { canEditFT?: boolean }) {
   const [editRowNumber, setEditRowNumber] = useState<number | null>(null);
   const [editOpen, setEditOpen] = useState(false);
 
-  // Delete dialog state — same rowNumber provenance as edit.
+  // Delete dialog state - same rowNumber provenance as edit.
   const [deleteRow, setDeleteRow] = useState<TableDataType | null>(null);
   const [deleteRowNumber, setDeleteRowNumber] = useState<number | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);

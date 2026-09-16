@@ -25,6 +25,7 @@ function NavigationMenu({
 }: React.HTMLAttributes<HTMLDivElement> & { viewport?: boolean }) {
   const [openItem, setOpenItem] = React.useState<string | null>(null);
 
+  // click outside to close
   React.useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;

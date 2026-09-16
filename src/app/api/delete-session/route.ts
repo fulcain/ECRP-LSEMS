@@ -11,7 +11,7 @@ import { hasSessionEditAccess } from "@/lib/role-config";
  *
  * Deletes a single row in "FT Sessions" by 1-based sheet row number
  * (sent as `originalRowNumber`). Same Command+ role gate as
- * `/api/update-session` — see `hasSessionEditAccess`.
+ * `/api/update-session` - see `hasSessionEditAccess`.
  *
  * Expected body shape:
  *   { originalRowNumber, originalTimestamp? }

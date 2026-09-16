@@ -8,7 +8,7 @@
  *     (returns the user's roles within *our* guild, or 404 if they
  *      have not joined it)
  *
- * `jose` is not required here — these are plain `fetch` calls. We only use
+ * `jose` is not required here - these are plain `fetch` calls. We only use
  * jose for *our own* session JWT.
  */
 
@@ -92,12 +92,16 @@ export async function exchangeCodeForToken(opts: {
  * Exchange a stored refresh token for a fresh access token.
  * Discord refresh tokens don't expire, so this is safe to reuse for
  * the lifetime of the session unless the user revokes the app.
+ *
+ * The body carries only `grant_type` and `refresh_token` (plus the client
+ * credentials), because that is the whole of what Discord documents for this
+ * grant - `redirect_uri` belongs to the authorization_code exchange, and this
+ * endpoint rejects bodies it doesn't expect.
  */
 export async function refreshAccessToken(opts: {
   clientId: string;
   clientSecret: string;
   refreshToken: string;
-  redirectUri?: string;
 }): Promise<DiscordTokenResponse> {
   const body = new URLSearchParams({
     client_id: opts.clientId,
@@ -105,9 +109,6 @@ export async function refreshAccessToken(opts: {
     grant_type: "refresh_token",
     refresh_token: opts.refreshToken,
   });
-  // Required when the original authorization used a redirect_uri, which
-  // ours always does.
-  if (opts.redirectUri) body.set("redirect_uri", opts.redirectUri);
 
   const res = await fetch(`${DISCORD_API}/oauth2/token`, {
     method: "POST",

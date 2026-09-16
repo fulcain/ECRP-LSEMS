@@ -12,7 +12,7 @@ import { fetchWithRetry } from "@/lib/fetch-with-retry";
  * located by the *composite* of (Date, Your Name, Time Start, Time
  * Finish, EMR's Name) so we don't depend on a fragile Timestamp
  * format. Access is restricted to the same FTO Command-or-better
- * role triple (FTHead / FTAssHead / Command) — see
+ * role triple (FTHead / FTAssHead / Command) - see
  * `hasSessionEditAccess`.
  *
  * Expected body shape (everything is a string):
@@ -32,7 +32,7 @@ import { fetchWithRetry } from "@/lib/fetch-with-retry";
  */
 export async function POST(req: Request) {
   // We intentionally verify the JWT inside the route handler instead
-  // of routing `/api/update-session` through `ROUTE_ACCESS` — for API
+  // of routing `/api/update-session` through `ROUTE_ACCESS` - for API
   // routes a 403 JSON response is more useful than the middleware's
   // generic HTML redirect, and it keeps the route-role table focused
   // on UI pages.

@@ -31,7 +31,7 @@ import {
 } from "@/components/employee-stats/columns";
 import { fetchEmployeeStats } from "@/components/employee-stats/fetchEmployeeStats";
 import { Pagination } from "@/components/pagination";
-import { TableDataType } from "@/app/page";
+import { TableDataType } from "@/lib/types";
 
 export function EmployeeStatsTable() {
   const [sorting, setSorting] = useState<SortingState>([

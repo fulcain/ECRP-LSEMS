@@ -1,7 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
-import { TableDataType } from "@/app/page";
+import { TableDataType } from "@/lib/types";
 
 /**
  * Re-keys the raw sheet row objects to the column-friendly names the
@@ -19,7 +19,7 @@ export function mapEmployeeData(rawData: TableDataType[]): TableDataType[] {
   }));
 }
 
-/** Tiny status pill — green if the sheet's TRUE/FALSE column says YES. */
+/** Tiny status pill - green if the sheet's TRUE/FALSE column says YES. */
 const RibbonBox = ({ value }: { value: string }) => {
   const isTrue = value === "TRUE";
   return (

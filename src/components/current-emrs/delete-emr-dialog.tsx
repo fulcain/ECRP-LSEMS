@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { TableDataType } from "@/app/page";
+import { TableDataType } from "@/lib/types";
 
 interface DeleteEMRDialogProps {
   row: TableDataType | null;

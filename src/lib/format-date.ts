@@ -5,9 +5,9 @@
  * in `M/D/YYYY` format (e.g. `7/24/2026`). These helpers bridge the gap.
  *
  * Exports:
- *   - `parseDate(raw)`       — parse a CSV / user-typed date string → `Date | null`
- *   - `formatDateForSheet(d)` — format a `Date` → `M/D/YYYY` (sheet storage)
- *   - `formatDisplayDate(d)`  — format a `Date` → `DD/MMM` (app display, e.g. `24/JUL`)
+ *   - `parseDate(raw)`       - parse a CSV / user-typed date string → `Date | null`
+ *   - `formatDateForSheet(d)` - format a `Date` → `M/D/YYYY` (sheet storage)
+ *   - `formatDisplayDate(d)`  - format a `Date` → `DD/MMM` (app display, e.g. `24/JUL`)
  */
 
 const MONTH_ABBREVIATIONS = [
@@ -27,7 +27,7 @@ const MONTH_MAP: Record<string, number> = {
  *   1. `M/D/YYYY` or `M/D/YY` or `M/D`      (US-style)
  *   2. `DD/MMM/YYYY` or `DD/MMM`             (e.g. 24/JUL/2026)
  *   3. `YYYY-MM-DD`                           (ISO)
- *   4. `MMM DD, YYYY`                         (text — Jul 24, 2026)
+ *   4. `MMM DD, YYYY`                         (text - Jul 24, 2026)
  *   5. `DD-MMM-YYYY` or `DD-MMM`              (e.g. 24-JUL-2026)
  *   6. `DD.MM.YYYY`                           (European)
  *

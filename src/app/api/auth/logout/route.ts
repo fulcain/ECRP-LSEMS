@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
  *
  * Clears the `ftd_auth` cookie and redirects to /login?loggedOut=1.
  *
- * We deliberately do NOT export a GET handler here — logouts should
+ * We deliberately do NOT export a GET handler here - logouts should
  * require intent (button/form submit) so that any third-party request
  * (e.g. an <img> tag pointing at this URL) can't accidentally sign users
  * out.

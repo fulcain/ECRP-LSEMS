@@ -3,6 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { MessageCircleWarning } from "lucide-react";
 import { DiscordIcon } from "@/components/ui/discord-icon";
+import { DEFAULT_RETURN_TO } from "@/lib/cookies";
 
 /**
  * Client island for /login. Reads ?returnTo / ?error / ?reason / ?loggedOut
@@ -14,7 +15,7 @@ import { DiscordIcon } from "@/components/ui/discord-icon";
  */
 export function LoginButton() {
   const params = useSearchParams();
-  const returnTo = params.get("returnTo") ?? "/";
+  const returnTo = params.get("returnTo") ?? DEFAULT_RETURN_TO;
   const reason = params.get("reason");
   const error = params.get("error");
   const loggedOut = params.get("loggedOut");

@@ -2,23 +2,33 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { AUTH_COOKIE_NAME, authCookieOptions } from "@/lib/cookies";
 import { verifySessionToken } from "@/lib/jwt";
-import { refreshSessionIfStale, toPublicUser } from "@/lib/session";
+import { toPublicUser } from "@/lib/session";
+import { refreshSessionIfStale } from "@/lib/session-refresh";
 
 export const dynamic = "force-dynamic";
 
 /**
  * POST /api/auth/refresh
  *
- * Manually trigger the throttled silent refresh. Returns
- * `{ refreshed, user }` — `refreshed` is false when the session was
- * younger than `SESSION_REFRESH_INTERVAL_SECONDS` or the refresh failed
- * (in which case the cached cookie is left untouched). Never logs the
- * user out: a missing/invalid session is the only 401 case.
+ * Manually trigger the silent refresh - the "re-read my roles now" button.
+ * Returns `{ refreshed, reason, user }`, where `refreshed` is false when the
+ * read could not be made; the cached cookie is left untouched in that case, and
+ * `reason` says why so the page can tell the member what to do about it rather
+ * than appearing to do nothing. Never logs the user out: a missing/invalid
+ * session is the only 401 case.
  *
- * Client-side code (header, paperwork forms) doesn't need to call this —
- * `/api/auth/me` already refreshes in the background on page loads. This
- * exists for on-demand triggers like "re-check my roles" buttons or
- * window-focus handlers.
+ * This is the one caller that passes `explicit`, so it is never answered from
+ * cache: pressing the button has to actually ask Discord, otherwise a role
+ * that was just removed still looks present and the feature reads as broken.
+ *
+ * The reason that matters most is `no-refresh-token`: it means this browser's
+ * session was minted before the app stored a Discord refresh token, so no page
+ * load can re-read the member's roles either - a fresh sign-in is the only
+ * cure, and the UI says so instead of failing silently.
+ *
+ * Page loads don't need this - the middleware refreshes on every document
+ * request and `/api/auth/me` does it in the background. This is the explicit
+ * "re-check my roles right now" trigger behind the Staff Page button.
  */
 export async function POST() {
   const jar = await cookies();
@@ -38,15 +48,20 @@ export async function POST() {
     );
   }
 
-  const fresh = await refreshSessionIfStale(payload);
-  if (fresh) {
+  const fresh = await refreshSessionIfStale(payload, { explicit: true });
+  if (fresh.ok) {
     const res = NextResponse.json({
       refreshed: true,
+      reason: null,
       user: toPublicUser(fresh.payload),
     });
     res.cookies.set({ ...authCookieOptions(), value: fresh.token });
     return res;
   }
 
-  return NextResponse.json({ refreshed: false, user: toPublicUser(payload) });
+  return NextResponse.json({
+    refreshed: false,
+    reason: fresh.reason,
+    user: toPublicUser(payload),
+  });
 }

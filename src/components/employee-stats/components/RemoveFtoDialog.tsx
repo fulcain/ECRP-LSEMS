@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { TableDataType } from "@/app/page";
+import { TableDataType } from "@/lib/types";
 
 export interface RemoveFtoDialogProps {
   row: TableDataType | null;
@@ -85,7 +85,7 @@ export function RemoveFtoDialog({
           <div className="grid gap-2 text-sm rounded-md border bg-muted/40 p-3">
             <div className="flex justify-between gap-3">
               <span className="text-muted-foreground">FTO</span>
-              <span className="font-medium">{name || "—"}</span>
+              <span className="font-medium">{name || "-"}</span>
             </div>
           </div>
 

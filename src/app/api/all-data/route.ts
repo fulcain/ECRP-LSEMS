@@ -11,7 +11,7 @@ import { NextResponse } from "next/server";
  * NOTE: still subject to Google's published-CSV staleness (~5 min).
  */
 
-// Run on every request — without this Next.js treats the route as
+// Run on every request - without this Next.js treats the route as
 // static and freezes the first response forever.
 export const dynamic = "force-dynamic";
 
@@ -27,7 +27,7 @@ export async function GET() {
     headers: {
       "Content-Type": "text/csv",
       // `no-store` subsumes `no-cache`, `must-revalidate`, `max-age=0`,
-      // `Pragma`, and `Expires` — listing all five signals confusion
+      // `Pragma`, and `Expires` - listing all five signals confusion
       // and adds no behavior for HTTP/1.1+ browsers.
       "Cache-Control": "no-store",
     },

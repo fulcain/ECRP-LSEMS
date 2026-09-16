@@ -35,7 +35,7 @@ export function FtiPromotionCard() {
       await navigator.clipboard.writeText(bbcode);
       toast.success("FTI Promotion email copied to clipboard", { theme: "dark" });
     } catch {
-      toast.error("Couldn't copy to clipboard — check browser permissions.", { theme: "dark" });
+      toast.error("Couldn't copy to clipboard - check browser permissions.", { theme: "dark" });
     }
   };
 

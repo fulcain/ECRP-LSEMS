@@ -22,7 +22,7 @@ import { fetchWithRetry } from "@/lib/fetch-with-retry";
  * direct API hits; we do NOT re-check roles since the page is
  * already gated.
  *
- * Expected body: { name: string } — must match an ex-FTO row's
+ * Expected body: { name: string } - must match an ex-FTO row's
  * column-A value (case-insensitive trim on the Apps Script side).
  */
 export async function POST(req: Request) {

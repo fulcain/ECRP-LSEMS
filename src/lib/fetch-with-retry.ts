@@ -1,5 +1,5 @@
 /**
- * fetchWithRetry — wraps fetch() with automatic retries for transient
+ * fetchWithRetry - wraps fetch() with automatic retries for transient
  * network/DNS failures (getaddrinfo EAI_AGAIN, socket hang-up, etc.).
  *
  * Google's published Sheets/Docs CSV URLs respond with a 30x redirect to a
@@ -28,7 +28,7 @@ export async function fetchWithRetry(
     } catch (err) {
       lastError = err;
 
-      // Check both err.code and err.cause?.code — different Node.js
+      // Check both err.code and err.cause?.code - different Node.js
       // / Next.js runtimes structure fetch errors differently (some
       // put the code directly on the error, others nest it under
       // cause). The known transient codes are DNS / connection

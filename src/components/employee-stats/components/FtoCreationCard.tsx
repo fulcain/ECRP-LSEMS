@@ -53,7 +53,7 @@ export function FtoCreationCard({ onRefresh }: { onRefresh?: () => void }) {
       await navigator.clipboard.writeText(bbcode);
       toast.success("BBCode copied to clipboard", { theme: "dark" });
     } catch {
-      toast.error("Couldn't copy to clipboard — check browser permissions.", {
+      toast.error("Couldn't copy to clipboard - check browser permissions.", {
         theme: "dark",
       });
       return;
@@ -68,7 +68,7 @@ export function FtoCreationCard({ onRefresh }: { onRefresh?: () => void }) {
       await navigator.clipboard.writeText(ftoTraineeName);
       toast.success("Application name copied to clipboard", { theme: "dark" });
     } catch {
-      toast.error("Couldn't copy to clipboard — check browser permissions.", {
+      toast.error("Couldn't copy to clipboard - check browser permissions.", {
         theme: "dark",
       });
       return;

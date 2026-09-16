@@ -1,9 +1,10 @@
+import { ENTRY_ROUTE } from "@/configs/routes";
 import Link from "next/link";
 import { Home } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "FTD App | Page Not Found",
+  title: "LSEMS | Page Not Found",
   description: "The page you're looking for doesn't exist.",
 };
 
@@ -29,7 +30,7 @@ export default function NotFoundPage() {
 
         <div className="pt-4">
           <Link
-            href="/"
+            href={ENTRY_ROUTE}
             className="inline-flex items-center justify-center gap-2 w-full rounded-md bg-primary text-primary-foreground font-semibold py-2.5 px-4 hover:opacity-90 transition-opacity"
           >
             <Home className="h-4 w-4" />

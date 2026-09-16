@@ -1,10 +1,23 @@
+import { ENTRY_ROUTE } from "@/configs/routes";
+import { SESSION_TTL_SECONDS } from "@/lib/jwt";
+
 /**
  * Cookie name used for the FTD session JWT.
  * Edge `Request` and Node API routes both understand this format.
  */
 export const AUTH_COOKIE_NAME = "ftd_auth";
 
-import { SESSION_TTL_SECONDS } from "@/lib/jwt";
+/**
+ * Where the app sends a user who lands on `/login` without a `returnTo`
+ * (and where the Discord OAuth flow falls back to if its `returnTo`
+ * turns out not to be a same-origin path).
+ *
+ * That is the entry point, `/`, which the middleware resolves to the first
+ * page the member's own roles open - FT Sessions for a trainer, the Staff Page
+ * for anyone else. Sending everybody to one page would dump most of the
+ * department on an access-denied screen right after signing in.
+ */
+export const DEFAULT_RETURN_TO = ENTRY_ROUTE;
 
 /**
  * Cookie-options used by both sign-in (callback) and sign-out (logout)

@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { buildDiscordAuthorizeUrl } from "@/lib/discord";
 import { signOAuthState, readRequiredEnv } from "@/app/api/auth/_helpers";
+import { DEFAULT_RETURN_TO } from "@/lib/cookies";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,8 @@ export const dynamic = "force-dynamic";
  *    callback can verify it.
  * 3. 302-redirects the browser to Discord's authorize URL.
  *
- * If `returnTo` is missing or not a same-origin path, we default to "/".
+ * If `returnTo` is missing or not a same-origin path, we default to
+ * `DEFAULT_RETURN_TO`.
  */
 export async function GET(req: NextRequest) {
   try {
@@ -21,12 +23,13 @@ export async function GET(req: NextRequest) {
     const redirectUri = readRequiredEnv("DISCORD_REDIRECT_URI");
     const guildId = readRequiredEnv("DISCORD_GUILD_ID");
 
-    const requestedReturn = req.nextUrl.searchParams.get("returnTo") ?? "/";
+    const requestedReturn =
+      req.nextUrl.searchParams.get("returnTo") ?? DEFAULT_RETURN_TO;
     const safeReturnTo =
       requestedReturn.startsWith("/") &&
       !requestedReturn.startsWith("//")
         ? requestedReturn
-        : "/";
+        : DEFAULT_RETURN_TO;
 
     const stateToken = await signOAuthState({
       returnTo: safeReturnTo,
@@ -47,7 +50,7 @@ export async function GET(req: NextRequest) {
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
       path: "/",
-      maxAge: 60 * 10, // 10 minutes — enough to complete the OAuth bounce
+      maxAge: 60 * 10, // 10 minutes - enough to complete the OAuth bounce
     });
 
     return res;

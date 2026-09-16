@@ -21,7 +21,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { TableDataType } from "@/app/page";
+import { TableDataType } from "@/lib/types";
 import {
   parseDate,
   formatDisplayDate,

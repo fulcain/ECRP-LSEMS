@@ -3,18 +3,21 @@ import type { Metadata } from "next";
 import { ShieldAlert } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "FTD App | Access Denied",
+  title: "LSEMS | Access Denied",
   description: "Your Discord account doesn't have access to this page.",
 };
 
 export default async function UnauthorizedPage({
   searchParams,
 }: {
-  searchParams: Promise<{ path?: string; reason?: string }>;
+  searchParams: Promise<{ path?: string; reason?: string; division?: string }>;
 }) {
   const sp = await searchParams;
   const path = sp.path ?? "this page";
   const reason = sp.reason;
+  // Set by the middleware when the refused page belongs to a division, so the
+  // message says *whose* page it is instead of leaving people guessing.
+  const division = sp.division;
 
   const heading =
     reason === "not_in_guild"
@@ -45,8 +48,18 @@ export default async function UnauthorizedPage({
     ) : (
       <>
         Your Discord account doesn&apos;t have a role that grants access to{" "}
-        <code className="rounded bg-surface-hover px-1.5 py-0.5 text-xs">{path}</code>.
-        Contact an FTD administrator to request the appropriate role.
+        <code className="rounded bg-surface-hover px-1.5 py-0.5 text-xs">{path}</code>
+        {division ? (
+          <>
+            {" "}
+            - that page belongs to the{" "}
+            <span className="font-medium text-foreground">{division}</span>{" "}
+            division, so one of its Discord roles is required.
+          </>
+        ) : (
+          "."
+        )}{" "}
+        Contact an LSEMS administrator to request the appropriate role.
       </>
     );
 

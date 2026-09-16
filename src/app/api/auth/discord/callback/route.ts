@@ -9,6 +9,7 @@ import {
   signAndSetSessionCookie,
   readRequiredEnv,
 } from "@/app/api/auth/_helpers";
+import { DEFAULT_RETURN_TO } from "@/lib/cookies";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +21,7 @@ export const dynamic = "force-dynamic";
  *   2. Exchange `code` for an access_token.
  *   3. Fetch user (/users/@me).
  *   4. Fetch guild-member (/users/@me/guilds/{GUILD_ID}/member).
- *      — 404 here means the user is not in our guild → `/unauthorized`.
+ *      - 404 here means the user is not in our guild → `/unauthorized`.
  *   5. Mint a JWT with the user's identity and roles.
  *   6. Set it as httpOnly `ftd_auth` cookie, redirect to `returnTo`.
  */
@@ -94,7 +95,7 @@ export async function GET(req: NextRequest) {
     const dest = req.nextUrl.clone();
     dest.pathname = stateData.returnTo.startsWith("/")
       ? stateData.returnTo
-      : "/";
+      : DEFAULT_RETURN_TO;
     dest.search = "";
     return redirectClearingState(dest);
   } catch (err) {

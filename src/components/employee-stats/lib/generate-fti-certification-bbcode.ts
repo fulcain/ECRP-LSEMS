@@ -105,7 +105,7 @@ export function generateCertificationPaperwork(values: FtiCertificationValues): 
   return substitute(CERTIFICATION_TEMPLATE, values);
 }
 
-/** Generates the Divisional File BBCode — auto-filled from the same values, no extra input needed. */
+/** Generates the Divisional File BBCode - auto-filled from the same values, no extra input needed. */
 export function generateDivisionalFile(values: FtiCertificationValues): string {
   return substitute(DIVISIONAL_TEMPLATE, values);
 }

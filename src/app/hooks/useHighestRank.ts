@@ -1,18 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getHighestRank, rankLabel } from "@/lib/role-config";
-
-/** Shape of /api/auth/me's `user` payload (kept local to avoid coupling). */
-interface MeResponseUser {
-  discordId: string;
-  username: string;
-  globalName: string | null;
-  nick: string | null;
-  avatar: string | null;
-  avatarUrl: string | null;
-  roles: string[];
-}
+import { useMedic } from "@/app/context/MedicContext";
+import { useGuildIdentity } from "@/app/hooks/useGuildIdentity";
 
 export interface HighestRankState {
   rankLabel: string | null;
@@ -22,59 +11,23 @@ export interface HighestRankState {
   error: Error | null;
 }
 
-
+/**
+ * The rank to prefill forms with - used by the paperwork tools so nobody has
+ * to type it.
+ *
+ * The rank saved on the Staff Page comes first: that is the member's own
+ * statement of what they are, and it is what the page's own editor shows.
+ * Discord detection is the fallback, for anyone who hasn't filled the Staff
+ * Page in yet - `useGuildIdentity` owns that request and resolves divisions
+ * and the director role from the same role list.
+ */
 export function useHighestRank(): HighestRankState {
-  const [state, setState] = useState<HighestRankState>({
-    rankLabel: null,
-    isLoading: true,
-    error: null,
-  });
+  const { identity, isLoading, error } = useGuildIdentity();
+  const { medicCredentials } = useMedic();
 
-  useEffect(() => {
-    const controller = new AbortController();
-
-    const load = async () => {
-      try {
-        const res = await fetch("/api/auth/me", {
-          signal: controller.signal,
-        });
-        if (!res.ok) {
-          // 401 = signed out, anything else = unexpected. Either way we
-          // surface "no rank" rather than throwing, so paperwork forms
-          // stay usable for manual rank entry.
-          setState({ rankLabel: null, isLoading: false, error: null });
-          return;
-        }
-
-        const data = (await res.json()) as { user: MeResponseUser | null };
-        const userRoles = data.user?.roles ?? [];
-        const alias = getHighestRank(userRoles);
-        setState({
-          rankLabel: alias ? rankLabel(alias) : null,
-          isLoading: false,
-          error: null,
-        });
-      } catch (err) {
-        // AbortController rejection = clean unmount, not a real error.
-        // Single check covers both fetch and json() abort paths since
-        // we own the only abort source (the cleanup below).
-        if (controller.signal.aborted) return;
-        setState({
-          rankLabel: null,
-          isLoading: false,
-          error: err instanceof Error ? err : new Error(String(err)),
-        });
-      }
-    };
-
-    // `void` makes the floating-promise intent explicit and silences
-    // `no-floating-promises` ESLint complaints.
-    void load();
-
-    return () => {
-      controller.abort();
-    };
-  }, []);
-
-  return state;
+  return {
+    rankLabel: medicCredentials.rank || identity.rankLabel,
+    isLoading,
+    error,
+  };
 }

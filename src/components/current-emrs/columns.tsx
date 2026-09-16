@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { TableDataType } from "@/app/page";
+import { TableDataType } from "@/lib/types";
 
 const StatusBox = ({ value }: { value: string }) => {
   const isTrue = value === "TRUE";

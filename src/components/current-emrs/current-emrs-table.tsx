@@ -28,7 +28,7 @@ import {
   mapEmployeeDataRaw,
 } from "@/components/current-emrs/columns";
 import { Pagination } from "@/components/pagination";
-import { TableDataType } from "@/app/page";
+import { TableDataType } from "@/lib/types";
 import { fetchCurrentEMRs } from "./fetchCurrentEMRs";
 import { CreateNewEMR } from "@/components/create-new-emr/create-new-emr";
 import { EditEMRDialog } from "@/components/current-emrs/edit-emr-dialog";

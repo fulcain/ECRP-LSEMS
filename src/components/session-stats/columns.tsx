@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
-import { TableDataType } from "@/app/page";
+import { TableDataType } from "@/lib/types";
 
 export function mappedMonthlySessionData(
   rawData: TableDataType[],

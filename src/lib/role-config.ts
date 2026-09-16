@@ -1,22 +1,32 @@
 /**
- * Two-record architecture — keep these separate:
- *   • `ROLES` (`configs/roles.ts`) gates FT route access.
- *   • `RANKS` does the LSEMS org rank display on paperworks.
- * Adding to one shouldn't bleed into the other.
+ * Access decisions, built on the role registry in `configs/roles.ts`:
+ *   • `ROLES` is the one place a Discord role id or role name is declared - it
+ *     feeds the route gates *and* the department ladder, divisions, directors
+ *     and templates.
+ *   • `DIVISIONS` declares each division's ranks and, when it has one, its
+ *     route; `ROUTE_ACCESS` is derived from that, so a division page is gated
+ *     on the ranks of the division it belongs to.
+ *   • `LSEMS_RANKS` (`app/constants/general/ranks.ts`) orders the ladder.
  */
 
 import {
+  DIVISION_ENTRIES,
   ROUTE_ACCESS,
   ROLES,
-  RANKS,
   ADMIN_USER_IDS,
+  divisionForRoute,
+  type DivisionKey,
+  type DivisionRoute,
   type RoleName,
-  type LsemsRankName,
   type RouteRoleRule,
 } from "@/configs/roles";
+import { LSEMS_RANKS, type LsemsRankName } from "@/app/constants/general/ranks";
+import { ROUTES } from "@/configs/routes";
 
-// Re-export the source types so callers can import everything from one place.
-export type { RoleName, LsemsRankName, RouteRoleRule };
+// Re-export the source types and helpers so callers can import everything from
+// one place.
+export type { RoleName, LsemsRankName, RouteRoleRule, DivisionKey, DivisionRoute };
+export { divisionForRoute };
 
 /**
  * Minimal shape a nav item must satisfy for `filterAccessibleLinks` to
@@ -43,28 +53,45 @@ function warnIfNotSnowflake(label: string, id: string): void {
   }
 }
 
-for (const [alias, id] of Object.entries(ROLES)) {
-  warnIfNotSnowflake(`ROLES.${alias}`, id);
-}
-for (const [alias, id] of Object.entries(RANKS)) {
-  warnIfNotSnowflake(`RANKS.${alias}`, id);
+for (const [alias, role] of Object.entries(ROLES)) {
+  // `null` is the documented "the guild has no such role" value, not a typo.
+  if (role.id) warnIfNotSnowflake(`ROLES.${alias}`, role.id);
 }
 for (const id of ADMIN_USER_IDS) {
   warnIfNotSnowflake("ADMIN_USER_IDS", id);
 }
 
+// A division page is gated on the division's own rank ids, so with none of them
+// declared the gate can't recognise a member: only Command+ and the division's
+// director can open it. Worth saying out loud, once at boot, rather than
+// leaving a division to wonder why its own page refuses it. The fix is a
+// registry entry - these ids are maintained by hand in `configs/roles.ts`.
+for (const [key, division] of DIVISION_ENTRIES) {
+  if (!division.route) continue;
+  if (division.ranks.some((alias) => ROLES[alias].id)) continue;
+  console.warn(
+    `[role-config] The "${division.label}" (${key}) ranks have no Discord ids in ` +
+      `configs/roles.ts, so ${division.route} opens to Command+ and its ` +
+      "director only.",
+  );
+}
+
 /**
  * Find the most specific route rule matching `pathname` by longest-prefix
- * match. Returns `undefined` if no rule applies — which is treated as
+ * match. Returns `undefined` if no rule applies - which is treated as
  * "open" downstream.
  *
  * The trailing `/` in the prefix check matters: it prevents keys like
- * `/paperwork` from accidentally matching `/paperwork-v2`.
+ * `/divisions/ftd` from accidentally matching `/divisions/ftd-legacy`.
  */
 export function matchRoleRule(pathname: string): RouteRoleRule | undefined {
+  // Compare the path alone: nav items carry their tab in the query string
+  // (`/management/supervisor?tab=loa`), and a rule that skipped those would let
+  // the link past its own gate.
+  const path = pathname.split("?")[0];
   let bestKey: string | null = null;
   for (const key of Object.keys(ROUTE_ACCESS)) {
-    if (pathname === key || pathname.startsWith(`${key}/`)) {
+    if (path === key || path.startsWith(`${key}/`)) {
       if (!bestKey || key.length > bestKey.length) bestKey = key;
     }
   }
@@ -78,79 +105,24 @@ export function matchRoleRule(pathname: string): RouteRoleRule | undefined {
  *   1. Admins (in `ADMIN_USER_IDS`) always pass.
  *   2. If the route has no rule (or an empty rule), it's open.
  *   3. Otherwise, the user must hold at least one of the route's
- *      `requireAnyRole` aliases (resolved via `ROLES`).
+ *      `requireAnyRole` aliases (resolved via `ROLES`). For a division page
+ *      those are that division's own ranks plus `DEPARTMENT_ACCESS`.
  */
-/**
- * Friendly rank labels rendered into the paperwork "Rank" dropdown and
- * BBCode signature. **This object is the single source of truth** for
- * both the labels and the LSEMS rank ordering — `RANK_HIERARCHY` below
- * is derived from its key order so adding a new rank here automatically
- * slots it into `getHighestRank`'s iteration.
- *
- * `Object.keys` returns string keys in insertion order, so the order
- * here IS the order users will see in the dropdown (highest → lowest).
- * Customise any label string here without touching the snowflake
- * config in `configs/roles.ts`.
- *
- * The `satisfies Record<LsemsRankName, string>` constraint enforces that
- * every alias has a label, but does NOT lock the keys to a specific
- * order — so it's safe to insert new ranks anywhere in this object.
- */
-export const RANK_LABELS = {
-  ChiefOfEMS: "Chief of EMS",
-  AssistantChiefOfEMS: "Assistant Chief of EMS",
-  DeputyChiefOfEMS: "Deputy Chief of EMS",
-  Consultant: "Consultant",
-  Commander: "Commander",
-  Captain: "Captain",
-  Lieutenant: "Lieutenant",
-  LeadParamedic: "Lead Paramedic",
-  SeniorParamedic: "Senior Paramedic",
-  Paramedic: "Paramedic",
-  JuniorParamedic: "Junior Paramedic",
-  MasterEMT: "Master EMT",
-  EMPP: "EMP-P",
-  EMTAdvanced: "EMT-Advanced",
-  EMTIntermediate: "EMT-Intermediate",
-  EMTBasic: "EMT-Basic",
-  EMRTrainee: "EMR Trainee",
-} satisfies Record<LsemsRankName, string>;
-
-/**
- * LSEMS rank hierarchy used for paperworks: HIGHEST → LOWEST. The first
- * match in the user's Discord role snowflakes wins, so listing Chief of
- * EMS first means a Chief of EMS user is ranked as "Chief of EMS" even
- * if they also hold Paramedic, EMT-Basic, etc.
- *
- * Derived from `RANK_LABELS` key order so the labels object stays the
- * single source of truth — `as readonly LsemsRankName[]` is safe because
- * the `satisfies Record<LsemsRankName, string>` check above guarantees
- * every key is a valid `LsemsRankName`.
- */
-export const RANK_HIERARCHY: readonly LsemsRankName[] = Object.keys(
-  RANK_LABELS,
-) as readonly LsemsRankName[];
-
 /**
  * Resolve a user's Discord role snowflakes down to their highest LSEMS
  * rank. Returns `null` if the user holds no rank-related role.
  *
- * - Iterates `RANK_HIERARCHY` (highest first) so the first match wins.
- * - Looks up snowflakes via `RANKS` so role aliases keep their single
- *   source of truth in `configs/roles.ts`.
+ * `LSEMS_RANKS` is declared highest-first, so the first match wins: a
+ * Chief of EMS who also holds Paramedic is ranked as Chief of EMS.
  */
 export function getHighestRank(
   userRoleIds: readonly string[],
 ): LsemsRankName | null {
-  for (const alias of RANK_HIERARCHY) {
-    if (userRoleIds.includes(RANKS[alias])) return alias;
+  const held = new Set(userRoleIds);
+  for (const rank of LSEMS_RANKS) {
+    if (rank.id && held.has(rank.id)) return rank.alias;
   }
   return null;
-}
-
-/** Convenience: look up the friendly label for an LSEMS rank alias. */
-export function rankLabel(alias: LsemsRankName): string {
-  return RANK_LABELS[alias];
 }
 
 export function userHasAccess(
@@ -165,11 +137,16 @@ export function userHasAccess(
   const rule = matchRoleRule(pathname);
   if (!rule || rule.requireAnyRole.length === 0) return true;
 
-  // Resolve the friendly aliases to snowflake IDs, then intersect. Using a
-  // Set drops `as const`'s literal-union type so `.has(string)` typechecks.
-  const requiredIds = new Set<string>(
-    rule.requireAnyRole.map((alias) => ROLES[alias]),
-  );
+  // Resolve the friendly aliases to snowflakes, then intersect, dropping the
+  // entries that have no id at all.
+  const requiredIds = new Set<string>();
+  for (const alias of rule.requireAnyRole) {
+    const id = ROLES[alias].id;
+    if (id) requiredIds.add(id);
+  }
+  // Fail closed: a gated rule with no collected ids must not open the route.
+  if (requiredIds.size === 0) return false;
+
   for (const id of userRoleIds) {
     if (requiredIds.has(id)) return true;
   }
@@ -177,17 +154,42 @@ export function userHasAccess(
 }
 
 /**
+ * Where a signed-in member belongs when they land on the app's entry point:
+ * the first of these their own roles open. A division member lands in their
+ * section, an employee on the Staff Page, and a supervisor who holds nothing
+ * else on the supervisor tools - so a promotion, a transfer or a new division
+ * never dumps someone on an access-denied page after signing in.
+ */
+const LANDING_ORDER: readonly string[] = [
+  ROUTES.divisions.ftd.sessions,
+  ROUTES.divisions.red,
+  ROUTES.divisions.bls,
+  ROUTES.workspace.staff,
+  ROUTES.management.supervisor,
+];
+
+export function landingRouteFor(
+  userRoleIds: readonly string[],
+  discordId?: string,
+): string {
+  return (
+    LANDING_ORDER.find((path) => userHasAccess(path, userRoleIds, discordId)) ??
+    ROUTES.workspace.staff
+  );
+}
+
+/**
  * Decide whether `userRoleIds` is allowed to edit FT session rows.
  *
  * Mirrors the same triple (FTHead / FTAssHead / Command) the
- * `/fd-command` route already gates on, so editing a session has the
- * same access bar as opening the Command page. Admins (in
+ * FTD Command page already gates on, so editing a session has the
+ * same access bar as opening that page. Admins (in
  * `ADMIN_USER_IDS`) short-circuit to `true` to match the rest of
  * `userHasAccess`'s behavior.
  *
  * Used by:
  *   - the `/api/update-session` route (server-side guard)
- *   - `app/page.tsx` (server-rendered flag passed to <AllDataTable>)
+ *   - the FT Sessions page (server-rendered flag passed to <AllDataTable>)
  */
 export function hasSessionEditAccess(
   userRoleIds: readonly string[],
@@ -196,11 +198,11 @@ export function hasSessionEditAccess(
   if (discordId && ADMIN_USER_IDS.has(discordId)) {
     return true;
   }
-  const requiredIds = new Set<string>([
-    ROLES.FTHead,
-    ROLES.FTAssHead,
-    ROLES.Command,
-  ]);
+  const requiredIds = new Set<string>();
+  for (const alias of ["FTHead", "FTAssHead", "Command"] as const) {
+    const id = ROLES[alias].id;
+    if (id) requiredIds.add(id);
+  }
   for (const id of userRoleIds) {
     if (requiredIds.has(id)) return true;
   }
@@ -210,7 +212,7 @@ export function hasSessionEditAccess(
 /**
  * Filter a list of nav-style links down to only those the caller is
  * permitted to open. Reuses `userHasAccess` so route rules stay as the
- * single source of truth — adding a new gated route in
+ * single source of truth - adding a new gated route in
  * `configs/roles.ts` automatically updates the header with no extra
  * wiring.
  *
@@ -222,7 +224,7 @@ export function hasSessionEditAccess(
  *   • `userRoleIds === null` means "unauthenticated"/"could not
  *     verify session token". In that case we cannot identify an admin,
  *     so we restrict to purely *open* routes (paths with no entry in
- *     `ROUTE_ACCESS`) — keeping gated links off `/login` and
+ *     `ROUTE_ACCESS`) - keeping gated links off `/login` and
  *     `/unauthorized`.
  */
 export function filterAccessibleLinks<T extends AccessCheckableLink>(

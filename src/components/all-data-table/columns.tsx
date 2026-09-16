@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { TableDataType } from "@/app/page";
+import { TableDataType } from "@/lib/types";
 
 /**
  * Per-row callback hookup for the (optional, Command+ only) Actions
@@ -21,7 +21,7 @@ import { TableDataType } from "@/app/page";
  */
 export interface AllDataColumnOptions {
   onEdit: (row: TableDataType) => void;
-  /** Optional — when provided, the dropdown shows a Delete item. */
+  /** Optional - when provided, the dropdown shows a Delete item. */
   onDelete?: (row: TableDataType) => void;
   /** When true, the Actions column is appended; otherwise hidden. */
   canEdit: boolean;
@@ -33,7 +33,7 @@ export interface AllDataColumnOptions {
  * Returns a factory rather than a module-level const so the trailing
  * Actions column can pull `onEdit`/`onDelete` from <AllDataTable>.
  * `canEdit` is the gate the server-rendered <AppPage> computes from
- * `hasSessionEditAccess(...)` — when false, the column is fully
+ * `hasSessionEditAccess(...)` - when false, the column is fully
  * omitted (no empty header / empty cells) instead of every row
  * being a non-functional button.
  */

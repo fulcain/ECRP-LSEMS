@@ -80,7 +80,7 @@ export async function POST(req: Request) {
     );
   }
 
-  // Optional ribbon booleans — when the client supplies any of these,
+  // Optional ribbon booleans - when the client supplies any of these,
   // the Apps Script writes them to columns E (5), F (6), G (7), H (8)
   // alongside the new name. We forward undefined as null so the
   // Apps Script can distinguish "not supplied" (skip the cell) from

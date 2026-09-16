@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TableDataType } from "@/app/page";
+import { TableDataType } from "@/lib/types";
 
 export interface EditEmployeeStatsRowDialogProps {
   row: TableDataType | null;
@@ -24,7 +24,7 @@ export interface EditEmployeeStatsRowDialogProps {
   onOpenChange: (open: boolean) => void;
   /** Called after a successful edit so the parent can patch the row in local
    *  state (optimistic update). The four ribbon booleans are passed so the
-   *  parent doesn't need to refetch — important because the upstream
+   *  parent doesn't need to refetch - important because the upstream
    *  Google Sheets published CSV can be ~5 min stale. */
   onEdited?: (
     newName: string,
@@ -72,7 +72,7 @@ export function EditEmployeeStatsRowDialog({
 
     if (originalSheetRow == null) {
       toast.error(
-        "Missing sheet row identifier — reload the page so the row index re-syncs.",
+        "Missing sheet row identifier - reload the page so the row index re-syncs.",
         { theme: "dark" },
       );
       return;
@@ -140,10 +140,10 @@ export function EditEmployeeStatsRowDialog({
               />
             </div>
 
-            {/* Ribbon checkboxes — 15 / 40 / 100 / 165. The four
+            {/* Ribbon checkboxes - 15 / 40 / 100 / 165. The four
                 columns on the sheet (E..H) hold the session-ribbon
                 eligibility, written as "TRUE" / "FALSE" strings. */}
-            <div className="grid grid-cols-2 gap-3 rounded-md border bg-muted/30 p-3">
+            <div className="grid grid-cols-1 gap-3 rounded-md sm:grid-cols-2 border bg-muted/30 p-3">
               <div className="flex items-center gap-2">
                 <Checkbox
                   id="r15"

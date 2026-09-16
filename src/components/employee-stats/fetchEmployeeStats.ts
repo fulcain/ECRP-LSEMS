@@ -1,5 +1,5 @@
 import Papa from "papaparse";
-import { TableDataType } from "@/app/page";
+import { TableDataType } from "@/lib/types";
 
 
 export interface EmployeeStatsSourceRow extends TableDataType {
@@ -53,7 +53,7 @@ export async function fetchFullEmployeeStats(): Promise<FullEmployeeStatsPayload
     exFtos: [],
   };
   try {
-    // See note in fetchEmployeeStats above — the same
+    // See note in fetchEmployeeStats above - the same
     // cache-busting rationale applies to fetchFullEmployeeStats too.
     const res = await fetch("/api/employee-stats", { cache: "no-store" });
     const csvText = await res.text();
@@ -75,7 +75,7 @@ export async function fetchFullEmployeeStats(): Promise<FullEmployeeStatsPayload
     rawData.forEach((row, i) => {
       if (i === 0) return;
 
-      // Skip the "Ex FTOs" sentinel row — it's a divider, not an FTO.
+      // Skip the "Ex FTOs" sentinel row - it's a divider, not an FTO.
       if (sentinelPos === i) return;
 
       const isExFto = sentinelPos !== -1 && i > sentinelPos;

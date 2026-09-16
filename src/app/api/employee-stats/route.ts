@@ -15,7 +15,7 @@ import { NextResponse } from "next/server";
  * Script `doGet` and point this proxy at it.
  */
 
-// Run on every request — without this Next.js would treat the route
+// Run on every request - without this Next.js would treat the route
 // as static and freeze the first response forever.
 export const dynamic = "force-dynamic";
 
@@ -32,10 +32,10 @@ export async function GET() {
   return new NextResponse(text, {
     headers: {
       "Content-Type": "text/csv",
-      // Tell the browser not to cache at all — the data is mutable
+      // Tell the browser not to cache at all - the data is mutable
       // and the upstream staleness is already the floor on freshness.
       // `no-store` subsumes `no-cache`, `must-revalidate`, `max-age=0`,
-      // `Pragma`, and `Expires` — listing all five signals confusion
+      // `Pragma`, and `Expires` - listing all five signals confusion
       // and adds no behavior for HTTP/1.1+ browsers.
       "Cache-Control": "no-store",
     },

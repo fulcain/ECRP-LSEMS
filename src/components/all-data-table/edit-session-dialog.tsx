@@ -20,7 +20,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { TableDataType } from "@/app/page";
+import { TableDataType } from "@/lib/types";
 import {
   parseDate,
   formatDateForSheet,
@@ -42,7 +42,7 @@ interface EditSessionDialogProps {
  * is always correct. The sheet stores dates as `M/D/YYYY`.
  *
  * The Apps Script update handler locates the row by **sheet row number**
- * — sent as `originalRowNumber`. We also send `originalTimestamp` for
+ * - sent as `originalRowNumber`. We also send `originalTimestamp` for
  * an optional sanity check.
  */
 export function EditSessionDialog({
@@ -101,7 +101,7 @@ export function EditSessionDialog({
 
     if (originalRowNumber == null) {
       toast.error(
-        "Missing sheet row identifier — reload the table so the CSV index re-syncs.",
+        "Missing sheet row identifier - reload the table so the CSV index re-syncs.",
         { theme: "dark" },
       );
       return;
@@ -180,7 +180,7 @@ export function EditSessionDialog({
               <Label>Sheet Row</Label>
               <Input
                 value={
-                  originalRowNumber != null ? String(originalRowNumber) : "—"
+                  originalRowNumber != null ? String(originalRowNumber) : "-"
                 }
                 readOnly
                 disabled
