@@ -7,8 +7,8 @@ import {
   type GuildIdentityRead,
 } from "@/app/hooks/useGuildIdentity";
 import { ROUTES } from "@/configs/routes";
-import { heldRoles } from "@/lib/member-identity";
-import { BadgeCheck, Check, Copy, Crown, RefreshCw, Sparkles } from "lucide-react";
+import { heldRoles, type HeldRole } from "@/lib/member-identity";
+import { BadgeCheck, Crown, RefreshCw, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
@@ -45,17 +45,52 @@ function RoleTag({ children }: { children: React.ReactNode }) {
 }
 
 /**
+ * One labelled run of role tags. The divider between this and the next group
+ * is drawn by the caller, so the two groups read as one list split in two.
+ */
+function RoleGroup({
+  label,
+  roles,
+  emptyNote,
+}: {
+  label: string;
+  roles: readonly HeldRole[];
+  emptyNote: string;
+}) {
+  return (
+    <div>
+      <p className="flex items-center gap-2 text-[10px] font-semibold tracking-[0.16em] text-slate-500 uppercase">
+        {label}
+        <span className="rounded-full border border-white/10 bg-slate-900/70 px-2 py-0.5 text-[11px] font-medium tracking-normal text-slate-400 normal-case">
+          {roles.length}
+        </span>
+      </p>
+      {roles.length === 0 ? (
+        <p className="mt-2 text-xs text-slate-500">{emptyNote}</p>
+      ) : (
+        <div className="mt-2 flex flex-wrap gap-2">
+          {roles.map((role) => (
+            <RoleTag key={role.alias}>{role.name}</RoleTag>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
  * The member's Discord identity, read from their session.
  *
  * Everything here comes from the roles the app already fetches on every page
  * load, so the tab costs no extra Discord call. The two halves answer
- * different questions: what the app calls them (rank, director, divisions) and
- * which of their Discord roles it recognised to get there.
+ * different questions: what the app calls them (rank and director title) and
+ * which of their Discord roles it recognised to get there - with the
+ * divisional roles split out, since those are the ones that say which
+ * divisions the member is in.
  */
 export function DiscordProfileCard() {
   const { user, identity, isLoading, error, refresh } = useGuildIdentity();
   const [syncing, setSyncing] = useState(false);
-  const [copied, setCopied] = useState(false);
   /** What the last press of Re-read produced, or null before it is used. */
   const [syncOutcome, setSyncOutcome] = useState<GuildIdentityRead | null>(null);
 
@@ -65,14 +100,11 @@ export function DiscordProfileCard() {
     ? (user.nick ?? user.globalName ?? user.username)
     : null;
 
-  // Which divisions they are in, and - where they hold one - the rank in it.
-  // Membership is listed even with no rank: a division's rank list only names
-  // its leadership, so belonging is a different question from ranking.
-  const divisionEntries = identity.divisionMembership.map((label) => ({
-    label,
-    rank: identity.divisionRanks[label] ?? null,
-  }));
-  const rankedDivisions = divisionEntries.filter((entry) => entry.rank !== null);
+  // Division roles are listed apart: a division's membership role is held by
+  // all of its people, so this is where a rank-and-file member's division
+  // shows up at all.
+  const departmentRoles = roles.filter((role) => !role.isDivision);
+  const divisionRoles = roles.filter((role) => role.isDivision);
 
   const handleSync = async () => {
     setSyncing(true);
@@ -84,19 +116,6 @@ export function DiscordProfileCard() {
     } finally {
       setSyncing(false);
     }
-  };
-
-  const handleCopyId = () => {
-    if (!user) return;
-    void navigator.clipboard
-      ?.writeText(user.discordId)
-      .then(() => {
-        setCopied(true);
-        window.setTimeout(() => setCopied(false), 1500);
-      })
-      .catch(() => {
-        /* Clipboard blocked (insecure context) - the id stays selectable. */
-      });
   };
 
   const shell =
@@ -178,19 +197,6 @@ export function DiscordProfileCard() {
               <p className="truncate text-sm text-slate-400">
                 @{user.username}
               </p>
-              <button
-                type="button"
-                onClick={handleCopyId}
-                title="Copy your Discord user id"
-                className="mt-1.5 inline-flex cursor-pointer items-center gap-1.5 rounded-md px-1.5 py-1 font-mono text-[11px] text-slate-500 transition-colors hover:bg-slate-800/70 hover:text-slate-300"
-              >
-                {copied ? (
-                  <Check className="h-3.5 w-3.5 text-emerald-400" />
-                ) : (
-                  <Copy className="h-3.5 w-3.5" />
-                )}
-                {user.discordId}
-              </button>
             </div>
           </div>
 
@@ -217,11 +223,10 @@ export function DiscordProfileCard() {
             What the app reads from your roles
           </h3>
           <p className="mt-0.5 text-xs text-slate-400">
-            {rankedDivisions.length === divisionEntries.length
-              ? "The same values the Staff Settings tab fills in for you."
-              : `${divisionEntries.length - rankedDivisions.length} of these ${divisionEntries.length} divisions are open to you through the division's own role, with no rank of its own on your account.`}
+            The same values the Staff Settings tab fills in for you. Which
+            divisions those roles put you in is split out below.
           </p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <Fact
               label="Rank"
               value={identity.rankLabel ?? "No rank detected"}
@@ -233,18 +238,6 @@ export function DiscordProfileCard() {
                 identity.directorTitle ? (
                   <Crown className="h-3.5 w-3.5 text-violet-300" />
                 ) : undefined
-              }
-            />
-            <Fact
-              label={divisionEntries.length === 1 ? "Division" : "Divisions"}
-              value={
-                divisionEntries.length === 0
-                  ? "Not in a division"
-                  : divisionEntries
-                      .map(({ label, rank }) =>
-                        rank ? `${label} - ${rank}` : label,
-                      )
-                      .join(", ")
               }
             />
           </div>
@@ -263,10 +256,18 @@ export function DiscordProfileCard() {
               None of your Discord roles are in the registry yet.
             </p>
           ) : (
-            <div className="mt-3 flex flex-wrap gap-2">
-              {roles.map((role) => (
-                <RoleTag key={role.alias}>{role.name}</RoleTag>
-              ))}
+            <div className="mt-3 space-y-4">
+              <RoleGroup
+                label="Department"
+                roles={departmentRoles}
+                emptyNote="No department roles on your account."
+              />
+              <hr className="border-white/10" />
+              <RoleGroup
+                label="Divisions"
+                roles={divisionRoles}
+                emptyNote="Not in a division."
+              />
             </div>
           )}
         </div>

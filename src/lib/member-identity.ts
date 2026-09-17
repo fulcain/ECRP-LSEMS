@@ -67,7 +67,27 @@ export type HeldRole = {
   alias: RoleName;
   /** The role's display name, as declared in the registry. */
   name: string;
+  /**
+   * Whether the role belongs to a division - one of its ranks or its
+   * membership role - rather than to the department ladder. The profile lists
+   * the two apart, which is how a member sees which divisions they are in
+   * without a separate divisions card.
+   */
+  isDivision: boolean;
 };
+
+/**
+ * Every snowflake a live division claims: its ranks and its membership role.
+ *
+ * Built from `divisions` rather than a second hand-written list, so a rank
+ * added to a division is classified as divisional with no edit here.
+ */
+const DIVISION_ROLE_IDS: ReadonlySet<string> = new Set(
+  divisions.flatMap(({ data }) => [
+    ...data.ranks.flatMap((rank) => (rank.id ? [rank.id] : [])),
+    ...(data.membership?.id ? [data.membership.id] : []),
+  ]),
+);
 
 /**
  * The reverse of `resolveMemberIdentity`: every role the member holds that the
@@ -86,7 +106,8 @@ export function heldRoles(roleIds: readonly string[]): HeldRole[] {
 
   for (const alias of Object.keys(ROLES) as RoleName[]) {
     const { id, name } = ROLES[alias];
-    if (id && held.has(id)) found.push({ alias, name });
+    if (id && held.has(id))
+      found.push({ alias, name, isDivision: DIVISION_ROLE_IDS.has(id) });
   }
 
   return found;
