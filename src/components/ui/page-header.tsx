@@ -20,7 +20,7 @@ export function PageHeader({
     <header className={cn("mb-8 flex flex-col items-center gap-3 text-center", className)}>
       {showLogo && (
         <div className="flex items-center gap-3">
-          <Image alt="FT" src="/FT.png" height={36} width={36} className="opacity-90" />
+          <Image alt="LSEMS" src="/General.png" height={36} width={36} className="opacity-90" />
           {icon && <span className="text-muted-foreground">{icon}</span>}
         </div>
       )}
