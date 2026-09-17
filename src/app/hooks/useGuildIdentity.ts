@@ -22,12 +22,14 @@ export interface GuildUser {
 /**
  * Why a read could not refresh the member's roles.
  *
- * "no-refresh-token" is the one a member can act on: their session was minted
- * before the app stored a Discord refresh token, so nothing will re-read their
- * roles until they sign in again.
+ * "no-refresh-token" and "session-expired" are the two a member can act on:
+ * the first means their session was minted before the app stored a Discord
+ * refresh token, the second that Discord has retired the stored one. Either
+ * way nothing will re-read their roles until they sign in again.
  */
 export type GuildRefreshFailureReason =
   | "no-refresh-token"
+  | "session-expired"
   | "throttled"
   | "not-configured"
   | "left-guild"
@@ -50,6 +52,11 @@ export interface GuildIdentityRead {
   answered: boolean;
   /** False when Discord could not be asked, so nothing new was learned. */
   refreshed: boolean;
+  /**
+   * True when the session was renewed but Discord's profile read did not land,
+   * so the identity here is the previous one. Never report this as a re-read.
+   */
+  carried: boolean;
   /** Why nothing new was learned, or null when the read succeeded. */
   reason: GuildRefreshFailureReason | null;
   /** The resolved identity for this read. */
@@ -120,6 +127,7 @@ export function useGuildIdentity(): GuildIdentityState {
       ): GuildIdentityRead => ({
         answered: false,
         refreshed: false,
+        carried: false,
         reason,
         identity: emptyMemberIdentity,
         user: null,
@@ -134,6 +142,24 @@ export function useGuildIdentity(): GuildIdentityState {
         setState({ identity, user, isLoading: false, error });
       };
 
+      /**
+       * Leave the last answer on screen after a read that couldn't be made.
+       *
+       * Blanking the identity is what a *signed-out* visitor should see, never
+       * a member whose session is fine and whose read merely failed: "I pressed
+       * Re-read and it signed me out" is this state, and the cookie was intact
+       * throughout. A visitor who really is signed out has nothing here to keep,
+       * so they still get the sign-in prompt.
+       */
+      const keep = (error: Error | null): void => {
+        if (requestRef.current !== requestId) return;
+        setState((prev) => ({
+          ...prev,
+          isLoading: false,
+          error: prev.user ? prev.error : error,
+        }));
+      };
+
       try {
         // A forced read goes through /api/auth/refresh, which re-fetches the
         // member from Discord before answering. The initial read asks
@@ -144,16 +170,20 @@ export function useGuildIdentity(): GuildIdentityState {
           ? await fetch("/api/auth/refresh", { method: "POST" })
           : await fetch("/api/auth/me?refresh=1", { cache: "no-store" });
         if (!res.ok) {
-          // 401 = signed out, anything else = unexpected. Either way we surface
-          // "nothing detected" rather than throwing, so every tool that reads a
-          // rank stays usable with hand-entered values.
-          settle(emptyMemberIdentity, null, null);
+          // 401 = signed out, anything else = unexpected. Either way we keep
+          // whatever was last shown rather than throwing, so every tool that
+          // reads a rank stays usable with hand-entered values.
+          console.warn(
+            `[guild-identity] ${force ? "/api/auth/refresh" : "/api/auth/me"} answered ${res.status}`,
+          );
+          keep(null);
           return failure("request-failed");
         }
 
         const data = (await res.json()) as {
           user: GuildUser | null;
           refreshed?: boolean;
+          carried?: boolean;
           reason?: GuildRefreshFailureReason | null;
         };
         const user = data.user ?? null;
@@ -177,16 +207,14 @@ export function useGuildIdentity(): GuildIdentityState {
         return {
           answered: user !== null,
           refreshed: data.refreshed ?? false,
+          carried: data.carried ?? false,
           reason: data.refreshed ? null : (data.reason ?? "request-failed"),
           identity,
           user,
         };
       } catch (err) {
-        settle(
-          emptyMemberIdentity,
-          null,
-          err instanceof Error ? err : new Error(String(err)),
-        );
+        console.warn("[guild-identity] read failed", err);
+        keep(err instanceof Error ? err : new Error(String(err)));
         return failure("discord-error");
       }
     },

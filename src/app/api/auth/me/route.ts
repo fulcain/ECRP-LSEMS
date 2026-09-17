@@ -34,11 +34,12 @@ export async function GET(req: NextRequest) {
   if (!payload) return NextResponse.json({ user: null }, { status: 401 });
 
   const force = req.nextUrl.searchParams.get("refresh") === "1";
-  const fresh = await refreshSessionIfStale(payload, { force });
+  const fresh = await refreshSessionIfStale(token, payload, { force });
   if (fresh.ok) {
     const res = NextResponse.json({
       user: toPublicUser(fresh.payload),
       refreshed: true,
+      carried: fresh.carried ?? false,
       reason: null,
     });
     res.cookies.set({ ...authCookieOptions(), value: fresh.token });

@@ -21,9 +21,10 @@ export const dynamic = "force-dynamic";
  * cache: pressing the button has to actually ask Discord, otherwise a role
  * that was just removed still looks present and the feature reads as broken.
  *
- * The reason that matters most is `no-refresh-token`: it means this browser's
- * session was minted before the app stored a Discord refresh token, so no page
- * load can re-read the member's roles either - a fresh sign-in is the only
+ * The two reasons that matter most are `no-refresh-token` and
+ * `session-expired`: the first means this browser's session was minted before
+ * the app stored a Discord refresh token, the second that Discord has retired
+ * the one it stored. Neither can be retried away - a fresh sign-in is the only
  * cure, and the UI says so instead of failing silently.
  *
  * Page loads don't need this - the middleware refreshes on every document
@@ -48,10 +49,11 @@ export async function POST() {
     );
   }
 
-  const fresh = await refreshSessionIfStale(payload, { explicit: true });
+  const fresh = await refreshSessionIfStale(token, payload, { explicit: true });
   if (fresh.ok) {
     const res = NextResponse.json({
       refreshed: true,
+      carried: fresh.carried ?? false,
       reason: null,
       user: toPublicUser(fresh.payload),
     });

@@ -41,6 +41,36 @@ interface DiscordTokenResponse {
   scope: string;
 }
 
+/**
+ * A rejection from Discord's token endpoint, kept typed so a caller can tell a
+ * *dead* refresh token (`invalid_grant` - spent, revoked or expired) from a
+ * transient problem. The two need opposite handling: the first is permanent for
+ * that session and only a fresh sign-in cures it, the second is worth retrying.
+ */
+export class DiscordTokenError extends Error {
+  readonly status: number;
+  readonly code: string | null;
+
+  constructor(status: number, code: string | null, body: string) {
+    super(
+      `Discord token endpoint answered ${status}${code ? ` (${code})` : ""}: ${body}`,
+    );
+    this.name = "DiscordTokenError";
+    this.status = status;
+    this.code = code;
+  }
+}
+
+/** Reads the `error` field out of Discord's OAuth error body, if it has one. */
+function errorCodeOf(body: string): string | null {
+  try {
+    const parsed = JSON.parse(body) as { error?: unknown };
+    return typeof parsed.error === "string" ? parsed.error : null;
+  } catch {
+    return null;
+  }
+}
+
 /** Build the Discord authorize URL the user is redirected to. */
 export function buildDiscordAuthorizeUrl(opts: {
   clientId: string;
@@ -83,7 +113,7 @@ export async function exchangeCodeForToken(opts: {
 
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`Discord token exchange failed: ${res.status} ${text}`);
+    throw new DiscordTokenError(res.status, errorCodeOf(text), text);
   }
   return (await res.json()) as DiscordTokenResponse;
 }
@@ -95,8 +125,13 @@ export async function exchangeCodeForToken(opts: {
  *
  * The body carries only `grant_type` and `refresh_token` (plus the client
  * credentials), because that is the whole of what Discord documents for this
- * grant - `redirect_uri` belongs to the authorization_code exchange, and this
- * endpoint rejects bodies it doesn't expect.
+ * grant - `redirect_uri` belongs to the authorization_code exchange. Verified
+ * against the live endpoint: a token exchange with and without `redirect_uri`
+ * is answered identically, so omitting it is not what a rejected refresh is.
+ *
+ * The token is single-use: redeeming it retires it, and the response carries
+ * the one that replaces it. Callers must persist the new one - the old one is
+ * dead the moment this returns.
  */
 export async function refreshAccessToken(opts: {
   clientId: string;
@@ -118,7 +153,7 @@ export async function refreshAccessToken(opts: {
 
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`Discord refresh token exchange failed: ${res.status} ${text}`);
+    throw new DiscordTokenError(res.status, errorCodeOf(text), text);
   }
   return (await res.json()) as DiscordTokenResponse;
 }
@@ -128,6 +163,7 @@ export async function fetchDiscordUser(
 ): Promise<DiscordUser> {
   const res = await fetch(`${DISCORD_API}/users/@me`, {
     headers: { Authorization: `Bearer ${accessToken}` },
+    cache: "no-store",
   });
   if (!res.ok) {
     throw new Error(`Discord /users/@me failed: ${res.status}`);
@@ -144,8 +180,7 @@ export async function fetchGuildMember(
   guildId: string,
 ): Promise<DiscordGuildMember | null> {
   const res = await fetch(
-    `${DISCORD_API}/users/@me/guilds/${guildId}/member`,
-    { headers: { Authorization: `Bearer ${accessToken}` } },
+    `${DISCORD_API}/users/@me/guilds/${guildId}/member`,      { headers: { Authorization: `Bearer ${accessToken}` }, cache: "no-store" },
   );
   if (res.status === 404) return null;
   if (!res.ok) {

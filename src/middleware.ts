@@ -82,7 +82,7 @@ export async function middleware(req: NextRequest) {
 
   // Throttled in `session-refresh.ts`; a document load uses the short window
   // (so a reload genuinely re-reads Discord), background fetches the long one.
-  const outcome = await refreshSessionIfStale(verified, {
+  const outcome = await refreshSessionIfStale(token, verified, {
     force: isDocumentLoad(req),
   });
   const refreshed = outcome.ok ? outcome : null;
