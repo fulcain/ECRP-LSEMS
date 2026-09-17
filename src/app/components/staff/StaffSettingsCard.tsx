@@ -3,17 +3,13 @@
 import { MedicCredentials } from "@/app/(routes)/operations/division-templates/components/MedicCredentials";
 import { divisions } from "@/app/constants/divisions";
 import { useMedic } from "@/app/context/MedicContext";
-import {
-  useGuildIdentity,
-  type GuildIdentityRead,
-} from "@/app/hooks/useGuildIdentity";
-import { ROUTES } from "@/configs/routes";
+import { useGuildIdentity } from "@/app/hooks/useGuildIdentity";
+import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { hasIdentity, type MemberIdentity } from "@/lib/member-identity";
 import {
+  autoFilledDivisionRanks,
   syncedDirectorRole,
-  syncedDivisionRanks,
   syncedRank,
-  type DiscordSyncMode,
 } from "@/lib/staff-sync";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,8 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SyncOutcomeNote } from "@/app/components/staff/SyncOutcomeNote";
-import { Crown, RefreshCw, Sparkles } from "lucide-react";
+import { Crown } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -32,18 +27,6 @@ type StaffSettingsCardProps = {
   title?: string;
   description?: string;
 };
-
-/** One "what Discord says" pill: the rank, a division, or a director title. */
-function DetectedChip({ label, value }: { label: string; value: string }) {
-  return (
-    <span className="inline-flex min-w-0 items-center gap-2 rounded-full border border-emerald-400/20 bg-slate-900/60 px-3 py-1 text-xs">
-      <span className="shrink-0 text-[10px] font-semibold tracking-[0.16em] text-emerald-300/80 uppercase">
-        {label}
-      </span>
-      <span className="truncate font-medium text-white">{value}</span>
-    </span>
-  );
-}
 
 const rankManagedDivisions = divisions.filter(
   (division) => division.data.ranks.length > 0,
@@ -58,52 +41,50 @@ export function StaffSettingsCard({
     useMedic();
   const [showEditForm, setShowEditForm] = useState(false);
 
-  const {
-    identity,
-    user,
-    isLoading: identityLoading,
-    error: identityError,
-    refresh,
-  } = useGuildIdentity();
-  const [syncing, setSyncing] = useState(false);
-  /**
-   * What the last press of Sync produced, so the panel can report it. Null
-   * until the button is used: the automatic pass has nothing to announce.
-   */
-  const [syncOutcome, setSyncOutcome] = useState<GuildIdentityRead | null>(null);
+  const { identity, isLoading: identityLoading, error: identityError } =
+    useGuildIdentity();
   const detected = hasIdentity(identity);
-  //
-  // The "what Discord says" panel is shown whenever Discord actually answered,
-  // not only when it found something. Gating it on `detected` meant the panel -
-  // and its Sync button, and any explanation of what Sync just did - vanished
-  // at exactly the moment a member removed their last role, which is the one
-  // moment they need to see the result and be able to press it again.
-  const hasDiscordAnswer = user !== null;
+
+  // What the last automatic fill wrote, per division. A saved rank that no
+  // longer matches it is a manual pick and the fill pass leaves it alone.
+  const [lastSyncedRanks, setLastSyncedRanks] = useLocalStorage<
+    Record<string, string>
+  >("division-ranks-last-synced", {});
+  const lastSyncedRef = useRef(lastSyncedRanks);
+  lastSyncedRef.current = lastSyncedRanks;
 
   /**
    * Copy what Discord says onto the saved credentials.
    *
-   * The rules themselves live in `lib/staff-sync.ts`; this is only the wiring
-   * from them into the two saved stores.
+   * The rank and director role always follow Discord when it reports them;
+   * the division ranks go through the three-way merge so a rank the member
+   * picked themselves survives the next page load. The rules live in
+   * `lib/staff-sync.ts`; this is only the wiring into the saved stores.
    */
   const applyDiscord = useCallback(
-    (next: MemberIdentity, mode: DiscordSyncMode) => {
+    (next: MemberIdentity) => {
       setMedicCredentials((prev) => ({
         ...prev,
-        rank: syncedRank(prev.rank, next, mode),
-        directorRole: syncedDirectorRole(prev.directorRole, next, mode),
+        rank: syncedRank(prev.rank, next),
+        directorRole: syncedDirectorRole(prev.directorRole, next),
       }));
 
-      setDivisionRanks((prev) =>
-        syncedDivisionRanks(
+      setDivisionRanks((prev) => {
+        const { ranks, lastSynced } = autoFilledDivisionRanks(
           prev,
+          lastSyncedRef.current,
           next,
-          mode,
           rankManagedDivisions.map((division) => division.label),
-        ),
-      );
+        );
+        setLastSyncedRanks(lastSynced);
+        return ranks;
+      });
     },
-    [setDivisionRanks, setMedicCredentials],
+    [
+      setDivisionRanks,
+      setLastSyncedRanks,
+      setMedicCredentials,
+    ],
   );
 
   // Re-read the member's roles once per page load, as soon as Discord answers,
@@ -117,33 +98,8 @@ export function StaffSettingsCard({
     if (autoAppliedRef.current) return;
     autoAppliedRef.current = true;
     if (identityError || !detected) return;
-    applyDiscord(identity, "fill");
+    applyDiscord(identity);
   }, [applyDiscord, detected, identity, identityError, identityLoading]);
-
-  /**
-   * The Sync button: ask Discord for the member's roles right now, then make
-   * the saved values match the answer - including clearing what Discord no
-   * longer reports.
-   *
-   * The result is applied from the read itself rather than from `identity`, so
-   * there is no window where the button copies the previous render's values.
-   * If the read could not be made at all, nothing is changed and `syncOutcome`
-   * says why - a button that looks like it did nothing is worse than one that
-   * explains itself. And because a role change also changes what the *server*
-   * lets this member open, the hook re-renders the route when a read happens.
-   */
-  const handleSync = async () => {
-    if (syncing) return;
-    setSyncing(true);
-    setSyncOutcome(null);
-    try {
-      const read = await refresh({ force: true });
-      applyDiscord(read.identity, read.answered ? "replace" : "fill");
-      setSyncOutcome(read);
-    } finally {
-      setSyncing(false);
-    }
-  };
 
   const isCredentialsEmpty =
     !medicCredentials.name ||
@@ -219,69 +175,6 @@ export function StaffSettingsCard({
             </Button>
           )}
         </div>
-
-        {hasDiscordAnswer && (
-          <div className="rounded-[1.5rem] border border-emerald-500/20 bg-emerald-500/[0.06] p-5">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div className="min-w-0 space-y-3">
-                <div>
-                  <h3 className="flex items-center gap-2 text-sm font-semibold text-emerald-200">
-                    <Sparkles className="h-4 w-4" />
-                    Detected from your Discord roles
-                  </h3>
-                  <p className="text-xs text-slate-400">
-                    Read from your roles on every page load and saved here, so a
-                    new rank shows up without signing in again. Anything Discord
-                    cannot see is left as you set it.
-                  </p>
-                </div>
-
-                {syncOutcome && (
-                  <SyncOutcomeNote
-                    outcome={syncOutcome}
-                    returnTo={ROUTES.workspace.staff}
-                  />
-                )}
-
-                {!detected && (
-                  <p className="text-xs text-slate-300">
-                    None of your Discord roles are a rank, a director role or a
-                    division membership the app can name. If you hold one, it
-                    may need adding to the app&apos;s role registry.
-                  </p>
-                )}
-
-                <div className="flex flex-wrap gap-2">
-                  {identity.rankLabel && (
-                    <DetectedChip label="Rank" value={identity.rankLabel} />
-                  )}
-                  {identity.directorTitle && (
-                    <DetectedChip label="Director" value={identity.directorTitle} />
-                  )}
-                  {identity.divisionMembership.map((division) => (
-                    <DetectedChip
-                      key={division}
-                      label={division}
-                      value={identity.divisionRanks[division] ?? "Division member"}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <Button
-                variant="outline"
-                onClick={handleSync}
-                disabled={syncing}
-                className="whitespace-nowrap border-emerald-400/30 bg-slate-900/40 text-emerald-200 transition-all duration-200 hover:scale-[1.02] hover:border-emerald-300/50 hover:bg-emerald-950/30 active:scale-95 disabled:opacity-60"
-              >
-                <RefreshCw
-                  className={`mr-2 h-4 w-4 ${syncing ? "animate-spin" : ""}`}
-                />
-                {syncing ? "Checking Discord" : "Sync from Discord"}
-              </Button>
-            </div>
-          </div>
-        )}
 
         <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
           <div className="mb-4">
