@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "ECRP LSEMS | Supervisor Tools",
+  title: "Supervisor Tools",
   description:
     "Supervisor tools for LOA processing, meeting agendas, and contract signings",
 };

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "LSEMS | FTD Command",
+  title: "FTD Command",
   description: "Field Training Division command workspace",
 };
 

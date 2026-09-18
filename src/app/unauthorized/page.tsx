@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { ShieldAlert } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "LSEMS | Access Denied",
+  title: "Access Denied",
   description: "Your Discord account doesn't have access to this page.",
 };
 

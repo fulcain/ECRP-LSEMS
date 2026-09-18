@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "ECRP LSEMS | Quick Links",
+  title: "Quick Links",
   description: "Quick Links for the GOV website",
 };
 

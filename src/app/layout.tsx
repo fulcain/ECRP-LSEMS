@@ -10,7 +10,13 @@ import { filterAccessibleLinks } from "@/lib/role-config";
 import { getSession } from "@/lib/session";
 
 export const metadata: Metadata = {
-  title: "LSEMS Operations | ECRP",
+  // The brand is written down once. Every route's layout declares only its own
+  // name ("Supervisor Tools", "Paperwork", ...) and the template turns it into
+  // the tab title, so a page can't end up with a differently-spelled app name.
+  title: {
+    default: "ECRP LSEMS",
+    template: "ECRP LSEMS | %s",
+  },
   description: "Emergency medical services operations workspace",
   // The department emblem, the same file the sidebar and page headers draw.
   // Declared here rather than as an `app/icon.*` so there is one copy of the

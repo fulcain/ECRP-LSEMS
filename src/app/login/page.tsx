@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { LoginButton } from "@/app/login/LoginButton";
 
 export const metadata: Metadata = {
-  title: "LSEMS | Sign in",
+  title: "Sign in",
   description: "Sign in with Discord to access LSEMS.",
 };
 

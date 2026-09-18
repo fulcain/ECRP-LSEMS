@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "LSEMS | RED",
+  title: "RED",
   description: "RED application format builder",
 };
 

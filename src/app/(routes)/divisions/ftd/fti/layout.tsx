@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "LSEMS | FTI",
+  title: "FTI",
   description: "Field Training Instructor certification workspace",
 };
 

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "LSEMS | Paperwork",
+  title: "Paperwork",
   description: "LSEMS paperwork workspace",
 };
 

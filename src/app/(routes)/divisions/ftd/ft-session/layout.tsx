@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "LSEMS | FT Sessions",
+  title: "FT Sessions",
   description: "Field training session reports, employee progress, and monthly activity",
 };
 

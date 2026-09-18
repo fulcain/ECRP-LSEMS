@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "ECRP LSEMS | Availability",
+  title: "Availability",
   description: "Time of Availability converted from local to UTC",
 };
 

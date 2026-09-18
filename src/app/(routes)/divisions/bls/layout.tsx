@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "LSEMS | BLS",
+  title: "BLS",
   description: "BLS application format builder",
 };
 

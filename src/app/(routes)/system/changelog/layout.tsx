@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "LSEMS | Change Log",
+  title: "Change Log",
   description: "A unified history of updates and improvements to the LSEMS application",
 };
 
