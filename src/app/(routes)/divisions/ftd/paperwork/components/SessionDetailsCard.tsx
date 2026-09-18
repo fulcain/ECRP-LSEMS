@@ -89,8 +89,12 @@ export function SessionDetailsCard() {
     }
   };
 
-  const clearAll = () => {
-    setDetails({
+  /** Clears every field that describes one session. The signature is the
+   *  member's own, not the session's, so it survives both this and the reset
+   *  that follows a successful save. */
+  const resetSessionFields = () => {
+    setDetails((prev) => ({
+      ...prev,
       ftoName: "",
       date: undefined,
       timeStart: "",
@@ -98,10 +102,13 @@ export function SessionDetailsCard() {
       emrName: "",
       emrNameManual: "",
       sessionConducted: "",
-      signature: "",
-    });
+    }));
     setNameSearch("");
     setEmrSearch("");
+  };
+
+  const clearAll = () => {
+    resetSessionFields();
     toast.info("Session details cleared", { theme: "dark" });
   };
 
@@ -139,7 +146,13 @@ export function SessionDetailsCard() {
 
       const result = await res.json();
       if (result.success) {
-        toast.success("Session created successfully", { theme: "dark" });
+        // The session is saved, so the form is done with: clear it for the
+        // next one. The toast is the only confirmation the user gets, so it
+        // must not be the thing that vanishes.
+        resetSessionFields();
+        toast.success("Session created - details reset for the next one", {
+          theme: "dark",
+        });
       } else {
         toast.error("Something went wrong", { theme: "dark" });
       }
@@ -152,7 +165,7 @@ export function SessionDetailsCard() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4 space-y-6">
+    <div className="max-w-4xl mx-auto">
       {/* === Session Details Card === */}
       <Card className="border shadow-sm">
         <CardHeader className="pb-3">
@@ -352,7 +365,7 @@ export function SessionDetailsCard() {
             </div>
 
             {isEmrSelected && (
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-muted-foreground">
                 Selected: {resolvedEMR}
                 {details.emrName && " (from list)"}
                 {details.emrNameManual && " (manual entry)"}
@@ -385,8 +398,15 @@ export function SessionDetailsCard() {
             <Button type="submit" disabled={submitting} onClick={handleSubmit}>
               {submitting ? "Saving..." : "Create Session"}
             </Button>
-            <Button type="button" variant="outline" onClick={clearAll} className="px-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={clearAll}
+              aria-label="Clear the session details"
+              title="Clear the session details"
+            >
               <RotateCcw className="h-4 w-4" />
+              Reset
             </Button>
           </div>
         </CardContent>

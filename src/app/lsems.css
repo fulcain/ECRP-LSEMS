@@ -134,15 +134,17 @@
 
 @keyframes fade-in-up {
   from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  to { opacity: 1; }
 }
 
 .animate-shimmer-text {
   color: #dbeafe;
 }
 
+/* No fill mode - see the note on .animate-fade-in in globals.css: a lingering
+   transform would pin fixed-position children to this element. */
 .animate-fade-in-up {
-  animation: fade-in-up 0.35s ease-out forwards;
+  animation: fade-in-up 0.35s ease-out;
 }
 
 @media (prefers-reduced-motion: reduce) {

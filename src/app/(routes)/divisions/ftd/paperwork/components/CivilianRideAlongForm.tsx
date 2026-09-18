@@ -159,7 +159,7 @@ export default function CivilianRideAlongForm() {
   return (
     <>
       <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
-      <div className="max-w-4xl mx-auto py-8 px-4 space-y-6">
+      <div className="max-w-4xl mx-auto space-y-6">
         <h2 className="sr-only">Civilian Ride-Along Paperwork</h2>
 
         {/* === Guideline (read this before filling anything) === */}

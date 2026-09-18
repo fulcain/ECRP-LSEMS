@@ -147,12 +147,12 @@
 /* ── Utility animations ── */
 @keyframes fade-in {
   from { opacity: 0; transform: translateY(4px); }
-  to   { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; }
 }
 
 @keyframes slide-up {
   from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; }
 }
 
 @keyframes glow-pulse {
@@ -160,12 +160,15 @@
   50%      { box-shadow: 0 0 35px oklch(0.68 0.17 252 / 0.22); }
 }
 
+/* No fill mode: a retained `to` frame carrying a transform leaves a containing
+   block behind, which anchors every position:fixed child (toasts, overlays) to
+   the page instead of the viewport. */
 .animate-fade-in {
-  animation: fade-in 0.3s ease-out both;
+  animation: fade-in 0.3s ease-out;
 }
 
 .animate-slide-up {
-  animation: slide-up 0.35s ease-out both;
+  animation: slide-up 0.35s ease-out;
 }
 
 /* ── Scrollbar styling ── */
