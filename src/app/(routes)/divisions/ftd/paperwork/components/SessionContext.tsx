@@ -29,6 +29,56 @@ const defaultDetails: SessionDetails = {
 
 export type FormType = "normal" | "reinstatement" | "civilianRideAlong";
 
+/** The persisted session blob. This key and shape are shared with older
+ *  builds, so stored sessions survive a deploy. */
+interface StoredSession {
+  ftoName: string;
+  date: string | null; // ISO string or null
+  timeStart: string;
+  timeFinish: string;
+  emrName: string;
+  emrNameManual: string;
+  sessionConducted: string;
+  signature: string;
+}
+
+const SESSION_STORAGE_KEY = "ftd-session-details";
+
+/** Read the stored session straight from storage.
+ *  Deliberately not `useLocalStorage`: the restore pass has to see the stored
+ *  values on mount, and the hook hydrates a render later. */
+function readStoredSession(): StoredSession | null {
+  try {
+    const raw = localStorage.getItem(SESSION_STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as StoredSession) : null;
+  } catch (error) {
+    console.error("Error reading the stored FTD session:", error);
+    return null;
+  }
+}
+
+function writeStoredSession(session: StoredSession) {
+  try {
+    localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+  } catch (error) {
+    console.error("Error writing the FTD session:", error);
+  }
+}
+
+/** True once the member has put something into the session fields. */
+function sessionTouched(details: SessionDetails): boolean {
+  return Boolean(
+    details.ftoName ||
+      details.date ||
+      details.timeStart ||
+      details.timeFinish ||
+      details.emrName ||
+      details.emrNameManual ||
+      details.sessionConducted ||
+      details.signature,
+  );
+}
+
 interface AdditionalMandatoriesState {
   normal: string;
   reinstatement: string;
@@ -71,70 +121,42 @@ const SessionContext = createContext<SessionContextValue | null>(null);
 
 /** Cross-form session state: FTO/date/times/EMR/phase/additional mandatories. Persists to localStorage. */
 export function SessionProvider({ children }: { children: React.ReactNode }) {
-  const [persisted, setPersisted] = useLocalStorage<{
-    ftoName: string;
-    date: string | null; // ISO string or null
-    timeStart: string;
-    timeFinish: string;
-    emrName: string;
-    emrNameManual: string;
-    sessionConducted: string;
-    signature: string;
-  }>("ftd-session-details", {
-    ftoName: "",
-    date: null,
-    timeStart: "",
-    timeFinish: "",
-    emrName: "",
-    emrNameManual: "",
-    sessionConducted: "",
-    signature: "",
-  });
+  const [details, setDetails] = useState<SessionDetails>(defaultDetails);
 
-  const [details, setDetails] = useState<SessionDetails>(() => ({
-    ...defaultDetails,
-    ftoName: persisted.ftoName,
-    date: persisted.date ? new Date(persisted.date) : undefined,
-    timeStart: persisted.timeStart,
-    timeFinish: persisted.timeFinish,
-    emrName: persisted.emrName,
-    emrNameManual: persisted.emrNameManual,
-    sessionConducted: persisted.sessionConducted,
-    signature: persisted.signature,
-  }));
+  // What storage holds as far as this tab knows: the restore reads it, every
+  // write records it. The persist effect below compares against it instead of
+  // tracking "have I run yet", which the double-invoked effects of StrictMode
+  // would trip straight back into overwriting the stored session.
+  const storedRef = useRef<StoredSession | null>(null);
 
-  // `useLocalStorage` hydrates after the first render, so the initial read
-  // above only ever sees defaults. Apply the stored session once it arrives,
-  // and only while the form is still untouched - a reload used to drop the
-  // trainer, times and signature the member had already filled in.
+  // Adopt the stored session. Runs before the persist effect below, so storage
+  // has been read by the time that one decides whether to write.
+  const [restoreDone, setRestoreDone] = useState(false);
   const restoredRef = useRef(false);
   useEffect(() => {
     if (restoredRef.current) return;
     restoredRef.current = true;
-    setDetails((prev) => {
-      const touched =
-        prev.ftoName ||
-        prev.date ||
-        prev.timeStart ||
-        prev.timeFinish ||
-        prev.emrName ||
-        prev.emrNameManual ||
-        prev.sessionConducted ||
-        prev.signature;
-      if (touched) return prev;
-      return {
-        ...defaultDetails,
-        ftoName: persisted.ftoName,
-        date: persisted.date ? new Date(persisted.date) : undefined,
-        timeStart: persisted.timeStart,
-        timeFinish: persisted.timeFinish,
-        emrName: persisted.emrName,
-        emrNameManual: persisted.emrNameManual,
-        sessionConducted: persisted.sessionConducted,
-        signature: persisted.signature,
-      };
-    });
-  }, [persisted]);
+    const stored = readStoredSession();
+    storedRef.current = stored;
+    if (stored) {
+      setDetails((prev) =>
+        sessionTouched(prev)
+          ? prev
+          : {
+              ...defaultDetails,
+              ftoName: stored.ftoName,
+              date: stored.date ? new Date(stored.date) : undefined,
+              timeStart: stored.timeStart,
+              timeFinish: stored.timeFinish,
+              emrName: stored.emrName,
+              emrNameManual: stored.emrNameManual,
+              sessionConducted: stored.sessionConducted,
+              signature: stored.signature,
+            },
+      );
+    }
+    setRestoreDone(true);
+  }, []);
 
   // The signature belongs to the member, not to the session: take it from the
   // Staff Page so it only ever has to be saved once. A signature the session
@@ -151,8 +173,12 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     );
   }, [medicCredentials.signature]);
 
+  // Write the session back, but never the values of a render that predates the
+  // restore: those are the empty defaults, and persisting them is what made
+  // these fields look like they were never saved.
   useEffect(() => {
-    setPersisted({
+    if (!restoreDone) return;
+    const session: StoredSession = {
       ftoName: details.ftoName,
       date: details.date ? details.date.toISOString() : null,
       timeStart: details.timeStart,
@@ -161,8 +187,12 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       emrNameManual: details.emrNameManual,
       sessionConducted: details.sessionConducted,
       signature: details.signature,
-    });
-  }, [details, setPersisted]);
+    };
+    if (!storedRef.current && !sessionTouched(details)) return;
+    if (JSON.stringify(session) === JSON.stringify(storedRef.current)) return;
+    storedRef.current = session;
+    writeStoredSession(session);
+  }, [details, restoreDone]);
 
   const [ftoNames, setFtoNames] = useState<string[]>([]);
   useEffect(() => {

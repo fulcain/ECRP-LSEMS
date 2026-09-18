@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { Check, Copy, UserX } from "lucide-react";
 
@@ -45,14 +45,21 @@ export function EmrDischargeCard() {
     dischargeDate: "",
   });
 
-  const [name, setName] = useState(savedForm?.name ?? "");
-  const [reason, setReason] = useState(savedForm?.reason ?? "");
-  const [salutation, setSalutation] = useState(savedForm?.salutation ?? "");
-  const [dischargeDate, setDischargeDate] = useState(savedForm?.dischargeDate ?? "");
+  // Read from the stored form, write back per field. Mirroring it into its own
+  // `useState`s lost the stored values: the mount pass persisted the empty
+  // defaults over them before they could be applied.
+  const setField = (field: keyof typeof savedForm, value: string) =>
+    setSavedForm((prev) => ({ ...prev, [field]: value }));
 
-  useEffect(() => {
-    setSavedForm({ name, reason, salutation, dischargeDate });
-  }, [name, reason, salutation, dischargeDate, setSavedForm]);
+  const name = savedForm.name;
+  const reason = savedForm.reason;
+  const salutation = savedForm.salutation;
+  const dischargeDate = savedForm.dischargeDate;
+
+  const setName = (value: string) => setField("name", value);
+  const setReason = (value: string) => setField("reason", value);
+  const setSalutation = (value: string) => setField("salutation", value);
+  const setDischargeDate = (value: string) => setField("dischargeDate", value);
 
   const [sigName] = useSharedLocalStorageString(SHARED_SIG_NAME_KEY, "");
   const [sigRank] = useSharedLocalStorageString(SHARED_SIG_RANK_KEY, "");

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { Copy, ExternalLink, User, Calendar, RefreshCw } from "lucide-react";
 
@@ -25,17 +25,19 @@ export function FtoCreationCard({ onRefresh }: { onRefresh?: () => void }) {
     applicationDate: "",
   });
 
-  const [ftoTraineeName, setFtoTraineeName] = useState<string>(
-    savedForm?.ftoTraineeName ?? "",
-  );
-  const [applicationDate, setApplicationDate] = useState<string>(
-    savedForm?.applicationDate ?? "",
-  );
+  // Read from the stored form, write back per field, so a refresh doesn't wipe
+  // them out. Mirroring the hook into its own `useState`s lost the stored
+  // values: the mount pass persisted the empty defaults over them.
+  const setField = (field: keyof typeof savedForm, value: string) =>
+    setSavedForm((prev) => ({ ...prev, [field]: value }));
 
-  // Persist form inputs to localStorage so a refresh doesn't wipe them out.
-  useEffect(() => {
-    setSavedForm({ ftoTraineeName: ftoTraineeName, applicationDate });
-  }, [ftoTraineeName, applicationDate, setSavedForm]);
+  const ftoTraineeName = savedForm.ftoTraineeName;
+  const applicationDate = savedForm.applicationDate;
+
+  const setFtoTraineeName = (value: string) =>
+    setField("ftoTraineeName", value);
+  const setApplicationDate = (value: string) =>
+    setField("applicationDate", value);
 
   const bbcode = useMemo(
     () =>

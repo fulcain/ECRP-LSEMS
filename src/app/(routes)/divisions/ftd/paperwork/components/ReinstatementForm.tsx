@@ -103,16 +103,13 @@ export default function ReinstatementForm() {
   };
 
   // additionalMandatories lives in shared SessionContext, not on the form.
-  const [savedForm, setSavedForm] = useLocalStorage(
+  // The hook *is* the form's state. Mirroring it into a second `useState` and
+  // writing that back lost the stored data: the mirror's own mount write
+  // replaced the hydrated value before it could ever be applied.
+  const [form, setForm] = useLocalStorage<any>(
     "ftd-reinstatement-paperwork-form-data",
     { ...defaultFormState },
   );
-
-  const [form, setForm] = useState<any>(savedForm);
-
-  useEffect(() => {
-    setSavedForm(form);
-  }, [form, setSavedForm]);
 
   // Auto-populate Rank from the user's highest Discord role once the
   // /api/auth/me lookup resolves. Always overwrites on page reload so
@@ -121,7 +118,7 @@ export default function ReinstatementForm() {
   useEffect(() => {
     if (!autoRankLabel) return;
     setForm((prev: any) => ({ ...prev, rank: autoRankLabel }));
-  }, [autoRankLabel]);
+  }, [autoRankLabel, setForm]);
 
   const clearAllFields = () => {
     setForm({

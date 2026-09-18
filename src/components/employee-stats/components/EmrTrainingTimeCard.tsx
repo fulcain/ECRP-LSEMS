@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { ClipboardList, Copy, Mail } from "lucide-react";
 
@@ -30,12 +30,17 @@ export function EmrTrainingTimeCard() {
     daysLeft: "",
   });
 
-  const [emrName, setEmrName] = useState(savedForm?.emrName ?? "");
-  const [daysLeft, setDaysLeft] = useState(savedForm?.daysLeft ?? "");
+  // Read from the stored form, write back per field. Mirroring it into its own
+  // `useState`s lost the stored values: the mount pass persisted the empty
+  // defaults over them before they could be applied.
+  const setField = (field: keyof typeof savedForm, value: string) =>
+    setSavedForm((prev) => ({ ...prev, [field]: value }));
 
-  useEffect(() => {
-    setSavedForm({ emrName, daysLeft });
-  }, [emrName, daysLeft, setSavedForm]);
+  const emrName = savedForm.emrName;
+  const daysLeft = savedForm.daysLeft;
+
+  const setEmrName = (value: string) => setField("emrName", value);
+  const setDaysLeft = (value: string) => setField("daysLeft", value);
 
   const [sigName] = useSharedLocalStorageString(SHARED_SIG_NAME_KEY, "");
   const [sigRank] = useSharedLocalStorageString(SHARED_SIG_RANK_KEY, "");

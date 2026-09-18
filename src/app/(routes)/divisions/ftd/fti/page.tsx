@@ -244,15 +244,43 @@ export default function FtiPage() {
     answer5: "",
   });
 
-  const [studentName, setStudentName] = useState(savedForm?.studentName ?? "");
-  const [studentRank, setStudentRank] = useState(savedForm?.studentRank ?? "");
-  const [certifiedBy, setCertifiedBy] = useState(savedForm?.certifiedBy ?? "");
-  const [completionDate, setCompletionDate] = useState(savedForm?.completionDate ?? "");
-  const [answer1, setAnswer1] = useState(savedForm?.answer1 ?? "");
-  const [answer2, setAnswer2] = useState(savedForm?.answer2 ?? "");
-  const [answer3, setAnswer3] = useState(savedForm?.answer3 ?? "");
-  const [answer4, setAnswer4] = useState(savedForm?.answer4 ?? "");
-  const [answer5, setAnswer5] = useState(savedForm?.answer5 ?? "");
+  // The fields read straight off the stored form and write back one at a time.
+  // Giving each its own `useState` and persisting those lost the stored answers:
+  // the mount pass wrote the empty defaults over them before they were applied.
+  const setField = (
+    field:
+      | "studentName"
+      | "studentRank"
+      | "certifiedBy"
+      | "completionDate"
+      | "answer1"
+      | "answer2"
+      | "answer3"
+      | "answer4"
+      | "answer5",
+    value: string,
+  ) => setSavedForm((prev) => ({ ...prev, [field]: value }));
+
+  const studentName = savedForm.studentName;
+  const studentRank = savedForm.studentRank;
+  const certifiedBy = savedForm.certifiedBy;
+  const completionDate = savedForm.completionDate;
+  const answer1 = savedForm.answer1;
+  const answer2 = savedForm.answer2;
+  const answer3 = savedForm.answer3;
+  const answer4 = savedForm.answer4;
+  const answer5 = savedForm.answer5;
+
+  const setStudentName = (value: string) => setField("studentName", value);
+  const setStudentRank = (value: string) => setField("studentRank", value);
+  const setCertifiedBy = (value: string) => setField("certifiedBy", value);
+  const setCompletionDate = (value: string) =>
+    setField("completionDate", value);
+  const setAnswer1 = (value: string) => setField("answer1", value);
+  const setAnswer2 = (value: string) => setField("answer2", value);
+  const setAnswer3 = (value: string) => setField("answer3", value);
+  const setAnswer4 = (value: string) => setField("answer4", value);
+  const setAnswer5 = (value: string) => setField("answer5", value);
 
   /* Auto-fill certifiedBy from shared bar on first mount (only if empty) */
   const [certByInitDone, setCertByInitDone] = useState(false);
@@ -265,21 +293,6 @@ export default function FtiPage() {
     setCertByInitDone(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  /* Persist to localStorage on change */
-  useEffect(() => {
-    setSavedForm({
-      studentName,
-      studentRank,
-      certifiedBy,
-      completionDate,
-      answer1,
-      answer2,
-      answer3,
-      answer4,
-      answer5,
-    });
-  }, [studentName, studentRank, certifiedBy, completionDate, answer1, answer2, answer3, answer4, answer5, setSavedForm]);
 
   /* ---- BBCode generation ---- */
   const certifierRank = ftdRank ? `${sigRank} | ${ftdRank}` : sigRank;

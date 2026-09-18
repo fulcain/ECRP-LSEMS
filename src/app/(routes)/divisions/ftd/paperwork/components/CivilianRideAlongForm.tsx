@@ -64,16 +64,13 @@ export default function CivilianRideAlongForm() {
   // Rank dropdown is locked by default, matching the other papers.
   const [isRankEditing, setIsRankEditing] = useState(false);
 
-  const [savedForm, setSavedForm] = useLocalStorage(
+  // The hook *is* the form's state. Mirroring it into a second `useState` and
+  // writing that back lost the stored data: the mirror's own mount write
+  // replaced the hydrated value before it could ever be applied.
+  const [form, setForm] = useLocalStorage<typeof defaultFormState>(
     "ftd-civilian-ridealong-form-data",
     { ...defaultFormState },
   );
-
-  const [form, setForm] = useState<typeof defaultFormState>(savedForm);
-
-  useEffect(() => {
-    setSavedForm(form);
-  }, [form, setSavedForm]);
 
   // Auto-populate Rank from highest Discord role on hook resolve.
   // Always overwrites on page reload so the rank reflects their current
@@ -84,7 +81,7 @@ export default function CivilianRideAlongForm() {
       ...prev,
       rank: autoRankLabel,
     }));
-  }, [autoRankLabel]);
+  }, [autoRankLabel, setForm]);
 
   useEffect(() => {
     setCurrentPhase(phase);
