@@ -12,6 +12,11 @@ import { getSession } from "@/lib/session";
 export const metadata: Metadata = {
   title: "LSEMS Operations | ECRP",
   description: "Emergency medical services operations workspace",
+  // The department emblem, the same file the sidebar and page headers draw.
+  // Declared here rather than as an `app/icon.*` so there is one copy of the
+  // image to update - the stray `app/favicon.ico` it replaces was still the
+  // old FTD badge and would win over it.
+  icons: { icon: "/General.png" },
 };
 
 /**
