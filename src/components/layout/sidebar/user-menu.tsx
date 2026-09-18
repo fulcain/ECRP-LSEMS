@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { memberDisplayName } from "@/lib/member-name";
 import { LogOut, MessageCircle, User as UserIcon } from "lucide-react";
 import Link from "next/link";
 
@@ -56,7 +57,7 @@ export function UserMenu() {
     );
   }
 
-  const displayName = user.nick ?? user.globalName ?? user.username;
+  const displayName = memberDisplayName(user) ?? user.username;
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-2.5">

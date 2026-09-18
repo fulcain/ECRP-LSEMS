@@ -21,6 +21,25 @@
 
 import type { DirectorRole } from "@/app/constants/general/directorRoles";
 import type { MemberIdentity } from "@/lib/member-identity";
+import {
+  memberDisplayName,
+  type DiscordNameSource,
+} from "@/lib/member-name";
+
+/**
+ * The name to save: Discord's own name for the member, or whatever is saved.
+ *
+ * The same resolution and the same cleaning the sidebar and the Discord
+ * Profile tab use, so the name a document is signed with is the name the
+ * member sees everywhere else. Rank is deliberately not prefixed here - it is
+ * printed on its own line.
+ */
+export function syncedName(
+  saved: string,
+  user: DiscordNameSource | null | undefined,
+): string {
+  return memberDisplayName(user) ?? saved;
+}
 
 /** The department rank to save: Discord's, or whatever is already saved. */
 export function syncedRank(

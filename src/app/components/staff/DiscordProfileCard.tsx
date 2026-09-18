@@ -8,23 +8,10 @@ import {
 } from "@/app/hooks/useGuildIdentity";
 import { ROUTES } from "@/configs/routes";
 import { heldRoles, type HeldRole } from "@/lib/member-identity";
+import { memberDisplayName } from "@/lib/member-name";
 import { BadgeCheck, RefreshCw, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-
-/** One label/value line in the profile summary. */
-function Fact({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-xl border border-white/10 bg-slate-900/70 px-4 py-3">
-      <p className="text-[10px] font-semibold tracking-[0.16em] text-slate-500 uppercase">
-        {label}
-      </p>
-      <p className="mt-1 min-w-0 truncate text-sm font-medium text-white">
-        {value}
-      </p>
-    </div>
-  );
-}
 
 /** A small rounded tag for a Discord role the member holds. */
 function RoleTag({ children }: { children: React.ReactNode }) {
@@ -73,10 +60,11 @@ function RoleGroup({
  * The member's Discord identity, read from their session.
  *
  * Everything here comes from the roles the app already fetches on every page
- * load, so the tab costs no extra Discord call. The two halves answer
- * different questions: the rank the app resolves for them, and which of their
- * Discord roles it recognised to get there - with the divisional roles split
- * out, since those are the ones that say which divisions the member is in.
+ * load, so the tab costs no extra Discord call. The rank the app resolves for
+ * them rides in the header, right under the name it comes from; the list below
+ * is the other half - which of their Discord roles it recognised to get there -
+ * with the divisional roles split out, since those are the ones that say which
+ * divisions the member is in.
  */
 export function DiscordProfileCard() {
   const { user, identity, isLoading, error, refresh } = useGuildIdentity();
@@ -86,9 +74,9 @@ export function DiscordProfileCard() {
 
   const roles = useMemo(() => heldRoles(user?.roles ?? []), [user]);
 
-  const displayName = user
-    ? (user.nick ?? user.globalName ?? user.username)
-    : null;
+  // Cleaned, so a quoted nickname never reaches the header; `@username` beside
+  // it is the account handle and is shown exactly as Discord reports it.
+  const displayName = memberDisplayName(user);
 
   // Division roles are listed apart: a division's membership role is held by
   // all of its people, so this is where a rank-and-file member's division
@@ -187,6 +175,14 @@ export function DiscordProfileCard() {
               <p className="truncate text-sm text-slate-400">
                 @{user.username}
               </p>
+              {/* The one value the app reads off the roles, so it belongs with
+                  the name rather than in a section of its own. */}
+              <span className="mt-2 inline-flex max-w-full items-center gap-1.5 rounded-full border border-indigo-400/25 bg-indigo-500/10 px-2.5 py-1 text-xs font-medium text-indigo-100">
+                <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-indigo-300" />
+                <span className="min-w-0 truncate">
+                  {identity.rankLabel ?? "No rank detected"}
+                </span>
+              </span>
             </div>
           </div>
 
@@ -206,23 +202,6 @@ export function DiscordProfileCard() {
         {syncOutcome && (
           <SyncOutcomeNote outcome={syncOutcome} returnTo={ROUTES.workspace.staff} />
         )}
-
-        <div>
-          <h3 className="flex items-center gap-2 text-sm font-semibold text-white">
-            <BadgeCheck className="h-4 w-4 text-indigo-300" />
-            What the app reads from your roles
-          </h3>
-          <p className="mt-0.5 text-xs text-slate-400">
-            The same values the Staff Settings tab fills in for you. Which
-            divisions those roles put you in is split out below.
-          </p>
-          <div className="mt-3 grid gap-3">
-            <Fact
-              label="Rank"
-              value={identity.rankLabel ?? "No rank detected"}
-            />
-          </div>
-        </div>
 
         <div>
           <h3 className="flex items-center gap-2 text-sm font-semibold text-white">

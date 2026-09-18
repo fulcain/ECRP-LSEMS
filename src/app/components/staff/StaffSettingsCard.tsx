@@ -2,13 +2,15 @@
 
 import { MedicCredentials } from "@/app/(routes)/operations/division-templates/components/MedicCredentials";
 import { divisions } from "@/app/constants/divisions";
+import { divisionsForDirector } from "@/app/constants/general/directorRoles";
 import { useMedic } from "@/app/context/MedicContext";
-import { useGuildIdentity } from "@/app/hooks/useGuildIdentity";
+import { useGuildIdentity, type GuildUser } from "@/app/hooks/useGuildIdentity";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
-import { hasIdentity, type MemberIdentity } from "@/lib/member-identity";
+import type { MemberIdentity } from "@/lib/member-identity";
 import {
   autoFilledDivisionRanks,
   syncedDirectorRole,
+  syncedName,
   syncedRank,
 } from "@/lib/staff-sync";
 import { Button } from "@/components/ui/button";
@@ -35,15 +37,18 @@ const NONE_DIVISION_RANK = "__none__";
 
 export function StaffSettingsCard({
   title = "Staff Settings",
-  description = "Save your name, signature, and rank once to reuse across tools.",
+  description = "Your name, rank and director role come from Discord. Save your signature here to reuse it across tools.",
 }: StaffSettingsCardProps) {
   const { medicCredentials, setMedicCredentials, divisionRanks, setDivisionRanks } =
     useMedic();
   const [showEditForm, setShowEditForm] = useState(false);
 
-  const { identity, isLoading: identityLoading, error: identityError } =
-    useGuildIdentity();
-  const detected = hasIdentity(identity);
+  const {
+    user,
+    identity,
+    isLoading: identityLoading,
+    error: identityError,
+  } = useGuildIdentity();
 
   // What the last automatic fill wrote, per division. A saved rank that no
   // longer matches it is a manual pick and the fill pass leaves it alone.
@@ -56,15 +61,17 @@ export function StaffSettingsCard({
   /**
    * Copy what Discord says onto the saved credentials.
    *
-   * The rank and director role always follow Discord when it reports them;
-   * the division ranks go through the three-way merge so a rank the member
-   * picked themselves survives the next page load. The rules live in
+   * The name, rank and director role always follow Discord when it reports
+   * them - there is no longer an input for any of the three, so Discord is the
+   * only source; the division ranks go through the three-way merge so a rank
+   * the member picked themselves survives the next page load. The rules live in
    * `lib/staff-sync.ts`; this is only the wiring into the saved stores.
    */
   const applyDiscord = useCallback(
-    (next: MemberIdentity) => {
+    (next: MemberIdentity, nextUser: GuildUser | null) => {
       setMedicCredentials((prev) => ({
         ...prev,
+        name: syncedName(prev.name, nextUser),
         rank: syncedRank(prev.rank, next),
         directorRole: syncedDirectorRole(prev.directorRole, next),
       }));
@@ -91,24 +98,38 @@ export function StaffSettingsCard({
   // so a rank added since the last visit is in place without anyone pressing
   // anything - the session itself is refreshed by the middleware on every
   // page load, so what arrives here is current.
+  //
+  // Gated on Discord having answered at all, never on it having found
+  // something: the name comes from the profile, so a member with no rank yet
+  // still needs this pass to run.
   const autoAppliedRef = useRef(false);
 
   useEffect(() => {
     if (identityLoading) return;
     if (autoAppliedRef.current) return;
     autoAppliedRef.current = true;
-    if (identityError || !detected) return;
-    applyDiscord(identity);
-  }, [applyDiscord, detected, identity, identityError, identityLoading]);
+    if (identityError || !user) return;
+    applyDiscord(identity, user);
+  }, [applyDiscord, identity, identityError, identityLoading, user]);
 
-  const isCredentialsEmpty =
-    !medicCredentials.name ||
-    !medicCredentials.signature ||
-    !medicCredentials.rank;
+  // Discord reports no rank - either the member holds none or the role id isn't
+  // in the registry yet - so they get the picker and are not locked out of the
+  // tools that refuse to generate a document without a rank.
+  const showRankFallback = !identityLoading && !identity.rankLabel;
+
+  const needsSignature = !medicCredentials.signature;
+  const identityLine = [medicCredentials.rank, medicCredentials.name]
+    .filter(Boolean)
+    .join(" ");
 
   const directorRole = medicCredentials.directorRole;
   const savedDirectorTitle =
     directorRole?.enabled && directorRole.title ? directorRole.title : null;
+
+  // Read from Discord rather than the saved dropdown: access is granted by the
+  // role, so this is the coverage the member actually has. Same declaration
+  // the route gate reads, so the two can't disagree.
+  const coveredDivisions = divisionsForDirector(identity.directorTitle);
 
   return (
     <div className="relative overflow-hidden rounded-[2rem] border border-violet-500/20 bg-slate-950/80 shadow-2xl shadow-violet-950/30">
@@ -126,11 +147,9 @@ export function StaffSettingsCard({
             <div className="flex flex-col">
               <h2 className="mb-1 text-xl font-semibold text-white">{title}</h2>
               <p className="text-sm text-slate-400">{description}</p>
-              {!isCredentialsEmpty && !showEditForm && (
+              {!showEditForm && identityLine && (
                 <div className="mt-2 flex flex-col gap-1 text-sm text-slate-400">
-                  <p>
-                    {medicCredentials.rank} {medicCredentials.name}
-                  </p>
+                  <p>{identityLine}</p>
                   {savedDirectorTitle && (
                     <p className="inline-flex items-center gap-1.5 text-violet-300">
                       <Crown className="h-3.5 w-3.5" />
@@ -139,11 +158,17 @@ export function StaffSettingsCard({
                   )}
                 </div>
               )}
+              {coveredDivisions.length > 0 && (
+                <p className="mt-2 inline-flex items-start gap-1.5 text-xs text-violet-300/80">
+                  <Crown className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                  <span>
+                    Your director role covers {coveredDivisions.join(", ")}.
+                  </span>
+                </p>
+              )}
             </div>
 
-            {!isCredentialsEmpty &&
-              medicCredentials.signature &&
-              !showEditForm && (
+            {medicCredentials.signature && !showEditForm && (
                 <div className="mt-2 flex items-center rounded-xl border border-white/10 bg-slate-800/50 p-2 transition-all duration-200 hover:border-white/20 sm:mt-0">
                   <Image
                     src={medicCredentials.signature}
@@ -157,9 +182,10 @@ export function StaffSettingsCard({
               )}
           </div>
 
-          {isCredentialsEmpty || showEditForm ? (
+          {needsSignature || showEditForm ? (
             <MedicCredentials
               medicCredentials={medicCredentials}
+              showRankFallback={showRankFallback}
               setMedicCredentialsAction={(values) => {
                 setMedicCredentials(values);
                 setShowEditForm(false);
@@ -171,7 +197,7 @@ export function StaffSettingsCard({
               onClick={() => setShowEditForm(true)}
               className="whitespace-nowrap border-slate-600 text-slate-300 transition-all duration-200 hover:scale-[1.02] hover:border-violet-500/40 hover:bg-violet-950/20 hover:text-violet-200 active:scale-95"
             >
-              Edit Credentials
+              Edit Signature
             </Button>
           )}
         </div>

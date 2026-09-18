@@ -5,7 +5,12 @@
  * this file only decides the order they are listed in, and which divisions
  * each director covers.
  */
-import { DIVISION_ENTRIES, ROLES } from "@/configs/roles";
+import {
+  DIVISION_ENTRIES,
+  DIVISIONS,
+  ROLES,
+  type DivisionKey,
+} from "@/configs/roles";
 
 export type DirectorEntry = {
   title: string;
@@ -62,6 +67,18 @@ export const directorResponsibility: Record<DirectorRoleTitle, string[]> = {
   ),
 };
 
+/**
+ * The divisions a title looks after, or an empty list when the string is not a
+ * director title at all. The lookup is what tells a director which sections
+ * their role actually opens.
+ */
+export function divisionsForDirector(
+  title: string | null | undefined,
+): readonly string[] {
+  if (!title) return [];
+  return directorResponsibility[title as DirectorRoleTitle] ?? [];
+}
+
 export type DirectorRole = {
   enabled: boolean;
   title: string;
@@ -73,6 +90,20 @@ export const defaultDirectorRole: DirectorRole = {
 };
 
 export type DirectorGuard = DirectorRole | null | undefined;
+
+/**
+ * The director title covering a division, from the title the member holds.
+ *
+ * Keyed by the division's key rather than its label so a caller doesn't write
+ * the label by hand: the coverage lookup compares against the label, and a
+ * tool that spells it a little differently would silently lose the override.
+ */
+export function directorTitleForDivisionKey(
+  directorRole: DirectorGuard,
+  divisionKey: DivisionKey,
+): string | null {
+  return getDirectorTitleForDivision(directorRole, DIVISIONS[divisionKey].label);
+}
 
 // Returns the director title whenever the user holds one, regardless of which
 // division is selected (used for department-wide templates).
