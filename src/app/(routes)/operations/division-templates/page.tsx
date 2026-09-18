@@ -11,7 +11,8 @@ import { generateEmailTemplate } from "@/app/templates/general/division-emails";
 import { useMedic } from "@/app/context/MedicContext";
 import DivisionSelector from "@/app/(routes)/operations/division-templates/components/DivisionSelector";
 import TemplateOptions from "@/app/(routes)/operations/division-templates/components/TemplateOptions";
-import { BodyAndMainTitle } from "@/components/layout/main-and-title";
+import { PageContainer } from "@/components/ui/page-container";
+import { PageHeader } from "@/components/ui/page-header";
 import { useMemo, useEffect, useRef, useCallback } from "react";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 
@@ -252,12 +253,11 @@ export default function Home() {
   };
 
   return (
-    <BodyAndMainTitle
-      description="Select a division and create email templates, signatures, or
-              BBCode posts
-"
-      title="Division Email Templates"
-    >
+    <PageContainer>
+      <PageHeader
+        title="Division Email Templates"
+        subtitle="Select a division and create email templates, signatures, or BBCode posts"
+      />
       <ToastContainer
         position="top-right"
         autoClose={2000}
@@ -297,6 +297,6 @@ export default function Home() {
           />
         </div>
       </div>
-    </BodyAndMainTitle>
+    </PageContainer>
   );
 }

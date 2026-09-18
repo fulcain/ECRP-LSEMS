@@ -3,7 +3,8 @@
 import { useEffect, useRef } from "react";
 import { FileText } from "lucide-react";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
-import { BodyAndMainTitle } from "@/components/layout/main-and-title";
+import { PageContainer } from "@/components/ui/page-container";
+import { PageHeader } from "@/components/ui/page-header";
 import { TabBar, type Tab } from "@/components/ui/tab-bar";
 import { LOATemplate } from "./components/LOATemplate";
 
@@ -50,11 +51,13 @@ export default function TemplatesPage() {
   }, [activeTab]);
 
   return (
-    <BodyAndMainTitle
-      title="Templates"
-      description="Generate ready-to-post templates for the government website."
-    >
-      <div className="mx-auto w-full max-w-5xl">
+    <PageContainer>
+      <PageHeader
+        title="Templates"
+        subtitle="Generate ready-to-post templates for the government website."
+      />
+      {/* At the same width as the heading above it */}
+      <div className="w-full">
         <TabBar
           tabs={templatesTabs}
           active={activeTab}
@@ -63,6 +66,6 @@ export default function TemplatesPage() {
 
         {activeTab === "loa" && <LOATemplate />}
       </div>
-    </BodyAndMainTitle>
+    </PageContainer>
   );
 }

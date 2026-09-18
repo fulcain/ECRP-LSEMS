@@ -18,7 +18,8 @@ import {
 import { useMedic } from "@/app/context/MedicContext";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { blsTemplates } from "@/app/templates/bls-formats";
-import { BodyAndMainTitle } from "@/components/layout/main-and-title";
+import { PageContainer } from "@/components/ui/page-container";
+import { PageHeader } from "@/components/ui/page-header";
 import { CourseReportsProcessor } from "./components/CourseReportsProcessor";
 import { UpcomingCourseProcessor } from "./components/UpcomingCourseProcessor";
 import { Button } from "@/components/ui/button";
@@ -312,10 +313,11 @@ export default function BLSFormatsPage() {
         }
       `}</style>
 
-      <BodyAndMainTitle
-        title="BLS"
-        description="Build BLS application responses with the applicant's name and saved staff credentials."
-      >
+      <PageContainer>
+        <PageHeader
+          title="BLS"
+          subtitle="Build BLS application responses with the applicant's name and saved staff credentials."
+        />
         {/* Tab Selector */}
         <TabBar tabs={pageTabs} active={activeTab} onChange={setActiveTab} />
 
@@ -762,7 +764,7 @@ export default function BLSFormatsPage() {
           </div>
         </div>
         )}
-      </BodyAndMainTitle>
+      </PageContainer>
     </>
   );
 }

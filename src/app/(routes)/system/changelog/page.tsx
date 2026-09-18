@@ -1,4 +1,5 @@
-import { BodyAndMainTitle } from "@/components/layout/main-and-title";
+import { PageContainer } from "@/components/ui/page-container";
+import { PageHeader } from "@/components/ui/page-header";
 import { changeLog as lsemsChangeLog, type ChangeItem, type ChangeType } from "@/app/constants/changelog";
 import { changeLog as ftdChangeLog } from "@/app/constants/ftd-changelog";
 import { CalendarDays, Sparkles, Zap } from "lucide-react";
@@ -27,7 +28,8 @@ function ChangeItemRow({ item }: { item: ChangeItem }) {
 }
 
 export default function ChangeLogPage() {
-  return <BodyAndMainTitle title="Change Log" description="A unified history of updates, features, and changes across the LSEMS application.">
+  return <PageContainer>
+    <PageHeader title="Change Log" subtitle="A unified history of updates, features, and changes across the LSEMS application." />
     <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/80 shadow-2xl shadow-blue-950/30">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(59,130,246,0.14),_transparent_38%),radial-gradient(circle_at_bottom_left,_rgba(168,85,247,0.10),_transparent_34%)]" />
       <div className="relative p-4 sm:p-5 lg:p-8">
@@ -36,5 +38,5 @@ export default function ChangeLogPage() {
         </ol>}
       </div>
     </div>
-  </BodyAndMainTitle>;
+  </PageContainer>;
 }

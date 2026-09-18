@@ -1,7 +1,8 @@
 "use client";
 
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
-import { BodyAndMainTitle } from "@/components/layout/main-and-title";
+import { PageContainer } from "@/components/ui/page-container";
+import { PageHeader } from "@/components/ui/page-header";
 import { TabBar, type Tab } from "@/components/ui/tab-bar";
 import { ContractSigningProcessor } from "./components/ContractSigningProcessor";
 import { LOAProcessor } from "./components/LOAProcessor";
@@ -89,12 +90,13 @@ export default function SupervisorPage() {
   }, [activeTab]);
 
   return (
-    <BodyAndMainTitle
-      title="Supervisor Tools"
-      description="Manage LOA processing, meeting agendas, contract signings, promotions, resignations, and supervisor tasks"
-    >
-      {/* Tab Selector + Content (shared width so tabs stay aligned) */}
-      <div className="mx-auto w-full max-w-4xl">
+    <PageContainer>
+      <PageHeader
+        title="Supervisor Tools"
+        subtitle="Manage LOA processing, meeting agendas, contract signings, promotions, resignations, and supervisor tasks"
+      />
+      {/* Tab Selector + Content, at the same width as the heading above them */}
+      <div className="w-full">
         <TabBar tabs={tabs} active={activeTab} onChange={setActiveTab} />
 
         {/* Tab Content */}
@@ -104,6 +106,6 @@ export default function SupervisorPage() {
         {activeTab === "promotions" && <PromotionProcessor />}
         {activeTab === "resignations" && <ResignationProcessor />}
       </div>
-    </BodyAndMainTitle>
+    </PageContainer>
   );
 }

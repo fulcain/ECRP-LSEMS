@@ -3,7 +3,8 @@
 import { DiscordProfileCard } from "@/app/components/staff/DiscordProfileCard";
 import { StaffSettingsCard } from "@/app/components/staff/StaffSettingsCard";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
-import { BodyAndMainTitle } from "@/components/layout/main-and-title";
+import { PageContainer } from "@/components/ui/page-container";
+import { PageHeader } from "@/components/ui/page-header";
 import { TabBar, type Tab } from "@/components/ui/tab-bar";
 import { IdCard, SlidersHorizontal } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -57,10 +58,11 @@ export default function StaffPage() {
   }, [activeTab]);
 
   return (
-    <BodyAndMainTitle
-      title="Staff Page"
-      description="Save your name, signature and ranks once, and check what Discord says about you."
-    >
+    <PageContainer>
+      <PageHeader
+        title="Staff Page"
+        subtitle="Save your name, signature and ranks once, and check what Discord says about you."
+      />
       <TabBar
         tabs={tabs}
         active={activeTab}
@@ -68,6 +70,6 @@ export default function StaffPage() {
         ariaLabel="Staff page sections"
       />
       {activeTab === "discord" ? <DiscordProfileCard /> : <StaffSettingsCard />}
-    </BodyAndMainTitle>
+    </PageContainer>
   );
 }

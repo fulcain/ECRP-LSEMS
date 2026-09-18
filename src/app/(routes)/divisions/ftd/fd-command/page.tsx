@@ -4,8 +4,6 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Mail, UserPlus, Users } from "lucide-react";
 
-import { PageContainer } from "@/components/ui/page-container";
-import { PageHeader } from "@/components/ui/page-header";
 import { TabBar, type Tab } from "@/components/ui/tab-bar";
 
 import { CurrentEMRsTable } from "@/components/current-emrs/current-emrs-table";
@@ -87,13 +85,9 @@ function CommandPageContent() {
     } catch { /* noop */ }
   }, [tab, pathname, router, searchParams]);
 
+  // Content only: the FTD section layout owns the container and the heading.
   return (
-    <PageContainer>
-      <PageHeader
-        title="Command Page"
-        subtitle="Manage EMRs, FTOs, and ready-to-send emails from one place."
-      />
-
+    <>
       <TabBar tabs={TABS} active={tab} onChange={setTab} />
 
       {tab === "emrs" && <CurrentEMRsTable />}
@@ -108,6 +102,6 @@ function CommandPageContent() {
           </div>
         </div>
       )}
-    </PageContainer>
+    </>
   );
 }

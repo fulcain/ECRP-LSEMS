@@ -198,7 +198,7 @@ export default function ReinstatementForm() {
   return (
     <>
       <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="space-y-6">
 
         {/* Section heading for screen readers; the page-level <h1> lives in the
             PaperworkTypeSelector header above. */}

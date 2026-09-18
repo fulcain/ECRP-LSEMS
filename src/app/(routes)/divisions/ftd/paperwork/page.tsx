@@ -1,11 +1,7 @@
 "use client";
 import { PaperworkTypeSelector } from "@/app/(routes)/divisions/ftd/paperwork/components/PaperworkTypeSelector";
-import { PageContainer } from "@/components/ui/page-container";
 
+/** Content only: the FTD section layout owns the container and the heading. */
 export default function Home() {
-  return (
-    <PageContainer>
-      <PaperworkTypeSelector />
-    </PageContainer>
-  );
+  return <PaperworkTypeSelector />;
 }

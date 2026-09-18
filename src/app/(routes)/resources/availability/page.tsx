@@ -6,7 +6,8 @@ import {
   convertRangeStringToUTC,
 } from "@/app/helpers/timeUtils";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
-import { BodyAndMainTitle } from "@/components/layout/main-and-title";
+import { PageContainer } from "@/components/ui/page-container";
+import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,11 +28,11 @@ export default function Availability() {
   const [copied, setCopied] = useState(false);
 
   return (
-    <BodyAndMainTitle
-      title="Time of Availability"
-      description="Create your time of availability by writing your time and converting
-          it to UTC time"
-    >
+    <PageContainer>
+      <PageHeader
+        title="Time of Availability"
+        subtitle="Create your time of availability by writing your time and converting it to UTC time"
+      />
       <div className="relative overflow-hidden rounded-[2rem] border border-cyan-500/20 bg-slate-950/80 shadow-2xl shadow-cyan-950/30">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.12),_transparent_38%),radial-gradient(circle_at_bottom_right,_rgba(6,182,212,0.08),_transparent_34%)]" />
         <div className="pointer-events-none absolute inset-0 opacity-[0.03]"
@@ -167,6 +168,6 @@ export default function Availability() {
           )}
         </div>
       </div>
-    </BodyAndMainTitle>
+    </PageContainer>
   );
 }

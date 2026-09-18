@@ -69,7 +69,7 @@ function PaperworkTypeContent() {
         <FormTypeUrlSyncer />
       </Suspense>
       <div className="space-y-6">
-        <PaperworkHeader />
+        <PaperworkTypePicker />
         <PaperworkTypeRouter />
         {/* Session Details is irrelevant to the Civilian Ride-Along flow
             (no EMR, no session row to save), so it's hidden in that mode. */}
@@ -79,17 +79,15 @@ function PaperworkTypeContent() {
   );
 }
 
-function PaperworkHeader() {
+/**
+ * The format switcher. The page title and its description come from the FTD
+ * section shell, so this carries only the type tabs and the autosave note.
+ */
+function PaperworkTypePicker() {
   return (
-    <header className="max-w-4xl mx-auto space-y-5">
-      <div className="flex items-start justify-between gap-4">
-        <div className="space-y-1.5">
-          <h1 className="text-2xl font-semibold tracking-tight">Paperwork</h1>
-          <p className="text-sm text-muted-foreground">
-            Choose a paperwork format to begin.
-          </p>
-        </div>
-        <span className="mt-2 text-xs text-muted-foreground flex items-center gap-1.5">
+    <div className="space-y-5">
+      <div className="flex justify-end">
+        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
@@ -98,7 +96,7 @@ function PaperworkHeader() {
         </span>
       </div>
       <PaperworkTypeTabs />
-    </header>
+    </div>
   );
 }
 

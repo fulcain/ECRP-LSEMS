@@ -1,40 +1,40 @@
-import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 type PageHeaderProps = {
   title: string;
   subtitle?: string;
-  icon?: React.ReactNode;
-  showLogo?: boolean;
+  /** Small line above the title. Same wording on every page by default. */
+  eyebrow?: string;
   className?: string;
 };
 
+/**
+ * The one page heading in the app: every route renders exactly one of these,
+ * directly inside `PageContainer` and above anything else on the page (tabs
+ * included), so a title always sits in the same place at the same size.
+ *
+ * Left-aligned on purpose - it lines up with the page content and the tab rows
+ * beneath it, which a centred heading cannot do.
+ */
 export function PageHeader({
   title,
   subtitle,
-  icon,
-  showLogo = false,
+  eyebrow = "LSEMS Operations",
   className,
 }: PageHeaderProps) {
   return (
-    <header className={cn("mb-8 flex flex-col items-center gap-3 text-center", className)}>
-      {showLogo && (
-        <div className="flex items-center gap-3">
-          <Image alt="LSEMS" src="/General.png" height={36} width={36} className="opacity-90" />
-          {icon && <span className="text-muted-foreground">{icon}</span>}
-        </div>
+    <header className={cn("mb-8 border-b border-slate-800/80 pb-6", className)}>
+      <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-300/80">
+        {eyebrow}
+      </p>
+      <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+        {title}
+      </h1>
+      {subtitle && (
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+          {subtitle}
+        </p>
       )}
-      {!showLogo && icon && (
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-inset ring-primary/20">
-          {icon}
-        </span>
-      )}
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
-        {subtitle && (
-          <p className="mt-1 text-sm text-muted-foreground max-w-lg mx-auto">{subtitle}</p>
-        )}
-      </div>
     </header>
   );
 }

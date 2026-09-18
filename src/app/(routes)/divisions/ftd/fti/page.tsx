@@ -11,8 +11,6 @@ import {
   UserCheck,
 } from "lucide-react";
 
-import { PageContainer } from "@/components/ui/page-container";
-import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -340,14 +338,10 @@ export default function FtiPage() {
     }
   };
 
+  // Content only: the FTD section layout owns the container and the heading.
   return (
-    <PageContainer className="max-w-5xl space-y-6">
+    <div className="space-y-6">
       <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
-
-      <PageHeader
-        title="Field Training Instructor"
-        subtitle="Phase notes, trainer info, and auto-generated FTO certification paperwork."
-      />
 
       <SharedSignatureBar subtitle="applies to all paperwork on this page" />
 
@@ -545,6 +539,6 @@ export default function FtiPage() {
           </div>
         </CardContent>
       </Card>
-    </PageContainer>
+    </div>
   );
 }

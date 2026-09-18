@@ -165,7 +165,7 @@ export function SessionDetailsCard() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div>
       {/* === Session Details Card === */}
       <Card className="border shadow-sm">
         <CardHeader className="pb-3">

@@ -1,7 +1,8 @@
 "use client";
 
 import { divisions } from "@/app/constants/divisions";
-import { BodyAndMainTitle } from "@/components/layout/main-and-title";
+import { PageContainer } from "@/components/ui/page-container";
+import { PageHeader } from "@/components/ui/page-header";
 import {
   Accordion,
   AccordionContent,
@@ -222,10 +223,11 @@ export default function QuickLinks() {
   }, [query]);
 
   return (
-    <BodyAndMainTitle
-      title="Quick Links"
-      description="Browse and access all your quick links"
-    >
+    <PageContainer>
+      <PageHeader
+        title="Quick Links"
+        subtitle="Browse and access all your quick links"
+      />
       <div className="relative overflow-hidden rounded-[2rem] border border-emerald-500/20 bg-slate-950/80 shadow-2xl shadow-emerald-950/30">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(52,211,153,0.15),_transparent_38%),radial-gradient(circle_at_bottom_left,_rgba(16,185,129,0.10),_transparent_34%)]" />
         <div className="pointer-events-none absolute inset-0 opacity-[0.03]"
@@ -271,6 +273,6 @@ export default function QuickLinks() {
           )}
         </div>
       </div>
-    </BodyAndMainTitle>
+    </PageContainer>
   );
 }

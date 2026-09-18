@@ -19,7 +19,8 @@ import {
   OFFER_HOURS,
   OFFER_TIERS,
 } from "@/app/templates/red-formats";
-import { BodyAndMainTitle } from "@/components/layout/main-and-title";
+import { PageContainer } from "@/components/ui/page-container";
+import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -280,10 +281,11 @@ export default function REDFormatsPage() {
         }
       `}</style>
 
-      <BodyAndMainTitle
-        title="RED"
-        description="Build RED application responses with saved staff credentials and quick-swap BBCode placeholders."
-      >
+      <PageContainer>
+        <PageHeader
+          title="RED"
+          subtitle="Build RED application responses with saved staff credentials and quick-swap BBCode placeholders."
+        />
         <div
           key={animKey}
           className="relative overflow-hidden rounded-[2rem] border"
@@ -903,7 +905,7 @@ export default function REDFormatsPage() {
             </section>
           </div>
         </div>
-      </BodyAndMainTitle>
+      </PageContainer>
     </>
   );
 }

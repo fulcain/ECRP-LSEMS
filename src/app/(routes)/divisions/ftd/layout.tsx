@@ -1,16 +1,21 @@
-import { FtdTabs } from "@/components/ftd-tabs";
+import { FtdSectionHeader } from "@/components/ftd-section-header";
+import { PageContainer } from "@/components/ui/page-container";
 import { FTD_TABS, type FtdTabValue } from "@/configs/ftd-tabs";
 import { userHasAccess } from "@/lib/role-config";
 import { getSession } from "@/lib/session";
 
 /**
  * The FTD workspace shell. Every page beneath `/divisions/ftd` is a tab in
- * here, so the bar renders once at the section level rather than being
- * repeated by each page's own layout.
+ * here, so the heading and the bar render once at the section level rather than
+ * being repeated by each page - the pages render content only.
  *
- * The tabs are filtered with the same rule the route gate enforces, so a
- * member sees exactly the tabs they can open - an instructor is not shown the
- * Command tab they would be bounced out of.
+ * The heading comes from the active tab's own config (`configs/ftd-tabs.ts`),
+ * which is also where its `href` and gate live, so a page's title can never
+ * disagree with the tab that leads to it.
+ *
+ * The tabs are filtered with the same rule the route gate enforces, so a member
+ * sees exactly the tabs they can open - an instructor is not shown the Command
+ * tab they would be bounced out of.
  */
 export default async function FtdLayout({
   children,
@@ -25,11 +30,9 @@ export default async function FtdLayout({
     : [];
 
   return (
-    <>
-      <div className="mx-auto w-full max-w-6xl px-4 pt-5 sm:px-6 lg:px-8">
-        <FtdTabs available={available} />
-      </div>
+    <PageContainer>
+      <FtdSectionHeader available={available} />
       {children}
-    </>
+    </PageContainer>
   );
 }
