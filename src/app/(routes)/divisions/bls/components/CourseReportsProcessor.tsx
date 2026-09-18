@@ -2,6 +2,7 @@
 
 import { useMedic } from "@/app/context/MedicContext";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import { directorTitleForDivisionKey } from "@/app/constants/general/directorRoles";
 import {
   renderCourseReport,
   type CourseReportType,
@@ -219,11 +220,18 @@ export function CourseReportsProcessor() {
     .filter(Boolean)
     .join(" ");
 
-  // "EMS Rank | BLS Rank" line used by the OTS signature block.
+  // "EMS Rank | BLS Rank" line used by the OTS signature block, or the
+  // director's own title when they cover Basic Life Support.
   const blsRank = divisionRanks["Basic Life Support"] ?? "";
-  const medicRankLine = blsRank
-    ? `${medicCredentials.rank} | ${blsRank}`
-    : medicCredentials.rank || undefined;
+  const directorTitle = directorTitleForDivisionKey(
+    medicCredentials.directorRole,
+    "bls",
+  );
+  const medicRankLine = directorTitle
+    ? `${directorTitle} / ${medicCredentials.rank}`
+    : blsRank
+      ? `${medicCredentials.rank} | ${blsRank}`
+      : medicCredentials.rank || undefined;
 
   const dateStr = date
     ? format(date, "dd/MMM/yyyy").toUpperCase()

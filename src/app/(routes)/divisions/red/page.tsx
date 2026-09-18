@@ -13,6 +13,7 @@ import {
   Tag,
   X,
 } from "lucide-react";
+import { directorTitleForDivisionKey } from "@/app/constants/general/directorRoles";
 import { useMedic } from "@/app/context/MedicContext";
 import {
   redTemplates,
@@ -199,9 +200,17 @@ export default function REDFormatsPage() {
 
   const bbcodeOutput = useMemo(() => {
     const applicant = `${gender} ${applicantName.trim() || "Applicant Name"}`;
-    const medicRank = redRank
-      ? `${medicCredentials.rank} / ${redRank}`
-      : medicCredentials.rank || undefined;
+    // A director covering RED signs as the director, not as a RED rank they
+    // don't hold.
+    const directorTitle = directorTitleForDivisionKey(
+      medicCredentials.directorRole,
+      "red",
+    );
+    const medicRank = directorTitle
+      ? `${directorTitle} / ${medicCredentials.rank}`
+      : redRank
+        ? `${medicCredentials.rank} / ${redRank}`
+        : medicCredentials.rank || undefined;
     return activeFormat.renderBody({
       applicant,
       reasons,
@@ -225,6 +234,7 @@ export default function REDFormatsPage() {
     medicCredentials.name,
     medicCredentials.rank,
     medicCredentials.signature,
+    medicCredentials.directorRole,
     redRank,
     denialType,
     applyOtherChar,

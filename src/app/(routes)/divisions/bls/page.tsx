@@ -15,6 +15,7 @@ import {
   Tag,
   X,
 } from "lucide-react";
+import { directorTitleForDivisionKey } from "@/app/constants/general/directorRoles";
 import { useMedic } from "@/app/context/MedicContext";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { blsTemplates } from "@/app/templates/bls-formats";
@@ -240,9 +241,17 @@ export default function BLSFormatsPage() {
 
   const bbcodeOutput = useMemo(() => {
     const applicant = applicantName.trim() || "Applicant Name";
-    const medicRank = blsRank
-      ? `${medicCredentials.rank} | ${blsRank}`
-      : medicCredentials.rank || undefined;
+    // A director covering Basic Life Support signs as the director, not as a
+    // BLS rank they don't hold.
+    const directorTitle = directorTitleForDivisionKey(
+      medicCredentials.directorRole,
+      "bls",
+    );
+    const medicRank = directorTitle
+      ? `${directorTitle} / ${medicCredentials.rank}`
+      : blsRank
+        ? `${medicCredentials.rank} | ${blsRank}`
+        : medicCredentials.rank || undefined;
     return activeFormat.renderBody({
       applicant,
       reasons,
@@ -261,6 +270,7 @@ export default function BLSFormatsPage() {
     medicCredentials.name,
     medicCredentials.rank,
     medicCredentials.signature,
+    medicCredentials.directorRole,
     blsRank,
     cooldownDays,
     reapplyDate,
