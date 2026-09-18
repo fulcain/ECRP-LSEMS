@@ -435,8 +435,8 @@ export function Phase1Notes() {
           Show the EMR where to retrieve a fire extinguisher.
           <div className="mt-1">
             <OOC>
-              RP first, then <Command>/fl</Command>. It will be{" "}
-              <Bold>INVISIBLE</Bold> in the top left slot in the weapon wheel!
+              RP first, then <Command>/fl</Command>. Tell them to press TAB in
+              order to see the hotkey for the extinguisher.
             </OOC>
           </div>
         </Item>

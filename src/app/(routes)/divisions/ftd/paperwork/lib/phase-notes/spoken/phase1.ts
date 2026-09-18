@@ -141,7 +141,7 @@ export const PHASE1_SPOKEN = [
 
   "## Fire calls",
 
-  "I'll show you where the fire extinguishers live. (( RP pulling it out first, then `/fl`. Heads up - it's INVISIBLE in the top-left weapon wheel slot! ))",
+  "I'll show you where the fire extinguishers live. (( RP first, then `/fl`. Tell them to press TAB in order to see the hotkey for the extinguisher. ))",
 
   "To extinguish just take the pin out and shoot straight into the fire (( press `E` on the floating UI, then `/extinguish` )).",
 

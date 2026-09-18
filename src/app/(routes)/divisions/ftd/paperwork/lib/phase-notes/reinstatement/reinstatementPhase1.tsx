@@ -204,9 +204,8 @@ export function ReinstatementPhase1Notes() {
           <Item>
             Show the EMR where to retrieve a fire extinguisher.{" "}
             <OOC>
-              RP, then <Command>/fl</Command>. Remind them that
-              It&rsquo;ll be <Bold>INVISIBLE</Bold> in the top left
-              slot in the weapon wheel!
+              RP first, then <Command>/fl</Command>. Tell them to press TAB in
+              order to see the hotkey for the extinguisher.
             </OOC>
           </Item>
           <Item>

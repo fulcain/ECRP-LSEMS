@@ -616,7 +616,7 @@ Rank
 [/list]
 [*][color=#800000][b]Fire Calls[/b][/color][list]
 [*]Show the EMR where to retrieve a fire extinguisher. 
-[ooc]RP first, then [c]/fl[/c]. It will be [b]INVISIBLE[/b] in the top left slot in the weapon wheel![/ooc]
+[ooc]RP first, then [c]/fl[/c] Tell them to press TAB in order to see the hotkey for the extinguisher.[/ooc]
 [*]Then explain the process of extinguishing a fire to the EMR. 
 [ooc][c]E[/c] on the floating UI, and [c]/extinguish[/c][/ooc]
 [*]Inform the EMR that there can be lingering flames, and that it's best to check the surroundings thoroughly.
