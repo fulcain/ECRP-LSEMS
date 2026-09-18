@@ -1,8 +1,10 @@
 import React from "react";
+import { SUPPORT_CONTACT } from "@/configs/contact";
 import { DiscordIcon } from "@/components/icons/discord-icon";
 
 type DiscordContactIndicatorProps = {
-  handle: string;
+  /** Defaults to the declared support contact - pass one only to override it. */
+  handle?: string;
   variant?: "pill" | "icon";
   label?: string;
   iconClassName?: string;
@@ -10,7 +12,7 @@ type DiscordContactIndicatorProps = {
 };
 
 export function DiscordContactIndicator({
-  handle,
+  handle = SUPPORT_CONTACT.handle,
   variant = "pill",
   label,
   iconClassName,

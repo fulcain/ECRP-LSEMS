@@ -41,7 +41,7 @@ export function SidebarMobile({ headerLinks }: SidebarMobileProps) {
               </div>;
             })}
           </nav>
-          <div className="mt-3 shrink-0 space-y-2.5 border-t border-slate-800 pt-3"><UserMenu /><DiscordContactIndicator handle="@fulcain" /></div>
+          <div className="mt-3 shrink-0 space-y-2.5 border-t border-slate-800 pt-3"><UserMenu /><DiscordContactIndicator /></div>
         </SheetContent>
       </Sheet>
     </div>
