@@ -8,28 +8,19 @@ import {
 } from "@/app/hooks/useGuildIdentity";
 import { ROUTES } from "@/configs/routes";
 import { heldRoles, type HeldRole } from "@/lib/member-identity";
-import { BadgeCheck, Crown, RefreshCw, Sparkles } from "lucide-react";
+import { BadgeCheck, RefreshCw, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
 /** One label/value line in the profile summary. */
-function Fact({
-  label,
-  value,
-  icon,
-}: {
-  label: string;
-  value: string;
-  icon?: React.ReactNode;
-}) {
+function Fact({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl border border-white/10 bg-slate-900/70 px-4 py-3">
       <p className="text-[10px] font-semibold tracking-[0.16em] text-slate-500 uppercase">
         {label}
       </p>
-      <p className="mt-1 flex min-w-0 items-center gap-2 text-sm font-medium text-white">
-        {icon}
-        <span className="truncate">{value}</span>
+      <p className="mt-1 min-w-0 truncate text-sm font-medium text-white">
+        {value}
       </p>
     </div>
   );
@@ -83,10 +74,9 @@ function RoleGroup({
  *
  * Everything here comes from the roles the app already fetches on every page
  * load, so the tab costs no extra Discord call. The two halves answer
- * different questions: what the app calls them (rank and director title) and
- * which of their Discord roles it recognised to get there - with the
- * divisional roles split out, since those are the ones that say which
- * divisions the member is in.
+ * different questions: the rank the app resolves for them, and which of their
+ * Discord roles it recognised to get there - with the divisional roles split
+ * out, since those are the ones that say which divisions the member is in.
  */
 export function DiscordProfileCard() {
   const { user, identity, isLoading, error, refresh } = useGuildIdentity();
@@ -226,19 +216,10 @@ export function DiscordProfileCard() {
             The same values the Staff Settings tab fills in for you. Which
             divisions those roles put you in is split out below.
           </p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <div className="mt-3 grid gap-3">
             <Fact
               label="Rank"
               value={identity.rankLabel ?? "No rank detected"}
-            />
-            <Fact
-              label="Director"
-              value={identity.directorTitle ?? "Not a director"}
-              icon={
-                identity.directorTitle ? (
-                  <Crown className="h-3.5 w-3.5 text-violet-300" />
-                ) : undefined
-              }
             />
           </div>
         </div>
