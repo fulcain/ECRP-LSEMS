@@ -32,15 +32,15 @@ const RP_RE = /\{\{([\s\S]*?)\}\}/g;
 
 /** Styling for the (( and )) badges that tag OOC text in Script mode. */
 const OOC_BADGE_CLS =
-  "inline-block rounded border border-blue-600/30 px-1 py-[1px] align-baseline text-[9px] font-semibold uppercase tracking-wide not-italic text-blue-600/70 dark:border-sky-400/30 dark:text-sky-400/70";
+  "inline-block rounded border border-blue-600/30 px-1 py-[1px] align-baseline text-[10px] font-semibold uppercase tracking-wide not-italic text-blue-600/70 dark:border-sky-400/30 dark:text-sky-400/70";
 
 /** Styling for the Note badge that tags || ... || text in Script mode. */
 const NOTE_BADGE_CLS =
-  "inline-block rounded border border-amber-600/30 px-1 py-[1px] align-baseline text-[9px] font-semibold uppercase tracking-wide not-italic text-amber-700/80 dark:border-amber-400/30 dark:text-amber-300/80";
+  "inline-block rounded border border-amber-600/30 px-1 py-[1px] align-baseline text-[10px] font-semibold uppercase tracking-wide not-italic text-amber-700/80 dark:border-amber-400/30 dark:text-amber-300/80";
 
 /** Styling for the {{ and }} badges that tag RP lines in Script mode. */
 const RP_BADGE_CLS =
-  "inline-block rounded border border-violet-600/30 px-1 py-[1px] align-baseline text-[9px] font-semibold uppercase tracking-wide not-italic text-violet-600/70 dark:border-violet-400/30 dark:text-violet-400/70";
+  "inline-block rounded border border-violet-600/30 px-1 py-[1px] align-baseline text-[10px] font-semibold uppercase tracking-wide not-italic text-violet-600/70 dark:border-violet-400/30 dark:text-violet-400/70";
 
 /** Copy text to the clipboard, falling back to execCommand on insecure contexts. */
 async function copyText(text: string): Promise<boolean> {
@@ -162,7 +162,7 @@ function renderInline(segment: string, keyBase: string): React.ReactNode {
           aria-label={
             isSlashCommand ? `Copy as /b: ${command}` : `Copy ${command}`
           }
-          className="inline-flex items-center rounded-md border border-emerald-700/30 bg-emerald-700/10 px-1.5 py-0.5 align-baseline font-mono text-[12px] whitespace-nowrap text-emerald-800 transition-colors hover:bg-emerald-700/20 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-300 dark:hover:bg-emerald-400/20"
+          className="inline-flex items-center rounded-md border border-emerald-700/30 bg-emerald-700/10 px-1.5 py-0.5 align-baseline font-mono text-xs whitespace-nowrap text-emerald-800 transition-colors hover:bg-emerald-700/20 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-300 dark:hover:bg-emerald-400/20"
         >
           {command}
         </button>

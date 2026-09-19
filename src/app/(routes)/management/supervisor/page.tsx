@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import { useTabParam } from "@/app/hooks/useTabParam";
 import { PageContainer } from "@/components/ui/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { TabBar, type Tab } from "@/components/ui/tab-bar";
@@ -16,7 +16,6 @@ import {
   FileText,
   LogOut,
 } from "lucide-react";
-import React, { useEffect, useRef } from "react";
 
 type SupervisorTab =
   | "loa"
@@ -58,36 +57,14 @@ const tabs: Tab<SupervisorTab>[] = [
   },
 ];
 
+const tabValues = tabs.map((tab) => tab.value);
+
 export default function SupervisorPage() {
-  const [activeTab, setActiveTab] = useLocalStorage<SupervisorTab>(
+  const [activeTab, setActiveTab] = useTabParam(
     "supervisor-tab",
+    tabValues,
     "loa",
   );
-
-  // Sync initial tab from URL query param (takes priority over localStorage)
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const fromUrl = params.get("tab") as SupervisorTab | null;
-    if (fromUrl && tabs.some((t) => t.value === fromUrl)) {
-      setActiveTab(fromUrl);
-    }
-  }, [setActiveTab]);
-
-  // Sync URL when tab changes (skip initial mount)
-  const isFirstRender = useRef(true);
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    const params = new URLSearchParams(window.location.search);
-    params.set("tab", activeTab);
-    window.history.replaceState(
-      null,
-      "",
-      `${window.location.pathname}?${params.toString()}`,
-    );
-  }, [activeTab]);
 
   return (
     <PageContainer>

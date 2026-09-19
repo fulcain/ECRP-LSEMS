@@ -204,23 +204,23 @@ export function PromotionProcessor() {
       <PromotionRankSelect value={newRank} onChange={setNewRank} />
 
       {/* Personnel Info */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+      <div className="panel-inner p-5">
         <div className="mb-4 flex items-center gap-2">
-          <Users className="h-4 w-4 text-slate-400" />
-          <h3 className="text-sm font-medium text-slate-300">Personnel details</h3>
+          <Users className="h-4 w-4 text-muted-foreground" />
+          <h3 className="text-sm font-medium text-muted-foreground">Personnel details</h3>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <Label className="mb-1 block text-xs text-slate-500">Full name</Label>
+            <Label className="mb-1 block text-xs text-muted-foreground">Full name</Label>
             <Input
               value={personnelName}
               onChange={(e) => setPersonnelName(e.target.value)}
               placeholder="John Smith"
-              className="border-slate-800 bg-slate-950 text-white placeholder:text-slate-600"
+              className="border-border bg-surface-raised text-foreground placeholder:text-muted-foreground"
             />
           </div>
           <div>
-            <Label className="mb-1 block text-xs text-slate-500">Title</Label>
+            <Label className="mb-1 block text-xs text-muted-foreground">Title</Label>
             <div className="flex gap-1.5">
               {(["Mr.", "Ms."] as const).map((t) => (
                 <button
@@ -228,8 +228,8 @@ export function PromotionProcessor() {
                   onClick={() => setTitle(t)}
                   className={`flex-1 rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
                     title === t
-                      ? "border-slate-600 bg-slate-800 text-white"
-                      : "border-slate-800 bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-slate-100"
+                      ? "border-border bg-surface-hover text-foreground"
+                      : "border-border bg-surface-raised text-muted-foreground hover:bg-surface-hover hover:text-foreground"
                   }`}
                 >
                   {t}
@@ -238,21 +238,21 @@ export function PromotionProcessor() {
             </div>
           </div>
           <div>
-            <Label className="mb-1 block text-xs text-slate-500">Previous rank</Label>
+            <Label className="mb-1 block text-xs text-muted-foreground">Previous rank</Label>
             <Input
               value={previousRank}
               onChange={(e) => setPreviousRank(e.target.value)}
               placeholder="e.g. EMT-B, EMT-I"
-              className="border-slate-800 bg-slate-950 text-white placeholder:text-slate-600"
+              className="border-border bg-surface-raised text-foreground placeholder:text-muted-foreground"
             />
           </div>
           <div>
-            <Label className="mb-1 block text-xs text-slate-500">Promotion date</Label>
+            <Label className="mb-1 block text-xs text-muted-foreground">Promotion date</Label>
             <Input
               value={promotionDate}
               onChange={(e) => setPromotionDate(e.target.value.toUpperCase())}
               placeholder="DD/MMM/YYYY"
-              className="border-slate-800 bg-slate-950 font-mono text-white placeholder:text-slate-600"
+              className="border-border bg-surface-raised font-mono text-foreground placeholder:text-muted-foreground"
             />
           </div>
 
@@ -260,17 +260,17 @@ export function PromotionProcessor() {
       </div>
 
       {/* Procedure Checklist */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+      <div className="panel-inner p-5">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <ListChecks className="h-4 w-4 text-slate-400" />
-            <h3 className="text-sm font-medium text-slate-300">Procedure checklist</h3>
+            <ListChecks className="h-4 w-4 text-muted-foreground" />
+            <h3 className="text-sm font-medium text-muted-foreground">Procedure checklist</h3>
           </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={resetChecklists}
-            className="text-slate-500 hover:text-slate-200"
+            className="text-muted-foreground hover:text-foreground"
           >
             <RotateCcw className="mr-1 h-3 w-3" />
             Reset all
@@ -283,7 +283,7 @@ export function PromotionProcessor() {
             return (
               <li
                 key={step.id}
-                className="rounded-lg border border-slate-800 bg-slate-950/50 p-4 transition-colors hover:border-slate-700"
+                className="rounded-xl border border-border bg-surface-raised/60 p-4 transition-colors hover:border-primary/30"
               >
                 <div className="flex items-start gap-3">
                   <button
@@ -291,14 +291,14 @@ export function PromotionProcessor() {
                     role="checkbox"
                     aria-checked={isDone}
                     onClick={() => toggleStep(step.id)}
-                    className="mt-0.5 text-slate-500 transition-colors hover:text-slate-200"
+                    className="mt-0.5 text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {isDone ? <CheckSquare className="h-5 w-5" /> : <Square className="h-5 w-5" />}
                   </button>
                   <div className="flex-1">
                     <p
                       className={`text-sm font-medium ${
-                        isDone ? "text-slate-500 line-through" : "text-white"
+                        isDone ? "text-muted-foreground line-through" : "text-foreground"
                       }`}
                     >
                       {step.label}
@@ -311,7 +311,7 @@ export function PromotionProcessor() {
                               value={personnelFileUrl}
                               onChange={(e) => setPersonnelFileUrl(e.target.value)}
                               placeholder="Personnel File Topic URL"
-                              className="h-7 w-full border-slate-800 bg-slate-950 text-xs text-white placeholder:text-slate-600 sm:w-64"
+                              className="h-7 w-full border-border bg-surface-raised text-xs text-foreground placeholder:text-muted-foreground sm:w-64"
                             />
                             {(!currentRankInfo?.label || !promotionDate) && (
                               <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-1 text-[10px] text-amber-400">
@@ -324,7 +324,7 @@ export function PromotionProcessor() {
                         {step.copyText.length > 0 && (
                           <button
                             onClick={() => copyBBCode({ bbCodeText: step.copyText })}
-                            className="inline-flex items-center gap-1.5 rounded-md border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+                            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
                           >
                             <Copy className="h-3 w-3" />
                             Copy BBCode
@@ -362,7 +362,7 @@ export function PromotionProcessor() {
                       </div>
                     )}
                   </div>
-                  <Icon className="h-4 w-4 shrink-0 text-slate-600" />
+                  <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
                 </div>
               </li>
             );
@@ -371,15 +371,15 @@ export function PromotionProcessor() {
       </div>
 
       {/* OOC Checklist */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+      <div className="panel-inner p-5">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <MessageSquare className="h-4 w-4 text-slate-400" />
-            <h3 className="text-sm font-medium text-slate-300">
+            <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            <h3 className="text-sm font-medium text-muted-foreground">
               (( Out-of-Character checklist ))
             </h3>
           </div>
-          <span className="text-xs text-slate-500">
+          <span className="text-xs text-muted-foreground">
             {completedOocCount}/{allOocItems.length}
           </span>
         </div>
@@ -390,7 +390,7 @@ export function PromotionProcessor() {
             return (
               <li
                 key={item.id}
-                className="rounded-lg border border-slate-800 bg-slate-950/50 p-4 transition-colors hover:border-slate-700"
+                className="rounded-xl border border-border bg-surface-raised/60 p-4 transition-colors hover:border-primary/30"
               >
                 <div className="flex items-start gap-3">
                   <button
@@ -398,18 +398,18 @@ export function PromotionProcessor() {
                     role="checkbox"
                     aria-checked={isDone}
                     onClick={() => toggleOoc(item.id)}
-                    className="mt-0.5 text-slate-500 transition-colors hover:text-slate-200"
+                    className="mt-0.5 text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {isDone ? <CheckSquare className="h-5 w-5" /> : <Square className="h-5 w-5" />}
                   </button>
                   <p
                     className={`flex-1 text-sm leading-relaxed ${
-                      isDone ? "text-slate-500 line-through" : "text-slate-200"
+                      isDone ? "text-muted-foreground line-through" : "text-foreground"
                     }`}
                   >
                     {item.label}
                   </p>
-                  <Icon className="h-4 w-4 shrink-0 text-slate-600" />
+                  <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
                 </div>
               </li>
             );
@@ -418,14 +418,14 @@ export function PromotionProcessor() {
       </div>
 
       {/* Quick Links */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
-        <h3 className="mb-3 text-sm font-medium text-slate-300">Quick links</h3>
+      <div className="panel-inner p-5">
+        <h3 className="mb-3 text-sm font-medium text-muted-foreground">Quick links</h3>
         <div className="flex flex-wrap gap-2">
           <a
             href="https://gov.eclipse-rp.net/viewforum.php?f=605"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
           >
             <ExternalLink className="h-3 w-3" />
             Personnel Files
@@ -434,7 +434,7 @@ export function PromotionProcessor() {
             href="https://gov.eclipse-rp.net/viewforum.php?f=573"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
           >
             <ExternalLink className="h-3 w-3" />
             Employee Adjustments
@@ -443,7 +443,7 @@ export function PromotionProcessor() {
             href="https://gov.eclipse-rp.net/viewtopic.php?t=9497"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
           >
             <ExternalLink className="h-3 w-3" />
             Staff Roster
@@ -452,7 +452,7 @@ export function PromotionProcessor() {
             href="https://ecrplsems.com/"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
           >
             <ExternalLink className="h-3 w-3" />
             Dashboard

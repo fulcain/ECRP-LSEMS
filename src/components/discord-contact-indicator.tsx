@@ -39,7 +39,7 @@ export function DiscordContactIndicator({
   return (
     <div
       className={
-        "flex items-center gap-2.5 rounded-lg border border-white/5 bg-white/[0.02] px-3 py-2 text-[11px] text-slate-400 transition-colors hover:border-indigo-500/20 hover:bg-indigo-500/5" +
+        "flex items-center gap-2.5 rounded-lg border border-border bg-white/[0.02] px-3 py-2 text-[11px] text-muted-foreground transition-colors hover:border-indigo-500/20 hover:bg-indigo-500/5" +
         (className ? ` ${className}` : "")
       }
     >
@@ -49,7 +49,7 @@ export function DiscordContactIndicator({
         }
       />
       <span className="truncate">
-        <span className="font-medium text-slate-300">{handle}</span>
+        <span className="font-medium text-muted-foreground">{handle}</span>
       </span>
     </div>
   );

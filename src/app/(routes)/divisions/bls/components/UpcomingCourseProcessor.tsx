@@ -247,24 +247,18 @@ export function UpcomingCourseProcessor() {
     <div className="space-y-6">
       <ToastContainer position="top-right" autoClose={2500} theme="dark" />
 
-      <div className="relative overflow-hidden rounded-[2rem] border border-amber-500/20 bg-slate-950/80 shadow-2xl shadow-amber-950/30">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.12),_transparent_38%),radial-gradient(circle_at_bottom_right,_rgba(245,158,11,0.08),_transparent_34%)]" />
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage:
-              "linear-gradient(hsla(0,0%,100%,0.1) 1px, transparent 1px), linear-gradient(90deg, hsla(0,0%,100%,0.1) 1px, transparent 1px)",
-            backgroundSize: "32px 32px",
-          }}
-        />
-        <div className="relative p-5 lg:p-8">
+      <div className="panel relative overflow-hidden">
+        {/* The page's accent as a single line, so it reads as identity rather
+            than as a second background behind the content. */}
+        <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-warning/70 to-transparent" />
+        <div className="relative p-4 sm:p-5 lg:p-6">
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-            <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
+            <div className="panel-inner p-5 transition-colors hover:border-primary/30">
               <div className="space-y-5">
                 <div className="flex flex-col gap-1.5">
                   <Label
                     htmlFor="courseType"
-                    className="text-sm font-medium text-slate-300"
+                    className="text-sm font-medium text-muted-foreground"
                   >
                     Course Type
                   </Label>
@@ -276,16 +270,16 @@ export function UpcomingCourseProcessor() {
                   >
                     <SelectTrigger
                       id="courseType"
-                      className="w-full border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-slate-500"
+                      className="w-full border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border"
                     >
                       <SelectValue placeholder="Select course type" />
                     </SelectTrigger>
-                    <SelectContent className="border-slate-700 bg-slate-900 text-white">
+                    <SelectContent className="border-border bg-surface text-foreground">
                       {COURSE_TYPE_OPTIONS.map((option) => (
                         <SelectItem
                           key={option.value}
                           value={option.value}
-                          className="transition-all duration-150 hover:bg-slate-700/60"
+                          className="transition-all duration-200 hover:bg-surface-hover/60"
                         >
                           {option.label}
                         </SelectItem>
@@ -300,7 +294,7 @@ export function UpcomingCourseProcessor() {
                   <div className="flex flex-col gap-1.5">
                     <Label
                       htmlFor="datetime"
-                      className="text-sm font-medium text-slate-300"
+                      className="text-sm font-medium text-muted-foreground"
                     >
                       Course Date &amp; Time (UTC)
                     </Label>
@@ -310,8 +304,8 @@ export function UpcomingCourseProcessor() {
                           <Button
                             variant="outline"
                             className={cn(
-                              "w-full justify-start text-left font-normal border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-slate-500 sm:w-[260px]",
-                              !date && !datetime && "text-slate-400",
+                              "w-full justify-start text-left font-normal border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border sm:w-[260px]",
+                              !date && !datetime && "text-muted-foreground",
                             )}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
@@ -323,7 +317,7 @@ export function UpcomingCourseProcessor() {
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent
-                          className="w-auto border-slate-700 bg-slate-900 p-0"
+                          className="w-auto border-border bg-surface p-0"
                           align="start"
                         >
                           <Calendar
@@ -344,7 +338,7 @@ export function UpcomingCourseProcessor() {
                             : "")
                         }
                         onChange={(e) => setTime(e.target.value)}
-                        className="w-[140px] border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-slate-500 focus-visible:ring-2"
+                        className="w-[140px] border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
                       />
                     </div>
                   </div>
@@ -354,7 +348,7 @@ export function UpcomingCourseProcessor() {
                   <div className="flex flex-col gap-1.5">
                     <Label
                       htmlFor="prevDatetime"
-                      className="text-sm font-medium text-slate-300"
+                      className="text-sm font-medium text-muted-foreground"
                     >
                       Previous Date &amp; Time (UTC)
                     </Label>
@@ -364,8 +358,8 @@ export function UpcomingCourseProcessor() {
                           <Button
                             variant="outline"
                             className={cn(
-                              "w-full justify-start text-left font-normal border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-slate-500 sm:w-[260px]",
-                              !prevDate && !prevDatetime && "text-slate-400",
+                              "w-full justify-start text-left font-normal border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border sm:w-[260px]",
+                              !prevDate && !prevDatetime && "text-muted-foreground",
                             )}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
@@ -377,7 +371,7 @@ export function UpcomingCourseProcessor() {
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent
-                          className="w-auto border-slate-700 bg-slate-900 p-0"
+                          className="w-auto border-border bg-surface p-0"
                           align="start"
                         >
                           <Calendar
@@ -397,7 +391,7 @@ export function UpcomingCourseProcessor() {
                             : "")
                         }
                         onChange={(e) => setPrevTime(e.target.value)}
-                        className="w-[140px] border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-slate-500 focus-visible:ring-2"
+                        className="w-[140px] border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
                       />
                     </div>
                   </div>
@@ -406,7 +400,7 @@ export function UpcomingCourseProcessor() {
                 <div className="flex flex-col gap-1.5">
                   <Label
                     htmlFor="instructor"
-                    className="text-sm font-medium text-slate-300"
+                    className="text-sm font-medium text-muted-foreground"
                   >
                     Instructor Name
                   </Label>
@@ -417,7 +411,7 @@ export function UpcomingCourseProcessor() {
                     onChange={(e) => setInstructor(e.target.value)}
                     placeholder="First Last"
                     required
-                    className="border-slate-700 bg-slate-800 text-white placeholder:text-slate-400 transition-all duration-200 hover:border-slate-500 focus-visible:ring-2"
+                    className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
                   />
                 </div>
               </div>
@@ -427,7 +421,7 @@ export function UpcomingCourseProcessor() {
               <Button
                 variant="outline"
                 type="submit"
-                className="border-slate-600 text-slate-300 transition-all duration-200 hover:scale-[1.02] hover:border-amber-500/40 hover:bg-amber-950/20 hover:text-amber-200 active:scale-95"
+                className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-amber-500/40 hover:bg-amber-950/20 hover:text-amber-200 active:scale-[0.98]"
               >
                 Generate
               </Button>
@@ -435,7 +429,7 @@ export function UpcomingCourseProcessor() {
                 variant="destructive"
                 type="button"
                 onClick={handleClear}
-                className="transition-all duration-200 hover:scale-[1.02] active:scale-95"
+                className="transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
               >
                 Clear
               </Button>
@@ -444,18 +438,18 @@ export function UpcomingCourseProcessor() {
 
           {output && (
             <div className="mt-6 space-y-3">
-              <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
-                <pre className="overflow-x-auto whitespace-pre-wrap rounded-xl border border-white/5 bg-slate-950/80 p-4 font-mono text-sm leading-relaxed text-slate-100">
+              <div className="panel-inner p-5 transition-colors hover:border-primary/30">
+                <pre className="overflow-x-auto whitespace-pre-wrap rounded-xl border border-border bg-background/80 p-4 font-mono text-sm leading-relaxed text-foreground">
                   {output}
                 </pre>
               </div>
               <Button
                 onClick={handleCopy}
                 variant="secondary"
-                className={`transition-all duration-200 hover:scale-[1.02] active:scale-95 ${
+                className={`transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
                   copied
-                    ? "bg-emerald-600 text-white hover:bg-emerald-500"
-                    : "bg-slate-700 text-white hover:bg-slate-600"
+                    ? "bg-emerald-600 text-foreground hover:bg-emerald-500"
+                    : "bg-surface-hover text-foreground hover:bg-surface-hover"
                 }`}
               >
                 {copied ? "Copied!" : "Copy to Clipboard"}

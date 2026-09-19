@@ -1,7 +1,6 @@
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import type { Metadata } from "next";
 import "./globals.css";
-import "./lsems.css";
 import "react-toastify/dist/ReactToastify.css";
 import { SidebarLayout } from "@/components/layout/sidebar/sidebar-layout";
 import { MedicProvider } from "@/app/context/MedicContext";
@@ -50,10 +49,13 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
+        {/* Dark only. The palette lives on `:root` and the class is what makes
+            `dark:` utilities apply; `enableSystem` used to hand a light-OS
+            member light tokens against a shell that hardcodes dark surfaces. */}
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
-          enableSystem
+          forcedTheme="dark"
           disableTransitionOnChange
         >
           <MedicProvider>

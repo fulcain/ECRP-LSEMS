@@ -28,10 +28,10 @@ export function StaffSettingsIndicator() {
             <AlertCircle className="h-4 w-4" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-white">
+            <p className="text-sm font-semibold text-foreground">
               Staff settings still need to be completed
             </p>
-            <p className="text-sm text-slate-300">
+            <p className="text-sm text-muted-foreground">
               Add your saved name, signature, and rank so every tool can use
               them automatically.
             </p>
@@ -46,7 +46,7 @@ export function StaffSettingsIndicator() {
           <Button
             asChild
             variant="outline"
-            className="border-amber-300/30 bg-slate-900/40 text-white hover:bg-slate-800"
+            className="border-amber-300/30 bg-surface/40 text-foreground hover:bg-surface-hover"
           >
             <Link href={ROUTES.workspace.staff}>
               Open Staff Page

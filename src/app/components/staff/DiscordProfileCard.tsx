@@ -37,14 +37,14 @@ function RoleGroup({
 }) {
   return (
     <div>
-      <p className="flex items-center gap-2 text-[10px] font-semibold tracking-[0.16em] text-slate-500 uppercase">
+      <p className="eyebrow flex items-center gap-2 text-muted-foreground">
         {label}
-        <span className="rounded-full border border-white/10 bg-slate-900/70 px-2 py-0.5 text-[11px] font-medium tracking-normal text-slate-400 normal-case">
+        <span className="rounded-full border border-border bg-surface/70 px-2 py-0.5 text-[11px] font-medium tracking-normal text-muted-foreground normal-case">
           {roles.length}
         </span>
       </p>
       {roles.length === 0 ? (
-        <p className="mt-2 text-xs text-slate-500">{emptyNote}</p>
+        <p className="mt-2 text-xs text-muted-foreground">{emptyNote}</p>
       ) : (
         <div className="mt-2 flex flex-wrap gap-2">
           {roles.map((role) => (
@@ -96,21 +96,11 @@ export function DiscordProfileCard() {
     }
   };
 
-  const shell =
-    "relative overflow-hidden rounded-[2rem] border border-indigo-500/20 bg-slate-950/80 shadow-2xl shadow-indigo-950/30";
+  const shell = "panel relative overflow-hidden";
 
+  /** The page accent, as one line rather than a wash behind the content. */
   const backdrop = (
-    <>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.16),_transparent_40%),radial-gradient(circle_at_bottom_right,_rgba(88,101,242,0.10),_transparent_36%)]" />
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage:
-            "linear-gradient(hsla(0,0%,100%,0.1) 1px, transparent 1px), linear-gradient(90deg, hsla(0,0%,100%,0.1) 1px, transparent 1px)",
-          backgroundSize: "32px 32px",
-        }}
-      />
-    </>
+    <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-indigo-400/70 to-transparent" />
   );
 
   if (isLoading && !user) {
@@ -118,9 +108,9 @@ export function DiscordProfileCard() {
       <div className={shell}>
         {backdrop}
         <div className="relative space-y-4 p-5 lg:p-8">
-          <div className="h-16 w-16 animate-pulse rounded-full bg-slate-800" />
-          <div className="h-4 w-48 animate-pulse rounded bg-slate-800" />
-          <div className="h-3 w-32 animate-pulse rounded bg-slate-800/70" />
+          <div className="h-16 w-16 animate-pulse rounded-full bg-surface-hover" />
+          <div className="h-4 w-48 animate-pulse rounded bg-surface-hover" />
+          <div className="h-3 w-32 animate-pulse rounded bg-surface-hover/70" />
         </div>
       </div>
     );
@@ -131,17 +121,17 @@ export function DiscordProfileCard() {
       <div className={shell}>
         {backdrop}
         <div className="relative flex flex-col items-start gap-4 p-5 lg:p-8">
-          <h2 className="text-xl font-semibold text-white">
+          <h2 className="text-xl font-semibold text-foreground">
             Discord Profile
           </h2>
-          <p className="max-w-xl text-sm text-slate-400">
+          <p className="max-w-xl text-sm text-muted-foreground">
             {error
               ? "Your Discord profile could not be read. Signing in again usually fixes it."
               : "Sign in with Discord to see the account and roles this page reads your rank from."}
           </p>
           <Link
             href="/login"
-            className="inline-flex items-center gap-2 rounded-md bg-[#5865F2] px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#4752c4]"
+            className="inline-flex items-center gap-2 rounded-md bg-[#5865F2] px-3 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-[#4752c4]"
           >
             Sign in with Discord
           </Link>
@@ -164,15 +154,15 @@ export function DiscordProfileCard() {
                 className="h-16 w-16 shrink-0 rounded-full ring-2 ring-indigo-400/30"
               />
             ) : (
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-slate-800 text-lg font-semibold text-slate-300 ring-2 ring-indigo-400/20">
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-surface-hover text-lg font-semibold text-muted-foreground ring-2 ring-indigo-400/20">
                 {(displayName ?? user.username).slice(0, 1).toUpperCase()}
               </div>
             )}
             <div className="min-w-0">
-              <h2 className="truncate text-xl font-semibold text-white">
+              <h2 className="truncate text-xl font-semibold text-foreground">
                 {displayName}
               </h2>
-              <p className="truncate text-sm text-slate-400">
+              <p className="truncate text-sm text-muted-foreground">
                 @{user.username}
               </p>
               {/* The one value the app reads off the roles, so it belongs with
@@ -190,7 +180,7 @@ export function DiscordProfileCard() {
             variant="outline"
             onClick={handleSync}
             disabled={syncing}
-            className="whitespace-nowrap border-indigo-400/30 bg-slate-900/40 text-indigo-200 transition-all duration-200 hover:scale-[1.02] hover:border-indigo-300/50 hover:bg-indigo-950/30 active:scale-95 disabled:opacity-60"
+            className="whitespace-nowrap border-indigo-400/30 bg-surface/40 text-indigo-200 transition-all duration-200 hover:scale-[1.02] hover:border-indigo-300/50 hover:bg-indigo-950/30 active:scale-[0.98] disabled:opacity-60"
           >
             <RefreshCw
               className={`mr-2 h-4 w-4 ${syncing ? "animate-spin" : ""}`}
@@ -204,15 +194,15 @@ export function DiscordProfileCard() {
         )}
 
         <div>
-          <h3 className="flex items-center gap-2 text-sm font-semibold text-white">
+          <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
             <Sparkles className="h-4 w-4 text-indigo-300" />
             Roles the app recognises
-            <span className="rounded-full border border-white/10 bg-slate-900/70 px-2 py-0.5 text-[11px] font-medium text-slate-400">
+            <span className="rounded-full border border-border bg-surface/70 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
               {roles.length}
             </span>
           </h3>
           {roles.length === 0 ? (
-            <p className="mt-2 text-xs text-slate-400">
+            <p className="mt-2 text-xs text-muted-foreground">
               None of your Discord roles are in the registry yet.
             </p>
           ) : (
@@ -222,7 +212,7 @@ export function DiscordProfileCard() {
                 roles={departmentRoles}
                 emptyNote="No department roles on your account."
               />
-              <hr className="border-white/10" />
+              <hr className="border-border" />
               <RoleGroup
                 label="Divisions"
                 roles={divisionRoles}

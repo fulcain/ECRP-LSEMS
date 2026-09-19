@@ -393,10 +393,10 @@ export function CourseReportsProcessor() {
                 />
               </div>
               <div>
-                <p className="text-[10px] font-semibold tracking-[0.28em] text-cyan-300 uppercase">
+                <p className="text-[10px] font-semibold tracking-[0.18em] text-cyan-300 uppercase">
                   Course Pricing
                 </p>
-                <h3 className="text-lg font-bold tracking-tight text-white">
+                <h3 className="text-lg font-bold tracking-tight text-foreground">
                   Price Guide &amp; Discounts
                 </h3>
               </div>
@@ -415,28 +415,13 @@ export function CourseReportsProcessor() {
         </div>
       </div>
 
-      <div
-        className="relative overflow-hidden rounded-[2rem] border"
-        style={{
-          borderColor: `hsl(${HUE} 70% 50% / 0.25)`,
-          background: `linear-gradient(135deg, hsl(${HUE} 60% 6% / 0.95), hsl(${HUE} 50% 3% / 0.98))`,
-        }}
-      >
-        {/* Animated gradient overlay */}
+      <div className="panel relative overflow-hidden">
+        {/* The status colour as a single accent line rather than a wash. */}
         <div
-          className="pointer-events-none absolute inset-0 opacity-40"
+          className="pointer-events-none absolute inset-x-0 top-0 h-0.5 opacity-70"
           style={{
             background: `radial-gradient(circle at 20% 30%, hsl(${hsl} / 0.18) 0%, transparent 45%),
                          radial-gradient(circle at 80% 70%, hsl(${HUE + 40} 70% 55% / 0.10) 0%, transparent 40%)`,
-          }}
-        />
-        {/* Extra subtle grid texture */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage:
-              "linear-gradient(hsla(0,0%,100%,0.1) 1px, transparent 1px), linear-gradient(90deg, hsla(0,0%,100%,0.1) 1px, transparent 1px)",
-            backgroundSize: "32px 32px",
           }}
         />
 
@@ -444,7 +429,7 @@ export function CourseReportsProcessor() {
           {/* ════ LEFT COLUMN ════ */}
           <section className="min-w-0 space-y-6">
             {/* ── Course Report Builder ── */}
-            <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
+            <div className="panel-inner p-5 transition-colors hover:border-primary/30">
               <div className="mb-4 flex items-center gap-2">
                 <div
                   className="flex h-7 w-7 items-center justify-center rounded-lg"
@@ -456,7 +441,7 @@ export function CourseReportsProcessor() {
                   />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white">
+                  <h3 className="font-semibold text-foreground">
                     Course Report Builder
                   </h3>
                 </div>
@@ -465,10 +450,10 @@ export function CourseReportsProcessor() {
               <div className="space-y-4">
                 {/* ── Date & Time ── */}
                 <div
-                  className="cr-animate-fade-up space-y-4 rounded-xl border border-white/5 bg-slate-800/40 p-4"
+                  className="cr-animate-fade-up space-y-4 rounded-xl border border-border bg-surface-hover/40 p-4"
                   key={reportType + "-datetime"}
                 >
-                  <p className="text-xs font-semibold tracking-[0.2em] text-cyan-300 uppercase">
+                  <p className="text-xs font-semibold tracking-[0.18em] text-cyan-300 uppercase">
                     Date &amp; Time
                   </p>
 
@@ -480,8 +465,8 @@ export function CourseReportsProcessor() {
                           <Button
                             variant="outline"
                             className={cn(
-                              "justify-start border-slate-700 bg-slate-800 text-left font-normal text-white transition-all duration-200 hover:border-slate-500",
-                              !date && "text-slate-400",
+                              "justify-start border-border bg-surface-hover text-left font-normal text-foreground transition-all duration-200 hover:border-border",
+                              !date && "text-muted-foreground",
                             )}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
@@ -491,7 +476,7 @@ export function CourseReportsProcessor() {
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent
-                          className="w-auto border-slate-700 bg-slate-900 p-0"
+                          className="w-auto border-border bg-surface p-0"
                           align="start"
                         >
                           <Calendar
@@ -510,10 +495,10 @@ export function CourseReportsProcessor() {
                         type="time"
                         value={time}
                         onChange={(e) => setTime(e.target.value)}
-                        className="w-[140px] border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-slate-500 focus-visible:ring-2"
+                        className="w-[140px] border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
                       />
                     </div>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-muted-foreground">
                       Date renders as{" "}
                       <span className="font-mono">DD/MMM/YYYY</span>. Time is
                       24-hour <span className="font-mono">HH:MM</span>.
@@ -523,14 +508,14 @@ export function CourseReportsProcessor() {
 
                 {/* ── Instructor ── */}
                 <div
-                  className="cr-animate-fade-up space-y-3 rounded-xl border border-white/5 bg-slate-800/40 p-4"
+                  className="cr-animate-fade-up space-y-3 rounded-xl border border-border bg-surface-hover/40 p-4"
                   key={reportType + "-instructor"}
                 >
-                  <p className="text-xs font-semibold tracking-[0.2em] text-cyan-300 uppercase">
+                  <p className="text-xs font-semibold tracking-[0.18em] text-cyan-300 uppercase">
                     Instructor
                   </p>
 
-                  <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-white/10 bg-slate-800/60 px-3 py-2 text-sm text-slate-200 transition-all duration-200 hover:border-cyan-500/40 hover:bg-cyan-950/20">
+                  <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-surface-hover/60 px-3 py-2 text-sm text-foreground transition-all duration-200 hover:border-cyan-500/40 hover:bg-cyan-950/20">
                     <input
                       type="checkbox"
                       checked={isMe}
@@ -559,9 +544,9 @@ export function CourseReportsProcessor() {
                     onChange={(e) => setInstructorsInput(e.target.value)}
                     disabled={isMe}
                     placeholder="RANK NAME"
-                    className="w-full border-slate-700 bg-slate-800 text-white placeholder:text-slate-400 transition-all duration-200 hover:border-cyan-500/50 focus-visible:ring-2 focus-visible:ring-cyan-500/30 disabled:opacity-60"
+                    className="w-full border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-cyan-500/50 focus-visible:ring-2 focus-visible:ring-cyan-500/30 disabled:opacity-60"
                   />
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-muted-foreground">
                     {isMe ? (
                       <>
                         Uncheck to type multiple instructors separated with{" "}
@@ -583,19 +568,19 @@ export function CourseReportsProcessor() {
                 {/* ── Officer(s) name (OTS only) ── */}
                 {reportType === "ots" && (
                   <div
-                    className="cr-animate-fade-up space-y-3 rounded-xl border border-white/5 bg-slate-800/40 p-4"
+                    className="cr-animate-fade-up space-y-3 rounded-xl border border-border bg-surface-hover/40 p-4"
                     key={reportType + "-officers"}
                   >
-                    <p className="text-xs font-semibold tracking-[0.2em] text-violet-300 uppercase">
+                    <p className="text-xs font-semibold tracking-[0.18em] text-violet-300 uppercase">
                       Officer(s) name
                     </p>
                     <Input
                       value={officersInput}
                       onChange={(e) => setOfficersInput(e.target.value)}
                       placeholder="Officer Name"
-                      className="w-full border-slate-700 bg-slate-800 text-white placeholder:text-slate-400 transition-all duration-200 hover:border-violet-500/50 focus-visible:ring-2 focus-visible:ring-violet-500/30"
+                      className="w-full border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-violet-500/50 focus-visible:ring-2 focus-visible:ring-violet-500/30"
                     />
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-muted-foreground">
                       Separate multiple officers with{" "}
                       <span className="font-mono">&amp;</span> - e.g.{" "}
                       <span className="font-mono">
@@ -609,10 +594,10 @@ export function CourseReportsProcessor() {
                 {/* ── Students (OTS only) ── */}
                 {reportType === "ots" && (
                   <div
-                    className="cr-animate-fade-up space-y-3 rounded-xl border border-white/5 bg-slate-800/40 p-4"
+                    className="cr-animate-fade-up space-y-3 rounded-xl border border-border bg-surface-hover/40 p-4"
                     key={reportType + "-students"}
                   >
-                    <p className="text-xs font-semibold tracking-[0.2em] text-violet-300 uppercase">
+                    <p className="text-xs font-semibold tracking-[0.18em] text-violet-300 uppercase">
                       Students
                     </p>
                     <div className="space-y-2">
@@ -624,7 +609,7 @@ export function CourseReportsProcessor() {
                             className="cr-animate-fade-up flex flex-wrap items-center gap-2"
                             style={{ animationDelay: `${index * 0.05}s` }}
                           >
-                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-white/10 bg-slate-700/50 font-mono text-xs text-slate-300">
+                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border bg-surface-hover/50 font-mono text-xs text-muted-foreground">
                               {index + 1}
                             </span>
                             <Input
@@ -633,7 +618,7 @@ export function CourseReportsProcessor() {
                                 updateStudent(index, "name", e.target.value)
                               }
                               placeholder="Fname Lname"
-                              className="min-w-[140px] flex-1 border-slate-700 bg-slate-800 text-white placeholder:text-slate-400 transition-all duration-200 hover:border-violet-500/50 focus-visible:ring-2 focus-visible:ring-violet-500/30"
+                              className="min-w-[140px] flex-1 border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-violet-500/50 focus-visible:ring-2 focus-visible:ring-violet-500/30"
                             />
                             <Select
                               value={student.company}
@@ -641,10 +626,10 @@ export function CourseReportsProcessor() {
                                 updateStudent(index, "company", value)
                               }
                             >
-                              <SelectTrigger className="h-10 w-[140px] shrink-0 border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-violet-500/50 focus-visible:ring-2 focus-visible:ring-violet-500/30">
+                              <SelectTrigger className="h-10 w-[140px] shrink-0 border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-violet-500/50 focus-visible:ring-2 focus-visible:ring-violet-500/30">
                                 <SelectValue placeholder="Company" />
                               </SelectTrigger>
-                              <SelectContent className="border-slate-700/80 bg-slate-900 text-white">
+                              <SelectContent className="border-border/80 bg-surface text-foreground">
                                 {COMPANY_OPTIONS.map((company) => (
                                   <SelectItem key={company} value={company}>
                                     {company}
@@ -658,7 +643,7 @@ export function CourseReportsProcessor() {
                                 onClick={addStudent}
                                 size="icon"
                                 title="Add student"
-                                className="h-10 w-10 shrink-0 bg-violet-500/15 text-violet-300 ring-1 ring-violet-500/30 transition-all duration-200 hover:scale-110 hover:bg-violet-500/30 hover:text-violet-200"
+                                className="h-10 w-10 shrink-0 bg-violet-500/15 text-violet-300 ring-1 ring-violet-500/30 transition-all duration-200 hover:scale-[1.02] hover:bg-violet-500/30 hover:text-violet-200"
                               >
                                 <Plus className="h-4 w-4" />
                               </Button>
@@ -668,7 +653,7 @@ export function CourseReportsProcessor() {
                                 onClick={() => removeStudent(index)}
                                 size="icon"
                                 variant="ghost"
-                                className="h-10 w-10 shrink-0 text-red-400 transition-all duration-200 hover:scale-110 hover:bg-red-950/40 hover:text-red-300"
+                                className="h-10 w-10 shrink-0 text-red-400 transition-all duration-200 hover:scale-[1.02] hover:bg-red-950/40 hover:text-red-300"
                               >
                                 <X className="h-4 w-4" />
                               </Button>
@@ -677,7 +662,7 @@ export function CourseReportsProcessor() {
                         );
                       })}
                     </div>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-muted-foreground">
                       Combines with the selected department as{" "}
                       <span className="font-mono">
                         Fname Lname - Company
@@ -690,22 +675,22 @@ export function CourseReportsProcessor() {
                 {/* ── Location (joint/normal only) ── */}
                 {reportType !== "ots" && (
                   <div
-                    className="cr-animate-fade-up space-y-2 rounded-xl border border-white/5 bg-slate-800/40 p-4"
+                    className="cr-animate-fade-up space-y-2 rounded-xl border border-border bg-surface-hover/40 p-4"
                     key={reportType + "-location"}
                   >
-                    <p className="text-xs font-semibold tracking-[0.2em] text-cyan-300 uppercase">
+                    <p className="text-xs font-semibold tracking-[0.18em] text-cyan-300 uppercase">
                       Location
                     </p>
                     <div className="flex items-center gap-2">
                       <MapPin
-                        className="h-4 w-4 shrink-0 text-slate-500"
+                        className="h-4 w-4 shrink-0 text-muted-foreground"
                         style={{ color: `hsl(${hsl} / 0.7)` }}
                       />
                       <Select value={location} onValueChange={setLocation}>
-                        <SelectTrigger className="w-full border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-slate-500 focus-visible:ring-2">
+                        <SelectTrigger className="w-full border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border focus-visible:ring-2">
                           <SelectValue placeholder="Select a location" />
                         </SelectTrigger>
-                        <SelectContent className="border-slate-700/80 bg-slate-900 text-white">
+                        <SelectContent className="border-border/80 bg-surface text-foreground">
                           <SelectItem value="Pillbox MD">Pillbox MD</SelectItem>
                           <SelectItem value="Paleto MD">Paleto MD</SelectItem>
                         </SelectContent>
@@ -717,10 +702,10 @@ export function CourseReportsProcessor() {
                 {/* ── Course Graduates (joint/normal only) ── */}
                 {reportType !== "ots" && (
                   <div
-                    className="cr-animate-fade-up space-y-3 rounded-xl border border-white/5 bg-slate-800/40 p-4"
+                    className="cr-animate-fade-up space-y-3 rounded-xl border border-border bg-surface-hover/40 p-4"
                     key={reportType + "-graduates"}
                   >
-                    <p className="text-xs font-semibold tracking-[0.2em] text-red-300 uppercase">
+                    <p className="text-xs font-semibold tracking-[0.18em] text-red-300 uppercase">
                       Course Graduates
                     </p>
                     <div className="space-y-2">
@@ -732,7 +717,7 @@ export function CourseReportsProcessor() {
                             className="cr-animate-fade-up flex flex-wrap items-center gap-2"
                             style={{ animationDelay: `${index * 0.05}s` }}
                           >
-                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-white/10 bg-slate-700/50 font-mono text-xs text-slate-300">
+                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border bg-surface-hover/50 font-mono text-xs text-muted-foreground">
                               {index + 1}
                             </span>
                             <Input
@@ -741,7 +726,7 @@ export function CourseReportsProcessor() {
                                 updateGraduate(index, "name", e.target.value)
                               }
                               placeholder="Firstname Lastname"
-                              className="min-w-[140px] flex-1 border-slate-700 bg-slate-800 text-white placeholder:text-slate-400 transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-500/30"
+                              className="min-w-[140px] flex-1 border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-500/30"
                             />
                             {reportType === "normal" && (
                               <Select
@@ -750,10 +735,10 @@ export function CourseReportsProcessor() {
                                   updateGraduate(index, "company", value)
                                 }
                               >
-                                <SelectTrigger className="h-10 w-[140px] shrink-0 border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-500/30">
+                                <SelectTrigger className="h-10 w-[140px] shrink-0 border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-500/30">
                                   <SelectValue placeholder="Company" />
                                 </SelectTrigger>
-                                <SelectContent className="border-slate-700/80 bg-slate-900 text-white">
+                                <SelectContent className="border-border/80 bg-surface text-foreground">
                                   {COMPANY_OPTIONS.map((company) => (
                                     <SelectItem key={company} value={company}>
                                       {company}
@@ -768,7 +753,7 @@ export function CourseReportsProcessor() {
                                 onClick={addGraduate}
                                 size="icon"
                                 title="Add graduate"
-                                className="h-10 w-10 shrink-0 bg-red-500/15 text-red-300 ring-1 ring-red-500/30 transition-all duration-200 hover:scale-110 hover:bg-red-500/30 hover:text-red-200"
+                                className="h-10 w-10 shrink-0 bg-red-500/15 text-red-300 ring-1 ring-red-500/30 transition-all duration-200 hover:scale-[1.02] hover:bg-red-500/30 hover:text-red-200"
                               >
                                 <Plus className="h-4 w-4" />
                               </Button>
@@ -778,7 +763,7 @@ export function CourseReportsProcessor() {
                                 onClick={() => removeGraduate(index)}
                                 size="icon"
                                 variant="ghost"
-                                className="h-10 w-10 shrink-0 text-red-400 transition-all duration-200 hover:scale-110 hover:bg-red-950/40 hover:text-red-300"
+                                className="h-10 w-10 shrink-0 text-red-400 transition-all duration-200 hover:scale-[1.02] hover:bg-red-950/40 hover:text-red-300"
                               >
                                 <X className="h-4 w-4" />
                               </Button>
@@ -788,7 +773,7 @@ export function CourseReportsProcessor() {
                       })}
                     </div>
                     {reportType === "normal" && (
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-muted-foreground">
                         Combines with the selected department as{" "}
                         <span className="font-mono">
                           Firstname Lastname - Company
@@ -801,10 +786,10 @@ export function CourseReportsProcessor() {
 
                 {/* ── Confirmation (funds, gov money, receipts) ── */}
                 <div
-                  className="cr-animate-fade-up space-y-3 rounded-xl border border-white/5 bg-slate-800/40 p-4"
+                  className="cr-animate-fade-up space-y-3 rounded-xl border border-border bg-surface-hover/40 p-4"
                   key={reportType + "-guide"}
                 >
-                  <p className="text-xs font-semibold tracking-[0.2em] text-cyan-300 uppercase">
+                  <p className="text-xs font-semibold tracking-[0.18em] text-cyan-300 uppercase">
                     {reportType === "normal"
                       ? "Funds & Confirmation"
                       : reportType === "ots"
@@ -818,7 +803,7 @@ export function CourseReportsProcessor() {
                         Funds obtained
                       </Label>
                       <div className="relative">
-                        <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm text-slate-500">
+                        <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm text-muted-foreground">
                           $
                         </span>
                         <Input
@@ -831,10 +816,10 @@ export function CourseReportsProcessor() {
                             )
                           }
                           placeholder="10000"
-                          className="border-slate-700 bg-slate-800 pl-7 text-white placeholder:text-slate-400 transition-all duration-200 hover:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-500/30"
+                          className="border-border bg-surface-hover pl-7 text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-500/30"
                         />
                       </div>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-muted-foreground">
                         Converts to{" "}
                         <span className="font-mono">
                           ${formatFunds(fundsObtained) || "N/A"}
@@ -845,7 +830,7 @@ export function CourseReportsProcessor() {
 
                   <div className="space-y-2">
                     {reportType !== "joint" && (
-                      <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-white/10 bg-slate-800/60 px-3 py-2 text-sm text-slate-200 transition-all duration-200 hover:border-emerald-500/40 hover:bg-emerald-950/20">
+                      <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-surface-hover/60 px-3 py-2 text-sm text-foreground transition-all duration-200 hover:border-emerald-500/40 hover:bg-emerald-950/20">
                         <input
                           type="checkbox"
                           checked={moneyGivenToGovernment}
@@ -856,14 +841,14 @@ export function CourseReportsProcessor() {
                         />
                         <span>
                           Money given to the Government?{" "}
-                          <span className="font-mono text-xs text-slate-400">
+                          <span className="font-mono text-xs text-muted-foreground">
                             {moneyGivenToGovernment ? "[✓]" : "[ ]"}
                           </span>
                         </span>
                       </label>
                     )}
                     {reportType !== "ots" && (
-                      <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-white/10 bg-slate-800/60 px-3 py-2 text-sm text-slate-200 transition-all duration-200 hover:border-emerald-500/40 hover:bg-emerald-950/20">
+                      <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-surface-hover/60 px-3 py-2 text-sm text-foreground transition-all duration-200 hover:border-emerald-500/40 hover:bg-emerald-950/20">
                         <input
                           type="checkbox"
                           checked={guideEmailSent}
@@ -872,7 +857,7 @@ export function CourseReportsProcessor() {
                         />
                         <span>
                           BLS Guide email sent?{" "}
-                          <span className="font-mono text-xs text-slate-400">
+                          <span className="font-mono text-xs text-muted-foreground">
                             {guideEmailSent ? "[✓]" : "[ ]"}
                           </span>
                         </span>
@@ -893,7 +878,7 @@ export function CourseReportsProcessor() {
                             "_blank",
                           )
                         }
-                        className="border-slate-600 text-slate-300 transition-all duration-200 hover:scale-[1.02] hover:border-cyan-500/40 hover:bg-cyan-950/20 hover:text-cyan-200"
+                        className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-cyan-500/40 hover:bg-cyan-950/20 hover:text-cyan-200"
                       >
                         <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
                         Open Guide Topic
@@ -907,7 +892,7 @@ export function CourseReportsProcessor() {
                           (window.location.href =
                             "/divisions/bls?tab=formats&format=quick-guide")
                         }
-                        className="border-slate-600 text-slate-300 transition-all duration-200 hover:scale-[1.02] hover:border-cyan-500/40 hover:bg-cyan-950/20 hover:text-cyan-200"
+                        className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-cyan-500/40 hover:bg-cyan-950/20 hover:text-cyan-200"
                       >
                         <BookOpen className="mr-1.5 h-3.5 w-3.5" />
                         BLS Quick Guide
@@ -928,9 +913,9 @@ export function CourseReportsProcessor() {
                         value={receiptUrl}
                         onChange={(e) => setReceiptUrl(e.target.value)}
                         placeholder="https://i.ibb.co/…"
-                        className="border-slate-700 bg-slate-800 text-white placeholder:text-slate-400 transition-all duration-200 hover:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-500/30"
+                        className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-500/30"
                       />
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-muted-foreground">
                         Goes inside the BBCode link:{" "}
                         <span className="font-mono">
                           [url=YOUR-URL]*Attachment*[/url]
@@ -951,9 +936,9 @@ export function CourseReportsProcessor() {
                         value={receiptWeazelUrl}
                         onChange={(e) => setReceiptWeazelUrl(e.target.value)}
                         placeholder="https://i.ibb.co/…"
-                        className="border-slate-700 bg-slate-800 text-white placeholder:text-slate-400 transition-all duration-200 hover:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-500/30"
+                        className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-500/30"
                       />
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-muted-foreground">
                         Goes inside the BBCode link:{" "}
                         <span className="font-mono">
                           [url=YOUR-URL]*Attachment*[/url]
@@ -971,22 +956,22 @@ export function CourseReportsProcessor() {
           {/* ════ RIGHT COLUMN ════ */}
           <section className="min-w-0 space-y-6">
             {/* ── Generated Output ── */}
-            <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
+            <div className="panel-inner p-5 transition-colors hover:border-primary/30">
               <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="text-[10px] font-semibold tracking-[0.28em] text-slate-500 uppercase">
+                  <p className="text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
                     Generated Output
                   </p>
-                  <h3 className="mt-0.5 text-xl font-semibold text-white">
+                  <h3 className="mt-0.5 text-xl font-semibold text-foreground">
                     Ready to paste BBCode
                   </h3>
                 </div>
                 <Button
                   onClick={handleCopy}
                   size="default"
-                  className={`transition-all duration-200 hover:scale-[1.03] active:scale-95 ${
+                  className={`transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
                     copied
-                      ? "bg-emerald-600 text-white hover:bg-emerald-500"
+                      ? "bg-emerald-600 text-foreground hover:bg-emerald-500"
                       : ""
                   }`}
                   style={
@@ -1007,7 +992,7 @@ export function CourseReportsProcessor() {
               <Textarea
                 value={bbcodeOutput}
                 readOnly
-                className="min-h-[340px] resize-none border-slate-700/60 bg-slate-950/80 font-mono text-sm leading-relaxed text-slate-100 transition-all duration-200 focus-visible:ring-2 lg:min-h-[460px]"
+                className="min-h-[340px] resize-none border-border/60 bg-background/80 font-mono text-sm leading-relaxed text-foreground transition-all duration-200 focus-visible:ring-2 lg:min-h-[460px]"
               />
             </div>
           </section>

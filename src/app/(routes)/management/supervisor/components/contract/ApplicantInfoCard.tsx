@@ -63,10 +63,10 @@ export function ApplicantInfoCard({
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+    <div className="rounded-xl border border-border bg-surface p-5">
       <div className="mb-3 flex items-center gap-2">
-        <Users className="h-4 w-4 text-slate-400" />
-        <h3 className="text-sm font-medium text-slate-300">
+        <Users className="h-4 w-4 text-muted-foreground" />
+        <h3 className="text-sm font-medium text-muted-foreground">
           Applicant information
         </h3>
       </div>
@@ -75,16 +75,16 @@ export function ApplicantInfoCard({
           value={personnelName}
           onChange={(e) => onNameChange(e.target.value)}
           placeholder="Applicant's full name"
-          className="border-slate-700 bg-slate-950 text-white placeholder:text-slate-500 focus-visible:ring-1 focus-visible:ring-slate-500"
+          className="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-border"
         />
         <Select
           value={title}
           onValueChange={(value) => onTitleChange(value as ApplicantTitle)}
         >
-          <SelectTrigger className="w-full border-slate-700 bg-slate-950 text-white focus-visible:ring-1 focus-visible:ring-slate-500 sm:w-[100px]">
+          <SelectTrigger className="w-full border-border bg-background text-foreground focus-visible:ring-1 focus-visible:ring-border sm:w-[100px]">
             <SelectValue placeholder="Title" />
           </SelectTrigger>
-          <SelectContent className="border-slate-700 bg-slate-900 text-white">
+          <SelectContent className="border-border bg-surface text-foreground">
             <SelectItem value="Mr.">Mr.</SelectItem>
             <SelectItem value="Ms.">Ms.</SelectItem>
           </SelectContent>
@@ -93,18 +93,18 @@ export function ApplicantInfoCard({
 
       <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label className="text-xs text-slate-400">Phone Number</Label>
+          <Label className="text-xs text-muted-foreground">Phone Number</Label>
           <Input
             type="tel"
             value={phoneNumber}
             onChange={(e) => onPhoneNumberChange(e.target.value)}
             placeholder="e.g. 555-1234"
-            className="border-slate-700 bg-slate-950 text-white placeholder:text-slate-500 focus-visible:ring-1 focus-visible:ring-slate-500"
+            className="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-border"
           />
         </div>
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <Label className="text-xs text-slate-400">Date Hired</Label>
+            <Label className="text-xs text-muted-foreground">Date Hired</Label>
             <button
               type="button"
               onClick={() => onManualDateToggle(!isManualDate)}
@@ -119,7 +119,7 @@ export function ApplicantInfoCard({
               value={manualDate}
               onChange={(e) => onManualDateChange(e.target.value)}
               placeholder="dd/MMM/YYYY"
-              className="border-slate-700 bg-slate-950 text-white placeholder:text-slate-500 focus-visible:ring-1 focus-visible:ring-slate-500"
+              className="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-border"
             />
           ) : (
             <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
@@ -127,15 +127,15 @@ export function ApplicantInfoCard({
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start border-slate-700 bg-slate-950 text-left font-normal text-white hover:bg-slate-900 hover:text-white focus-visible:ring-1 focus-visible:ring-slate-500",
-                    !dateHired && "text-slate-500",
+                    "w-full justify-start border-border bg-background text-left font-normal text-foreground hover:bg-surface hover:text-foreground focus-visible:ring-1 focus-visible:ring-border",
+                    !dateHired && "text-muted-foreground",
                   )}
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4 text-slate-400" />
+                  <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                   {dateHired ? format(dateHired, "dd/MMM/yyyy").toUpperCase() : "Pick a date"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto border-slate-700 bg-slate-900 p-0" align="start">
+              <PopoverContent className="w-auto border-border bg-surface p-0" align="start">
                 <Calendar
                   mode="single"
                   selected={dateHired}
@@ -144,7 +144,7 @@ export function ApplicantInfoCard({
                     setCalendarOpen(false);
                   }}
                   initialFocus
-                  className="text-white"
+                  className="text-foreground"
                 />
               </PopoverContent>
             </Popover>
@@ -154,28 +154,28 @@ export function ApplicantInfoCard({
 
       <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label className="text-xs text-slate-400">Employee Profile Link</Label>
+          <Label className="text-xs text-muted-foreground">Employee Profile Link</Label>
           <Input
             type="url"
             value={employeeProfileLink}
             onChange={(e) => onEmployeeProfileLinkChange(e.target.value)}
             placeholder="https://gov.eclipse-rp.net/..."
-            className="border-slate-700 bg-slate-950 text-white placeholder:text-slate-500 focus-visible:ring-1 focus-visible:ring-slate-500"
+            className="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-border"
           />
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs text-slate-400">Personnel File Link</Label>
+          <Label className="text-xs text-muted-foreground">Personnel File Link</Label>
           <Input
             type="url"
             value={personnelFileLink}
             onChange={(e) => onPersonnelFileLinkChange(e.target.value)}
             placeholder="https://gov.eclipse-rp.net/..."
-            className="border-slate-700 bg-slate-950 text-white placeholder:text-slate-500 focus-visible:ring-1 focus-visible:ring-slate-500"
+            className="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-border"
           />
         </div>
       </div>
 
-      <p className="mt-3 flex items-start gap-1.5 text-xs text-slate-500">
+      <p className="mt-3 flex items-start gap-1.5 text-xs text-muted-foreground">
       </p>
     </div>
   );

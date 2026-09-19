@@ -5,6 +5,12 @@ type PageHeaderProps = {
   subtitle?: string;
   /** Small line above the title. Same wording on every page by default. */
   eyebrow?: string;
+  /**
+   * Primary page actions, rendered on the right on wide screens and stacked
+   * under the title otherwise. A page-level action belongs here rather than
+   * floating somewhere in the body, so it is always in the same place.
+   */
+  actions?: React.ReactNode;
   className?: string;
 };
 
@@ -20,20 +26,33 @@ export function PageHeader({
   title,
   subtitle,
   eyebrow = "LSEMS Operations",
+  actions,
   className,
 }: PageHeaderProps) {
   return (
-    <header className={cn("mb-8 border-b border-slate-800/80 pb-6", className)}>
-      <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-300/80">
-        {eyebrow}
-      </p>
-      <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-        {title}
-      </h1>
-      {subtitle && (
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
-          {subtitle}
+    <header
+      className={cn(
+        "mb-6 flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between",
+        className,
+      )}
+    >
+      <div className="min-w-0">
+        <p className="eyebrow mb-2 text-primary/80">
+          {eyebrow}
         </p>
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+          {title}
+        </h1>
+        {subtitle && (
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+            {subtitle}
+          </p>
+        )}
+      </div>
+      {actions && (
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          {actions}
+        </div>
       )}
     </header>
   );

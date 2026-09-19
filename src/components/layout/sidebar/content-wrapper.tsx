@@ -9,7 +9,7 @@ export function ContentWrapper({ children }: { children: React.ReactNode }) {
   return (
     <div
       className={cn(
-        "transition-all duration-300 ease-in-out min-h-screen",
+        "transition-all duration-200 ease-in-out min-h-screen",
         collapsed ? "lg:pl-[72px]" : "lg:pl-64",
       )}
     >

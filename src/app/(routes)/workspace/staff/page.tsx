@@ -2,12 +2,11 @@
 
 import { DiscordProfileCard } from "@/app/components/staff/DiscordProfileCard";
 import { StaffSettingsCard } from "@/app/components/staff/StaffSettingsCard";
-import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import { useTabParam } from "@/app/hooks/useTabParam";
 import { PageContainer } from "@/components/ui/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { TabBar, type Tab } from "@/components/ui/tab-bar";
 import { IdCard, SlidersHorizontal } from "lucide-react";
-import { useEffect, useRef } from "react";
 
 type StaffTab = "settings" | "discord";
 
@@ -25,37 +24,14 @@ const tabs: Tab<StaffTab>[] = [
   },
 ];
 
+const tabValues = tabs.map((tab) => tab.value);
+
 export default function StaffPage() {
-  const [activeTab, setActiveTab] = useLocalStorage<StaffTab>(
+  const [activeTab, setActiveTab] = useTabParam(
     "staff-tab",
+    tabValues,
     "settings",
   );
-
-  // The URL query wins over localStorage on first render, so a shared link
-  // such as ?tab=discord opens that tab.
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const fromUrl = params.get("tab") as StaffTab | null;
-    if (fromUrl && tabs.some((tab) => tab.value === fromUrl)) {
-      setActiveTab(fromUrl);
-    }
-  }, [setActiveTab]);
-
-  // Keep the URL in step with the active tab (skipping the first render).
-  const isFirstRender = useRef(true);
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    const params = new URLSearchParams(window.location.search);
-    params.set("tab", activeTab);
-    window.history.replaceState(
-      null,
-      "",
-      `${window.location.pathname}?${params.toString()}`,
-    );
-  }, [activeTab]);
 
   return (
     <PageContainer>

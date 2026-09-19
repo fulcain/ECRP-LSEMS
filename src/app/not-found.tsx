@@ -18,7 +18,7 @@ export default function NotFoundPage() {
     <div className="flex min-h-screen items-center justify-center bg-background p-6">
       <div className="w-full max-w-md space-y-6 rounded-xl border bg-card p-8 text-card-foreground shadow-2xl">
         <div className="flex flex-col items-center gap-3">
-          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-800 text-3xl font-bold text-slate-400">
+          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-surface-hover text-3xl font-bold text-muted-foreground">
             404
           </span>
           <h1 className="text-2xl font-bold">Page not found</h1>

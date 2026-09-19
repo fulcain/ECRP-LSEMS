@@ -82,7 +82,7 @@ export function MedicCredentials({
 
       {showRankFallback && (
         <>
-          <p className="w-full text-xs text-slate-400">
+          <p className="w-full text-xs text-muted-foreground">
             Discord doesn&apos;t resolve a rank for your account yet, so set it
             here.
           </p>

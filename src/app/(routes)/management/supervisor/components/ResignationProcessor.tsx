@@ -467,26 +467,26 @@ export function ResignationProcessor() {
       )}
 
       {/* Personnel Info */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+      <div className="panel-inner p-5">
         <div className="mb-4 flex items-center gap-2">
-          <LogOut className="h-4 w-4 text-slate-400" />
-          <h3 className="text-sm font-medium text-slate-300">
+          <LogOut className="h-4 w-4 text-muted-foreground" />
+          <h3 className="text-sm font-medium text-muted-foreground">
             Personnel details
           </h3>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <Label className="mb-1 block text-xs text-slate-500">Full name</Label>
+            <Label className="mb-1 block text-xs text-muted-foreground">Full name</Label>
             <Input
               value={personnelName}
               onChange={(e) => setPersonnelName(e.target.value)}
               placeholder="John Smith"
-              className="border-slate-800 bg-slate-950 text-white placeholder:text-slate-600"
+              className="border-border bg-surface-raised text-foreground placeholder:text-muted-foreground"
             />
           </div>
 
           <div>
-            <Label className="mb-1 block text-xs text-slate-500">
+            <Label className="mb-1 block text-xs text-muted-foreground">
               Discharge type
             </Label>
             <div className="flex gap-1.5">
@@ -499,7 +499,7 @@ export function ResignationProcessor() {
                       ? type === "Honorable"
                         ? "border-emerald-500/40 bg-emerald-500/20 text-emerald-300"
                         : "border-red-500/40 bg-red-500/20 text-red-300"
-                      : "border-slate-800 bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-slate-100"
+                      : "border-border bg-surface-raised text-muted-foreground hover:bg-surface-hover hover:text-foreground"
                   }`}
                 >
                   {type}
@@ -508,47 +508,47 @@ export function ResignationProcessor() {
             </div>
           </div>
           <div>
-            <Label className="mb-1 block text-xs text-slate-500">
+            <Label className="mb-1 block text-xs text-muted-foreground">
               Discharge date
             </Label>
             <Input
               value={dischargeDate}
               onChange={(e) => setDischargeDate(e.target.value.toUpperCase())}
               placeholder="DD/MMM/YYYY"
-              className="border-slate-800 bg-slate-950 font-mono text-white placeholder:text-slate-600"
+              className="border-border bg-surface-raised font-mono text-foreground placeholder:text-muted-foreground"
             />
           </div>
           <div className="sm:col-span-2">
-            <Label className="mb-1 block text-xs text-slate-500">
+            <Label className="mb-1 block text-xs text-muted-foreground">
               Discharge reason / justification
             </Label>
             <Input
               value={dischargeReason}
               onChange={(e) => setDischargeReason(e.target.value)}
               placeholder="Reason for discharge"
-              className="border-slate-800 bg-slate-950 text-white placeholder:text-slate-600"
+              className="border-border bg-surface-raised text-foreground placeholder:text-muted-foreground"
             />
           </div>
           <div className="sm:col-span-2">
-            <Label className="mb-1 block text-xs text-slate-500">
+            <Label className="mb-1 block text-xs text-muted-foreground">
               Resignation post URL
             </Label>
             <Input
               value={resignationPostUrl}
               onChange={(e) => setResignationPostUrl(e.target.value)}
               placeholder="https://gov.eclipse-rp.net/viewtopic.php?t=..."
-              className="border-slate-800 bg-slate-950 text-white placeholder:text-slate-600"
+              className="border-border bg-surface-raised text-foreground placeholder:text-muted-foreground"
             />
           </div>
           <div className="sm:col-span-2">
-            <Label className="mb-1 block text-xs text-slate-500">
+            <Label className="mb-1 block text-xs text-muted-foreground">
               RP of discharge link
             </Label>
             <Input
               value={dischargeRpLink}
               onChange={(e) => setDischargeRpLink(e.target.value)}
               placeholder="https://..."
-              className="border-slate-800 bg-slate-950 text-white placeholder:text-slate-600"
+              className="border-border bg-surface-raised text-foreground placeholder:text-muted-foreground"
             />
           </div>
         </div>
@@ -564,11 +564,11 @@ export function ResignationProcessor() {
       />
 
       {/* Procedure Checklist */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+      <div className="panel-inner p-5">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <ListChecks className="h-4 w-4 text-slate-400" />
-            <h3 className="text-sm font-medium text-slate-300">
+            <ListChecks className="h-4 w-4 text-muted-foreground" />
+            <h3 className="text-sm font-medium text-muted-foreground">
               Procedure checklist
             </h3>
           </div>
@@ -576,7 +576,7 @@ export function ResignationProcessor() {
             variant="ghost"
             size="sm"
             onClick={resetChecklists}
-            className="text-slate-500 hover:text-slate-200"
+            className="text-muted-foreground hover:text-foreground"
           >
             <RotateCcw className="mr-1 h-3 w-3" />
             Reset all
@@ -589,10 +589,10 @@ export function ResignationProcessor() {
             return (
               <li
                 key={step.id}
-                className={`rounded-lg border bg-slate-950/50 p-4 transition-colors ${
+                className={`rounded-lg border bg-background/50 p-4 transition-colors ${
                   step.warning
                     ? "border-red-500/20 hover:border-red-500/40"
-                    : "border-slate-800 hover:border-slate-700"
+                    : "border-border hover:border-border"
                 }`}
               >
                 <div className="flex items-start gap-3">
@@ -604,7 +604,7 @@ export function ResignationProcessor() {
                     className={`mt-0.5 transition-colors ${
                       step.warning
                         ? "text-red-400/70 hover:text-red-300"
-                        : "text-slate-500 hover:text-slate-200"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     {isDone ? (
@@ -617,25 +617,25 @@ export function ResignationProcessor() {
                     <p
                       className={`text-sm font-medium ${
                         isDone
-                          ? "text-slate-500 line-through"
+                          ? "text-muted-foreground line-through"
                           : step.warning
                             ? "text-red-300"
-                            : "text-white"
+                            : "text-foreground"
                       }`}
                     >
                       {step.label}
                     </p>
                     {step.subItems && !isDone && (
-                      <ul className="mt-2 space-y-1.5 border-l border-slate-700 pl-3">
+                      <ul className="mt-2 space-y-1.5 border-l border-border pl-3">
                         {step.subItems.map((sub) => (
-                          <li key={sub.id} className="text-xs text-slate-400">
+                          <li key={sub.id} className="text-xs text-muted-foreground">
                             {sub.label}
                             {sub.copyText && (
                               <button
                                 onClick={() =>
                                   copyBBCode({ bbCodeText: sub.copyText! })
                                 }
-                                className="ml-2 inline-flex items-center gap-1 rounded-md border border-slate-700 bg-slate-900 px-2 py-0.5 text-[10px] text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+                                className="ml-2 inline-flex items-center gap-1 rounded-md border border-border bg-surface-raised px-2 py-0.5 text-[10px] text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
                               >
                                 <Copy className="h-3 w-3" />
                                 {sub.copyLabel || "Copy"}
@@ -661,7 +661,7 @@ export function ResignationProcessor() {
                               onClick={() =>
                                 copyBBCode({ bbCodeText: step.copyText! })
                               }
-                              className="inline-flex items-center gap-1.5 rounded-md border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+                              className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
                             >
                               <Copy className="h-3 w-3" />
                               {step.copyLabel || "Copy BBCode"}
@@ -701,7 +701,7 @@ export function ResignationProcessor() {
                         </div>
                       )}
                   </div>
-                  <Icon className="h-4 w-4 shrink-0 text-slate-600" />
+                  <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
                 </div>
               </li>
             );
@@ -710,15 +710,15 @@ export function ResignationProcessor() {
       </div>
 
       {/* OOC Checklist */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+      <div className="panel-inner p-5">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <MessageSquare className="h-4 w-4 text-slate-400" />
-            <h3 className="text-sm font-medium text-slate-300">
+            <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            <h3 className="text-sm font-medium text-muted-foreground">
               (( Out-of-Character checklist ))
             </h3>
           </div>
-          <span className="text-xs text-slate-500">
+          <span className="text-xs text-muted-foreground">
             {completedOocCount}/{oocItems.length}
           </span>
         </div>
@@ -729,7 +729,7 @@ export function ResignationProcessor() {
             return (
               <li
                 key={item.id}
-                className="rounded-lg border border-slate-800 bg-slate-950/50 p-4 transition-colors hover:border-slate-700"
+                className="rounded-xl border border-border bg-surface-raised/60 p-4 transition-colors hover:border-primary/30"
               >
                 <div className="flex items-start gap-3">
                   <button
@@ -737,7 +737,7 @@ export function ResignationProcessor() {
                     role="checkbox"
                     aria-checked={isDone}
                     onClick={() => toggleOoc(item.id)}
-                    className="mt-0.5 text-slate-500 transition-colors hover:text-slate-200"
+                    className="mt-0.5 text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {isDone ? (
                       <CheckSquare className="h-5 w-5" />
@@ -748,13 +748,13 @@ export function ResignationProcessor() {
                   <div className="flex-1">
                     <p
                       className={`text-sm leading-relaxed ${
-                        isDone ? "text-slate-500 line-through" : "text-slate-200"
+                        isDone ? "text-muted-foreground line-through" : "text-foreground"
                       }`}
                     >
                       {item.label}
                     </p>
                     {item.note && !isDone && (
-                      <p className="mt-1 text-xs text-slate-500">{item.note}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">{item.note}</p>
                     )}
                     {!isDone && (item.copyText || item.action) && (
                       <div className="mt-2 flex flex-wrap gap-2">
@@ -763,7 +763,7 @@ export function ResignationProcessor() {
                             onClick={() =>
                               copyBBCode({ bbCodeText: item.copyText! })
                             }
-                            className="inline-flex items-center gap-1.5 rounded-md border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+                            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
                           >
                             <Copy className="h-3 w-3" />
                             {item.copyLabel || "Copy"}
@@ -783,7 +783,7 @@ export function ResignationProcessor() {
                       </div>
                     )}
                   </div>
-                  <Icon className="h-4 w-4 shrink-0 text-slate-600" />
+                  <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
                 </div>
               </li>
             );
@@ -792,14 +792,14 @@ export function ResignationProcessor() {
       </div>
 
       {/* Quick Links */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
-        <h3 className="mb-3 text-sm font-medium text-slate-300">Quick links</h3>
+      <div className="panel-inner p-5">
+        <h3 className="mb-3 text-sm font-medium text-muted-foreground">Quick links</h3>
         <div className="flex flex-wrap gap-2">
           <a
             href="https://gov.eclipse-rp.net/viewforum.php?f=605"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
           >
             <ExternalLink className="h-3 w-3" />
             Personnel Files
@@ -808,7 +808,7 @@ export function ResignationProcessor() {
             href="https://gov.eclipse-rp.net/viewforum.php?f=573"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
           >
             <ExternalLink className="h-3 w-3" />
             Employee Adjustments
@@ -817,7 +817,7 @@ export function ResignationProcessor() {
             href="https://gov.eclipse-rp.net/viewtopic.php?t=9497"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
           >
             <ExternalLink className="h-3 w-3" />
             Staff Roster
@@ -826,7 +826,7 @@ export function ResignationProcessor() {
             href="https://ecrplsems.com/"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
           >
             <ExternalLink className="h-3 w-3" />
             Dashboard

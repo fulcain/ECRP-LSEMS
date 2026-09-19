@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { FileText } from "lucide-react";
-import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import { useTabParam } from "@/app/hooks/useTabParam";
 import { PageContainer } from "@/components/ui/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { TabBar, type Tab } from "@/components/ui/tab-bar";
@@ -19,36 +18,14 @@ const templatesTabs: Tab<TemplatesTab>[] = [
   },
 ];
 
+const tabValues = templatesTabs.map((tab) => tab.value);
+
 export default function TemplatesPage() {
-  const [activeTab, setActiveTab] = useLocalStorage<TemplatesTab>(
+  const [activeTab, setActiveTab] = useTabParam(
     "templates-tab",
+    tabValues,
     "loa",
   );
-
-  // Sync initial tab from URL query param (takes priority over localStorage)
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const fromUrl = params.get("tab") as TemplatesTab | null;
-    if (fromUrl && templatesTabs.some((t) => t.value === fromUrl)) {
-      setActiveTab(fromUrl);
-    }
-  }, [setActiveTab]);
-
-  // Sync URL when tab changes (skip initial mount)
-  const isFirstRender = useRef(true);
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    const params = new URLSearchParams(window.location.search);
-    params.set("tab", activeTab);
-    window.history.replaceState(
-      null,
-      "",
-      `${window.location.pathname}?${params.toString()}`,
-    );
-  }, [activeTab]);
 
   return (
     <PageContainer>

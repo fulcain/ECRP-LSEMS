@@ -265,16 +265,9 @@ export default function Home() {
         transition={Bounce}
       />
 
-      <div className="relative overflow-hidden rounded-[2rem] border border-sky-500/20 bg-slate-950/80 shadow-2xl shadow-sky-950/30">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.18),_transparent_38%),radial-gradient(circle_at_bottom_right,_rgba(14,165,233,0.12),_transparent_34%)]" />
-        <div className="pointer-events-none absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage:
-              "linear-gradient(hsla(0,0%,100%,0.1) 1px, transparent 1px), linear-gradient(90deg, hsla(0,0%,100%,0.1) 1px, transparent 1px)",
-            backgroundSize: "32px 32px",
-          }}
-        />
-        <div className="relative grid grid-cols-1 gap-8 p-5 lg:grid-cols-3 lg:p-8">
+      <div className="panel relative overflow-hidden">
+        <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
+        <div className="relative grid grid-cols-1 gap-6 p-4 sm:p-5 lg:grid-cols-3 lg:p-6">
           <DivisionSelector
             selectedDivision={selectedDivision}
             setSelectedDivision={setSelectedDivision}

@@ -80,7 +80,7 @@ function ToolbarButton({
       title={title}
       aria-label={title}
       onClick={onClick}
-      className="h-7 w-7 text-slate-300 hover:bg-slate-700/60 hover:text-white active:scale-95"
+      className="h-7 w-7 text-muted-foreground hover:bg-surface-hover/60 hover:text-foreground active:scale-[0.98]"
     >
       <Icon className="h-4 w-4" />
     </Button>
@@ -88,7 +88,7 @@ function ToolbarButton({
 }
 
 function ToolbarDivider() {
-  return <span className="mx-0.5 h-5 w-px shrink-0 bg-slate-700" />;
+  return <span className="mx-0.5 h-5 w-px shrink-0 bg-surface-hover" />;
 }
 
 function PresetPopover({
@@ -126,16 +126,16 @@ function PresetPopover({
           variant="ghost"
           title={title}
           aria-label={title}
-          className="h-7 w-7 text-slate-300 hover:bg-slate-700/60 hover:text-white active:scale-95"
+          className="h-7 w-7 text-muted-foreground hover:bg-surface-hover/60 hover:text-foreground active:scale-[0.98]"
         >
           <Icon className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="w-56 border-slate-700 bg-slate-900 p-3 text-slate-200"
+        className="w-56 border-border bg-surface p-3 text-foreground"
       >
-        <p className="mb-2 text-xs font-medium text-slate-300">{title}</p>
+        <p className="mb-2 text-xs font-medium text-muted-foreground">{title}</p>
         <div className="flex flex-wrap gap-1.5">
           {presets.map((preset) =>
             swatch ? (
@@ -145,7 +145,7 @@ function PresetPopover({
                 title={preset.label}
                 aria-label={preset.label}
                 onClick={() => apply(preset.value)}
-                className="h-6 w-6 cursor-pointer rounded border border-white/20 transition-transform hover:scale-110"
+                className="h-6 w-6 cursor-pointer rounded border border-border transition-transform hover:scale-[1.02]"
                 style={{ backgroundColor: preset.value }}
               />
             ) : (
@@ -153,7 +153,7 @@ function PresetPopover({
                 key={preset.value}
                 type="button"
                 onClick={() => apply(preset.value)}
-                className="cursor-pointer rounded border border-slate-700 bg-slate-800 px-2 py-1 text-xs text-slate-200 transition-colors hover:border-sky-500/40 hover:text-white"
+                className="cursor-pointer rounded border border-border bg-surface-hover px-2 py-1 text-xs text-foreground transition-colors hover:border-sky-500/40 hover:text-foreground"
               >
                 {preset.label}
               </button>
@@ -172,7 +172,7 @@ function PresetPopover({
             inputMode={customInputMode ?? "text"}
             onChange={(event) => setCustom(event.target.value)}
             placeholder={customPlaceholder}
-            className="h-7 border-slate-700 bg-slate-800 text-xs text-white placeholder:text-slate-500"
+            className="h-7 border-border bg-surface-hover text-xs text-foreground placeholder:text-muted-foreground"
           />
           <Button
             type="submit"
@@ -307,7 +307,7 @@ export default function BBCodeEditor({
 
   return (
     <div className="w-full">
-      <div className="flex flex-wrap items-center gap-0.5 rounded-t-lg border border-b-0 border-slate-700 bg-slate-900/80 px-1.5 py-1">
+      <div className="flex flex-wrap items-center gap-0.5 rounded-t-lg border border-b-0 border-border bg-surface/80 px-1.5 py-1">
         <ToolbarButton
           icon={Bold}
           title="Bold (Ctrl+B)"
@@ -413,7 +413,7 @@ export default function BBCodeEditor({
         onKeyDown={handleKeyDown}
         rows={rows}
         placeholder={placeholder}
-        className="w-full resize-y rounded-t-none border-t-0 border-slate-700 bg-slate-800 font-mono text-xs text-slate-200 placeholder:text-slate-500 transition-all duration-200 hover:border-slate-500 focus-visible:ring-2"
+        className="w-full resize-y rounded-t-none border-t-0 border-border bg-surface-hover font-mono text-xs text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
       />
     </div>
   );

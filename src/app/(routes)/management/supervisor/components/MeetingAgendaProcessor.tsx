@@ -196,12 +196,12 @@ export function MeetingAgendaProcessor() {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         {/* Meeting Type */}
-        <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
+        <div className="panel-inner p-5 transition-colors hover:border-primary/30">
           <div className="space-y-5">
             <div className="flex flex-col gap-1.5">
               <Label
                 htmlFor="meetingType"
-                className="text-sm font-medium text-slate-300"
+                className="text-sm font-medium text-muted-foreground"
               >
                 Meeting Type
               </Label>
@@ -213,16 +213,16 @@ export function MeetingAgendaProcessor() {
               >
                 <SelectTrigger
                   id="meetingType"
-                  className="w-full border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-slate-500"
+                  className="w-full border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border"
                 >
                   <SelectValue placeholder="Select meeting type" />
                 </SelectTrigger>
-                <SelectContent className="border-slate-700 bg-slate-900 text-white">
+                <SelectContent className="border-border bg-surface-raised text-foreground">
                   {meetingTemplates.map((tmpl) => (
                     <SelectItem
                       key={tmpl.value}
                       value={tmpl.value}
-                      className="transition-all duration-150 hover:bg-slate-700/60"
+                      className="transition-all duration-200 hover:bg-surface-hover/60"
                     >
                       {tmpl.label}
                     </SelectItem>
@@ -233,7 +233,7 @@ export function MeetingAgendaProcessor() {
 
             {/* Date & Time (UTC) */}
             <div className="flex flex-col gap-1.5">
-              <Label className="text-sm font-medium text-slate-300">
+              <Label className="text-sm font-medium text-muted-foreground">
                 Meeting Date & Time (UTC)
               </Label>
               <div className="flex flex-wrap items-center gap-2">
@@ -242,8 +242,8 @@ export function MeetingAgendaProcessor() {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-[260px] justify-start text-left font-normal border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-slate-500",
-                        !date && "text-slate-400"
+                        "w-[260px] justify-start text-left font-normal border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border",
+                        !date && "text-muted-foreground"
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
@@ -251,7 +251,7 @@ export function MeetingAgendaProcessor() {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent
-                    className="w-auto border-slate-700 bg-slate-900 p-0"
+                    className="w-auto border-border bg-surface-raised p-0"
                     align="start"
                   >
                     <Calendar
@@ -267,7 +267,7 @@ export function MeetingAgendaProcessor() {
                   type="time"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
-                  className="w-[140px] border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-slate-500 focus-visible:ring-2"
+                  className="w-[140px] border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
                 />
               </div>
             </div>
@@ -279,7 +279,7 @@ export function MeetingAgendaProcessor() {
           <Button
             variant="outline"
             type="submit"
-            className="border-slate-600 text-slate-300 transition-all duration-200 hover:scale-[1.02] hover:border-indigo-500/40 hover:bg-indigo-950/20 hover:text-indigo-200 active:scale-95"
+            className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-indigo-500/40 hover:bg-indigo-950/20 hover:text-indigo-200 active:scale-[0.98]"
           >
             Generate
           </Button>
@@ -287,7 +287,7 @@ export function MeetingAgendaProcessor() {
             variant="destructive"
             type="button"
             onClick={handleClear}
-            className="transition-all duration-200 hover:scale-[1.02] active:scale-95"
+            className="transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
           >
             Clear
           </Button>
@@ -296,10 +296,10 @@ export function MeetingAgendaProcessor() {
 
       {/* Step-by-Step Instructions */}
       {activeTemplate && (
-        <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
+        <div className="panel-inner p-5 transition-colors hover:border-primary/30">
           <div className="mb-4 flex items-center gap-2">
             <ListChecks className="h-5 w-5 text-indigo-400" />
-            <h3 className="text-sm font-semibold text-white">
+            <h3 className="text-sm font-semibold text-foreground">
               Step-by-Step: How to Post a {activeTemplate.label}
             </h3>
           </div>
@@ -307,7 +307,7 @@ export function MeetingAgendaProcessor() {
             {activeTemplate.steps.map((step, i) => (
               <li
                 key={i}
-                className="flex items-start gap-3 text-sm text-slate-300"
+                className="flex items-start gap-3 text-sm text-muted-foreground"
               >
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-500/20 text-xs font-bold text-indigo-300 ring-1 ring-indigo-400/30">
                   {i + 1}
@@ -323,23 +323,23 @@ export function MeetingAgendaProcessor() {
       {output && (
         <div className="space-y-3">
           {/* Subject Line */}
-          <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
+          <div className="panel-inner p-5 transition-colors hover:border-primary/30">
             <div className="mb-3 flex items-center gap-2">
-              <FileText className="h-4 w-4 text-slate-400" />
-              <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+              <FileText className="h-4 w-4 text-muted-foreground" />
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Subject Line
               </h4>
             </div>
-            <pre className="overflow-x-auto whitespace-pre-wrap rounded-xl border border-white/5 bg-slate-950/80 p-4 font-mono text-sm leading-relaxed text-amber-200">
+            <pre className="overflow-x-auto whitespace-pre-wrap rounded-xl border border-border bg-surface-raised/60 p-4 font-mono text-sm leading-relaxed text-warning">
               {subjectLine}
             </pre>
             <Button
               onClick={handleCopySubject}
               variant="secondary"
-              className={`mt-3 transition-all duration-200 hover:scale-[1.02] active:scale-95 ${
+              className={`mt-3 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
                 copiedSubject
-                  ? "bg-emerald-600 text-white hover:bg-emerald-500"
-                  : "bg-slate-700 text-white hover:bg-slate-600"
+                  ? "bg-emerald-600 text-foreground hover:bg-emerald-500"
+                  : "bg-surface-hover text-foreground hover:bg-surface-hover"
               }`}
             >
               {copiedSubject ? "Copied!" : "Copy Subject Line"}
@@ -347,14 +347,14 @@ export function MeetingAgendaProcessor() {
           </div>
 
           {/* BBCode Body */}
-          <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
+          <div className="panel-inner p-5 transition-colors hover:border-primary/30">
             <div className="mb-3 flex items-center gap-2">
-              <Clock className="h-4 w-4 text-slate-400" />
-              <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 BBCode Body
               </h4>
             </div>
-            <pre className="max-h-[500px] overflow-auto whitespace-pre-wrap rounded-xl border border-white/5 bg-slate-950/80 p-4 font-mono text-sm leading-relaxed text-slate-100">
+            <pre className="max-h-[500px] overflow-auto whitespace-pre-wrap rounded-xl border border-border bg-surface-raised/60 p-4 font-mono text-sm leading-relaxed text-foreground">
               {output}
             </pre>
           </div>
@@ -363,10 +363,10 @@ export function MeetingAgendaProcessor() {
             <Button
               onClick={handleCopy}
               variant="secondary"
-              className={`transition-all duration-200 hover:scale-[1.02] active:scale-95 ${
+              className={`transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
                 copied
-                  ? "bg-emerald-600 text-white hover:bg-emerald-500"
-                  : "bg-slate-700 text-white hover:bg-slate-600"
+                  ? "bg-emerald-600 text-foreground hover:bg-emerald-500"
+                  : "bg-surface-hover text-foreground hover:bg-surface-hover"
               }`}
             >
               <Copy className="mr-2 h-4 w-4" />
@@ -387,7 +387,7 @@ export function MeetingAgendaProcessor() {
               >
                 <Button
                   variant="secondary"
-                  className="transition-all duration-200 hover:scale-[1.02] active:scale-95 bg-indigo-600 text-white hover:bg-indigo-500"
+                  className="transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] bg-indigo-600 text-foreground hover:bg-indigo-500"
                 >
                   <Copy className="mr-2 h-4 w-4" />
                   Copy BBCode & Open Forum

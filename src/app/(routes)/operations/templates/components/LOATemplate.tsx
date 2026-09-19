@@ -118,17 +118,17 @@ export function LOATemplate() {
         {/* Left: Form */}
         <div className="space-y-5">
           {/* Employee Information */}
-          <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-5">
+          <div className="rounded-2xl border border-border bg-surface/90 p-5">
             <div className="mb-4 flex items-center gap-2">
               <Users className="h-4 w-4 text-blue-400" />
-              <h3 className="text-sm font-semibold text-white">
+              <h3 className="text-sm font-semibold text-foreground">
                 Employee Information
               </h3>
             </div>
 
             <div className="space-y-4">
               <div>
-                <Label className="mb-1.5 block text-xs text-slate-400">
+                <Label className="mb-1.5 block text-xs text-muted-foreground">
                   Rank
                 </Label>
                 <Input
@@ -138,13 +138,13 @@ export function LOATemplate() {
                     setRankTouched(true);
                   }}
                   placeholder="e.g. Senior Paramedic"
-                  className="border-white/10 bg-slate-800/50 text-white placeholder:text-slate-500 focus:border-blue-500/50"
+                  className="border-border bg-surface-hover/50 text-foreground placeholder:text-muted-foreground focus:border-blue-500/50"
                 />
               </div>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <Label className="mb-1.5 block text-xs text-slate-400">
+                  <Label className="mb-1.5 block text-xs text-muted-foreground">
                     First Name
                   </Label>
                   <Input
@@ -154,11 +154,11 @@ export function LOATemplate() {
                       setFirstNameTouched(true);
                     }}
                     placeholder="First name"
-                    className="border-white/10 bg-slate-800/50 text-white placeholder:text-slate-500 focus:border-blue-500/50"
+                    className="border-border bg-surface-hover/50 text-foreground placeholder:text-muted-foreground focus:border-blue-500/50"
                   />
                 </div>
                 <div>
-                  <Label className="mb-1.5 block text-xs text-slate-400">
+                  <Label className="mb-1.5 block text-xs text-muted-foreground">
                     Last Name
                   </Label>
                   <Input
@@ -168,7 +168,7 @@ export function LOATemplate() {
                       setLastNameTouched(true);
                     }}
                     placeholder="Last name"
-                    className="border-white/10 bg-slate-800/50 text-white placeholder:text-slate-500 focus:border-blue-500/50"
+                    className="border-border bg-surface-hover/50 text-foreground placeholder:text-muted-foreground focus:border-blue-500/50"
                   />
                 </div>
               </div>
@@ -178,7 +178,7 @@ export function LOATemplate() {
                 variant="outline"
                 size="sm"
                 onClick={resetFromCredentials}
-                className="cursor-pointer border-slate-600 text-slate-300 transition-all duration-200 hover:scale-[1.01] hover:border-amber-500/40 hover:bg-amber-950/20 hover:text-amber-200 active:scale-[0.99]"
+                className="cursor-pointer border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-amber-500/40 hover:bg-amber-950/20 hover:text-amber-200 active:scale-[0.98]"
               >
                 <RotateCcw className="mr-1.5 h-4 w-4" />
                 Reset to Staff Page
@@ -187,53 +187,53 @@ export function LOATemplate() {
           </div>
 
           {/* Leave Dates */}
-          <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-5">
+          <div className="rounded-2xl border border-border bg-surface/90 p-5">
             <div className="mb-4 flex items-center gap-2">
               <CalendarDays className="h-4 w-4 text-green-400" />
-              <h3 className="text-sm font-semibold text-white">
+              <h3 className="text-sm font-semibold text-foreground">
                 Leave of Absence Dates
               </h3>
             </div>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <Label className="mb-1.5 block text-xs text-slate-400">
+                <Label className="mb-1.5 block text-xs text-muted-foreground">
                   Beginning Date
                 </Label>
                 <Input
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value.toUpperCase())}
                   placeholder="DD/MMM/YYYY (e.g. 20/JUL/2026)"
-                  className="border-white/10 bg-slate-800/50 font-mono text-white placeholder:text-slate-500 focus:border-green-500/50"
+                  className="border-border bg-surface-hover/50 font-mono text-foreground placeholder:text-muted-foreground focus:border-green-500/50"
                 />
               </div>
               <div>
-                <Label className="mb-1.5 block text-xs text-slate-400">
+                <Label className="mb-1.5 block text-xs text-muted-foreground">
                   Return Date
                 </Label>
                 <Input
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value.toUpperCase())}
                   placeholder="DD/MMM/YYYY (e.g. 20/AUG/2026)"
-                  className="border-white/10 bg-slate-800/50 font-mono text-white placeholder:text-slate-500 focus:border-green-500/50"
+                  className="border-border bg-surface-hover/50 font-mono text-foreground placeholder:text-muted-foreground focus:border-green-500/50"
                 />
               </div>
             </div>
           </div>
 
           {/* Reasons */}
-          <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-5">
+          <div className="rounded-2xl border border-border bg-surface/90 p-5">
             <div className="mb-4 flex-col flex items-start gap-2">
               <div className="flex gap-2 items-center justify-center">
               <FileText className="h-4 w-4 text-amber-400" />
-              <h3 className="text-sm font-semibold text-white">Reason</h3>
+              <h3 className="text-sm font-semibold text-foreground">Reason</h3>
               </div>
                 <p className="text-xs text-gray-500">Reason Does not have to be too specific, but please leave both an IC and OOC reason.</p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <Label className="mb-1.5 block text-xs text-slate-400">
+                <Label className="mb-1.5 block text-xs text-muted-foreground">
                   IC Reason
                 </Label>
                 <Textarea
@@ -241,12 +241,12 @@ export function LOATemplate() {
                   onChange={(e) => setIcReason(e.target.value)}
                   placeholder="In-character reason for the leave of absence"
                   rows={3}
-                  className="w-full resize-y border-white/10 bg-slate-800/50 text-white placeholder:text-slate-500 focus:border-amber-500/50"
+                  className="w-full resize-y border-border bg-surface-hover/50 text-foreground placeholder:text-muted-foreground focus:border-amber-500/50"
                 />
               </div>
 
               <div>
-                <Label className="mb-1.5 block text-xs text-slate-400">
+                <Label className="mb-1.5 block text-xs text-muted-foreground">
                   OOC Reason
                 </Label>
                 <Textarea
@@ -254,9 +254,9 @@ export function LOATemplate() {
                   onChange={(e) => setOocReason(e.target.value)}
                   placeholder="Out-of-character reason - wrapped in (( ... )) with [ooc][/ooc]"
                   rows={3}
-                  className="w-full resize-y border-white/10 bg-slate-800/50 text-white placeholder:text-slate-500 focus:border-amber-500/50"
+                  className="w-full resize-y border-border bg-surface-hover/50 text-foreground placeholder:text-muted-foreground focus:border-amber-500/50"
                 />
-                <p className="mt-1 text-[10px] text-slate-500">
+                <p className="mt-1 text-[10px] text-muted-foreground">
                   Placed after the IC reason inside{" "}
                   <code className="text-amber-300/80">(( ... ))</code>.
                 </p>
@@ -288,11 +288,11 @@ export function LOATemplate() {
         </div>
 
         {/* Right: Preview */}
-        <div className="h-fit rounded-2xl border border-white/10 bg-slate-900/90">
-          <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+        <div className="h-fit rounded-2xl border border-border bg-surface/90">
+          <div className="flex items-center justify-between border-b border-border px-5 py-4">
             <div className="flex items-center gap-2">
-              <FileText className="h-4 w-4 text-slate-400" />
-              <h3 className="text-sm font-semibold text-white">
+              <FileText className="h-4 w-4 text-muted-foreground" />
+              <h3 className="text-sm font-semibold text-foreground">
                 Post Preview
               </h3>
             </div>
@@ -305,20 +305,20 @@ export function LOATemplate() {
             {/* Title */}
             <div>
               <div className="mb-2 flex items-center justify-between gap-3">
-                <Label className="text-xs text-slate-400">Post Title</Label>
+                <Label className="text-xs text-muted-foreground">Post Title</Label>
                 <Button
                   type="button"
                   size="sm"
                   variant="outline"
                   onClick={handleCopyTitle}
                   disabled={!title || !reasonsComplete}
-                  className="h-7 border-slate-600 px-2 text-[10px] text-slate-300 transition-all duration-200 hover:scale-[1.02] hover:bg-slate-700 hover:text-white"
+                  className="h-7 border-border px-2 text-[10px] text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:bg-surface-hover hover:text-foreground"
                 >
                   <Copy className="mr-1 h-3 w-3" />
                   Copy Title
                 </Button>
               </div>
-              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-800/50 px-3 py-2.5">
+              <div className="flex items-center gap-2 rounded-xl border border-border bg-surface-hover/50 px-3 py-2.5">
                 <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-400" />
                 <span className="truncate font-mono text-xs text-emerald-200">
                   {title}
@@ -328,10 +328,10 @@ export function LOATemplate() {
 
             {/* Body */}
             <div>
-              <Label className="mb-2 block text-xs text-slate-400">
+              <Label className="mb-2 block text-xs text-muted-foreground">
                 Template Body
               </Label>
-              <pre className="max-h-[420px] overflow-auto whitespace-pre-wrap rounded-xl border border-white/5 bg-slate-950/50 p-4 font-mono text-xs leading-relaxed text-slate-300">
+              <pre className="max-h-[420px] overflow-auto whitespace-pre-wrap rounded-xl border border-border bg-background/50 p-4 font-mono text-xs leading-relaxed text-muted-foreground">
                 {body}
               </pre>
             </div>
@@ -342,7 +342,7 @@ export function LOATemplate() {
                 type="button"
                 onClick={handleCopyTemplate}
                 disabled={!reasonsComplete}
-                className="w-full cursor-pointer bg-sky-600 py-6 text-sm font-semibold text-white shadow-lg shadow-sky-950/30 transition-all duration-300 hover:scale-[1.01] hover:bg-sky-500 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full cursor-pointer bg-sky-600 py-6 text-sm font-semibold text-foreground shadow-lg shadow-sky-950/30 transition-all duration-200 hover:scale-[1.02] hover:bg-sky-500 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Copy className="mr-2 h-4 w-4" />
                 Copy Template
@@ -357,7 +357,7 @@ export function LOATemplate() {
                   type="button"
                   onClick={handleCopyTemplate}
                   disabled={!reasonsComplete}
-                  className="w-full cursor-pointer border-emerald-600/50 bg-emerald-600 py-6 text-sm font-semibold text-white shadow-lg shadow-emerald-950/30 transition-all duration-300 hover:scale-[1.01] hover:border-emerald-500 hover:bg-emerald-500 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full cursor-pointer border-emerald-600/50 bg-emerald-600 py-6 text-sm font-semibold text-foreground shadow-lg shadow-emerald-950/30 transition-all duration-200 hover:scale-[1.02] hover:border-emerald-500 hover:bg-emerald-500 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ExternalLink className="mr-2 h-4 w-4" />
                   Copy to GOV
@@ -372,7 +372,7 @@ export function LOATemplate() {
               </p>
             )}
 
-            <p className="text-[10px] leading-relaxed text-slate-500">
+            <p className="text-[10px] leading-relaxed text-muted-foreground">
               Copy to GOV copies the template and opens the LOA posting page -
               paste the body there and use the post title above.
             </p>

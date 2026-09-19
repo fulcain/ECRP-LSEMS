@@ -132,23 +132,16 @@ export function StaffSettingsCard({
   const coveredDivisions = divisionsForDirector(identity.directorTitle);
 
   return (
-    <div className="relative overflow-hidden rounded-[2rem] border border-violet-500/20 bg-slate-950/80 shadow-2xl shadow-violet-950/30">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(139,92,246,0.15),_transparent_38%),radial-gradient(circle_at_bottom_right,_rgba(124,58,237,0.10),_transparent_34%)]" />
-      <div className="pointer-events-none absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage:
-            "linear-gradient(hsla(0,0%,100%,0.1) 1px, transparent 1px), linear-gradient(90deg, hsla(0,0%,100%,0.1) 1px, transparent 1px)",
-          backgroundSize: "32px 32px",
-        }}
-      />
-      <div className="relative space-y-8 p-5 lg:p-8">
+    <div className="panel relative overflow-hidden">
+      <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
+      <div className="relative space-y-6 p-4 sm:p-5 lg:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
             <div className="flex flex-col">
-              <h2 className="mb-1 text-xl font-semibold text-white">{title}</h2>
-              <p className="text-sm text-slate-400">{description}</p>
+              <h2 className="mb-1 text-xl font-semibold text-foreground">{title}</h2>
+              <p className="text-sm text-muted-foreground">{description}</p>
               {!showEditForm && identityLine && (
-                <div className="mt-2 flex flex-col gap-1 text-sm text-slate-400">
+                <div className="mt-2 flex flex-col gap-1 text-sm text-muted-foreground">
                   <p>{identityLine}</p>
                   {savedDirectorTitle && (
                     <p className="inline-flex items-center gap-1.5 text-violet-300">
@@ -169,7 +162,7 @@ export function StaffSettingsCard({
             </div>
 
             {medicCredentials.signature && !showEditForm && (
-                <div className="mt-2 flex items-center rounded-xl border border-white/10 bg-slate-800/50 p-2 transition-all duration-200 hover:border-white/20 sm:mt-0">
+                <div className="mt-2 flex items-center rounded-xl border border-border bg-surface-hover/50 p-2 transition-all duration-200 hover:border-border sm:mt-0">
                   <Image
                     src={medicCredentials.signature}
                     alt={`${medicCredentials.name} signature`}
@@ -195,17 +188,17 @@ export function StaffSettingsCard({
             <Button
               variant="outline"
               onClick={() => setShowEditForm(true)}
-              className="whitespace-nowrap border-slate-600 text-slate-300 transition-all duration-200 hover:scale-[1.02] hover:border-violet-500/40 hover:bg-violet-950/20 hover:text-violet-200 active:scale-95"
+              className="whitespace-nowrap border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-violet-500/40 hover:bg-violet-950/20 hover:text-violet-200 active:scale-[0.98]"
             >
               Edit Signature
             </Button>
           )}
         </div>
 
-        <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
+        <div className="panel-inner p-5 transition-colors hover:border-primary/30">
           <div className="mb-4">
-            <h3 className="text-lg font-semibold text-white">Division Ranks</h3>
-            <p className="text-sm text-slate-400">
+            <h3 className="text-lg font-semibold text-foreground">Division Ranks</h3>
+            <p className="text-sm text-muted-foreground">
               Set your saved rank for each division here so template tools can
               reuse them automatically.
             </p>
@@ -215,10 +208,10 @@ export function StaffSettingsCard({
             {rankManagedDivisions.map((division) => (
               <div
                 key={division.label}
-                className="rounded-xl border border-white/10 bg-slate-800/50 p-4 transition-all duration-200 hover:border-white/20 hover:bg-slate-800/70"
+                className="rounded-xl border border-border bg-surface-raised p-4 transition-colors hover:border-primary/30"
               >
                 <div className="mb-3 flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-700/50">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-hover/50">
                     <Image
                       src={division.image}
                       alt={division.label}
@@ -228,8 +221,8 @@ export function StaffSettingsCard({
                     />
                   </div>
                   <div>
-                    <p className="font-medium text-white">{division.label}</p>
-                    <p className="text-xs text-slate-400">
+                    <p className="font-medium text-foreground">{division.label}</p>
+                    <p className="text-xs text-muted-foreground">
                       {division.data.divisionName}
                     </p>
                   </div>
@@ -245,17 +238,17 @@ export function StaffSettingsCard({
                     }))
                   }
                 >
-                  <SelectTrigger className="w-full border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-slate-500">
+                  <SelectTrigger className="w-full border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border">
                     <SelectValue placeholder="Choose your division rank" />
                   </SelectTrigger>
-                  <SelectContent className="border-slate-700 bg-slate-900 text-white">
-                    <SelectItem value={NONE_DIVISION_RANK} className="transition-all duration-150 hover:bg-slate-700/60">None</SelectItem>
+                  <SelectContent className="border-border bg-surface text-foreground">
+                    <SelectItem value={NONE_DIVISION_RANK} className="transition-colors duration-200 hover:bg-surface-hover/60">None</SelectItem>
 
                     {division.data.ranks.map((rank) => (
                       <SelectItem
                         key={rank.name}
                         value={rank.name}
-                        className="transition-all duration-150 hover:bg-slate-700/60"
+                        className="transition-colors duration-200 hover:bg-surface-hover/60"
                       >
                         {rank.name}
                       </SelectItem>

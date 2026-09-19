@@ -2,7 +2,6 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
-@tailwind utilities;
 
 @theme inline {
   --color-background: var(--background);
@@ -29,6 +28,9 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -49,43 +51,9 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.14 0.005 260);
-  --surface: oklch(0.97 0.004 260);
-  --surface-hover: oklch(0.955 0.006 260);
-  --surface-raised: oklch(0.99 0.002 260);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.14 0.005 260);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.14 0.005 260);
-  --primary: oklch(0.48 0.14 255);
-  --primary-foreground: oklch(0.98 0.005 260);
-  --secondary: oklch(0.94 0.008 260);
-  --secondary-foreground: oklch(0.28 0.04 260);
-  --muted: oklch(0.94 0.008 260);
-  --muted-foreground: oklch(0.48 0.03 260);
-  --accent: oklch(0.94 0.04 252);
-  --accent-foreground: oklch(0.28 0.05 252);
-  --destructive: oklch(0.52 0.2 20);
-  --border: oklch(0.88 0.01 260);
-  --input: oklch(0.88 0.01 260);
-  --ring: oklch(0.52 0.16 255);
-  --chart-1: oklch(0.48 0.14 255);
-  --chart-2: oklch(0.6 0.12 180);
-  --chart-3: oklch(0.52 0.08 252);
-  --chart-4: oklch(0.7 0.18 80);
-  --chart-5: oklch(0.5 0.1 350);
-  --sidebar: oklch(0.98 0.002 260);
-  --sidebar-foreground: oklch(0.14 0.005 260);
-  --sidebar-primary: oklch(0.48 0.14 255);
-  --sidebar-primary-foreground: oklch(0.98 0.005 260);
-  --sidebar-accent: oklch(0.94 0.008 260);
-  --sidebar-accent-foreground: oklch(0.28 0.04 260);
-  --sidebar-border: oklch(0.88 0.01 260);
-  --sidebar-ring: oklch(0.52 0.16 255);
-}
 
-.dark {
+  /* Surfaces, darkest to lightest. Content sits on `surface`; `background` is
+     the page behind it, `surface-raised` an element that should lift off. */
   --background: oklch(0.115 0.008 250);
   --foreground: oklch(0.92 0.005 255);
   --surface: oklch(0.15 0.01 252);
@@ -104,6 +72,13 @@
   --accent: oklch(0.28 0.05 252);
   --accent-foreground: oklch(0.82 0.04 252);
   --destructive: oklch(0.52 0.22 20);
+
+  /* Status colours. Anything that communicates a state reads one of these, so
+     "success" is the same green on a badge, a banner and a table row. */
+  --success: oklch(0.72 0.15 165);
+  --warning: oklch(0.8 0.15 80);
+  --info: oklch(0.72 0.12 230);
+
   --border: oklch(0.22 0.015 252);
   --input: oklch(0.22 0.015 252);
   --ring: oklch(0.6 0.18 252);
@@ -132,10 +107,107 @@
     max-width: 100%;
     overflow-x: hidden;
   }
+
+  /* Keyboard focus is visible by default, so a control that forgets its own
+     ring is still reachable rather than silently invisible. */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+
+  ::selection {
+    @apply bg-primary/30 text-foreground;
+  }
+
+  /* ── Clickable things look clickable ──
+
+     Tailwind v4's preflight no longer gives `button` a pointer cursor, so
+     every control that didn't add one by hand read as inert. Rather than
+     sprinkle `cursor-pointer` across fifty components - where the next one
+     would forget it again - the rule lives here for every genuinely
+     interactive element.
+
+     Note this is the *base* layer: a component that sets its own cursor still
+     wins, which is why the Radix menu wrappers had to be corrected too. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="tab"]:not([aria-disabled="true"]),
+  [role="menuitem"]:not([data-disabled]),
+  [role="menuitemcheckbox"]:not([data-disabled]),
+  [role="menuitemradio"]:not([data-disabled]),
+  [role="option"]:not([data-disabled]):not([aria-disabled="true"]),
+  [role="checkbox"]:not([data-disabled]),
+  [role="radio"]:not([data-disabled]),
+  [role="switch"]:not([data-disabled]),
+  [role="combobox"]:not(:disabled),
+  a[href],
+  summary,
+  label[for],
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled),
+  input[type="file"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  /* A control that cannot be used says so with the cursor as well as opacity.
+     Scoped to the same interactive set on purpose: `cursor` inherits, so a
+     bare `[data-disabled]` on a Radix container would leave an arrow over a
+     whole panel of still-usable children. */
+  button:disabled,
+  [role="button"][aria-disabled="true"],
+  [role="menuitem"][data-disabled],
+  [role="option"][data-disabled],
+  [role="checkbox"][data-disabled],
+  [role="radio"][data-disabled],
+  [role="switch"][data-disabled],
+  input[type="checkbox"]:disabled,
+  input[type="radio"]:disabled {
+    cursor: not-allowed;
+  }
+}
+
+/* ── Shared component utilities ──
+
+   Panels and fields were being spelled out by hand on every page, in the slate
+   ramp, which is how two thirds of the app ended up looking like a different
+   product from the third that used the tokens. These are the shared spellings.
+   They live in the components layer, so any utility on the same element still
+   wins - `panel p-5` keeps the panel surface and takes the page's padding. */
+@layer components {
+  .panel {
+    @apply rounded-2xl border border-border bg-surface;
+  }
+
+  .panel-inner {
+    @apply rounded-xl border border-border bg-surface-raised;
+  }
+
+  .field {
+    @apply text-foreground placeholder:text-muted-foreground;
+  }
+
+  .chip {
+    @apply border-border bg-surface-raised text-muted-foreground;
+  }
+
+  /* ── Type roles ──
+
+     Two micro sizes carry every label in the app, and this is the one used
+     above a heading, a stat or a nav group. It had five different sizes and
+     five different letter-spacings before; the colour is left to the caller
+     because an eyebrow over a page title is not the same tone as one over a
+     table column. */
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.18em];
+  }
+
+  /** Supporting text under a label, a field or a heading. */
+  .meta {
+    @apply text-xs leading-relaxed text-muted-foreground;
+  }
 }
 
 /* ── Ambient background grain ── */
-.dark body::before {
+body::before {
   content: "";
   position: fixed;
   inset: 0;
@@ -143,6 +215,21 @@
   opacity: 0.03;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
+
+/* ── Motion ──
+
+   One interaction language for the whole app:
+
+     hover   a colour change, never a size change on a text control
+     press   `active:scale-[0.98]`, which the Button primitive carries itself
+     lift    `hover:scale-[1.02]`, for icon and avatar affordances only
+     speed   200ms, always
+
+   Before this there were six different scale magnitudes and four durations
+   doing the same job, which is what made the interface feel unsettled rather
+   than considered. A new component should reach for the Button primitive, not
+   re-invent the feedback.
+   ── */
 
 /* ── Utility animations ── */
 @keyframes fade-in {
@@ -155,14 +242,9 @@
   to   { opacity: 1; }
 }
 
-@keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 20px oklch(0.68 0.17 252 / 0.12); }
-  50%      { box-shadow: 0 0 35px oklch(0.68 0.17 252 / 0.22); }
-}
-
-/* No fill mode: a retained `to` frame carrying a transform leaves a containing
-   block behind, which anchors every position:fixed child (toasts, overlays) to
-   the page instead of the viewport. */
+/* No fill mode on any of these: a retained `to` frame carrying a transform
+   leaves a containing block behind, which anchors every position:fixed child
+   (toasts, overlays) to the page instead of the viewport. */
 .animate-fade-in {
   animation: fade-in 0.3s ease-out;
 }
@@ -172,17 +254,36 @@
 }
 
 /* ── Scrollbar styling ── */
-.dark ::-webkit-scrollbar {
+::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
-.dark ::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background: transparent;
 }
-.dark ::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   background: oklch(0.25 0.02 252);
   border-radius: 3px;
 }
-.dark ::-webkit-scrollbar-thumb:hover {
+::-webkit-scrollbar-thumb:hover {
   background: oklch(0.32 0.02 252);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-slide-up {
+    animation: none !important;
+  }
+
+  /* Scale feedback is decoration, not information - drop it entirely and keep
+     the colour transitions, so nothing is lost and nothing moves. */
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+  .hover\:scale-\[1\.02\]:hover,
+  [class*="active:scale-"]:active {
+    transform: none !important;
+  }
 }

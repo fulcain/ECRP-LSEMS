@@ -36,11 +36,11 @@ export interface Tab<T extends string> {
   href?: string;
 }
 
-/** Standard blue accent used when a tab doesn't declare its own colours. */
-const ACTIVE_FALLBACK = "border-blue-400/40 bg-blue-500/20 text-blue-200";
+/** Standard accent used when a tab doesn't declare its own colours. */
+const ACTIVE_FALLBACK = "border-primary/40 bg-primary/20 text-primary";
 
 const INACTIVE =
-  "border-white/10 bg-slate-900/60 text-slate-400 hover:border-white/20 hover:bg-slate-800 hover:text-white";
+  "border-border bg-surface text-muted-foreground hover:border-primary/30 hover:bg-surface-hover hover:text-foreground";
 
 const SIZES = {
   /** Page-level tab rows. */
@@ -90,11 +90,11 @@ export function TabBar<T extends string>({
   const items = tabs.map(({ value, label, icon, accent, href }) => {
     const isActive = active === value;
     const classes = cn(
-      "flex items-center border transition-all duration-200",
+      // The focus ring is on the tab itself, not only the row: keyboard users
+      // move between tabs, and a scaled active pill is the only visual cue.
+      "flex cursor-pointer items-center border transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
       variant.tab,
-      isActive
-        ? cn(accent ?? ACTIVE_FALLBACK, "scale-[1.03] shadow-lg")
-        : INACTIVE,
+      isActive ? cn(accent ?? ACTIVE_FALLBACK, "shadow-sm") : INACTIVE,
     );
 
     if (href) {
@@ -118,7 +118,7 @@ export function TabBar<T extends string>({
         role="tab"
         aria-selected={isActive}
         onClick={() => onChange?.(value)}
-        className={cn("cursor-pointer", classes)}
+        className={classes}
       >
         <TabIconSlot icon={icon} className={variant.icon} />
         {label}
@@ -139,9 +139,7 @@ export function TabBar<T extends string>({
           {items}
         </div>
       )}
-      {divider && (
-        <div className="mt-4 h-px bg-gradient-to-r from-white/10 via-white/5 to-transparent" />
-      )}
+      {divider && <div className="mt-4 h-px bg-border" />}
     </>
   );
 

@@ -50,11 +50,11 @@ export function WorkflowStepsList({
   badgeNumber,
 }: WorkflowStepsListProps) {
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+    <div className="rounded-xl border border-border bg-surface p-5">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <ListChecks className="h-4 w-4 text-slate-400" />
-          <h3 className="text-sm font-medium text-slate-300">
+          <ListChecks className="h-4 w-4 text-muted-foreground" />
+          <h3 className="text-sm font-medium text-muted-foreground">
             Procedure checklist
           </h3>
         </div>
@@ -62,7 +62,7 @@ export function WorkflowStepsList({
           variant="ghost"
           size="sm"
           onClick={onReset}
-          className="text-slate-500 hover:text-slate-200"
+          className="text-muted-foreground hover:text-foreground"
           title="Clears both the procedure checklist and the OOC checklist for this contract type"
         >
           <RotateCcw className="mr-1 h-3 w-3" />
@@ -88,9 +88,9 @@ export function WorkflowStepsList({
         ))}
       </ol>
 
-      <div className="mt-6 mb-4 flex items-center gap-2 border-t border-slate-800 pt-5">
-        <MessageSquare className="h-4 w-4 text-slate-400" />
-        <h3 className="text-sm font-medium text-slate-300">
+      <div className="mt-6 mb-4 flex items-center gap-2 border-t border-border pt-5">
+        <MessageSquare className="h-4 w-4 text-muted-foreground" />
+        <h3 className="text-sm font-medium text-muted-foreground">
           (( Out-of-Character checklist ))
         </h3>
       </div>
@@ -135,7 +135,7 @@ function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, empl
   const metadata = { dateHired: dateHired || null, phone: phone || null, employeeNumber: employeeNumber || null, employeeProfileLink: employeeProfileLink || null, personnelFileLink: personnelFileLink || null, badgeNumber: badgeNumber || null, personnelFileNumber: personnelFileLink ? ((() => { try { return new URL(personnelFileLink).searchParams.get('u') ?? null; } catch { return null; } })()) : null };
 
   return (
-    <li className="rounded-lg border border-slate-800 bg-slate-950/50 p-4 transition-colors hover:border-slate-700">
+    <li className="rounded-lg border border-border bg-background/50 p-4 transition-colors hover:border-border">
       <div className="flex items-start gap-3">
         <button
           type="button"
@@ -145,7 +145,7 @@ function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, empl
             isDone ? "Mark step as incomplete" : "Mark step as complete"
           }
           onClick={onToggle}
-          className="mt-0.5 text-slate-500 transition-colors hover:text-slate-200"
+          className="mt-0.5 text-muted-foreground transition-colors hover:text-foreground"
         >
           {isDone ? (
             <CheckSquare className="h-5 w-5" />
@@ -156,14 +156,14 @@ function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, empl
         <div className="flex-1">
           <h4
             className={`text-sm font-medium ${
-              isDone ? "text-slate-500 line-through" : "text-white"
+              isDone ? "text-muted-foreground line-through" : "text-foreground"
             }`}
           >
             {step.title}
           </h4>
           <p
             className={`mt-1 text-sm ${
-              isDone ? "text-slate-500 line-through" : "text-slate-400"
+              isDone ? "text-muted-foreground line-through" : "text-muted-foreground"
             }`}
           >
             {step.description}
@@ -177,7 +177,7 @@ function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, empl
                     <Link
                       key={idx}
                       href={action.internal.href}
-                      className="inline-flex items-center gap-1.5 rounded-md border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+                      className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
                     >
                       {action.label}
                     </Link>
@@ -203,8 +203,8 @@ function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, empl
                     }}
                     className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs transition-colors ${
                       disabled
-                        ? "cursor-not-allowed border-slate-800 bg-slate-950 text-slate-600"
-                        : "border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white"
+                        ? "cursor-not-allowed border-border bg-background text-muted-foreground"
+                        : "border-border bg-surface text-muted-foreground hover:bg-surface-hover hover:text-foreground"
                     }`}
                     title={
                       disabled
@@ -257,7 +257,7 @@ type OOCRowProps = {
 
 function OOCRow({ item, isDone, onToggle }: OOCRowProps) {
   return (
-    <li className="rounded-lg border border-slate-800 bg-slate-950/50 p-4 transition-colors hover:border-slate-700">
+    <li className="rounded-lg border border-border bg-background/50 p-4 transition-colors hover:border-border">
       <div className="flex items-start gap-3">
         <button
           type="button"
@@ -267,7 +267,7 @@ function OOCRow({ item, isDone, onToggle }: OOCRowProps) {
             isDone ? "Mark OOC step as incomplete" : "Mark OOC step as complete"
           }
           onClick={onToggle}
-          className="mt-0.5 text-slate-500 transition-colors hover:text-slate-200"
+          className="mt-0.5 text-muted-foreground transition-colors hover:text-foreground"
         >
           {isDone ? (
             <CheckSquare className="h-5 w-5" />
@@ -277,7 +277,7 @@ function OOCRow({ item, isDone, onToggle }: OOCRowProps) {
         </button>
         <p
           className={`flex-1 text-sm leading-relaxed ${
-            isDone ? "text-slate-500 line-through" : "text-slate-200"
+            isDone ? "text-muted-foreground line-through" : "text-foreground"
           }`}
         >
           {item.label}

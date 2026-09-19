@@ -289,8 +289,8 @@ export function LOAProcessor() {
         {/* Left: Form */}
         <div className="space-y-5">
           {/* Template Selector */}
-          <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-5">
-            <Label className="mb-3 block text-sm font-medium text-slate-300">
+          <div className="panel-inner p-5">
+            <Label className="mb-3 block text-sm font-medium text-muted-foreground">
               Select LOA Format
             </Label>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -301,7 +301,7 @@ export function LOAProcessor() {
                   className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
                     selectedTemplate === tmpl.value
                       ? `${tmpl.border} ${tmpl.badge} scale-[1.02]`
-                      : "border-white/10 bg-slate-800/50 text-slate-400 hover:border-white/20 hover:bg-slate-800 hover:text-white"
+                      : "border-border bg-surface-hover/50 text-muted-foreground hover:border-border hover:bg-surface-hover hover:text-foreground"
                   }`}
                 >
                   {templateIcons[tmpl.value]}
@@ -313,10 +313,10 @@ export function LOAProcessor() {
 
           {/* Quick Fill (LOA Active and Extended only) */}
           {(selectedTemplate === "approved" || selectedTemplate === "extended") && (
-          <div className="rounded-2xl border border-cyan-500/20 bg-slate-900/90 p-5">
+          <div className="panel-inner border-info/30 p-5">
             <div className="mb-4 flex items-center gap-2">
               <FileText className="h-4 w-4 text-cyan-400" />
-              <h3 className="text-sm font-semibold text-white">Quick Fill LOA Fields</h3>
+              <h3 className="text-sm font-semibold text-foreground">Quick Fill LOA Fields</h3>
             </div>
             <div className="flex gap-2">
               <Input
@@ -327,7 +327,7 @@ export function LOAProcessor() {
                   handleQuickFill(value);
                 }}
                 placeholder="Rank FirstName LastName | 17/SEP/2026 to 22/SEP/2026"
-                className={`border-white/10 bg-slate-800/50 font-mono text-white placeholder:text-slate-500 focus:border-cyan-500/50 ${
+                className={`border-border bg-surface-hover/50 font-mono text-foreground placeholder:text-muted-foreground focus:border-cyan-500/50 ${
                   quickFillStatus === "success"
                     ? "border-emerald-500/50"
                     : quickFillStatus === "error"
@@ -352,36 +352,36 @@ export function LOAProcessor() {
                   : 'Format not recognized. Use: Rank FirstName LastName | 17/SEP/2026 to 22/SEP/2026.'}
               </p>
             )}
-            <p className="mt-2 text-[10px] text-slate-500">
+            <p className="mt-2 text-[10px] text-muted-foreground">
               Copy the title of the LOA and paste it all here.
             </p>
           </div>
           )}
 
           {/* Personnel Info */}
-          <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-5">
+          <div className="panel-inner p-5">
             <div className="mb-4 flex items-center gap-2">
               <Users className="h-4 w-4 text-blue-400" />
-              <h3 className="text-sm font-semibold text-white">
+              <h3 className="text-sm font-semibold text-foreground">
                 Personnel Information
               </h3>
             </div>
 
             <div className="space-y-4">
               <div>
-                <Label className="mb-1.5 block text-xs text-slate-400">
+                <Label className="mb-1.5 block text-xs text-muted-foreground">
                   Personnel Name
                 </Label>
                 <Input
                   value={personnelName}
                   onChange={(e) => setPersonnelName(e.target.value)}
                   placeholder="Enter full name (e.g., John Smith)"
-                  className="border-white/10 bg-slate-800/50 text-white placeholder:text-slate-500 focus:border-blue-500/50"
+                  className="border-border bg-surface-hover/50 text-foreground placeholder:text-muted-foreground focus:border-blue-500/50"
                 />
               </div>
 
               <div>
-                <Label className="mb-2 block text-xs text-slate-400">
+                <Label className="mb-2 block text-xs text-muted-foreground">
                   Title
                 </Label>
                 <div className="flex gap-2">
@@ -390,7 +390,7 @@ export function LOAProcessor() {
                     className={`flex-1 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
                       title === "Mr."
                         ? "border-blue-500/50 bg-blue-500/20 text-blue-300"
-                        : "border-white/10 bg-slate-800/50 text-slate-400 hover:border-white/20 hover:text-white"
+                        : "border-border bg-surface-hover/50 text-muted-foreground hover:border-border hover:text-foreground"
                     }`}
                   >
                     Mr.
@@ -400,7 +400,7 @@ export function LOAProcessor() {
                     className={`flex-1 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
                       title === "Ms."
                         ? "border-pink-500/50 bg-pink-500/20 text-pink-300"
-                        : "border-white/10 bg-slate-800/50 text-slate-400 hover:border-white/20 hover:text-white"
+                        : "border-border bg-surface-hover/50 text-muted-foreground hover:border-border hover:text-foreground"
                     }`}
                   >
                     Ms.
@@ -412,33 +412,33 @@ export function LOAProcessor() {
 
           {/* Date Fields (LOA Approved only) */}
           {selectedTemplate === "approved" && (
-            <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-5">
+            <div className="panel-inner p-5">
               <div className="mb-4 flex items-center gap-2">
                 <CalendarDays className="h-4 w-4 text-green-400" />
-                <h3 className="text-sm font-semibold text-white">Leave Dates</h3>
+                <h3 className="text-sm font-semibold text-foreground">Leave Dates</h3>
               </div>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <Label className="mb-1.5 block text-xs text-slate-400">
+                  <Label className="mb-1.5 block text-xs text-muted-foreground">
                     Start Date
                   </Label>
                   <Input
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value.toUpperCase())}
                     placeholder="DD/MMM/YYYY (e.g. 20/JUL/2026)"
-                    className="border-white/10 bg-slate-800/50 font-mono text-white placeholder:text-slate-500 focus:border-green-500/50"
+                    className="border-border bg-surface-hover/50 font-mono text-foreground placeholder:text-muted-foreground focus:border-green-500/50"
                   />
                 </div>
                 <div>
-                  <Label className="mb-1.5 block text-xs text-slate-400">
+                  <Label className="mb-1.5 block text-xs text-muted-foreground">
                     End Date
                   </Label>
                   <Input
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value.toUpperCase())}
                     placeholder="DD/MMM/YYYY (e.g. 20/AUG/2026)"
-                    className="border-white/10 bg-slate-800/50 font-mono text-white placeholder:text-slate-500 focus:border-green-500/50"
+                    className="border-border bg-surface-hover/50 font-mono text-foreground placeholder:text-muted-foreground focus:border-green-500/50"
                   />
                 </div>
               </div>
@@ -474,33 +474,33 @@ export function LOAProcessor() {
 
           {/* Date Fields (LOA Extended only) */}
           {selectedTemplate === "extended" && (
-            <div className="rounded-2xl border border-orange-500/20 bg-slate-900/90 p-5">
+            <div className="panel-inner border-warning/30 p-5">
               <div className="mb-4 flex items-center gap-2">
                 <CalendarDays className="h-4 w-4 text-orange-400" />
-                <h3 className="text-sm font-semibold text-white">Extension Dates</h3>
+                <h3 className="text-sm font-semibold text-foreground">Extension Dates</h3>
               </div>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <Label className="mb-1.5 block text-xs text-slate-400">
+                  <Label className="mb-1.5 block text-xs text-muted-foreground">
                     Start Date
                   </Label>
                   <Input
                     value={extendedStartDate}
                     onChange={(e) => setExtendedStartDate(e.target.value.toUpperCase())}
                     placeholder="DD/MMM/YYYY (e.g. 20/JUL/2026)"
-                    className="border-white/10 bg-slate-800/50 font-mono text-white placeholder:text-slate-500 focus:border-orange-500/50"
+                    className="border-border bg-surface-hover/50 font-mono text-foreground placeholder:text-muted-foreground focus:border-orange-500/50"
                   />
                 </div>
                 <div>
-                  <Label className="mb-1.5 block text-xs text-slate-400">
+                  <Label className="mb-1.5 block text-xs text-muted-foreground">
                     End Date
                   </Label>
                   <Input
                     value={extendedEndDate}
                     onChange={(e) => setExtendedEndDate(e.target.value.toUpperCase())}
                     placeholder="DD/MMM/YYYY (e.g. 20/AUG/2026)"
-                    className="border-white/10 bg-slate-800/50 font-mono text-white placeholder:text-slate-500 focus:border-orange-500/50"
+                    className="border-border bg-surface-hover/50 font-mono text-foreground placeholder:text-muted-foreground focus:border-orange-500/50"
                   />
                 </div>
               </div>
@@ -536,21 +536,21 @@ export function LOAProcessor() {
 
           {/* Start Work At (LOA Expired only) */}
           {selectedTemplate === "expired" && (
-            <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-5">
+            <div className="panel-inner p-5">
               <div className="mb-4 flex items-center gap-2">
                 <CalendarDays className="h-4 w-4 text-amber-400" />
-                <h3 className="text-sm font-semibold text-white">Work Schedule</h3>
+                <h3 className="text-sm font-semibold text-foreground">Work Schedule</h3>
               </div>
-              <Label className="mb-1.5 block text-xs text-slate-400">
+              <Label className="mb-1.5 block text-xs text-muted-foreground">
                 Start Work At
               </Label>
               <Input
                 value={startWorkAt}
                 onChange={(e) => setStartWorkAt(e.target.value.toUpperCase())}
                 placeholder="DD/MMM/YYYY (e.g. 21/JUL/2026)"
-                className="border-white/10 bg-slate-800/50 font-mono text-white placeholder:text-slate-500 focus:border-amber-500/50"
+                className="border-border bg-surface-hover/50 font-mono text-foreground placeholder:text-muted-foreground focus:border-amber-500/50"
               />
-              <p className="mt-1 text-[10px] text-slate-500">
+              <p className="mt-1 text-[10px] text-muted-foreground">
                 Replaces the date after {'"tomorrow on"'}
               </p>
             </div>
@@ -558,10 +558,10 @@ export function LOAProcessor() {
 
           {/* Denial Reasons (conditional) */}
           {selectedTemplate === "denied" && (
-            <div className="rounded-2xl border border-red-500/20 bg-slate-900/90 p-5">
+            <div className="panel-inner border-destructive/30 p-5">
               <div className="mb-4 flex items-center gap-2">
                 <XCircle className="h-4 w-4 text-red-400" />
-                <h3 className="text-sm font-semibold text-white">
+                <h3 className="text-sm font-semibold text-foreground">
                   Denial Reasons
                 </h3>
               </div>
@@ -577,7 +577,7 @@ export function LOAProcessor() {
                         setDenialReasons(next);
                       }}
                       placeholder={`Reason ${index + 1}`}
-                      className="flex-1 border-white/10 bg-slate-800/50 text-white placeholder:text-slate-500 focus:border-red-500/50"
+                      className="flex-1 border-border bg-surface-hover/50 text-foreground placeholder:text-muted-foreground focus:border-red-500/50"
                     />
                     {denialReasons.length > 1 && (
                       <Button
@@ -589,7 +589,7 @@ export function LOAProcessor() {
                         }
                         size="icon"
                         variant="ghost"
-                        className="h-10 w-10 shrink-0 text-red-400 transition-all duration-200 hover:scale-110 hover:bg-red-950/40 hover:text-red-300"
+                        className="h-10 w-10 shrink-0 text-red-400 transition-all duration-200 hover:scale-[1.02] hover:bg-red-950/40 hover:text-red-300"
                       >
                         <XCircle className="h-4 w-4" />
                       </Button>
@@ -603,7 +603,7 @@ export function LOAProcessor() {
                 onClick={() => setDenialReasons((prev) => [...prev, ""])}
                 variant="outline"
                 size="sm"
-                className="mt-3 border-slate-600 text-slate-300 transition-all duration-200 hover:scale-[1.02] hover:border-red-500/40 hover:bg-red-950/20 hover:text-red-200"
+                className="mt-3 border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-red-500/40 hover:bg-red-950/20 hover:text-red-200"
               >
                 <Plus className="mr-1.5 h-3.5 w-3.5" />
                 Add reason
@@ -635,17 +635,17 @@ export function LOAProcessor() {
 
           {/* Personnel File Section (LOA Approved only) */}
           {selectedTemplate === "approved" && (
-            <div className="rounded-2xl border border-blue-500/20 bg-slate-900/90 p-5">
+            <div className="panel-inner border-primary/30 p-5">
               <div className="mb-4 flex items-center gap-2">
                 <FileText className="h-4 w-4 text-blue-400" />
-                <h3 className="text-sm font-semibold text-white">
+                <h3 className="text-sm font-semibold text-foreground">
                   Personnel File Section
                 </h3>
               </div>
 
               {/* Leave Type checkboxes */}
               <div>
-                <Label className="mb-2 block text-xs text-slate-400">
+                <Label className="mb-2 block text-xs text-muted-foreground">
                   Leave Type
                 </Label>
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -661,16 +661,16 @@ export function LOAProcessor() {
                             ? type === "LOA"
                               ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-300"
                               : "border-blue-500/50 bg-blue-500/15 text-blue-300"
-                            : "border-white/10 bg-slate-800/50 text-slate-400 hover:border-white/20 hover:bg-slate-800 hover:text-white"
+                            : "border-border bg-surface-hover/50 text-muted-foreground hover:border-border hover:bg-surface-hover hover:text-foreground"
                         }`}
                       >
                         <span
                           className={`flex h-4 w-4 items-center justify-center rounded border transition-all duration-200 ${
                             isSelected
                               ? type === "LOA"
-                                ? "border-emerald-400 bg-emerald-400 text-slate-950"
-                                : "border-blue-400 bg-blue-400 text-slate-950"
-                              : "border-slate-600 bg-slate-800/50 text-transparent"
+                                ? "border-emerald-400 bg-emerald-400 text-background"
+                                : "border-blue-400 bg-blue-400 text-background"
+                              : "border-border bg-surface-hover/50 text-transparent"
                           }`}
                         >
                           <Check className="h-3 w-3" strokeWidth={3} />
@@ -684,20 +684,20 @@ export function LOAProcessor() {
 
               {/* Request Form Link */}
               <div className="mt-4">
-                <Label className="mb-1.5 block text-xs text-slate-400">
+                <Label className="mb-1.5 block text-xs text-muted-foreground">
                   Request Form Link
                 </Label>
                 <Input
                   value={loaLink}
                   onChange={(e) => setLoaLink(e.target.value)}
                   placeholder="Paste the request form URL (e.g. https://gov.eclipse-rp.net/viewtopic.php?t=12345)"
-                  className="border-white/10 bg-slate-800/50 text-white placeholder:text-slate-500 focus:border-blue-500/50"
+                  className="border-border bg-surface-hover/50 text-foreground placeholder:text-muted-foreground focus:border-blue-500/50"
                 />
               </div>
 
               {/* Status Indicator */}
               <div
-                className={`mt-4 flex items-center gap-2.5 rounded-xl border p-3 transition-colors duration-300 ${
+                className={`mt-4 flex items-center gap-2.5 rounded-xl border p-3 transition-colors duration-200 ${
                   snippetStatus.ready
                     ? "border-emerald-500/20 bg-emerald-500/10"
                     : "border-amber-500/20 bg-amber-500/10"
@@ -714,7 +714,7 @@ export function LOAProcessor() {
                   >
                     {snippetStatus.title}
                   </p>
-                  <p className="mt-0.5 text-[10px] text-slate-400/80">
+                  <p className="mt-0.5 text-[10px] text-muted-foreground/80">
                     {snippetStatus.hint}
                   </p>
                 </div>
@@ -722,7 +722,7 @@ export function LOAProcessor() {
 
               {/* Snippet Preview */}
               {personnelSnippet && (
-                <div className="mt-3 rounded-xl border border-white/5 bg-slate-950/50 p-3">
+                <div className="mt-3 rounded-xl border border-border bg-surface-raised/60 p-3">
                   <pre className="whitespace-pre-wrap break-all font-mono text-xs leading-relaxed text-emerald-200/90">
                     {personnelSnippet}
                   </pre>
@@ -735,7 +735,7 @@ export function LOAProcessor() {
                   type="button"
                   onClick={handleCopySnippet}
                   disabled={!personnelSnippet}
-                  className="whitespace-nowrap rounded-xl border border-blue-500/30 bg-blue-500/15 px-4 py-2.5 text-sm font-medium text-blue-300 transition-all duration-200 hover:scale-[1.01] hover:border-blue-500/50 hover:bg-blue-500/25 hover:text-blue-200 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="whitespace-nowrap rounded-xl border border-blue-500/30 bg-blue-500/15 px-4 py-2.5 text-sm font-medium text-blue-300 transition-all duration-200 hover:scale-[1.02] hover:border-blue-500/50 hover:bg-blue-500/25 hover:text-blue-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Copy className="mr-2 h-4 w-4" />
                   Copy Snippet
@@ -744,7 +744,7 @@ export function LOAProcessor() {
                   href="https://gov.eclipse-rp.net/viewforum.php?f=605"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-slate-800/50 px-4 py-2.5 text-sm font-medium text-slate-300 transition-all duration-200 hover:scale-[1.01] hover:border-white/20 hover:bg-slate-800 hover:text-white active:scale-[0.99]"
+                  className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-border bg-surface-hover/50 px-4 py-2.5 text-sm font-medium text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-border hover:bg-surface-hover hover:text-foreground active:scale-[0.98]"
                 >
                   <ExternalLink className="h-4 w-4" />
                   Personnel Files
@@ -753,7 +753,7 @@ export function LOAProcessor() {
                   href="https://gov.eclipse-rp.net/viewforum.php?f=615"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/15 px-4 py-2.5 text-sm font-medium text-emerald-300 transition-all duration-200 hover:scale-[1.01] hover:border-emerald-500/50 hover:bg-emerald-500/25 hover:text-emerald-200 active:scale-[0.99]"
+                  className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/15 px-4 py-2.5 text-sm font-medium text-emerald-300 transition-all duration-200 hover:scale-[1.02] hover:border-emerald-500/50 hover:bg-emerald-500/25 hover:text-emerald-200 active:scale-[0.98]"
                 >
                   <ExternalLink className="h-4 w-4" />
                   Active LOA Section
@@ -763,7 +763,7 @@ export function LOAProcessor() {
                     href="https://ecrplsems.com/tasks"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-purple-500/30 bg-purple-500/15 px-4 py-2.5 text-sm font-medium text-purple-300 transition-all duration-200 hover:scale-[1.01] hover:border-purple-500/50 hover:bg-purple-500/25 hover:text-purple-200 active:scale-[0.99]"
+                    className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-purple-500/30 bg-purple-500/15 px-4 py-2.5 text-sm font-medium text-purple-300 transition-all duration-200 hover:scale-[1.02] hover:border-purple-500/50 hover:bg-purple-500/25 hover:text-purple-200 active:scale-[0.98]"
                   >
                     <ExternalLink className="h-4 w-4" />
                     LSEMS Dashboard
@@ -794,7 +794,7 @@ export function LOAProcessor() {
                   href="https://gov.eclipse-rp.net/viewforum.php?f=605"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-blue-500/30 bg-blue-500/15 px-4 py-2.5 text-sm font-medium text-blue-300 transition-all duration-200 hover:border-blue-500/50 hover:bg-blue-500/25 hover:text-blue-200 hover:scale-[1.01] active:scale-[0.99]"
+                  className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-blue-500/30 bg-blue-500/15 px-4 py-2.5 text-sm font-medium text-blue-300 transition-all duration-200 hover:border-blue-500/50 hover:bg-blue-500/25 hover:text-blue-200 hover:scale-[1.02] active:scale-[0.98]"
                 >
                   <ExternalLink className="h-4 w-4" />
                   Open Personnel Files
@@ -803,7 +803,7 @@ export function LOAProcessor() {
                   href="https://gov.eclipse-rp.net/viewforum.php?f=615"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/15 px-4 py-2.5 text-sm font-medium text-emerald-300 transition-all duration-200 hover:border-emerald-500/50 hover:bg-emerald-500/25 hover:text-emerald-200 hover:scale-[1.01] active:scale-[0.99]"
+                  className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/15 px-4 py-2.5 text-sm font-medium text-emerald-300 transition-all duration-200 hover:border-emerald-500/50 hover:bg-emerald-500/25 hover:text-emerald-200 hover:scale-[1.02] active:scale-[0.98]"
                 >
                   <ExternalLink className="h-4 w-4" />
                   Active LOA Section
@@ -813,7 +813,7 @@ export function LOAProcessor() {
                     href="https://ecrplsems.com/tasks"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-purple-500/30 bg-purple-500/15 px-4 py-2.5 text-sm font-medium text-purple-300 transition-all duration-200 hover:scale-[1.01] hover:border-purple-500/50 hover:bg-purple-500/25 hover:text-purple-200 active:scale-[0.99]"
+                    className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-purple-500/30 bg-purple-500/15 px-4 py-2.5 text-sm font-medium text-purple-300 transition-all duration-200 hover:scale-[1.02] hover:border-purple-500/50 hover:bg-purple-500/25 hover:text-purple-200 active:scale-[0.98]"
                   >
                     <ExternalLink className="h-4 w-4" />
                     LSEMS Dashboard
@@ -828,7 +828,7 @@ export function LOAProcessor() {
           <Button
             onClick={handleCopy}
             disabled={!generatedBBCode}
-            className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 py-6 text-base font-semibold text-white shadow-lg shadow-blue-950/30 transition-all duration-300 hover:from-blue-500 hover:to-purple-500 hover:shadow-xl hover:shadow-blue-950/40 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 py-6 text-base font-semibold text-foreground shadow-lg shadow-blue-950/30 transition-all duration-200 hover:from-blue-500 hover:to-purple-500 hover:shadow-xl hover:shadow-blue-950/40 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Copy className="mr-2 h-4 w-4" />
             Copy BBCode
@@ -836,11 +836,11 @@ export function LOAProcessor() {
         </div>
 
         {/* Right: Preview */}
-        <div className="rounded-2xl border border-white/10 bg-slate-900/90">
-          <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+        <div className="panel">
+          <div className="flex items-center justify-between border-b border-border px-5 py-4">
             <div className="flex items-center gap-2">
-              <FileText className="h-4 w-4 text-slate-400" />
-              <h3 className="text-sm font-semibold text-white">
+              <FileText className="h-4 w-4 text-muted-foreground" />
+              <h3 className="text-sm font-semibold text-foreground">
                 BBCode Preview
               </h3>
             </div>
@@ -853,7 +853,7 @@ export function LOAProcessor() {
             )}
           </div>
           <div className="p-5">
-            <pre className="max-h-[600px] overflow-auto whitespace-pre-wrap rounded-xl border border-white/5 bg-slate-950/50 p-4 font-mono text-xs leading-relaxed text-slate-300">
+            <pre className="max-h-[600px] overflow-auto whitespace-pre-wrap rounded-xl border border-border bg-surface-raised/60 p-4 font-mono text-xs leading-relaxed text-muted-foreground">
               {generatedBBCode || "// Fill in the fields to generate BBCode"}
             </pre>
           </div>

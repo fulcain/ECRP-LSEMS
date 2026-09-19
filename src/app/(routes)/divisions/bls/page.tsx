@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { directorTitleForDivisionKey } from "@/app/constants/general/directorRoles";
 import { useMedic } from "@/app/context/MedicContext";
-import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import { useTabParam } from "@/app/hooks/useTabParam";
 import { blsTemplates } from "@/app/templates/bls-formats";
 import { PageContainer } from "@/components/ui/page-container";
 import { PageHeader } from "@/components/ui/page-header";
@@ -94,39 +94,19 @@ const pageTabs: Tab<BLSPageTab>[] = [
   },
 ];
 
+const tabValues = pageTabs.map((tab) => tab.value);
+const droppedTabParams = ["format", "type"];
+
 export default function BLSFormatsPage() {
   const { medicCredentials, divisionRanks } = useMedic();
-  const [activeTab, setActiveTab] = useLocalStorage<BLSPageTab>(
+  const [activeTab, setActiveTab] = useTabParam(
     "bls-tab",
+    tabValues,
     "formats",
+    // `?format=` belongs to the Formats tab; switching away must not leave it
+    // behind to be picked up on a later load.
+    droppedTabParams,
   );
-
-  // Sync initial tab from URL query param (takes priority over localStorage)
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const fromUrl = params.get("tab") as BLSPageTab | null;
-    if (fromUrl && pageTabs.some((t) => t.value === fromUrl)) {
-      setActiveTab(fromUrl);
-    }
-  }, [setActiveTab]);
-
-  // Sync URL when tab changes (skip initial mount)
-  const tabFirstRender = useRef(true);
-  useEffect(() => {
-    if (tabFirstRender.current) {
-      tabFirstRender.current = false;
-      return;
-    }
-    const params = new URLSearchParams(window.location.search);
-    params.delete("format");
-    params.delete("type");
-    params.set("tab", activeTab);
-    window.history.replaceState(
-      null,
-      "",
-      `${window.location.pathname}?${params.toString()}`,
-    );
-  }, [activeTab]);
 
   const [selectedFormat, setSelectedFormat] =
     useState<(typeof blsTemplates)[number]["value"]>(blsTemplates[0].value);
@@ -336,37 +316,21 @@ export default function BLSFormatsPage() {
         {activeTab === "upcoming-course" && <UpcomingCourseProcessor />}
 
         {activeTab === "formats" && (
-        <div
-          key={animKey}
-          className="relative overflow-hidden rounded-[2rem] border"
-          style={{
-            borderColor: `hsl(${hue} 70% 50% / 0.25)`,
-            background: `linear-gradient(135deg, hsl(${hue} 60% 6% / 0.95), hsl(${hue} 50% 3% / 0.98))`,
-          }}
-        >
-          {/* Animated gradient overlay */}
+        <div key={animKey} className="panel relative overflow-hidden">
+          {/* The format's lifecycle colour used to repaint the entire panel, so
+              the page changed character with every selection and the content
+              sat on a palette of its own. As one accent line the signal
+              survives without competing with the page around it. */}
           <div
-            className="pointer-events-none absolute inset-0 opacity-40"
-            style={{
-              background: `radial-gradient(circle at 20% 30%, hsl(${hsl} / 0.18) 0%, transparent 45%),
-                           radial-gradient(circle at 80% 70%, hsl(${parseInt(hue) + 40} 70% 55% / 0.10) 0%, transparent 40%)`,
-            }}
-          />
-          {/* Extra subtle grid texture */}
-          <div
-            className="pointer-events-none absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage:
-                "linear-gradient(hsla(0,0%,100%,0.1) 1px, transparent 1px), linear-gradient(90deg, hsla(0,0%,100%,0.1) 1px, transparent 1px)",
-              backgroundSize: "32px 32px",
-            }}
+            className="absolute inset-x-0 top-0 h-0.5"
+            style={{ background: `hsl(${hue} 70% 50% / 0.7)` }}
           />
 
-          <div className="relative grid gap-8 p-5 lg:grid-cols-[1.1fr_0.9fr] lg:p-8">
+          <div className="relative grid gap-6 p-4 sm:p-5 lg:grid-cols-[1.1fr_0.9fr] lg:p-6">
             {/* ════ LEFT COLUMN ════ */}
             <section className="min-w-0 space-y-6">
               {/* ── Application Builder ── */}
-              <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
+              <div className="panel-inner p-5 transition-colors hover:border-primary/30">
                 <div className="mb-4 flex items-center gap-2">
                   <div
                     className="flex h-7 w-7 items-center justify-center rounded-lg"
@@ -378,7 +342,7 @@ export default function BLSFormatsPage() {
                     />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-white">
+                    <h3 className="font-semibold text-foreground">
                       Application Builder
                     </h3>
                   </div>
@@ -398,22 +362,22 @@ export default function BLSFormatsPage() {
                     >
                       <SelectTrigger
                         id="bls-format"
-                        className="w-full border-slate-700 bg-slate-800 text-white transition-all duration-200 hover:border-slate-500 focus-visible:ring-2"
+                        className="w-full border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
                       >
                         <SelectValue placeholder="Select a format" />
                       </SelectTrigger>
-                      <SelectContent className="border-slate-700/80 bg-slate-900 text-white">
+                      <SelectContent className="border-border/80 bg-surface text-foreground">
                         {blsTemplates.map((option) => {
                           const optHue = formatHue[option.value] ?? "0";
                           return (
                             <SelectItem
                               key={option.value}
                               value={option.value}
-                              className="transition-all duration-150 hover:bg-slate-700/60"
+                              className="transition-all duration-200 hover:bg-surface-hover/60"
                             >
                               <span className="flex min-w-0 items-center gap-2.5">
                                 <span
-                                  className="inline-block h-2.5 w-2.5 shrink-0 rounded-full ring-1 ring-white/20"
+                                  className="inline-block h-2.5 w-2.5 shrink-0 rounded-full ring-1 ring-border"
                                   style={{
                                     backgroundColor: `hsl(${optHue} 70% 55%)`,
                                   }}
@@ -439,7 +403,7 @@ export default function BLSFormatsPage() {
                         value={applicantName}
                         onChange={(event) => setApplicantName(event.target.value)}
                         placeholder="Enter the applicant's name"
-                        className="border-slate-700 bg-slate-800 text-white placeholder:text-slate-400 transition-all duration-200 hover:border-slate-500 focus-visible:ring-2"
+                        className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
                       />
                     </div>
                   </div>
@@ -448,9 +412,9 @@ export default function BLSFormatsPage() {
                   {supportsDenialDetails && (
                     <div
                       key="denied"
-                      className="animate-fade-up space-y-4 rounded-xl border border-white/5 bg-slate-800/40 p-4"
+                      className="animate-fade-up space-y-4 rounded-xl border border-border bg-surface-hover/40 p-4"
                     >
-                      <p className="text-xs font-semibold tracking-[0.2em] text-red-300 uppercase">
+                      <p className="text-xs font-semibold tracking-[0.18em] text-red-300 uppercase">
                         Denial details
                       </p>
 
@@ -469,9 +433,9 @@ export default function BLSFormatsPage() {
                             )
                           }
                           placeholder="7, 14 or 30"
-                          className="border-slate-700 bg-slate-800 text-white placeholder:text-slate-400 transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-500/30"
+                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-500/30"
                         />
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-muted-foreground">
                           Number of days the applicant must wait before they
                           can reapply.
                         </p>
@@ -486,9 +450,9 @@ export default function BLSFormatsPage() {
                             setReapplyDate(event.target.value)
                           }
                           placeholder="e.g. 01 AUG 2026"
-                          className="border-slate-700 bg-slate-800 text-white placeholder:text-slate-400 transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-500/30"
+                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-500/30"
                         />
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-muted-foreground">
                           The exact date the applicant may reapply.
                         </p>
                       </div>
@@ -499,9 +463,9 @@ export default function BLSFormatsPage() {
                   {supportsCourseDetails && (
                     <div
                       key="course"
-                      className="animate-fade-up space-y-3 rounded-xl border border-white/5 bg-slate-800/40 p-4"
+                      className="animate-fade-up space-y-3 rounded-xl border border-border bg-surface-hover/40 p-4"
                     >
-                      <p className="text-xs font-semibold tracking-[0.2em] text-blue-300 uppercase">
+                      <p className="text-xs font-semibold tracking-[0.18em] text-primary uppercase">
                         Upcoming class details
                       </p>
                       <div className="space-y-2">
@@ -513,9 +477,9 @@ export default function BLSFormatsPage() {
                             setCourseDate(event.target.value)
                           }
                           placeholder="e.g. 01/FEB/2026"
-                          className="border-slate-700 bg-slate-800 text-white placeholder:text-slate-400 transition-all duration-200 hover:border-blue-500/50 focus-visible:ring-2 focus-visible:ring-blue-500/30"
+                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-blue-500/30"
                         />
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-muted-foreground">
                           Used both for the header date and the timezone image
                           URL. Format: <span className="font-mono">DD/MMM/YYYY</span>.
                         </p>
@@ -529,9 +493,9 @@ export default function BLSFormatsPage() {
                             setCourseTime(event.target.value)
                           }
                           placeholder="e.g. 12:00"
-                          className="border-slate-700 bg-slate-800 text-white placeholder:text-slate-400 transition-all duration-200 hover:border-blue-500/50 focus-visible:ring-2 focus-visible:ring-blue-500/30"
+                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-blue-500/30"
                         />
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-muted-foreground">
                           24-hour, <span className="font-mono">HH:MM</span>.
                           Used to build the timezone image.
                         </p>
@@ -543,9 +507,9 @@ export default function BLSFormatsPage() {
                   {supportsReasons && (
                     <div
                       key="on-hold-reasons"
-                      className="animate-fade-up space-y-3 rounded-xl border border-white/5 bg-slate-800/40 p-4"
+                      className="animate-fade-up space-y-3 rounded-xl border border-border bg-surface-hover/40 p-4"
                     >
-                      <p className="text-xs font-semibold tracking-[0.2em] text-amber-300 uppercase">
+                      <p className="text-xs font-semibold tracking-[0.18em] text-amber-300 uppercase">
                         Hold reasons
                       </p>
                       <div className="space-y-2">
@@ -561,7 +525,7 @@ export default function BLSFormatsPage() {
                                 updateReason(index, e.target.value)
                               }
                               placeholder={`Reason ${index + 1}`}
-                              className="flex-1 border-slate-700 bg-slate-800 text-white placeholder:text-slate-400 transition-all duration-200 hover:border-amber-500/50 focus-visible:ring-2 focus-visible:ring-amber-500/30"
+                              className="flex-1 border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-amber-500/50 focus-visible:ring-2 focus-visible:ring-amber-500/30"
                             />
                             {reasons.length > 1 && (
                               <Button
@@ -569,7 +533,7 @@ export default function BLSFormatsPage() {
                                 onClick={() => removeReason(index)}
                                 size="icon"
                                 variant="ghost"
-                                className="h-10 w-10 shrink-0 text-red-400 transition-all duration-200 hover:scale-110 hover:bg-red-950/40 hover:text-red-300"
+                                className="h-10 w-10 shrink-0 text-red-400 transition-all duration-200 hover:scale-[1.02] hover:bg-red-950/40 hover:text-red-300"
                               >
                                 <X className="h-4 w-4" />
                               </Button>
@@ -582,7 +546,7 @@ export default function BLSFormatsPage() {
                         onClick={addReason}
                         variant="outline"
                         size="sm"
-                        className="border-slate-600 text-slate-300 transition-all duration-200 hover:scale-[1.02] hover:border-amber-500/40 hover:bg-amber-950/20 hover:text-amber-200"
+                        className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-amber-500/40 hover:bg-amber-950/20 hover:text-amber-200"
                       >
                         <Plus className="mr-1.5 h-3.5 w-3.5" />
                         Add reason
@@ -598,7 +562,7 @@ export default function BLSFormatsPage() {
                   className={`rounded-[1.5rem] border bg-gradient-to-br p-5 transition-colors duration-200 ${activeFormat.border} ${activeFormat.accent} hover:brightness-110`}
                 >
                   <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                    <h3 className="font-semibold text-white">Live Format Card</h3>
+                    <h3 className="font-semibold text-foreground">Live Format Card</h3>
                     <span
                       className={`rounded-full px-3 py-1 text-xs font-semibold ${activeFormat.badge}`}
                     >
@@ -606,42 +570,42 @@ export default function BLSFormatsPage() {
                     </span>
                   </div>
 
-                  <div className="space-y-3 text-sm text-slate-200">
+                  <div className="space-y-3 text-sm text-foreground">
                     {/* Applicant */}
-                    <div className="group min-w-0 rounded-2xl border border-white/10 bg-slate-950/45 p-4 transition-all duration-200 hover:border-white/20 hover:bg-slate-950/60">
-                      <p className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.24em] text-slate-500 uppercase">
+                    <div className="group min-w-0 rounded-2xl border border-border bg-background/45 p-4 transition-all duration-200 hover:border-border hover:bg-background/60">
+                      <p className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
                         <span
                           className="inline-block h-1.5 w-1.5 rounded-full"
                           style={{ backgroundColor: `hsl(${hsl})` }}
                         />
                         Applicant
                       </p>
-                      <p className="text-xl font-semibold tracking-tight text-white [overflow-wrap:anywhere]">
+                      <p className="text-xl font-semibold tracking-tight text-foreground [overflow-wrap:anywhere]">
                         {applicantName.trim() || "Applicant Name"}
                       </p>
                     </div>
 
                     {/* Ranks */}
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      <div className="min-w-0 rounded-2xl border border-white/10 bg-slate-950/45 p-4 transition-all duration-200 hover:border-white/20 hover:bg-slate-950/60">
-                        <p className="mb-1 text-[10px] font-semibold tracking-[0.24em] text-slate-500 uppercase">
+                      <div className="min-w-0 rounded-2xl border border-border bg-background/45 p-4 transition-all duration-200 hover:border-border hover:bg-background/60">
+                        <p className="mb-1 text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
                           Saved Rank
                         </p>
-                        <p className="truncate font-medium text-white">
+                        <p className="truncate font-medium text-foreground">
                           {medicCredentials.rank || (
-                            <span className="text-slate-500 italic">
+                            <span className="text-muted-foreground italic">
                               Not set
                             </span>
                           )}
                         </p>
                       </div>
-                      <div className="min-w-0 rounded-2xl border border-white/10 bg-slate-950/45 p-4 transition-all duration-200 hover:border-white/20 hover:bg-slate-950/60">
-                        <p className="mb-1 text-[10px] font-semibold tracking-[0.24em] text-slate-500 uppercase">
+                      <div className="min-w-0 rounded-2xl border border-border bg-background/45 p-4 transition-all duration-200 hover:border-border hover:bg-background/60">
+                        <p className="mb-1 text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
                           BLS Rank
                         </p>
-                        <p className="truncate font-medium text-white">
+                        <p className="truncate font-medium text-foreground">
                           {blsRank || (
-                            <span className="text-slate-500 italic">
+                            <span className="text-muted-foreground italic">
                               Not set
                             </span>
                           )}
@@ -650,8 +614,8 @@ export default function BLSFormatsPage() {
                     </div>
 
                     {/* Signature */}
-                    <div className="group min-w-0 rounded-2xl border border-white/10 bg-slate-950/45 p-4 transition-all duration-200 hover:border-white/20 hover:bg-slate-950/60">
-                      <div className="mb-2 flex items-center gap-2 text-white">
+                    <div className="group min-w-0 rounded-2xl border border-border bg-background/45 p-4 transition-all duration-200 hover:border-border hover:bg-background/60">
+                      <div className="mb-2 flex items-center gap-2 text-foreground">
                         <Signature
                           className="h-4 w-4"
                           style={{ color: `hsl(${hsl})` }}
@@ -664,12 +628,12 @@ export default function BLSFormatsPage() {
                           alt="Saved signature"
                           width={260}
                           height={70}
-                          className="h-auto max-h-20 max-w-full w-auto rounded-md bg-white/95 p-2 object-contain ring-1 ring-white/10 transition-all duration-200 group-hover:ring-white/20"
+                          className="h-auto max-h-20 max-w-full w-auto rounded-md bg-white/95 p-2 object-contain ring-1 ring-border transition-all duration-200 group-hover:ring-border"
                         />
                       ) : (
-                        <p className="text-sm leading-relaxed text-slate-400">
+                        <p className="text-sm leading-relaxed text-muted-foreground">
                           Add your signature from the{" "}
-                          <span className="font-medium text-slate-300">
+                          <span className="font-medium text-muted-foreground">
                             Staff Page
                           </span>{" "}
                           to have it dropped into each BLS format.
@@ -684,13 +648,13 @@ export default function BLSFormatsPage() {
             {/* ════ RIGHT COLUMN ════ */}
             <section className="min-w-0 space-y-6">
               {/* ── Generated Output ── */}
-              <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/90 p-5 transition-colors duration-200 hover:border-white/20">
+              <div className="panel-inner p-5 transition-colors hover:border-primary/30">
                 <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <p className="text-[10px] font-semibold tracking-[0.28em] text-slate-500 uppercase">
+                    <p className="text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
                       Generated Output
                     </p>
-                    <h3 className="mt-0.5 text-xl font-semibold text-white">
+                    <h3 className="mt-0.5 text-xl font-semibold text-foreground">
                       Ready to paste BBCode
                     </h3>
                   </div>
@@ -706,7 +670,7 @@ export default function BLSFormatsPage() {
                         }
                         variant="outline"
                         size="sm"
-                        className="border-blue-600/50 text-blue-300 transition-all duration-200 hover:scale-[1.03] hover:border-blue-500 hover:bg-blue-950/40 hover:text-blue-200"
+                        className="border-primary/40 text-primary transition-all duration-200 hover:scale-[1.02] hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
                       >
                         <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
                         Timezone Map
@@ -714,17 +678,17 @@ export default function BLSFormatsPage() {
                     )}
                     {activeFormat.titleTag && (
                       <>
-                        <span className="min-w-0 flex-1 truncate rounded-md border border-slate-700 bg-slate-900/80 px-2.5 py-1 font-mono text-xs tracking-wide text-slate-300 shadow-sm">
+                        <span className="min-w-0 flex-1 truncate rounded-md border border-border bg-surface/80 px-2.5 py-1 font-mono text-xs tracking-wide text-muted-foreground shadow-sm">
                           {fullTitle}
                         </span>
                         <Button
                           onClick={handleCopyTitleTag}
                           variant="outline"
                           size="sm"
-                          className={`transition-all duration-200 hover:scale-[1.03] ${
+                          className={`transition-all duration-200 hover:scale-[1.02] ${
                             copiedTitleTag
                               ? "border-emerald-500/60 bg-emerald-950/30 text-emerald-300"
-                              : "border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white"
+                              : "border-border text-muted-foreground hover:bg-surface-hover hover:text-foreground"
                           }`}
                           title={`Copies "${fullTitle}" to your clipboard`}
                         >
@@ -740,9 +704,9 @@ export default function BLSFormatsPage() {
                     <Button
                       onClick={handleCopy}
                       size="default"
-                      className={`transition-all duration-200 hover:scale-[1.03] active:scale-95 ${
+                      className={`transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
                         copied
-                          ? "bg-emerald-600 text-white hover:bg-emerald-500"
+                          ? "bg-emerald-600 text-foreground hover:bg-emerald-500"
                           : ""
                       }`}
                       style={
@@ -767,7 +731,7 @@ export default function BLSFormatsPage() {
                 <Textarea
                   value={bbcodeOutput}
                   readOnly
-                  className="min-h-[340px] resize-none border-slate-700/60 bg-slate-950/80 font-mono text-sm leading-relaxed text-slate-100 transition-all duration-200 focus-visible:ring-2 lg:min-h-[460px]"
+                  className="min-h-[340px] resize-none border-border/60 bg-background/80 font-mono text-sm leading-relaxed text-foreground transition-all duration-200 focus-visible:ring-2 lg:min-h-[460px]"
                 />
               </div>
             </section>

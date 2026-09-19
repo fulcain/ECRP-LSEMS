@@ -41,7 +41,7 @@ export function UserMenu() {
   }, []);
 
   if (user === undefined) {
-    return <div className="h-9 w-9 rounded-full bg-slate-700 animate-pulse" />;
+    return <div className="h-9 w-9 rounded-full bg-surface-hover animate-pulse" />;
   }
 
   if (!user) {
@@ -72,15 +72,15 @@ export function UserMenu() {
           <img
             src={user.avatarUrl}
             alt={displayName}
-            className="h-9 w-9 shrink-0 rounded-full ring-2 ring-slate-700"
+            className="h-9 w-9 shrink-0 rounded-full ring-2 ring-border"
           />
         ) : (
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-700">
-            <UserIcon className="h-4 w-4 text-slate-300" />
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-surface-hover">
+            <UserIcon className="h-4 w-4 text-muted-foreground" />
           </div>
         )}
         <span
-          className="min-w-0 flex-1 truncate text-[13px] font-semibold leading-tight text-white"
+          className="min-w-0 flex-1 truncate text-sm font-semibold leading-tight text-foreground"
           title={displayName}
         >
           {displayName}
@@ -89,7 +89,7 @@ export function UserMenu() {
       <form action="/api/auth/logout" method="post" className="w-full">
         <button
           type="submit"
-          className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-slate-800 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-700"
+          className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-border bg-surface-raised px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-hover"
           title="Sign out"
         >
           <LogOut className="h-4 w-4 shrink-0" />
