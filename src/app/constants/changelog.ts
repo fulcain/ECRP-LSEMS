@@ -17,23 +17,7 @@ export const changeLog: ChangeLogEntry[] = [
     changes: [
       {
         type: "change",
-        description:
-          "The whole interface has been redesigned on one design system. Every page now draws its colours, surfaces, spacing and headings from the same set of tokens, so the app reads as a single product rather than a collection of separate screens.",
-      },
-      {
-        type: "change",
-        description:
-          "Clickable elements now show a pointer cursor again, including buttons, menu items, checkboxes and the timezone picker.",
-      },
-      {
-        type: "change",
-        description:
-          "The sidebar was reworked: the LSEMS emblem is used as the brand and stays visible when the rail is collapsed, the navigation rows are taller, and the desktop and mobile menus now use the same highlight for the current page.",
-      },
-      {
-        type: "change",
-        description:
-          "The Availability tool no longer shows a weekly time total or a per-day hour count.",
+        description: "The whole interface has been redesigned.",
       },
     ],
   },
