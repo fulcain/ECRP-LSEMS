@@ -28,10 +28,6 @@ export const FT = {
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=178482",
       },
       {
-        name: "LSEMS",
-        url: "https://ecrp-ftd.vercel.app/",
-      },
-      {
         name: "FT Session Reports",
         url: "https://docs.google.com/forms/d/e/1FAIpQLSdRDNSsxhEgMgegEoDdd1NURAB84RgPKwaK34nD2emK2k24sg/viewform",
       },
