@@ -27,6 +27,14 @@ export const PILOT = {
         name: "Ability Course (Instructor+)",
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=211472",
       },
+        {
+        name: "Senior Pilot Profiles (Instructor+)",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=1232",
+      },
+      {
+        name: "Flight Instructor Profiles (Instructor+)",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=3950",
+      },
       {
         name: "Instructor Area (Instructor+)",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=3545",
