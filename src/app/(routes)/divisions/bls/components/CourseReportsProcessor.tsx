@@ -96,6 +96,13 @@ const PRICE_HINT_BBCODE = `Full Price: $20,000 cash or $21,000 wire.
 Discount: $10,000 cash or $11,000 wire for JB, DCC, Bayview, Bennys & Weazel personnel.
 Free: SADOC (CO1+), LSPD, Reapplicants, LSSD & LSEMS`;
 
+/** GOV topic each report type is posted into. */
+const REPORT_TOPIC_URLS: Record<CourseReportType, string> = {
+  joint: "https://gov.eclipse-rp.net/viewtopic.php?t=222067",
+  normal: "https://gov.eclipse-rp.net/viewtopic.php?t=129042",
+  ots: "https://gov.eclipse-rp.net/viewtopic.php?t=129042",
+};
+
 export function CourseReportsProcessor() {
   const { medicCredentials, divisionRanks } = useMedic();
   const [reportType, setReportType] = useLocalStorage<CourseReportType>(
@@ -328,6 +335,13 @@ export function CourseReportsProcessor() {
   const handleCopy = async () => {
     await navigator.clipboard.writeText(bbcodeOutput);
     flashCopied();
+  };
+
+  // Open first so the popup is not blocked by the await below losing the
+  // user-activation window, then copy.
+  const handleCopyAndOpen = () => {
+    window.open(REPORT_TOPIC_URLS[reportType], "_blank", "noopener,noreferrer");
+    void navigator.clipboard.writeText(bbcodeOutput).then(flashCopied);
   };
 
   const hsl = `${HUE} 70% 55%`;
@@ -889,8 +903,11 @@ export function CourseReportsProcessor() {
                         variant="outline"
                         size="sm"
                         onClick={() =>
-                          (window.location.href =
-                            "/divisions/bls?tab=formats&format=quick-guide")
+                          window.open(
+                            "/divisions/bls?tab=formats&format=quick-guide",
+                            "_blank",
+                            "noopener,noreferrer",
+                          )
                         }
                         className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-cyan-500/40 hover:bg-cyan-950/20 hover:text-cyan-200"
                       >
@@ -966,27 +983,38 @@ export function CourseReportsProcessor() {
                     Ready to paste BBCode
                   </h3>
                 </div>
-                <Button
-                  onClick={handleCopy}
-                  size="default"
-                  className={`transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
-                    copied
-                      ? "bg-emerald-600 text-foreground hover:bg-emerald-500"
-                      : ""
-                  }`}
-                  style={
-                    !copied
-                      ? { backgroundColor: `hsl(${hsl})`, color: "white" }
-                      : {}
-                  }
-                >
-                  {copied ? (
-                    <Check className="cr-animate-check h-4 w-4" />
-                  ) : (
-                    <ClipboardCopy className="h-4 w-4" />
-                  )}
-                  {copied ? "Copied!" : "Copy BBCode"}
-                </Button>
+                <div className="flex items-start gap-2">
+                  <Button
+                    onClick={handleCopyAndOpen}
+                    variant="outline"
+                    size="default"
+                    className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-cyan-500/40 hover:bg-cyan-950/20 hover:text-cyan-200 active:scale-[0.98]"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Copy &amp; Open Report
+                  </Button>
+                  <Button
+                    onClick={handleCopy}
+                    size="default"
+                    className={`transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
+                      copied
+                        ? "bg-emerald-600 text-foreground hover:bg-emerald-500"
+                        : ""
+                    }`}
+                    style={
+                      !copied
+                        ? { backgroundColor: `hsl(${hsl})`, color: "white" }
+                        : {}
+                    }
+                  >
+                    {copied ? (
+                      <Check className="cr-animate-check h-4 w-4" />
+                    ) : (
+                      <ClipboardCopy className="h-4 w-4" />
+                    )}
+                    {copied ? "Copied!" : "Copy BBCode"}
+                  </Button>
+                </div>
               </div>
 
               <Textarea

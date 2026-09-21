@@ -78,13 +78,16 @@ function renderStandardCourseReport({
 
   const guideTick = guideEmailSent ? "✓" : " ";
 
+  // An empty receipt would render a broken [url=] tag, so print N/A instead.
+  const receiptLink = receiptUrl
+    ? `[url=${receiptUrl}]*Attachment*[/url]`
+    : "N/A";
+
   const confirmationSection =
     type === "normal"
       ? `[b]Funds Obtained: [/b] $${fundsObtained || "HERE"}\n[i]Place a tick (✓) in the box[/i]\n[b]Money given to the Government?[/b] [${
           moneyGivenToGovernment ? "✓" : " "
-        }] \n[b]BLS Guide email sent?[/b] [${guideTick}] \n[b]Receipt:[/b] [url=${
-          receiptUrl || ""
-        }]*Attachment*[/url]`
+        }] \n[b]BLS Guide email sent?[/b] [${guideTick}] \n[b]Receipt:[/b] ${receiptLink}`
       : `[i]Place a tick (✓) in the box[/i]\n[b]BLS Guide email sent?[/b] [${guideTick}] `;
 
   return `[img]${headerImg}[/img]
@@ -140,6 +143,14 @@ function renderOtsCourseReport({
     .join("\n");
   const studentBlock = studentLines || "[*] Fname Lname - Company";
 
+  // An empty receipt would render a broken [url=] tag, so print N/A instead.
+  const receiptFundsLink = receiptUrl
+    ? `[url=${receiptUrl}]*Attachment*[/url]`
+    : "N/A";
+  const receiptWeazelLink = receiptWeazelUrl
+    ? `[url=${receiptWeazelUrl}]*Attachment*[/url]`
+    : "N/A";
+
   const signatureImg = medicSignature
     ? `[img]${medicSignature}[/img]`
     : `[b]Signature[/b]: [Add your saved signature in Staff Page]`;
@@ -159,8 +170,8 @@ ${studentBlock}
 [b]Funds Obtained: [/b] $${fundsObtained || "HERE"}
 [i]Place a tick (✓) in the box[/i]
 [b]Money given to the Government?[/b] [${moneyGivenToGovernment ? "✓" : " "}] 
-[b]Receipt (funds):[/b] [url=${receiptUrl || ""}]*Attachment*[/url]
-[b]Receipt (Weazel):[/b] [url=${receiptWeazelUrl || ""}]*Attachment*[/url]
+[b]Receipt (funds):[/b] ${receiptFundsLink}
+[b]Receipt (Weazel):[/b] ${receiptWeazelLink}
 
 ${signatureImg}
 [i]${nameLine}[/i]
