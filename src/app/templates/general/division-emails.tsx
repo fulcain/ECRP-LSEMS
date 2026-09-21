@@ -44,7 +44,17 @@ export const generateEmailTemplate = ({
     : division?.divisionName;
 
   // omitRecipientSection drops the "Dear …," greeting and the closing
-  // signature bar; omitBodySignature drops the body sign-off.
+  // signature bar; omitBodySignature drops the body sign-off. Separators ride
+  // inside the kept branches, so an omitted piece leaves no blank line behind.
+  const greeting =
+    !omitRecipientSection && recipient ? `[b]Dear ${recipient}[/b],\n\n` : "";
+  const bodySignOff = omitBodySignature
+    ? ""
+    : `\nBe well,\n\n[img]${medicCredentials.signature || "https://i.ibb.co/8DqJghtt/7flpkan.png"}[/img]\n[i]${medicCredentials.name || "Name"}[/i]\n`;
+  const closingBar = omitRecipientSection
+    ? ""
+    : `\n[divbox=#8d1717][color=transparent]spacer[/color][/divbox]\n[divbox4=eeeeee]\n[mdsig name="${medicCredentials.name || "Name"}" role="${roleLine}" img="${medicCredentials.signature || "https://i.ibb.co/8DqJghtt/7flpkan.png"}" height=38]\n[/divbox4]`;
+
   return `[mdheader2
 title="${subject ? `${subject} | ${date}` : `${date}`}"
 location="${locationParam}"
@@ -53,26 +63,6 @@ logo="${division?.image || "https://i.ibb.co/3mzQcHXM/QYXPM0p.png"}"
 department="One Team, One Mission, Saving Lives"
 ][/mdheader2]
 [divbox4=eeeeee]
-${!omitRecipientSection && recipient ? `[b]Dear ${recipient}[/b],` : ""}
-
-MESSAGE TEXT GOES HERE
-
-${
-    omitBodySignature
-      ? ""
-      : `Be well,
-
-[img]${medicCredentials.signature || "https://i.ibb.co/8DqJghtt/7flpkan.png"}[/img]
-[i]${medicCredentials.name || "Name"}[/i]
-`
-  }[/divbox4]
-${
-    omitRecipientSection
-      ? ""
-      : `[divbox=#8d1717][color=transparent]spacer[/color][/divbox]
-[divbox4=eeeeee]
-[mdsig name="${medicCredentials.name || "Name"}" role="${roleLine}" img="${medicCredentials.signature || "https://i.ibb.co/8DqJghtt/7flpkan.png"}" height=38]
-[/divbox4]
-`
-  }`;
+${greeting}MESSAGE TEXT GOES HERE
+${bodySignOff}[/divbox4]${closingBar}`;
 };
