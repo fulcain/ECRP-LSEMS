@@ -9,8 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
-import { useMedic } from "@/app/context/MedicContext";
-import { DIVISIONS } from "@/configs/roles";
 
 import {
   generateFtoCreationBBCode,
@@ -21,8 +19,6 @@ import {
 const FORM_STORAGE_KEY = "ftd-fto-creation-form-v2";
 
 export function FtoCreationCard({ onRefresh }: { onRefresh?: () => void }) {
-  const { medicCredentials, divisionRanks } = useMedic();
-
   const [savedForm, setSavedForm] = useLocalStorage(FORM_STORAGE_KEY, {
     ftoTraineeName: "",
     applicationDate: "",
@@ -47,19 +43,10 @@ export function FtoCreationCard({ onRefresh }: { onRefresh?: () => void }) {
       generateFtoCreationBBCode({
         applicationName: ftoTraineeName,
         applicationDate,
-        // The certifier is the member generating the post: their Staff Page
-        // details fill the `I, ... hereby certify ...` sentence. The header
-        // lines and closing signature block stay blank for hand-filling.
-        certifiedBy: `${
-          divisionRanks[DIVISIONS.ftd.label] || medicCredentials.rank
-        } ${medicCredentials.name}`.trim(),
-        certifierName: "",
-        certifierRank: "",
-        signature: "",
-        completionDate: "",
       }),
-    [ftoTraineeName, applicationDate, medicCredentials, divisionRanks],
+    [ftoTraineeName, applicationDate],
   );
+
 
   const hasApplicationInfo = ftoTraineeName.trim() !== "";
 

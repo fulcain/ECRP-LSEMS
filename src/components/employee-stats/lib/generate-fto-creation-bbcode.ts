@@ -101,7 +101,7 @@ Explain the Three Pillars in detail:
 
 [divbox4=white]
 [b][i]Sign please:[/i][/b]
-I, [b]{CERTIFIED_BY}[/b], hereby certify [b]{STUDENT_NAME}[/b] as a [b]Field Training Officer[/b].
+I, [b]Rank Fname Lname[/b], hereby certify [b]{STUDENT_NAME}[/b] as a [b]Field Training Officer[/b].
 
 [i]*Fill out the top post, and add your name, rank & date of training, please![/i]
 [hr][/hr]
@@ -133,29 +133,17 @@ export interface FtoCreationBBCodeValues {
    * `13/Jul/2026`). Whatever the user typed - we don't reformat.
    */
   applicationDate: string;
-  /** The certifying member's own details (the Staff Page). */
-  certifiedBy: string;
-  certifierName: string;
-  certifierRank: string;
-  signature: string;
-  /** Date of completion in `DD/MMM/YYYY` form (e.g. `19/SEP/2026`). */
-  completionDate: string;
 }
-
-/** Keep a readable placeholder in the post when the app has nothing to fill. */
-const withPlaceholder = (value: string, placeholder: string): string =>
-  value.trim() || placeholder;
 
 /**
  * Build the full FTO-Creation BBCode from the application-time values and the
  * certifying member's own Staff Page credentials.
  *
  * The application fields are emitted as empty `""` strings when unset (NOT
- * literal placeholders), so the post still looks clean for a partial fill. The
- * header `Certified by:` / `Date of completion:` lines and the closing
- * signature block are deliberately left blank for the poster to fill by hand;
- * the certifier's details appear only in the `I, ... hereby certify ...`
- * sentence.
+ * literal placeholders), so the post still looks clean for a partial fill.
+ * The post carries no member identity: the `Certified by:` /
+ * `Date of completion:` header lines and every signature line are filled by
+ * hand when the paperwork is signed.
  *
  * `{FT_ROSTER_URL}` is substituted from `GOV_FT_ROSTER_EDIT_URL` so the
  * rendered forum post and the in-app "Open FT Roster" button stay in sync
@@ -164,28 +152,14 @@ const withPlaceholder = (value: string, placeholder: string): string =>
 export function generateFtoCreationBBCode(
   values: FtoCreationBBCodeValues,
 ): string {
-  const certifiedBy = withPlaceholder(values.certifiedBy, "Rank Fname Lname");
-  const certifierName = withPlaceholder(values.certifierName, "Fname Lname");
-  const certifierRank = withPlaceholder(values.certifierRank, "Rank");
-
   return FTO_CREATION_BBCODE_TEMPLATE.replace(
-    /\{STUDENT_NAME\}|\{APPLICATION_DATE\}|\{CERTIFIED_BY\}|\{CERTIFIER_NAME\}|\{CERTIFIER_RANK\}|\{SIGNATURE\}|\{COMPLETION_DATE\}|\{FT_ROSTER_URL\}/g,
+    /\{STUDENT_NAME\}|\{APPLICATION_DATE\}|\{FT_ROSTER_URL\}/g,
     (token) => {
       switch (token) {
         case "{STUDENT_NAME}":
           return values.applicationName;
         case "{APPLICATION_DATE}":
           return values.applicationDate;
-        case "{CERTIFIED_BY}":
-          return certifiedBy;
-        case "{CERTIFIER_NAME}":
-          return certifierName;
-        case "{CERTIFIER_RANK}":
-          return certifierRank;
-        case "{SIGNATURE}":
-          return withPlaceholder(values.signature, "SIGNATURE");
-        case "{COMPLETION_DATE}":
-          return withPlaceholder(values.completionDate, "DD/MMM/YYYY");
         case "{FT_ROSTER_URL}":
           return GOV_FT_ROSTER_EDIT_URL;
         default:
