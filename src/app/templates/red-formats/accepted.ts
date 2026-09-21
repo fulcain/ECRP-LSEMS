@@ -4,8 +4,8 @@ export const acceptedTemplate: REDTemplateDefinition = {
   value: "accepted",
   label: "Application Processed (Accepted)",
   accent: "from-emerald-500/25 via-green-500/15 to-transparent",
-  border: "border-emerald-400/30",
-  badge: "bg-emerald-500/20 text-emerald-100 ring-1 ring-emerald-400/40",
+  border: "border-emerald-300/30 dark:border-emerald-400/30",
+  badge: "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-100 ring-1 ring-emerald-400/40",
   titleTag: "[ACCEPTED] LSEMS Application",
   renderBody: ({ applicant, medicName, medicRank, medicSignature }) => {
     const signatureImg = medicSignature

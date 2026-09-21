@@ -77,7 +77,7 @@ export function MedicCredentials({
         value={formik.values.signature}
       />
       {formik.touched.signature && formik.errors.signature && (
-        <span className="text-sm text-red-500">{formik.errors.signature}</span>
+        <span className="text-sm text-red-600 dark:text-red-500">{formik.errors.signature}</span>
       )}
 
       {showRankFallback && (
@@ -102,7 +102,7 @@ export function MedicCredentials({
             </SelectContent>
           </Select>
           {formik.touched.rank && formik.errors.rank && (
-            <span className="text-sm text-red-500">{formik.errors.rank}</span>
+            <span className="text-sm text-red-600 dark:text-red-500">{formik.errors.rank}</span>
           )}
         </>
       )}

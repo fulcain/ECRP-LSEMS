@@ -4,8 +4,8 @@ export const extendedLOATemplate: LOATemplateDefinition = {
   value: "extended",
   label: "LOA Extended",
   accent: "from-orange-500/25 via-amber-500/15 to-transparent",
-  border: "border-orange-400/30",
-  badge: "bg-orange-500/20 text-orange-100 ring-1 ring-orange-400/40",
+  border: "border-orange-300/30 dark:border-orange-400/30",
+  badge: "bg-orange-100 dark:bg-orange-500/20 text-orange-100 ring-1 ring-orange-400/40",
   bannerImg: "https://i.ibb.co/S47sdLwj/FQc3DVG.png",
   divboxColor: "darkorange",
   renderBody: ({

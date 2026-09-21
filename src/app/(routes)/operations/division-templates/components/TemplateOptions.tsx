@@ -204,7 +204,7 @@ export default function TemplateOptions({
               <Button
                 size="lg"
                 variant="outline"
-                className="w-full cursor-pointer border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-sky-500/40 hover:bg-sky-950/20 hover:text-sky-200 active:scale-[0.98]"
+                className="w-full cursor-pointer border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-sky-500/40 hover:bg-sky-50/20 dark:hover:bg-sky-950/20 hover:text-sky-200 active:scale-[0.98]"
                 onClick={handleGenerateSignature}
                 disabled={
                   !selectedDivision ||
@@ -218,8 +218,8 @@ export default function TemplateOptions({
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-sky-500/10 ring-1 ring-sky-500/20">
-              <Ambulance className="h-7 w-7 text-sky-400" />
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-sky-50 dark:bg-sky-500/10 ring-1 ring-sky-300/20 dark:ring-sky-500/20">
+              <Ambulance className="h-7 w-7 text-sky-600 dark:text-sky-400" />
             </div>
             <h3 className="mb-1 text-lg font-medium text-foreground">
               Select a Division

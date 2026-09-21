@@ -4,8 +4,8 @@ export const pendingEditTemplate: REDTemplateDefinition = {
   value: "pending-edit",
   label: "Application On Hold (Pending Edit)",
   accent: "from-sky-500/25 via-cyan-500/15 to-transparent",
-  border: "border-sky-400/30",
-  badge: "bg-sky-500/20 text-sky-100 ring-1 ring-sky-400/40",
+  border: "border-sky-300/30 dark:border-sky-400/30",
+  badge: "bg-sky-100 dark:bg-sky-500/20 text-sky-100 ring-1 ring-sky-400/40",
   titleTag: "[PENDING EDIT] LSEMS Application",
   renderBody: ({ applicant, reasons, medicName, medicRank, medicSignature }) => {
     const signatureImg = medicSignature

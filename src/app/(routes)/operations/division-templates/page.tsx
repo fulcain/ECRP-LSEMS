@@ -288,7 +288,6 @@ export default function Home() {
       <ToastContainer
         position="top-right"
         autoClose={2000}
-        theme="dark"
         transition={Bounce}
       />
 

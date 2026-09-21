@@ -8,8 +8,8 @@ export const quickGuideTemplate: BLSTemplateDefinition = {
   value: "quick-guide",
   label: "BLS Quick Guide",
   accent: "from-rose-500/25 via-orange-500/15 to-transparent",
-  border: "border-rose-400/30",
-  badge: "bg-rose-500/20 text-rose-100 ring-1 ring-rose-400/40",
+  border: "border-rose-300/30 dark:border-rose-400/30",
+  badge: "bg-rose-100 dark:bg-rose-500/20 text-rose-100 ring-1 ring-rose-400/40",
   renderBody: () => `[img]https://i.ibb.co/N6Sx6TX0/BLS-Quick-Guide.png[/img]
 [divbox=white]
 [color=transparent]UwU[/color]

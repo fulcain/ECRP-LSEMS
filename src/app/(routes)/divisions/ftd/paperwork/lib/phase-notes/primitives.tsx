@@ -156,7 +156,7 @@ export function Command({ children }: { children: React.ReactNode }) {
 
   return (
     <span className="inline-flex items-center gap-1">
-      <code className="px-1.5 py-0.5 rounded bg-zinc-900/85 dark:bg-zinc-800/85 text-emerald-300 font-mono text-[12px] border border-zinc-700/70 dark:border-zinc-700 whitespace-nowrap align-baseline">
+      <code className="px-1.5 py-0.5 rounded bg-zinc-900/85 dark:bg-zinc-800/85 text-emerald-700 dark:text-emerald-300 font-mono text-[12px] border border-zinc-700/70 dark:border-zinc-600 whitespace-nowrap align-baseline">
         {children}
       </code>
 
@@ -291,7 +291,7 @@ export function Figure({
 
 export function WarningCallout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="my-3 rounded-md border border-amber-500/40 bg-amber-500/10 dark:bg-amber-500/10 px-3.5 py-2.5 flex gap-2.5 items-start">
+    <div className="my-3 rounded-md border border-amber-300/40 dark:border-amber-500/40 bg-amber-50 dark:bg-amber-500/10 dark:bg-amber-500/10 px-3.5 py-2.5 flex gap-2.5 items-start">
       <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0 text-amber-700 dark:text-amber-400" />
       <div className="text-sm font-semibold text-amber-900 dark:text-amber-200 leading-snug">
         {children}
@@ -302,7 +302,7 @@ export function WarningCallout({ children }: { children: React.ReactNode }) {
 
 export function CriticalCallout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="my-3 rounded-md border border-red-500/40 bg-red-500/10 px-3.5 py-2.5 flex gap-2.5 items-start">
+    <div className="my-3 rounded-md border border-red-300/40 dark:border-red-500/40 bg-red-50 dark:bg-red-500/10 px-3.5 py-2.5 flex gap-2.5 items-start">
       <AlertOctagon className="h-4 w-4 mt-0.5 shrink-0 text-red-700 dark:text-red-400" />
       <div className="text-sm font-semibold text-red-800 dark:text-red-300 leading-snug">
         {children}
@@ -313,7 +313,7 @@ export function CriticalCallout({ children }: { children: React.ReactNode }) {
 
 export function ImportantNote({ children }: { children: React.ReactNode }) {
   return (
-    <div className="my-3 rounded-md border border-blue-500/30 bg-blue-500/5 px-3.5 py-2.5 flex gap-2.5 items-start">
+    <div className="my-3 rounded-md border border-blue-300/30 dark:border-blue-500/30 bg-blue-500/5 px-3.5 py-2.5 flex gap-2.5 items-start">
       <Info className="h-4 w-4 mt-0.5 shrink-0 text-blue-700 dark:text-blue-400" />
       <div className="text-sm text-blue-900/90 dark:text-blue-200/90 leading-snug">
         {children}

@@ -4,9 +4,9 @@ export const onHoldTemplate: BLSTemplateDefinition = {
   value: "on-hold",
   label: "On Hold",
   accent: "from-amber-500/25 via-yellow-500/15 to-transparent",
-  border: "border-amber-400/30",
+  border: "border-amber-300/30 dark:border-amber-400/30",
   badge:
-    "bg-amber-500/20 text-amber-100 ring-1 ring-amber-400/40",
+    "bg-amber-100 dark:bg-amber-500/20 text-amber-100 ring-1 ring-amber-400/40",
   titleTag: "[ON HOLD] BLS Training",
   renderBody: ({ applicant, reasons, medicName, medicRank, medicSignature }) => {
     const signatureImg = medicSignature

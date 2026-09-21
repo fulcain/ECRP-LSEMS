@@ -4,8 +4,8 @@ export const pendingDecisionTemplate: REDTemplateDefinition = {
   value: "pending-decision",
   label: "Pending Decision",
   accent: "from-orange-500/25 via-amber-500/15 to-transparent",
-  border: "border-orange-400/30",
-  badge: "bg-orange-500/20 text-orange-100 ring-1 ring-orange-400/40",
+  border: "border-orange-300/30 dark:border-orange-400/30",
+  badge: "bg-orange-100 dark:bg-orange-500/20 text-orange-100 ring-1 ring-orange-400/40",
   titleTag: "[PENDING DECISION] LSEMS Application",
   renderBody: ({ applicant, medicName, medicRank, medicSignature }) => {
     const signatureImg = medicSignature

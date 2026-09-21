@@ -144,7 +144,7 @@ export function StaffSettingsCard({
                 <div className="mt-2 flex flex-col gap-1 text-sm text-muted-foreground">
                   <p>{identityLine}</p>
                   {savedDirectorTitle && (
-                    <p className="inline-flex items-center gap-1.5 text-violet-300">
+                    <p className="inline-flex items-center gap-1.5 text-violet-700 dark:text-violet-300">
                       <Crown className="h-3.5 w-3.5" />
                       <span>{savedDirectorTitle}</span>
                     </p>
@@ -152,7 +152,7 @@ export function StaffSettingsCard({
                 </div>
               )}
               {coveredDivisions.length > 0 && (
-                <p className="mt-2 inline-flex items-start gap-1.5 text-xs text-violet-300/80">
+                <p className="mt-2 inline-flex items-start gap-1.5 text-xs text-violet-700/80 dark:text-violet-300/80">
                   <Crown className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                   <span>
                     Your director role covers {coveredDivisions.join(", ")}.
@@ -188,7 +188,7 @@ export function StaffSettingsCard({
             <Button
               variant="outline"
               onClick={() => setShowEditForm(true)}
-              className="whitespace-nowrap border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-violet-500/40 hover:bg-violet-950/20 hover:text-violet-200 active:scale-[0.98]"
+              className="whitespace-nowrap border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-violet-500/40 hover:bg-violet-50/20 dark:hover:bg-violet-950/20 hover:text-violet-200 active:scale-[0.98]"
             >
               Edit Signature
             </Button>

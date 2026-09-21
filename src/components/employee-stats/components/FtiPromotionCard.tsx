@@ -71,7 +71,7 @@ export function FtiPromotionCard() {
             className="cursor-pointer ml-auto inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
           >
             {titleCopied ? (
-              <Check className="h-3 w-3 text-emerald-400" />
+              <Check className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
             ) : (
               <Copy className="h-3 w-3" />
             )}

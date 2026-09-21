@@ -181,15 +181,15 @@ export function PromotionProcessor() {
 
   return (
     <div className="space-y-4">
-      <ToastContainer position="top-right" autoClose={2000} theme="dark" transition={Bounce} />
+      <ToastContainer position="top-right" autoClose={2000} transition={Bounce} />
 
       {/* Credentials Warning */}
       {isCredentialsEmpty && (
-        <div className="flex items-center gap-3 rounded-xl border border-amber-500/20 bg-amber-500/10 p-4">
-          <AlertTriangle className="h-5 w-5 shrink-0 text-amber-400" />
+        <div className="flex items-center gap-3 rounded-xl border border-amber-300/20 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/10 p-4">
+          <AlertTriangle className="h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" />
           <div>
-            <p className="text-sm font-medium text-amber-300">Staff credentials not set</p>
-            <p className="text-xs text-amber-400/70">
+            <p className="text-sm font-medium text-amber-700 dark:text-amber-300">Staff credentials not set</p>
+            <p className="text-xs text-amber-600/70 dark:text-amber-400/70">
               Set your name, signature, and rank in the{" "}
               <Link href="/workspace/staff" className="underline transition-colors hover:text-amber-300">
                 Staff Page
@@ -314,7 +314,7 @@ export function PromotionProcessor() {
                               className="h-7 w-full border-border bg-surface-raised text-xs text-foreground placeholder:text-muted-foreground sm:w-64"
                             />
                             {(!currentRankInfo?.label || !promotionDate) && (
-                              <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-1 text-[10px] text-amber-400">
+                              <span className="inline-flex items-center gap-1 rounded-md border border-amber-300/30 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-2 py-1 text-[10px] text-amber-600 dark:text-amber-400">
                                 <AlertTriangle className="h-3 w-3" />
                                 Fill rank and date to enable copy
                               </span>
@@ -333,7 +333,7 @@ export function PromotionProcessor() {
                         {step.titleText && (
                           <button
                             onClick={() => copyToClipboard(step.titleText!)}
-                            className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs text-emerald-300 transition-colors hover:bg-emerald-500/20 hover:text-emerald-200"
+                            className="inline-flex items-center gap-1.5 rounded-md border border-emerald-300/30 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 text-xs text-emerald-700 dark:text-emerald-300 transition-colors hover:bg-emerald-500/20 hover:text-emerald-200"
                           >
                             <Copy className="h-3 w-3" />
                             Copy Title
@@ -342,7 +342,7 @@ export function PromotionProcessor() {
                         {step.secondaryCopyText && (
                           <button
                             onClick={() => copyBBCode({ bbCodeText: step.secondaryCopyText! })}
-                            className="inline-flex items-center gap-1.5 rounded-md border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs text-amber-300 transition-colors hover:bg-amber-500/20 hover:text-amber-200"
+                            className="inline-flex items-center gap-1.5 rounded-md border border-amber-300/30 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-2.5 py-1 text-xs text-amber-700 dark:text-amber-300 transition-colors hover:bg-amber-500/20 hover:text-amber-200"
                           >
                             <Copy className="h-3 w-3" />
                             {step.secondaryCopyLabel || "Copy"}
@@ -353,7 +353,7 @@ export function PromotionProcessor() {
                             href={step.action.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-1 text-xs text-indigo-300 transition-colors hover:bg-indigo-500/20 hover:text-indigo-200"
+                            className="inline-flex items-center gap-1.5 rounded-md border border-indigo-300/30 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 text-xs text-indigo-700 dark:text-indigo-300 transition-colors hover:bg-indigo-500/20 hover:text-indigo-200"
                           >
                             <ExternalLink className="h-3 w-3" />
                             {step.action.label}

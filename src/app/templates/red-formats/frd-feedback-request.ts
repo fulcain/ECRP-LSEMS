@@ -4,8 +4,8 @@ export const frdFeedbackRequestTemplate: REDTemplateDefinition = {
   value: "frd-feedback-request",
   label: "FRD Feedback Request",
   accent: "from-violet-500/25 via-purple-500/15 to-transparent",
-  border: "border-violet-400/30",
-  badge: "bg-violet-500/20 text-violet-100 ring-1 ring-violet-400/40",
+  border: "border-violet-300/30 dark:border-violet-400/30",
+  badge: "bg-violet-100 dark:bg-violet-500/20 text-violet-100 ring-1 ring-violet-400/40",
   renderBody: ({
     employeeName,
     medicName,

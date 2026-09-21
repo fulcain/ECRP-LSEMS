@@ -9,8 +9,8 @@ export const supervisorMeetingTemplate: MeetingAgendaDefinition = {
   value: "supervisor",
   label: "Supervisor Meeting",
   accent: "from-blue-500/25 via-indigo-500/15 to-transparent",
-  border: "border-blue-400/30",
-  badge: "bg-blue-500/20 text-blue-100 ring-1 ring-blue-400/40",
+  border: "border-blue-300/30 dark:border-blue-400/30",
+  badge: "bg-blue-100 dark:bg-blue-500/20 text-blue-100 ring-1 ring-blue-400/40",
   forumUrl: "https://gov.eclipse-rp.net/posting.php?mode=post&f=1932",
   renderSubject: (date: string) => `Supervisor Meeting | ${date}`,
   renderBody: ({
@@ -79,7 +79,7 @@ ${signatureImg}
         href={SUPERVISOR_AGENDA_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-indigo-400 underline hover:text-indigo-300"
+        className="text-indigo-600 dark:text-indigo-400 underline hover:text-indigo-300"
       >
        Agenda Document
       </a>

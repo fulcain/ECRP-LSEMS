@@ -38,7 +38,7 @@ function ReconnectNotice({
   returnTo: string;
 }) {
   return (
-    <p className={`${shell} border-amber-400/25 bg-amber-500/10 text-amber-200`}>
+    <p className={`${shell} border-amber-300/25 dark:border-amber-400/25 bg-amber-50 dark:bg-amber-500/10 text-amber-800 dark:text-amber-200`}>
       <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
       <span>
         {message} You are still signed in - only this re-read needs one.
@@ -69,7 +69,7 @@ export function SyncOutcomeNote({
     // The session survived but Discord was not read, so claiming a re-read here
     // would be the same lie as a silent failure: say what actually happened.
     return (
-      <p className={`${shell} border-amber-400/25 bg-amber-500/10 text-amber-200`}>
+      <p className={`${shell} border-amber-300/25 dark:border-amber-400/25 bg-amber-50 dark:bg-amber-500/10 text-amber-800 dark:text-amber-200`}>
         <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
         Your session was renewed, but Discord could not be read this time, so
         the details below are the last ones it answered with.
@@ -80,7 +80,7 @@ export function SyncOutcomeNote({
   if (outcome.refreshed) {
     return (
       <p
-        className={`${shell} border-emerald-400/20 bg-emerald-500/10 text-emerald-200`}
+        className={`${shell} border-emerald-300/20 dark:border-emerald-400/20 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-200`}
       >
         <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
         Roles re-read from Discord just now.
@@ -120,7 +120,7 @@ export function SyncOutcomeNote({
         : "Discord could not be reached.";
 
   return (
-    <p className={`${shell} border-rose-400/25 bg-rose-500/10 text-rose-200`}>
+    <p className={`${shell} border-rose-300/25 dark:border-rose-400/25 bg-rose-50 dark:bg-rose-500/10 text-rose-800 dark:text-rose-200`}>
       <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
       {explanation} Your saved details are unchanged - try again in a moment.
     </p>

@@ -29,31 +29,31 @@ const tabs: Tab<SupervisorTab>[] = [
     value: "loa",
     label: "LOA Processing",
     icon: <FileText className="h-4 w-4" />,
-    accent: "border-emerald-400/40 bg-emerald-500/20 text-emerald-300",
+    accent: "border-emerald-300/40 dark:border-emerald-400/40 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300",
   },
   {
     value: "meetings",
     label: "Meetings",
     icon: <CalendarClock className="h-4 w-4" />,
-    accent: "border-indigo-400/40 bg-indigo-500/20 text-indigo-300",
+    accent: "border-indigo-300/40 dark:border-indigo-400/40 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300",
   },
   {
     value: "contract",
     label: "Contract Signing",
     icon: <FileSignature className="h-4 w-4" />,
-    accent: "border-sky-400/40 bg-sky-500/20 text-sky-300",
+    accent: "border-sky-300/40 dark:border-sky-400/40 bg-sky-100 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300",
   },
   {
     value: "promotions",
     label: "Promotions",
     icon: <Award className="h-4 w-4" />,
-    accent: "border-amber-400/40 bg-amber-500/20 text-amber-300",
+    accent: "border-amber-300/40 dark:border-amber-400/40 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300",
   },
   {
     value: "resignations",
     label: "Resignations",
     icon: <LogOut className="h-4 w-4" />,
-    accent: "border-rose-400/40 bg-rose-500/20 text-rose-300",
+    accent: "border-rose-300/40 dark:border-rose-400/40 bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300",
   },
 ];
 

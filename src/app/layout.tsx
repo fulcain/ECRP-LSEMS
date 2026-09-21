@@ -49,13 +49,13 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
-        {/* Dark only. The palette lives on `:root` and the class is what makes
-            `dark:` utilities apply; `enableSystem` used to hand a light-OS
-            member light tokens against a shell that hardcodes dark surfaces. */}
+        {/* The palette lives on `:root` (light) and `.dark`; the class on <html>
+            is what makes `dark:` utilities apply. forcedTheme used to pin this
+            app dark while the shell was dark-only - the toggle now owns it. */}
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
-          forcedTheme="dark"
+          enableSystem={false}
           disableTransitionOnChange
         >
           <MedicProvider>

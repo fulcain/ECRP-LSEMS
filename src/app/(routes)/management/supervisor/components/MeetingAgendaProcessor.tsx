@@ -170,17 +170,17 @@ export function MeetingAgendaProcessor() {
 
   return (
     <div className="space-y-5">
-      <ToastContainer position="top-right" autoClose={2500} theme="dark" />
+      <ToastContainer position="top-right" autoClose={2500} />
 
       {/* Credentials Warning */}
       {isCredentialsEmpty && (
-        <div className="flex items-center gap-3 rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4">
-          <AlertTriangle className="h-5 w-5 shrink-0 text-amber-400" />
+        <div className="flex items-center gap-3 rounded-2xl border border-amber-300/20 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/10 p-4">
+          <AlertTriangle className="h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" />
           <div>
-            <p className="text-sm font-medium text-amber-300">
+            <p className="text-sm font-medium text-amber-700 dark:text-amber-300">
               Staff credentials not set
             </p>
-            <p className="text-xs text-amber-400/70">
+            <p className="text-xs text-amber-600/70 dark:text-amber-400/70">
               Set your name, signature, and rank in the{" "}
               <Link
                 href="/workspace/staff"
@@ -279,7 +279,7 @@ export function MeetingAgendaProcessor() {
           <Button
             variant="outline"
             type="submit"
-            className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-indigo-500/40 hover:bg-indigo-950/20 hover:text-indigo-200 active:scale-[0.98]"
+            className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-indigo-500/40 hover:bg-indigo-50/20 dark:hover:bg-indigo-950/20 hover:text-indigo-200 active:scale-[0.98]"
           >
             Generate
           </Button>
@@ -298,7 +298,7 @@ export function MeetingAgendaProcessor() {
       {activeTemplate && (
         <div className="panel-inner p-5 transition-colors hover:border-primary/30">
           <div className="mb-4 flex items-center gap-2">
-            <ListChecks className="h-5 w-5 text-indigo-400" />
+            <ListChecks className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
             <h3 className="text-sm font-semibold text-foreground">
               Step-by-Step: How to Post a {activeTemplate.label}
             </h3>
@@ -309,7 +309,7 @@ export function MeetingAgendaProcessor() {
                 key={i}
                 className="flex items-start gap-3 text-sm text-muted-foreground"
               >
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-500/20 text-xs font-bold text-indigo-300 ring-1 ring-indigo-400/30">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-xs font-bold text-indigo-700 dark:text-indigo-300 ring-1 ring-indigo-400/30">
                   {i + 1}
                 </span>
                 <span className="pt-0.5">{step}</span>

@@ -4,8 +4,8 @@ export const discordInviteTemplate: REDTemplateDefinition = {
   value: "discord-invite",
   label: "(( Discord Invite ))",
   accent: "from-indigo-500/25 via-blue-500/15 to-transparent",
-  border: "border-indigo-400/30",
-  badge: "bg-indigo-500/20 text-indigo-100 ring-1 ring-indigo-400/40",
+  border: "border-indigo-300/30 dark:border-indigo-400/30",
+  badge: "bg-indigo-100 dark:bg-indigo-500/20 text-indigo-100 ring-1 ring-indigo-400/40",
   renderBody: () =>
     `[lsemssubtitle][ooc]DISCORD INVITATION[/ooc][/lsemssubtitle]
 [divbox=white][aligntable=right,0,0,0,0,0,0][right][font=Arial][b]

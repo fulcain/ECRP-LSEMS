@@ -27,7 +27,7 @@ export default function DivisionSelector({
               key={idx}
               className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border p-4 transition-all duration-200 ${
                 selectedDivision?.label === item.label
-                  ? "border-sky-500/60 bg-sky-500/10 shadow-lg shadow-sky-500/10"
+                  ? "border-sky-300/60 dark:border-sky-500/60 bg-sky-50 dark:bg-sky-500/10 shadow-lg shadow-sky-500/10"
                   : "border-border bg-surface-hover/50 hover:border-border hover:bg-surface-hover/80 hover:shadow-lg hover:shadow-white/5"
               }`}
               onClick={() => {

@@ -54,8 +54,8 @@ export const reinstatementOnHoldTemplate: REDTemplateDefinition = {
   value: "reinstatement-on-hold",
   label: "Reinstatement On-Hold",
   accent: "from-orange-500/25 via-amber-500/15 to-transparent",
-  border: "border-orange-400/30",
-  badge: "bg-orange-500/20 text-orange-100 ring-1 ring-orange-400/40",
+  border: "border-orange-300/30 dark:border-orange-400/30",
+  badge: "bg-orange-100 dark:bg-orange-500/20 text-orange-100 ring-1 ring-orange-400/40",
   titleTag: "[ON-HOLD] Reinstatement",
   renderBody: (context) =>
     renderReinstatement({
@@ -80,8 +80,8 @@ export const reinstatementReceivedTemplate: REDTemplateDefinition = {
   value: "reinstatement-received",
   label: "Reinstatement Received",
   accent: "from-emerald-500/25 via-green-500/15 to-transparent",
-  border: "border-emerald-400/30",
-  badge: "bg-emerald-500/20 text-emerald-100 ring-1 ring-emerald-400/40",
+  border: "border-emerald-300/30 dark:border-emerald-400/30",
+  badge: "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-100 ring-1 ring-emerald-400/40",
   titleTag: "[RECEIVED] Reinstatement",
   renderBody: (context) =>
     renderReinstatement({
@@ -112,8 +112,8 @@ export const reinstatementOfferTemplate: REDTemplateDefinition = {
   value: "reinstatement-offer",
   label: "Offer Of Employment",
   accent: "from-rose-500/25 via-orange-500/15 to-transparent",
-  border: "border-rose-400/30",
-  badge: "bg-rose-500/20 text-rose-100 ring-1 ring-rose-400/40",
+  border: "border-rose-300/30 dark:border-rose-400/30",
+  badge: "bg-rose-100 dark:bg-rose-500/20 text-rose-100 ring-1 ring-rose-400/40",
   titleTag: "[OFFER OF EMPLOYMENT] Reinstatement",
   renderBody: (context) =>
     renderReinstatement({
@@ -142,8 +142,8 @@ export const reinstatementContractTemplate: REDTemplateDefinition = {
   value: "reinstatement-contract",
   label: "Offer Of Employment Contract",
   accent: "from-rose-500/25 via-orange-500/15 to-transparent",
-  border: "border-rose-400/30",
-  badge: "bg-rose-500/20 text-rose-100 ring-1 ring-rose-400/40",
+  border: "border-rose-300/30 dark:border-rose-400/30",
+  badge: "bg-rose-100 dark:bg-rose-500/20 text-rose-100 ring-1 ring-rose-400/40",
   titleTag: "[EMPLOYMENT CONTRACT] Reinstatement",
   renderBody: (context) =>
     renderReinstatement({
@@ -167,8 +167,8 @@ export const reinstatementAcceptedTemplate: REDTemplateDefinition = {
   value: "reinstatement-accepted",
   label: "Reinstatement Accepted",
   accent: "from-emerald-500/25 via-green-500/15 to-transparent",
-  border: "border-emerald-400/30",
-  badge: "bg-emerald-500/20 text-emerald-100 ring-1 ring-emerald-400/40",
+  border: "border-emerald-300/30 dark:border-emerald-400/30",
+  badge: "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-100 ring-1 ring-emerald-400/40",
   titleTag: "[ACCEPTED] Reinstatement",
   renderBody: (context) =>
     renderReinstatement({
@@ -186,8 +186,8 @@ export const reinstatementDeniedTemplate: REDTemplateDefinition = {
   value: "reinstatement-denied",
   label: "Reinstatement Denied",
   accent: "from-red-500/25 via-rose-500/15 to-transparent",
-  border: "border-red-400/30",
-  badge: "bg-red-500/20 text-red-100 ring-1 ring-red-400/40",
+  border: "border-red-300/30 dark:border-red-400/30",
+  badge: "bg-red-100 dark:bg-red-500/20 text-red-100 ring-1 ring-red-400/40",
   titleTag: "[DENIED] Reinstatement",
   renderBody: (context) =>
     renderReinstatement({

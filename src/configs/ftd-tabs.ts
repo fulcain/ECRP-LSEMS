@@ -38,7 +38,7 @@ export const FTD_TABS = [
     title: "FT Session dashboard",
     description:
       "Monitor session reports, employee progress, and monthly training activity from one workspace.",
-    accent: "border-emerald-400/40 bg-emerald-500/20 text-emerald-300",
+    accent: "border-emerald-300/40 dark:border-emerald-400/40 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300",
   },
   {
     value: "paperwork",
@@ -46,7 +46,7 @@ export const FTD_TABS = [
     href: ROUTES.divisions.ftd.paperwork,
     title: "Paperwork",
     description: "Choose a paperwork format to begin.",
-    accent: "border-sky-400/40 bg-sky-500/20 text-sky-300",
+    accent: "border-sky-300/40 dark:border-sky-400/40 bg-sky-100 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300",
   },
   {
     value: "command",
@@ -54,7 +54,7 @@ export const FTD_TABS = [
     href: ROUTES.divisions.ftd.command,
     title: "Command Page",
     description: "Manage EMRs, FTOs, and ready-to-send emails from one place.",
-    accent: "border-indigo-400/40 bg-indigo-500/20 text-indigo-300",
+    accent: "border-indigo-300/40 dark:border-indigo-400/40 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300",
   },
   {
     value: "fti",
@@ -63,6 +63,6 @@ export const FTD_TABS = [
     title: "Field Training Instructor",
     description:
       "Phase notes, trainer info, and auto-generated FTO certification paperwork.",
-    accent: "border-amber-400/40 bg-amber-500/20 text-amber-300",
+    accent: "border-amber-300/40 dark:border-amber-400/40 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300",
   },
 ] as const satisfies readonly FtdTabConfig[];

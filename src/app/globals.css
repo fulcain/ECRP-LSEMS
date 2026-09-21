@@ -52,6 +52,58 @@
 :root {
   --radius: 0.625rem;
 
+  /* ── Light palette ──
+     Cool near-white surfaces, same hue family as the dark theme so a switch
+     never feels like a different product. Dark values live under `.dark` and
+     must stay in sync with this ramp layer-for-layer. */
+  --background: oklch(0.975 0.004 250);
+  --foreground: oklch(0.25 0.02 255);
+  --surface: oklch(0.995 0.002 250);
+  --surface-hover: oklch(0.955 0.006 250);
+  --surface-raised: oklch(0.985 0.003 250);
+  --card: oklch(0.995 0.002 250);
+  --card-foreground: oklch(0.25 0.02 255);
+  --popover: oklch(0.995 0.002 250);
+  --popover-foreground: oklch(0.25 0.02 255);
+  --primary: oklch(0.52 0.16 255);
+  --primary-foreground: oklch(0.99 0.002 250);
+  --secondary: oklch(0.955 0.006 250);
+  --secondary-foreground: oklch(0.3 0.02 255);
+  --muted: oklch(0.955 0.006 250);
+  --muted-foreground: oklch(0.5 0.02 252);
+  --accent: oklch(0.94 0.02 250);
+  --accent-foreground: oklch(0.35 0.06 252);
+  --destructive: oklch(0.55 0.21 25);
+
+  /* Status colours. Anything that communicates a state reads one of these, so
+     "success" is the same green on a badge, a banner and a table row. */
+  --success: oklch(0.55 0.13 160);
+  --warning: oklch(0.68 0.14 75);
+  --info: oklch(0.55 0.12 235);
+
+  --border: oklch(0.9 0.01 252);
+  --input: oklch(0.9 0.01 252);
+  --ring: oklch(0.55 0.15 252);
+  --chart-1: oklch(0.52 0.16 255);
+  --chart-2: oklch(0.55 0.13 170);
+  --chart-3: oklch(0.4 0.06 252);
+  --chart-4: oklch(0.7 0.18 80);
+  --chart-5: oklch(0.55 0.15 350);
+  --sidebar: oklch(0.965 0.005 250);
+  --sidebar-foreground: oklch(0.25 0.02 255);
+  --sidebar-primary: oklch(0.52 0.16 255);
+  --sidebar-primary-foreground: oklch(0.99 0.002 250);
+  --sidebar-accent: oklch(0.93 0.008 250);
+  --sidebar-accent-foreground: oklch(0.3 0.02 255);
+  --sidebar-border: oklch(0.9 0.01 252);
+  --sidebar-ring: oklch(0.55 0.15 252);
+  --scrollbar-thumb: oklch(0.8 0.012 252);
+  --scrollbar-thumb-hover: oklch(0.72 0.015 252);
+}
+
+.dark {
+  --radius: 0.625rem;
+
   /* Surfaces, darkest to lightest. Content sits on `surface`; `background` is
      the page behind it, `surface-raised` an element that should lift off. */
   --background: oklch(0.115 0.008 250);
@@ -95,6 +147,8 @@
   --sidebar-accent-foreground: oklch(0.88 0.005 255);
   --sidebar-border: oklch(0.22 0.015 252);
   --sidebar-ring: oklch(0.6 0.18 252);
+  --scrollbar-thumb: oklch(0.25 0.02 252);
+  --scrollbar-thumb-hover: oklch(0.32 0.02 252);
 }
 
 @layer base {
@@ -206,8 +260,9 @@
   }
 }
 
-/* ── Ambient background grain ── */
-body::before {
+/* ── Ambient background grain ──
+   Dark theme only: on near-white surfaces the noise reads as dirt. */
+.dark body::before {
   content: "";
   position: fixed;
   inset: 0;
@@ -262,11 +317,11 @@ body::before {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: oklch(0.25 0.02 252);
+  background: var(--scrollbar-thumb);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.32 0.02 252);
+  background: var(--scrollbar-thumb-hover);
 }
 
 @media (prefers-reduced-motion: reduce) {

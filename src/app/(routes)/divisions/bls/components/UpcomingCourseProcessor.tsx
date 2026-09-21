@@ -245,7 +245,7 @@ export function UpcomingCourseProcessor() {
 
   return (
     <div className="space-y-6">
-      <ToastContainer position="top-right" autoClose={2500} theme="dark" />
+      <ToastContainer position="top-right" autoClose={2500} />
 
       <div className="panel relative overflow-hidden">
         {/* The page's accent as a single line, so it reads as identity rather
@@ -421,7 +421,7 @@ export function UpcomingCourseProcessor() {
               <Button
                 variant="outline"
                 type="submit"
-                className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-amber-500/40 hover:bg-amber-950/20 hover:text-amber-200 active:scale-[0.98]"
+                className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-amber-500/40 hover:bg-amber-50/20 dark:hover:bg-amber-950/20 hover:text-amber-200 active:scale-[0.98]"
               >
                 Generate
               </Button>

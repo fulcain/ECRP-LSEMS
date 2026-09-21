@@ -10,6 +10,7 @@ import { useSidebar } from "../sidebar-context";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { DiscordContactIndicator } from "@/components/discord-contact-indicator";
 import { UserMenu } from "@/components/layout/sidebar/user-menu";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 type SidebarDesktopProps = {
   headerLinks: HeaderLink[];
@@ -67,15 +68,18 @@ export function SidebarDesktop({ headerLinks }: SidebarDesktopProps) {
               </span>
             )}
           </Link>
-          <button
-            type="button"
-            onClick={toggleCollapsed}
-            className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
-          </button>
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            <button
+              type="button"
+              onClick={toggleCollapsed}
+              className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
+              aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+              {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
 
         <div className="mb-2.5 h-px bg-border" />

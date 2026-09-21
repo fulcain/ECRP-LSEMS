@@ -281,7 +281,6 @@ export function LOAProcessor() {
       <ToastContainer
         position="top-right"
         autoClose={2000}
-        theme="dark"
         transition={Bounce}
       />
       {/* Main Content Grid */}
@@ -315,7 +314,7 @@ export function LOAProcessor() {
           {(selectedTemplate === "approved" || selectedTemplate === "extended") && (
           <div className="panel-inner border-info/30 p-5">
             <div className="mb-4 flex items-center gap-2">
-              <FileText className="h-4 w-4 text-cyan-400" />
+              <FileText className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
               <h3 className="text-sm font-semibold text-foreground">Quick Fill LOA Fields</h3>
             </div>
             <div className="flex gap-2">
@@ -329,9 +328,9 @@ export function LOAProcessor() {
                 placeholder="Rank FirstName LastName | 17/SEP/2026 to 22/SEP/2026"
                 className={`border-border bg-surface-hover/50 font-mono text-foreground placeholder:text-muted-foreground focus:border-cyan-500/50 ${
                   quickFillStatus === "success"
-                    ? "border-emerald-500/50"
+                    ? "border-emerald-300/50 dark:border-emerald-500/50"
                     : quickFillStatus === "error"
-                      ? "border-red-500/50"
+                      ? "border-red-300/50 dark:border-red-500/50"
                       : ""
                 }`}
               />
@@ -339,7 +338,7 @@ export function LOAProcessor() {
             {quickFillStatus !== "idle" && (
               <p
                 className={`mt-2 flex items-center gap-1.5 text-[10px] ${
-                  quickFillStatus === "success" ? "text-emerald-400" : "text-red-400"
+                  quickFillStatus === "success" ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
                 }`}
               >
                 {quickFillStatus === "success" ? (
@@ -361,7 +360,7 @@ export function LOAProcessor() {
           {/* Personnel Info */}
           <div className="panel-inner p-5">
             <div className="mb-4 flex items-center gap-2">
-              <Users className="h-4 w-4 text-blue-400" />
+              <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />
               <h3 className="text-sm font-semibold text-foreground">
                 Personnel Information
               </h3>
@@ -389,7 +388,7 @@ export function LOAProcessor() {
                     onClick={() => setTitle("Mr.")}
                     className={`flex-1 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
                       title === "Mr."
-                        ? "border-blue-500/50 bg-blue-500/20 text-blue-300"
+                        ? "border-blue-300/50 dark:border-blue-500/50 bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300"
                         : "border-border bg-surface-hover/50 text-muted-foreground hover:border-border hover:text-foreground"
                     }`}
                   >
@@ -399,7 +398,7 @@ export function LOAProcessor() {
                     onClick={() => setTitle("Ms.")}
                     className={`flex-1 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
                       title === "Ms."
-                        ? "border-pink-500/50 bg-pink-500/20 text-pink-300"
+                        ? "border-pink-300/50 dark:border-pink-500/50 bg-pink-100 dark:bg-pink-500/20 text-pink-700 dark:text-pink-300"
                         : "border-border bg-surface-hover/50 text-muted-foreground hover:border-border hover:text-foreground"
                     }`}
                   >
@@ -414,7 +413,7 @@ export function LOAProcessor() {
           {selectedTemplate === "approved" && (
             <div className="panel-inner p-5">
               <div className="mb-4 flex items-center gap-2">
-                <CalendarDays className="h-4 w-4 text-green-400" />
+                <CalendarDays className="h-4 w-4 text-green-600 dark:text-green-400" />
                 <h3 className="text-sm font-semibold text-foreground">Leave Dates</h3>
               </div>
 
@@ -445,24 +444,24 @@ export function LOAProcessor() {
 
               {/* Day Count */}
               {startDate && endDate && (
-                <div className="mt-4 flex items-center gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/20">
-                    <span className="text-lg font-bold text-emerald-400">
+                <div className="mt-4 flex items-center gap-3 rounded-xl border border-emerald-300/20 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10 p-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-500/20">
+                    <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
                       {numberOfDays}
                     </span>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-emerald-300">
+                    <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
                       {numberOfDays === 1 ? "1 day" : `${numberOfDays} days`}
                     </p>
-                    <p className="text-[10px] text-emerald-400/60">
+                    <p className="text-[10px] text-emerald-600/60 dark:text-emerald-400/60">
                       Duration automatically calculated
                     </p>
                   </div>
                   {numberOfDays > 30 && (
-                    <div className="ml-auto flex items-center gap-1.5 rounded-lg bg-amber-500/20 px-2.5 py-1">
-                      <AlertTriangle className="h-3 w-3 text-amber-400" />
-                      <span className="text-[10px] font-medium text-amber-300">
+                    <div className="ml-auto flex items-center gap-1.5 rounded-lg bg-amber-100 dark:bg-amber-500/20 px-2.5 py-1">
+                      <AlertTriangle className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                      <span className="text-[10px] font-medium text-amber-700 dark:text-amber-300">
                         Requires HC Approval
                       </span>
                     </div>
@@ -476,7 +475,7 @@ export function LOAProcessor() {
           {selectedTemplate === "extended" && (
             <div className="panel-inner border-warning/30 p-5">
               <div className="mb-4 flex items-center gap-2">
-                <CalendarDays className="h-4 w-4 text-orange-400" />
+                <CalendarDays className="h-4 w-4 text-orange-600 dark:text-orange-400" />
                 <h3 className="text-sm font-semibold text-foreground">Extension Dates</h3>
               </div>
 
@@ -507,24 +506,24 @@ export function LOAProcessor() {
 
               {/* Day Count */}
               {extendedStartDate && extendedEndDate && (
-                <div className="mt-4 flex items-center gap-3 rounded-xl border border-orange-500/20 bg-orange-500/10 p-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-500/20">
-                    <span className="text-lg font-bold text-orange-400">
+                <div className="mt-4 flex items-center gap-3 rounded-xl border border-orange-300/20 dark:border-orange-500/20 bg-orange-50 dark:bg-orange-500/10 p-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-500/20">
+                    <span className="text-lg font-bold text-orange-600 dark:text-orange-400">
                       {extendedNumberOfDays}
                     </span>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-orange-300">
+                    <p className="text-sm font-medium text-orange-700 dark:text-orange-300">
                       {extendedNumberOfDays === 1 ? "1 day" : `${extendedNumberOfDays} days`}
                     </p>
-                    <p className="text-[10px] text-orange-400/60">
+                    <p className="text-[10px] text-orange-600/60 dark:text-orange-400/60">
                       Duration automatically calculated
                     </p>
                   </div>
                   {extendedNumberOfDays > 30 && (
-                    <div className="ml-auto flex items-center gap-1.5 rounded-lg bg-amber-500/20 px-2.5 py-1">
-                      <AlertTriangle className="h-3 w-3 text-amber-400" />
-                      <span className="text-[10px] font-medium text-amber-300">
+                    <div className="ml-auto flex items-center gap-1.5 rounded-lg bg-amber-100 dark:bg-amber-500/20 px-2.5 py-1">
+                      <AlertTriangle className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                      <span className="text-[10px] font-medium text-amber-700 dark:text-amber-300">
                         Requires HC Approval
                       </span>
                     </div>
@@ -538,7 +537,7 @@ export function LOAProcessor() {
           {selectedTemplate === "expired" && (
             <div className="panel-inner p-5">
               <div className="mb-4 flex items-center gap-2">
-                <CalendarDays className="h-4 w-4 text-amber-400" />
+                <CalendarDays className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                 <h3 className="text-sm font-semibold text-foreground">Work Schedule</h3>
               </div>
               <Label className="mb-1.5 block text-xs text-muted-foreground">
@@ -560,7 +559,7 @@ export function LOAProcessor() {
           {selectedTemplate === "denied" && (
             <div className="panel-inner border-destructive/30 p-5">
               <div className="mb-4 flex items-center gap-2">
-                <XCircle className="h-4 w-4 text-red-400" />
+                <XCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
                 <h3 className="text-sm font-semibold text-foreground">
                   Denial Reasons
                 </h3>
@@ -589,7 +588,7 @@ export function LOAProcessor() {
                         }
                         size="icon"
                         variant="ghost"
-                        className="h-10 w-10 shrink-0 text-red-400 transition-all duration-200 hover:scale-[1.02] hover:bg-red-950/40 hover:text-red-300"
+                        className="h-10 w-10 shrink-0 text-red-600 dark:text-red-400 transition-all duration-200 hover:scale-[1.02] hover:bg-red-50/40 dark:hover:bg-red-950/40 hover:text-red-300"
                       >
                         <XCircle className="h-4 w-4" />
                       </Button>
@@ -603,7 +602,7 @@ export function LOAProcessor() {
                 onClick={() => setDenialReasons((prev) => [...prev, ""])}
                 variant="outline"
                 size="sm"
-                className="mt-3 border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-red-500/40 hover:bg-red-950/20 hover:text-red-200"
+                className="mt-3 border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-red-500/40 hover:bg-red-50/20 dark:hover:bg-red-950/20 hover:text-red-200"
               >
                 <Plus className="mr-1.5 h-3.5 w-3.5" />
                 Add reason
@@ -613,13 +612,13 @@ export function LOAProcessor() {
 
           {/* Credentials Warning */}
           {isCredentialsEmpty && (
-            <div className="flex items-center gap-3 rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4">
-              <AlertTriangle className="h-5 w-5 shrink-0 text-amber-400" />
+            <div className="flex items-center gap-3 rounded-2xl border border-amber-300/20 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/10 p-4">
+              <AlertTriangle className="h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" />
               <div>
-                <p className="text-sm font-medium text-amber-300">
+                <p className="text-sm font-medium text-amber-700 dark:text-amber-300">
                   Staff credentials not set
                 </p>
-                <p className="text-xs text-amber-400/70">
+                <p className="text-xs text-amber-600/70 dark:text-amber-400/70">
                   Set your name, signature, and rank in the{" "}
                   <Link
                     href="/workspace/staff"
@@ -637,7 +636,7 @@ export function LOAProcessor() {
           {selectedTemplate === "approved" && (
             <div className="panel-inner border-primary/30 p-5">
               <div className="mb-4 flex items-center gap-2">
-                <FileText className="h-4 w-4 text-blue-400" />
+                <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 <h3 className="text-sm font-semibold text-foreground">
                   Personnel File Section
                 </h3>
@@ -659,8 +658,8 @@ export function LOAProcessor() {
                         className={`flex items-center gap-2.5 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
                           isSelected
                             ? type === "LOA"
-                              ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-300"
-                              : "border-blue-500/50 bg-blue-500/15 text-blue-300"
+                              ? "border-emerald-300/50 dark:border-emerald-500/50 bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                              : "border-blue-300/50 dark:border-blue-500/50 bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300"
                             : "border-border bg-surface-hover/50 text-muted-foreground hover:border-border hover:bg-surface-hover hover:text-foreground"
                         }`}
                       >
@@ -668,8 +667,8 @@ export function LOAProcessor() {
                           className={`flex h-4 w-4 items-center justify-center rounded border transition-all duration-200 ${
                             isSelected
                               ? type === "LOA"
-                                ? "border-emerald-400 bg-emerald-400 text-background"
-                                : "border-blue-400 bg-blue-400 text-background"
+                                ? "border-emerald-300 dark:border-emerald-400 bg-emerald-400 text-background"
+                                : "border-blue-300 dark:border-blue-400 bg-blue-400 text-background"
                               : "border-border bg-surface-hover/50 text-transparent"
                           }`}
                         >
@@ -699,18 +698,18 @@ export function LOAProcessor() {
               <div
                 className={`mt-4 flex items-center gap-2.5 rounded-xl border p-3 transition-colors duration-200 ${
                   snippetStatus.ready
-                    ? "border-emerald-500/20 bg-emerald-500/10"
-                    : "border-amber-500/20 bg-amber-500/10"
+                    ? "border-emerald-300/20 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10"
+                    : "border-amber-300/20 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/10"
                 }`}
               >
                 {snippetStatus.ready ? (
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
                 ) : (
-                  <AlertTriangle className="h-4 w-4 shrink-0 text-amber-400" />
+                  <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
                 )}
                 <div className="min-w-0">
                   <p
-                    className={`text-xs font-medium ${snippetStatus.ready ? "text-emerald-300" : "text-amber-300"}`}
+                    className={`text-xs font-medium ${snippetStatus.ready ? "text-emerald-700 dark:text-emerald-300" : "text-amber-700 dark:text-amber-300"}`}
                   >
                     {snippetStatus.title}
                   </p>
@@ -723,7 +722,7 @@ export function LOAProcessor() {
               {/* Snippet Preview */}
               {personnelSnippet && (
                 <div className="mt-3 rounded-xl border border-border bg-surface-raised/60 p-3">
-                  <pre className="whitespace-pre-wrap break-all font-mono text-xs leading-relaxed text-emerald-200/90">
+                  <pre className="whitespace-pre-wrap break-all font-mono text-xs leading-relaxed text-emerald-800/90 dark:text-emerald-200/90">
                     {personnelSnippet}
                   </pre>
                 </div>
@@ -735,7 +734,7 @@ export function LOAProcessor() {
                   type="button"
                   onClick={handleCopySnippet}
                   disabled={!personnelSnippet}
-                  className="whitespace-nowrap rounded-xl border border-blue-500/30 bg-blue-500/15 px-4 py-2.5 text-sm font-medium text-blue-300 transition-all duration-200 hover:scale-[1.02] hover:border-blue-500/50 hover:bg-blue-500/25 hover:text-blue-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="whitespace-nowrap rounded-xl border border-blue-300/30 dark:border-blue-500/30 bg-blue-100 dark:bg-blue-500/15 px-4 py-2.5 text-sm font-medium text-blue-700 dark:text-blue-300 transition-all duration-200 hover:scale-[1.02] hover:border-blue-500/50 hover:bg-blue-500/25 hover:text-blue-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Copy className="mr-2 h-4 w-4" />
                   Copy Snippet
@@ -753,22 +752,22 @@ export function LOAProcessor() {
                   href="https://gov.eclipse-rp.net/viewforum.php?f=615"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/15 px-4 py-2.5 text-sm font-medium text-emerald-300 transition-all duration-200 hover:scale-[1.02] hover:border-emerald-500/50 hover:bg-emerald-500/25 hover:text-emerald-200 active:scale-[0.98]"
+                  className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-emerald-300/30 dark:border-emerald-500/30 bg-emerald-100 dark:bg-emerald-500/15 px-4 py-2.5 text-sm font-medium text-emerald-700 dark:text-emerald-300 transition-all duration-200 hover:scale-[1.02] hover:border-emerald-500/50 hover:bg-emerald-500/25 hover:text-emerald-200 active:scale-[0.98]"
                 >
                   <ExternalLink className="h-4 w-4" />
                   Active LOA Section
                 </a>
-                <div className="flex flex-wrap items-center gap-2 rounded-xl border border-purple-500/20 bg-purple-500/10 p-2">
+                <div className="flex flex-wrap items-center gap-2 rounded-xl border border-purple-300/20 dark:border-purple-500/20 bg-purple-50 dark:bg-purple-500/10 p-2">
                   <a
                     href="https://ecrplsems.com/tasks"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-purple-500/30 bg-purple-500/15 px-4 py-2.5 text-sm font-medium text-purple-300 transition-all duration-200 hover:scale-[1.02] hover:border-purple-500/50 hover:bg-purple-500/25 hover:text-purple-200 active:scale-[0.98]"
+                    className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-purple-300/30 dark:border-purple-500/30 bg-purple-100 dark:bg-purple-500/15 px-4 py-2.5 text-sm font-medium text-purple-700 dark:text-purple-300 transition-all duration-200 hover:scale-[1.02] hover:border-purple-500/50 hover:bg-purple-500/25 hover:text-purple-200 active:scale-[0.98]"
                   >
                     <ExternalLink className="h-4 w-4" />
                     LSEMS Dashboard
                   </a>
-                  <span className="text-xs text-purple-300/70">Open dashboard and mark the task complete</span>
+                  <span className="text-xs text-purple-700/70 dark:text-purple-300/70">Open dashboard and mark the task complete</span>
                 </div>
               </div>
             </div>
@@ -776,14 +775,14 @@ export function LOAProcessor() {
 
           {/* Personnel File Hint (other templates) */}
           {selectedTemplate !== "approved" && (
-            <div className="rounded-2xl border border-blue-500/20 bg-blue-500/10 p-4">
+            <div className="rounded-2xl border border-blue-300/20 dark:border-blue-500/20 bg-blue-50 dark:bg-blue-500/10 p-4">
               <div className="flex items-start gap-3">
-                <FileText className="mt-0.5 h-5 w-5 shrink-0 text-blue-400" />
+                <FileText className="mt-0.5 h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400" />
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-blue-300">
+                  <p className="text-sm font-medium text-blue-700 dark:text-blue-300">
                     Personnel File Section
                   </p>
-                  <p className="mt-1 text-xs text-blue-400/70">
+                  <p className="mt-1 text-xs text-blue-600/70 dark:text-blue-400/70">
                     Update the personnel file by editing the spoiler tagged
                     &quot;LOA/ROH&quot; with the request form link.
                   </p>
@@ -794,7 +793,7 @@ export function LOAProcessor() {
                   href="https://gov.eclipse-rp.net/viewforum.php?f=605"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-blue-500/30 bg-blue-500/15 px-4 py-2.5 text-sm font-medium text-blue-300 transition-all duration-200 hover:border-blue-500/50 hover:bg-blue-500/25 hover:text-blue-200 hover:scale-[1.02] active:scale-[0.98]"
+                  className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-blue-300/30 dark:border-blue-500/30 bg-blue-100 dark:bg-blue-500/15 px-4 py-2.5 text-sm font-medium text-blue-700 dark:text-blue-300 transition-all duration-200 hover:border-blue-500/50 hover:bg-blue-500/25 hover:text-blue-200 hover:scale-[1.02] active:scale-[0.98]"
                 >
                   <ExternalLink className="h-4 w-4" />
                   Open Personnel Files
@@ -803,22 +802,22 @@ export function LOAProcessor() {
                   href="https://gov.eclipse-rp.net/viewforum.php?f=615"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/15 px-4 py-2.5 text-sm font-medium text-emerald-300 transition-all duration-200 hover:border-emerald-500/50 hover:bg-emerald-500/25 hover:text-emerald-200 hover:scale-[1.02] active:scale-[0.98]"
+                  className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-emerald-300/30 dark:border-emerald-500/30 bg-emerald-100 dark:bg-emerald-500/15 px-4 py-2.5 text-sm font-medium text-emerald-700 dark:text-emerald-300 transition-all duration-200 hover:border-emerald-500/50 hover:bg-emerald-500/25 hover:text-emerald-200 hover:scale-[1.02] active:scale-[0.98]"
                 >
                   <ExternalLink className="h-4 w-4" />
                   Active LOA Section
                 </a>
-                <div className="flex flex-wrap items-center gap-2 rounded-xl border border-purple-500/20 bg-purple-500/10 p-2">
+                <div className="flex flex-wrap items-center gap-2 rounded-xl border border-purple-300/20 dark:border-purple-500/20 bg-purple-50 dark:bg-purple-500/10 p-2">
                   <a
                     href="https://ecrplsems.com/tasks"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-purple-500/30 bg-purple-500/15 px-4 py-2.5 text-sm font-medium text-purple-300 transition-all duration-200 hover:scale-[1.02] hover:border-purple-500/50 hover:bg-purple-500/25 hover:text-purple-200 active:scale-[0.98]"
+                    className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-purple-300/30 dark:border-purple-500/30 bg-purple-100 dark:bg-purple-500/15 px-4 py-2.5 text-sm font-medium text-purple-700 dark:text-purple-300 transition-all duration-200 hover:scale-[1.02] hover:border-purple-500/50 hover:bg-purple-500/25 hover:text-purple-200 active:scale-[0.98]"
                   >
                     <ExternalLink className="h-4 w-4" />
                     LSEMS Dashboard
                   </a>
-                  <span className="text-xs text-purple-300/70">Open dashboard and mark the task complete</span>
+                  <span className="text-xs text-purple-700/70 dark:text-purple-300/70">Open dashboard and mark the task complete</span>
                 </div>
               </div>
             </div>

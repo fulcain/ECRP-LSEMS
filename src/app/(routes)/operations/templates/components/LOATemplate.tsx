@@ -110,7 +110,6 @@ export function LOATemplate() {
       <ToastContainer
         position="top-right"
         autoClose={2000}
-        theme="dark"
         transition={Bounce}
       />
 
@@ -120,7 +119,7 @@ export function LOATemplate() {
           {/* Employee Information */}
           <div className="rounded-2xl border border-border bg-surface/90 p-5">
             <div className="mb-4 flex items-center gap-2">
-              <Users className="h-4 w-4 text-blue-400" />
+              <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />
               <h3 className="text-sm font-semibold text-foreground">
                 Employee Information
               </h3>
@@ -178,7 +177,7 @@ export function LOATemplate() {
                 variant="outline"
                 size="sm"
                 onClick={resetFromCredentials}
-                className="cursor-pointer border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-amber-500/40 hover:bg-amber-950/20 hover:text-amber-200 active:scale-[0.98]"
+                className="cursor-pointer border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-amber-500/40 hover:bg-amber-50/20 dark:hover:bg-amber-950/20 hover:text-amber-200 active:scale-[0.98]"
               >
                 <RotateCcw className="mr-1.5 h-4 w-4" />
                 Reset to Staff Page
@@ -189,7 +188,7 @@ export function LOATemplate() {
           {/* Leave Dates */}
           <div className="rounded-2xl border border-border bg-surface/90 p-5">
             <div className="mb-4 flex items-center gap-2">
-              <CalendarDays className="h-4 w-4 text-green-400" />
+              <CalendarDays className="h-4 w-4 text-green-600 dark:text-green-400" />
               <h3 className="text-sm font-semibold text-foreground">
                 Leave of Absence Dates
               </h3>
@@ -225,7 +224,7 @@ export function LOATemplate() {
           <div className="rounded-2xl border border-border bg-surface/90 p-5">
             <div className="mb-4 flex-col flex items-start gap-2">
               <div className="flex gap-2 items-center justify-center">
-              <FileText className="h-4 w-4 text-amber-400" />
+              <FileText className="h-4 w-4 text-amber-600 dark:text-amber-400" />
               <h3 className="text-sm font-semibold text-foreground">Reason</h3>
               </div>
                 <p className="text-xs text-gray-500">Reason Does not have to be too specific, but please leave both an IC and OOC reason.</p>
@@ -258,7 +257,7 @@ export function LOATemplate() {
                 />
                 <p className="mt-1 text-[10px] text-muted-foreground">
                   Placed after the IC reason inside{" "}
-                  <code className="text-amber-300/80">(( ... ))</code>.
+                  <code className="text-amber-700/80 dark:text-amber-300/80">(( ... ))</code>.
                 </p>
               </div>
             </div>
@@ -266,13 +265,13 @@ export function LOATemplate() {
 
           {/* Credentials Warning */}
           {isCredentialsEmpty && (
-            <div className="flex items-center gap-3 rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4">
-              <AlertTriangle className="h-5 w-5 shrink-0 text-amber-400" />
+            <div className="flex items-center gap-3 rounded-2xl border border-amber-300/20 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/10 p-4">
+              <AlertTriangle className="h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" />
               <div>
-                <p className="text-sm font-medium text-amber-300">
+                <p className="text-sm font-medium text-amber-700 dark:text-amber-300">
                   Staff credentials not set
                 </p>
-                <p className="text-xs text-amber-400/70">
+                <p className="text-xs text-amber-600/70 dark:text-amber-400/70">
                   Set your name, signature, and rank in the{" "}
                   <Link
                     href="/workspace/staff"
@@ -296,7 +295,7 @@ export function LOATemplate() {
                 Post Preview
               </h3>
             </div>
-            <span className="rounded-lg bg-emerald-500/20 px-2.5 py-1 text-[10px] font-medium text-emerald-100 ring-1 ring-emerald-400/40">
+            <span className="rounded-lg bg-emerald-100 dark:bg-emerald-500/20 px-2.5 py-1 text-[10px] font-medium text-emerald-100 ring-1 ring-emerald-400/40">
               LOA
             </span>
           </div>
@@ -319,8 +318,8 @@ export function LOATemplate() {
                 </Button>
               </div>
               <div className="flex items-center gap-2 rounded-xl border border-border bg-surface-hover/50 px-3 py-2.5">
-                <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-400" />
-                <span className="truncate font-mono text-xs text-emerald-200">
+                <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                <span className="truncate font-mono text-xs text-emerald-800 dark:text-emerald-200">
                   {title}
                 </span>
               </div>
@@ -366,7 +365,7 @@ export function LOATemplate() {
             </div>
 
             {!reasonsComplete && (
-              <p className="flex items-center gap-1.5 text-[10px] text-amber-400/90">
+              <p className="flex items-center gap-1.5 text-[10px] text-amber-600/90 dark:text-amber-400/90">
                 <AlertTriangle className="h-3 w-3 shrink-0" />
                 Fill in both the IC and OOC reasons to enable the copy buttons.
               </p>

@@ -20,7 +20,7 @@ const tabs: Tab<StaffTab>[] = [
     value: "discord",
     label: "Discord Profile",
     icon: <IdCard className="h-4 w-4" />,
-    accent: "border-indigo-400/40 bg-indigo-500/20 text-indigo-300",
+    accent: "border-indigo-300/40 dark:border-indigo-400/40 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300",
   },
 ];
 

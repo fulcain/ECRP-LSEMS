@@ -9,9 +9,9 @@ export const recruitmentWorkflow: ContractWorkflow = {
   label: "Regular Recruitment",
   description:
     "Sign LSEMS applicants joining as new Emergency Medical Responders (EMR).",
-  accent: "border-sky-400/40 bg-sky-500/20 text-sky-300",
-  border: "border-sky-400/30",
-  badge: "bg-sky-500/20 text-sky-100 ring-1 ring-sky-400/40",
+  accent: "border-sky-300/40 dark:border-sky-400/40 bg-sky-100 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300",
+  border: "border-sky-300/30 dark:border-sky-400/30",
+  badge: "bg-sky-100 dark:bg-sky-500/20 text-sky-100 ring-1 ring-sky-400/40",
   icon: <UserPlus className="h-4 w-4" />,
   steps: [
     {

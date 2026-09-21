@@ -132,8 +132,8 @@ export const upcomingClassTemplate: BLSTemplateDefinition = {
   value: "upcoming-class",
   label: "Notification of Upcoming Class",
   accent: "from-blue-500/25 via-indigo-500/15 to-transparent",
-  border: "border-blue-400/30",
-  badge: "bg-blue-500/20 text-blue-100 ring-1 ring-blue-400/40",
+  border: "border-blue-300/30 dark:border-blue-400/30",
+  badge: "bg-blue-100 dark:bg-blue-500/20 text-blue-100 ring-1 ring-blue-400/40",
   renderBody: ({
     medicName,
     medicRank,

@@ -238,7 +238,7 @@ function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, empl
             const unique = Array.from(new Set(missingLabels));
             if (unique.length === 0) return null;
             return (
-              <p className="mt-2 text-xs text-amber-400/90">
+              <p className="mt-2 text-xs text-amber-600/90 dark:text-amber-400/90">
                 Fill in the {unique.join(", ")} to enable copying.
               </p>
             );

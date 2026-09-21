@@ -78,19 +78,19 @@ const pageTabs: Tab<BLSPageTab>[] = [
     value: "formats",
     label: "Formats",
     icon: <FileText className="h-4 w-4" />,
-    accent: "border-emerald-400/40 bg-emerald-500/20 text-emerald-300",
+    accent: "border-emerald-300/40 dark:border-emerald-400/40 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300",
   },
   {
     value: "course-reports",
     label: "Course Reports",
     icon: <ClipboardList className="h-4 w-4" />,
-    accent: "border-cyan-400/40 bg-cyan-500/20 text-cyan-300",
+    accent: "border-cyan-300/40 dark:border-cyan-400/40 bg-cyan-100 dark:bg-cyan-500/20 text-cyan-700 dark:text-cyan-300",
   },
   {
     value: "upcoming-course",
     label: "Upcoming Course",
     icon: <CalendarClock className="h-4 w-4" />,
-    accent: "border-amber-400/40 bg-amber-500/20 text-amber-300",
+    accent: "border-amber-300/40 dark:border-amber-400/40 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300",
   },
 ];
 
@@ -414,7 +414,7 @@ export default function BLSFormatsPage() {
                       key="denied"
                       className="animate-fade-up space-y-4 rounded-xl border border-border bg-surface-hover/40 p-4"
                     >
-                      <p className="text-xs font-semibold tracking-[0.18em] text-red-300 uppercase">
+                      <p className="text-xs font-semibold tracking-[0.18em] text-red-700 dark:text-red-300 uppercase">
                         Denial details
                       </p>
 
@@ -433,7 +433,7 @@ export default function BLSFormatsPage() {
                             )
                           }
                           placeholder="7, 14 or 30"
-                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-500/30"
+                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-400/30 dark:focus-visible:ring-red-500/30"
                         />
                         <p className="text-xs text-muted-foreground">
                           Number of days the applicant must wait before they
@@ -450,7 +450,7 @@ export default function BLSFormatsPage() {
                             setReapplyDate(event.target.value)
                           }
                           placeholder="e.g. 01 AUG 2026"
-                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-500/30"
+                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-400/30 dark:focus-visible:ring-red-500/30"
                         />
                         <p className="text-xs text-muted-foreground">
                           The exact date the applicant may reapply.
@@ -477,7 +477,7 @@ export default function BLSFormatsPage() {
                             setCourseDate(event.target.value)
                           }
                           placeholder="e.g. 01/FEB/2026"
-                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-blue-500/30"
+                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-blue-400/30 dark:focus-visible:ring-blue-500/30"
                         />
                         <p className="text-xs text-muted-foreground">
                           Used both for the header date and the timezone image
@@ -493,7 +493,7 @@ export default function BLSFormatsPage() {
                             setCourseTime(event.target.value)
                           }
                           placeholder="e.g. 12:00"
-                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-blue-500/30"
+                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-blue-400/30 dark:focus-visible:ring-blue-500/30"
                         />
                         <p className="text-xs text-muted-foreground">
                           24-hour, <span className="font-mono">HH:MM</span>.
@@ -509,7 +509,7 @@ export default function BLSFormatsPage() {
                       key="on-hold-reasons"
                       className="animate-fade-up space-y-3 rounded-xl border border-border bg-surface-hover/40 p-4"
                     >
-                      <p className="text-xs font-semibold tracking-[0.18em] text-amber-300 uppercase">
+                      <p className="text-xs font-semibold tracking-[0.18em] text-amber-700 dark:text-amber-300 uppercase">
                         Hold reasons
                       </p>
                       <div className="space-y-2">
@@ -525,7 +525,7 @@ export default function BLSFormatsPage() {
                                 updateReason(index, e.target.value)
                               }
                               placeholder={`Reason ${index + 1}`}
-                              className="flex-1 border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-amber-500/50 focus-visible:ring-2 focus-visible:ring-amber-500/30"
+                              className="flex-1 border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-amber-500/50 focus-visible:ring-2 focus-visible:ring-amber-400/30 dark:focus-visible:ring-amber-500/30"
                             />
                             {reasons.length > 1 && (
                               <Button
@@ -533,7 +533,7 @@ export default function BLSFormatsPage() {
                                 onClick={() => removeReason(index)}
                                 size="icon"
                                 variant="ghost"
-                                className="h-10 w-10 shrink-0 text-red-400 transition-all duration-200 hover:scale-[1.02] hover:bg-red-950/40 hover:text-red-300"
+                                className="h-10 w-10 shrink-0 text-red-600 dark:text-red-400 transition-all duration-200 hover:scale-[1.02] hover:bg-red-50/40 dark:hover:bg-red-950/40 hover:text-red-300"
                               >
                                 <X className="h-4 w-4" />
                               </Button>
@@ -546,7 +546,7 @@ export default function BLSFormatsPage() {
                         onClick={addReason}
                         variant="outline"
                         size="sm"
-                        className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-amber-500/40 hover:bg-amber-950/20 hover:text-amber-200"
+                        className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-amber-500/40 hover:bg-amber-50/20 dark:hover:bg-amber-950/20 hover:text-amber-200"
                       >
                         <Plus className="mr-1.5 h-3.5 w-3.5" />
                         Add reason
@@ -687,7 +687,7 @@ export default function BLSFormatsPage() {
                           size="sm"
                           className={`transition-all duration-200 hover:scale-[1.02] ${
                             copiedTitleTag
-                              ? "border-emerald-500/60 bg-emerald-950/30 text-emerald-300"
+                              ? "border-emerald-300/60 dark:border-emerald-500/60 bg-emerald-50/30 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300"
                               : "border-border text-muted-foreground hover:bg-surface-hover hover:text-foreground"
                           }`}
                           title={`Copies "${fullTitle}" to your clipboard`}

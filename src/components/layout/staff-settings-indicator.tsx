@@ -21,10 +21,10 @@ export function StaffSettingsIndicator() {
   const isStaffPage = pathname === ROUTES.workspace.staff;
 
   return (
-    <div className="border-b border-amber-500/25 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-rose-500/10 pt-14 lg:pt-0">
+    <div className="border-b border-amber-300/25 dark:border-amber-500/25 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-rose-500/10 pt-14 lg:pt-0">
       <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <div className="flex items-start gap-3">
-          <div className="rounded-full border border-amber-400/30 bg-amber-400/15 p-2 text-amber-300">
+          <div className="rounded-full border border-amber-300/30 dark:border-amber-400/30 bg-amber-100 dark:bg-amber-500/15 p-2 text-amber-700 dark:text-amber-300">
             <AlertCircle className="h-4 w-4" />
           </div>
           <div>
@@ -39,7 +39,7 @@ export function StaffSettingsIndicator() {
         </div>
 
         {isStaffPage ? (
-          <div className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-sm text-emerald-300">
+          <div className="rounded-full border border-emerald-300/20 dark:border-emerald-400/20 bg-emerald-50 dark:bg-emerald-500/10 px-3 py-1 text-sm text-emerald-700 dark:text-emerald-300">
             Complete them here
           </div>
         ) : (

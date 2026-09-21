@@ -120,7 +120,7 @@ export function PromotionRankSelect({
                   >
                     <span>{rankInfo[rank].label}</span>
                     {isSelected && (
-                      <Check className="h-4 w-4 text-emerald-400" />
+                      <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                     )}
                   </button>
                 );

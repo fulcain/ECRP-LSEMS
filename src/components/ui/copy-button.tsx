@@ -39,7 +39,7 @@ export function CopyButton({
       onClick={handleCopy}
       className={cn(
         "transition-all duration-200",
-        copied && "text-emerald-400 hover:text-emerald-300",
+        copied && "text-emerald-600 dark:text-emerald-400 hover:text-emerald-300",
         className,
       )}
     >

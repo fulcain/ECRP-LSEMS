@@ -108,7 +108,7 @@ export function ApplicantInfoCard({
             <button
               type="button"
               onClick={() => onManualDateToggle(!isManualDate)}
-              className="text-[10px] text-sky-400 hover:text-sky-300 transition-colors"
+              className="text-[10px] text-sky-600 dark:text-sky-400 hover:text-sky-300 transition-colors"
             >
               {isManualDate ? "Use calendar" : "Enter manually"}
             </button>

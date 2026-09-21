@@ -21,19 +21,19 @@ const TABS: Tab<CommandTab>[] = [
     value: "emrs",
     label: "EMRs",
     icon: Users,
-    accent: "border-indigo-400/40 bg-indigo-500/20 text-indigo-300",
+    accent: "border-indigo-300/40 dark:border-indigo-400/40 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300",
   },
   {
     value: "ftos",
     label: "FTOs",
     icon: UserPlus,
-    accent: "border-sky-400/40 bg-sky-500/20 text-sky-300",
+    accent: "border-sky-300/40 dark:border-sky-400/40 bg-sky-100 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300",
   },
   {
     value: "emails",
     label: "Emails",
     icon: Mail,
-    accent: "border-amber-400/40 bg-amber-500/20 text-amber-300",
+    accent: "border-amber-300/40 dark:border-amber-400/40 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300",
   },
 ];
 

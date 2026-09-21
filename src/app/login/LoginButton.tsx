@@ -30,7 +30,7 @@ export function LoginButton() {
         </p>
       )}
       {reason === "expired" && (
-        <p className="text-sm text-amber-500 text-center flex items-center justify-center gap-2">
+        <p className="text-sm text-amber-600 dark:text-amber-500 text-center flex items-center justify-center gap-2">
           <MessageCircleWarning className="h-4 w-4" />
           Your session expired. Please sign in again.
         </p>
@@ -61,7 +61,7 @@ function ErrorBanner({ error }: { error: string }) {
   };
   const msg = messages[error] ?? `OAuth error: ${error}`;
   return (
-    <p className="text-sm text-red-500 text-center flex items-center justify-center gap-2">
+    <p className="text-sm text-red-600 dark:text-red-500 text-center flex items-center justify-center gap-2">
       <MessageCircleWarning className="h-4 w-4" />
       {msg}
     </p>

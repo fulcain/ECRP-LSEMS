@@ -48,19 +48,19 @@ const REPORT_OPTIONS: Tab<CourseReportType>[] = [
     value: "joint",
     label: "Joint BLS Course Reports",
     icon: GraduationCap,
-    accent: "border-cyan-400/40 bg-cyan-500/20 text-cyan-300",
+    accent: "border-cyan-300/40 dark:border-cyan-400/40 bg-cyan-100 dark:bg-cyan-500/20 text-cyan-700 dark:text-cyan-300",
   },
   {
     value: "normal",
     label: "Normal BLS Course Reports",
     icon: GraduationCap,
-    accent: "border-emerald-400/40 bg-emerald-500/20 text-emerald-300",
+    accent: "border-emerald-300/40 dark:border-emerald-400/40 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300",
   },
   {
     value: "ots",
     label: "On the Spot Classes",
     icon: GraduationCap,
-    accent: "border-violet-400/40 bg-violet-500/20 text-violet-300",
+    accent: "border-violet-300/40 dark:border-violet-400/40 bg-violet-100 dark:bg-violet-500/20 text-violet-700 dark:text-violet-300",
   },
 ];
 
@@ -377,11 +377,7 @@ export function CourseReportsProcessor() {
 
       {/* ── Course Pricing Guide ── */}
       <div
-        className="cr-animate-fade-up relative mb-6 overflow-hidden rounded-[1.5rem] border transition-colors duration-200"
-        style={{
-          borderColor: `hsl(${HUE} 70% 55% / 0.4)`,
-          background: `linear-gradient(135deg, hsl(${HUE} 65% 8% / 0.9), hsl(${HUE} 50% 3% / 0.95))`,
-        }}
+        className="cr-animate-fade-up relative mb-6 overflow-hidden rounded-[1.5rem] border bg-[linear-gradient(135deg,hsl(190_80%_96%_/_0.9),hsl(190_85%_90%_/_0.95))] border-[hsl(190_70%_55%_/_0.4)] transition-colors duration-200 dark:bg-[linear-gradient(135deg,hsl(190_65%_8%_/_0.9),hsl(190_50%_3%_/_0.95))]"
       >
         {/* Animated gradient wash */}
         <div
@@ -407,7 +403,7 @@ export function CourseReportsProcessor() {
                 />
               </div>
               <div>
-                <p className="text-[10px] font-semibold tracking-[0.18em] text-cyan-300 uppercase">
+                <p className="text-[10px] font-semibold tracking-[0.18em] text-cyan-700 dark:text-cyan-300 uppercase">
                   Course Pricing
                 </p>
                 <h3 className="text-lg font-bold tracking-tight text-foreground">
@@ -416,6 +412,8 @@ export function CourseReportsProcessor() {
               </div>
             </div>
           </div>
+          {/* A dark code block in both themes - the hint is BBCode meant for
+              pasting, and a dark terminal panel reads as such in light too. */}
           <pre
             className="overflow-x-auto rounded-xl border p-4 font-mono text-xs leading-relaxed"
             style={{
@@ -467,7 +465,7 @@ export function CourseReportsProcessor() {
                   className="cr-animate-fade-up space-y-4 rounded-xl border border-border bg-surface-hover/40 p-4"
                   key={reportType + "-datetime"}
                 >
-                  <p className="text-xs font-semibold tracking-[0.18em] text-cyan-300 uppercase">
+                  <p className="text-xs font-semibold tracking-[0.18em] text-cyan-700 dark:text-cyan-300 uppercase">
                     Date &amp; Time
                   </p>
 
@@ -525,11 +523,11 @@ export function CourseReportsProcessor() {
                   className="cr-animate-fade-up space-y-3 rounded-xl border border-border bg-surface-hover/40 p-4"
                   key={reportType + "-instructor"}
                 >
-                  <p className="text-xs font-semibold tracking-[0.18em] text-cyan-300 uppercase">
+                  <p className="text-xs font-semibold tracking-[0.18em] text-cyan-700 dark:text-cyan-300 uppercase">
                     Instructor
                   </p>
 
-                  <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-surface-hover/60 px-3 py-2 text-sm text-foreground transition-all duration-200 hover:border-cyan-500/40 hover:bg-cyan-950/20">
+                  <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-surface-hover/60 px-3 py-2 text-sm text-foreground transition-all duration-200 hover:border-cyan-500/40 hover:bg-cyan-50/20 dark:hover:bg-cyan-950/20">
                     <input
                       type="checkbox"
                       checked={isMe}
@@ -539,14 +537,14 @@ export function CourseReportsProcessor() {
                     <span>
                       It&apos;s me - auto-fill my rank &amp; name
                       {meInstructor && (
-                        <span className="ml-2 rounded-md bg-cyan-500/15 px-1.5 py-0.5 font-mono text-xs text-cyan-300">
+                        <span className="ml-2 rounded-md bg-cyan-100 dark:bg-cyan-500/15 px-1.5 py-0.5 font-mono text-xs text-cyan-700 dark:text-cyan-300">
                           {meInstructor}
                         </span>
                       )}
                     </span>
                   </label>
                   {isMe && !meInstructor && (
-                    <p className="text-xs text-amber-300/80">
+                    <p className="text-xs text-amber-700/80 dark:text-amber-300/80">
                       No saved rank &amp; name found - set them on the{" "}
                       <span className="font-medium">Staff page</span> to
                       auto-fill, or uncheck to type it manually.
@@ -558,7 +556,7 @@ export function CourseReportsProcessor() {
                     onChange={(e) => setInstructorsInput(e.target.value)}
                     disabled={isMe}
                     placeholder="RANK NAME"
-                    className="w-full border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-cyan-500/50 focus-visible:ring-2 focus-visible:ring-cyan-500/30 disabled:opacity-60"
+                    className="w-full border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-cyan-500/50 focus-visible:ring-2 focus-visible:ring-cyan-400/30 dark:focus-visible:ring-cyan-500/30 disabled:opacity-60"
                   />
                   <p className="text-xs text-muted-foreground">
                     {isMe ? (
@@ -585,14 +583,14 @@ export function CourseReportsProcessor() {
                     className="cr-animate-fade-up space-y-3 rounded-xl border border-border bg-surface-hover/40 p-4"
                     key={reportType + "-officers"}
                   >
-                    <p className="text-xs font-semibold tracking-[0.18em] text-violet-300 uppercase">
+                    <p className="text-xs font-semibold tracking-[0.18em] text-violet-700 dark:text-violet-300 uppercase">
                       Officer(s) name
                     </p>
                     <Input
                       value={officersInput}
                       onChange={(e) => setOfficersInput(e.target.value)}
                       placeholder="Officer Name"
-                      className="w-full border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-violet-500/50 focus-visible:ring-2 focus-visible:ring-violet-500/30"
+                      className="w-full border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-violet-500/50 focus-visible:ring-2 focus-visible:ring-violet-400/30 dark:focus-visible:ring-violet-500/30"
                     />
                     <p className="text-xs text-muted-foreground">
                       Separate multiple officers with{" "}
@@ -611,7 +609,7 @@ export function CourseReportsProcessor() {
                     className="cr-animate-fade-up space-y-3 rounded-xl border border-border bg-surface-hover/40 p-4"
                     key={reportType + "-students"}
                   >
-                    <p className="text-xs font-semibold tracking-[0.18em] text-violet-300 uppercase">
+                    <p className="text-xs font-semibold tracking-[0.18em] text-violet-700 dark:text-violet-300 uppercase">
                       Students
                     </p>
                     <div className="space-y-2">
@@ -632,7 +630,7 @@ export function CourseReportsProcessor() {
                                 updateStudent(index, "name", e.target.value)
                               }
                               placeholder="Fname Lname"
-                              className="min-w-[140px] flex-1 border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-violet-500/50 focus-visible:ring-2 focus-visible:ring-violet-500/30"
+                              className="min-w-[140px] flex-1 border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-violet-500/50 focus-visible:ring-2 focus-visible:ring-violet-400/30 dark:focus-visible:ring-violet-500/30"
                             />
                             <Select
                               value={student.company}
@@ -640,7 +638,7 @@ export function CourseReportsProcessor() {
                                 updateStudent(index, "company", value)
                               }
                             >
-                              <SelectTrigger className="h-10 w-[140px] shrink-0 border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-violet-500/50 focus-visible:ring-2 focus-visible:ring-violet-500/30">
+                              <SelectTrigger className="h-10 w-[140px] shrink-0 border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-violet-500/50 focus-visible:ring-2 focus-visible:ring-violet-400/30 dark:focus-visible:ring-violet-500/30">
                                 <SelectValue placeholder="Company" />
                               </SelectTrigger>
                               <SelectContent className="border-border/80 bg-surface text-foreground">
@@ -657,7 +655,7 @@ export function CourseReportsProcessor() {
                                 onClick={addStudent}
                                 size="icon"
                                 title="Add student"
-                                className="h-10 w-10 shrink-0 bg-violet-500/15 text-violet-300 ring-1 ring-violet-500/30 transition-all duration-200 hover:scale-[1.02] hover:bg-violet-500/30 hover:text-violet-200"
+                                className="h-10 w-10 shrink-0 bg-violet-100 dark:bg-violet-500/15 text-violet-700 dark:text-violet-300 ring-1 ring-violet-300/30 dark:ring-violet-500/30 transition-all duration-200 hover:scale-[1.02] hover:bg-violet-500/30 hover:text-violet-200"
                               >
                                 <Plus className="h-4 w-4" />
                               </Button>
@@ -667,7 +665,7 @@ export function CourseReportsProcessor() {
                                 onClick={() => removeStudent(index)}
                                 size="icon"
                                 variant="ghost"
-                                className="h-10 w-10 shrink-0 text-red-400 transition-all duration-200 hover:scale-[1.02] hover:bg-red-950/40 hover:text-red-300"
+                                className="h-10 w-10 shrink-0 text-red-600 dark:text-red-400 transition-all duration-200 hover:scale-[1.02] hover:bg-red-50/40 dark:hover:bg-red-950/40 hover:text-red-300"
                               >
                                 <X className="h-4 w-4" />
                               </Button>
@@ -692,7 +690,7 @@ export function CourseReportsProcessor() {
                     className="cr-animate-fade-up space-y-2 rounded-xl border border-border bg-surface-hover/40 p-4"
                     key={reportType + "-location"}
                   >
-                    <p className="text-xs font-semibold tracking-[0.18em] text-cyan-300 uppercase">
+                    <p className="text-xs font-semibold tracking-[0.18em] text-cyan-700 dark:text-cyan-300 uppercase">
                       Location
                     </p>
                     <div className="flex items-center gap-2">
@@ -719,7 +717,7 @@ export function CourseReportsProcessor() {
                     className="cr-animate-fade-up space-y-3 rounded-xl border border-border bg-surface-hover/40 p-4"
                     key={reportType + "-graduates"}
                   >
-                    <p className="text-xs font-semibold tracking-[0.18em] text-red-300 uppercase">
+                    <p className="text-xs font-semibold tracking-[0.18em] text-red-700 dark:text-red-300 uppercase">
                       Course Graduates
                     </p>
                     <div className="space-y-2">
@@ -740,7 +738,7 @@ export function CourseReportsProcessor() {
                                 updateGraduate(index, "name", e.target.value)
                               }
                               placeholder="Firstname Lastname"
-                              className="min-w-[140px] flex-1 border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-500/30"
+                              className="min-w-[140px] flex-1 border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-400/30 dark:focus-visible:ring-red-500/30"
                             />
                             {reportType === "normal" && (
                               <Select
@@ -749,7 +747,7 @@ export function CourseReportsProcessor() {
                                   updateGraduate(index, "company", value)
                                 }
                               >
-                                <SelectTrigger className="h-10 w-[140px] shrink-0 border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-500/30">
+                                <SelectTrigger className="h-10 w-[140px] shrink-0 border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-400/30 dark:focus-visible:ring-red-500/30">
                                   <SelectValue placeholder="Company" />
                                 </SelectTrigger>
                                 <SelectContent className="border-border/80 bg-surface text-foreground">
@@ -767,7 +765,7 @@ export function CourseReportsProcessor() {
                                 onClick={addGraduate}
                                 size="icon"
                                 title="Add graduate"
-                                className="h-10 w-10 shrink-0 bg-red-500/15 text-red-300 ring-1 ring-red-500/30 transition-all duration-200 hover:scale-[1.02] hover:bg-red-500/30 hover:text-red-200"
+                                className="h-10 w-10 shrink-0 bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300 ring-1 ring-red-300/30 dark:ring-red-500/30 transition-all duration-200 hover:scale-[1.02] hover:bg-red-500/30 hover:text-red-200"
                               >
                                 <Plus className="h-4 w-4" />
                               </Button>
@@ -777,7 +775,7 @@ export function CourseReportsProcessor() {
                                 onClick={() => removeGraduate(index)}
                                 size="icon"
                                 variant="ghost"
-                                className="h-10 w-10 shrink-0 text-red-400 transition-all duration-200 hover:scale-[1.02] hover:bg-red-950/40 hover:text-red-300"
+                                className="h-10 w-10 shrink-0 text-red-600 dark:text-red-400 transition-all duration-200 hover:scale-[1.02] hover:bg-red-50/40 dark:hover:bg-red-950/40 hover:text-red-300"
                               >
                                 <X className="h-4 w-4" />
                               </Button>
@@ -803,7 +801,7 @@ export function CourseReportsProcessor() {
                   className="cr-animate-fade-up space-y-3 rounded-xl border border-border bg-surface-hover/40 p-4"
                   key={reportType + "-guide"}
                 >
-                  <p className="text-xs font-semibold tracking-[0.18em] text-cyan-300 uppercase">
+                  <p className="text-xs font-semibold tracking-[0.18em] text-cyan-700 dark:text-cyan-300 uppercase">
                     {reportType === "normal"
                       ? "Funds & Confirmation"
                       : reportType === "ots"
@@ -830,7 +828,7 @@ export function CourseReportsProcessor() {
                             )
                           }
                           placeholder="10000"
-                          className="border-border bg-surface-hover pl-7 text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-500/30"
+                          className="border-border bg-surface-hover pl-7 text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-400/30 dark:focus-visible:ring-emerald-500/30"
                         />
                       </div>
                       <p className="text-xs text-muted-foreground">
@@ -844,7 +842,7 @@ export function CourseReportsProcessor() {
 
                   <div className="space-y-2">
                     {reportType !== "joint" && (
-                      <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-surface-hover/60 px-3 py-2 text-sm text-foreground transition-all duration-200 hover:border-emerald-500/40 hover:bg-emerald-950/20">
+                      <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-surface-hover/60 px-3 py-2 text-sm text-foreground transition-all duration-200 hover:border-emerald-500/40 hover:bg-emerald-50/20 dark:hover:bg-emerald-950/20">
                         <input
                           type="checkbox"
                           checked={moneyGivenToGovernment}
@@ -862,7 +860,7 @@ export function CourseReportsProcessor() {
                       </label>
                     )}
                     {reportType !== "ots" && (
-                      <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-surface-hover/60 px-3 py-2 text-sm text-foreground transition-all duration-200 hover:border-emerald-500/40 hover:bg-emerald-950/20">
+                      <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-surface-hover/60 px-3 py-2 text-sm text-foreground transition-all duration-200 hover:border-emerald-500/40 hover:bg-emerald-50/20 dark:hover:bg-emerald-950/20">
                         <input
                           type="checkbox"
                           checked={guideEmailSent}
@@ -892,7 +890,7 @@ export function CourseReportsProcessor() {
                             "_blank",
                           )
                         }
-                        className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-cyan-500/40 hover:bg-cyan-950/20 hover:text-cyan-200"
+                        className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-cyan-500/40 hover:bg-cyan-50/20 dark:hover:bg-cyan-950/20 hover:text-cyan-200"
                       >
                         <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
                         Open Guide Topic
@@ -909,7 +907,7 @@ export function CourseReportsProcessor() {
                             "noopener,noreferrer",
                           )
                         }
-                        className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-cyan-500/40 hover:bg-cyan-950/20 hover:text-cyan-200"
+                        className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-cyan-500/40 hover:bg-cyan-50/20 dark:hover:bg-cyan-950/20 hover:text-cyan-200"
                       >
                         <BookOpen className="mr-1.5 h-3.5 w-3.5" />
                         BLS Quick Guide
@@ -930,14 +928,15 @@ export function CourseReportsProcessor() {
                         value={receiptUrl}
                         onChange={(e) => setReceiptUrl(e.target.value)}
                         placeholder="https://i.ibb.co/…"
-                        className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-500/30"
+                        className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-400/30 dark:focus-visible:ring-emerald-500/30"
                       />
                       <p className="text-xs text-muted-foreground">
                         Goes inside the BBCode link:{" "}
                         <span className="font-mono">
                           [url=YOUR-URL]*Attachment*[/url]
                         </span>
-                        .
+                        . Leave empty if there is no receipt — the report will
+                        print <span className="font-mono">N/A</span>.
                       </p>
                     </div>
                   )}
@@ -953,14 +952,15 @@ export function CourseReportsProcessor() {
                         value={receiptWeazelUrl}
                         onChange={(e) => setReceiptWeazelUrl(e.target.value)}
                         placeholder="https://i.ibb.co/…"
-                        className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-500/30"
+                        className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-400/30 dark:focus-visible:ring-emerald-500/30"
                       />
                       <p className="text-xs text-muted-foreground">
                         Goes inside the BBCode link:{" "}
                         <span className="font-mono">
                           [url=YOUR-URL]*Attachment*[/url]
                         </span>
-                        .
+                        . Leave empty if there is no receipt — the report will
+                        print <span className="font-mono">N/A</span>.
                       </p>
                     </div>
                   )}
@@ -988,7 +988,7 @@ export function CourseReportsProcessor() {
                     onClick={handleCopyAndOpen}
                     variant="outline"
                     size="default"
-                    className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-cyan-500/40 hover:bg-cyan-950/20 hover:text-cyan-200 active:scale-[0.98]"
+                    className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-cyan-500/40 hover:bg-cyan-50/20 dark:hover:bg-cyan-950/20 hover:text-cyan-200 active:scale-[0.98]"
                   >
                     <ExternalLink className="h-4 w-4" />
                     Copy &amp; Open Report

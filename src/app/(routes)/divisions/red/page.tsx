@@ -440,7 +440,7 @@ export default function REDFormatsPage() {
                             setInterviewDate(event.target.value)
                           }
                           placeholder="e.g. 15 JUL 2026"
-                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-sky-500/30"
+                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-sky-400/30 dark:focus-visible:ring-sky-500/30"
                         />
                       </div>
                       <div className="space-y-2">
@@ -454,7 +454,7 @@ export default function REDFormatsPage() {
                             setInterviewTime(event.target.value)
                           }
                           placeholder="e.g. 14:00"
-                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-sky-500/30"
+                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-sky-400/30 dark:focus-visible:ring-sky-500/30"
                         />
                       </div>
                     </div>
@@ -465,7 +465,7 @@ export default function REDFormatsPage() {
                       key="employment-rank"
                       className="animate-fade-up space-y-3 rounded-xl border border-border bg-surface-hover/40 p-4"
                     >
-                      <p className="text-xs font-semibold tracking-[0.18em] text-rose-300 uppercase">
+                      <p className="text-xs font-semibold tracking-[0.18em] text-rose-700 dark:text-rose-300 uppercase">
                         Reinstatement offer details
                       </p>
                       <div className="space-y-2">
@@ -475,7 +475,7 @@ export default function REDFormatsPage() {
                           value={employmentRank}
                           onChange={(event) => setEmploymentRank(event.target.value)}
                           placeholder="Decided Rank"
-                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-rose-500/30"
+                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-rose-400/30 dark:focus-visible:ring-rose-500/30"
                         />
                       </div>
                       <div className="space-y-2">
@@ -483,7 +483,7 @@ export default function REDFormatsPage() {
                           <Label htmlFor="offer-tier">
                             Activity requirement
                           </Label>
-                          <span className="rounded-full bg-rose-500/15 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-rose-200 ring-1 ring-rose-400/30">
+                          <span className="rounded-full bg-rose-100 dark:bg-rose-500/15 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-rose-800 dark:text-rose-200 ring-1 ring-rose-400/30">
                             {offerHours}
                           </span>
                         </div>
@@ -519,7 +519,7 @@ export default function REDFormatsPage() {
                       key={selectedFormat}
                       className="animate-fade-up space-y-3 rounded-xl border border-border bg-surface-hover/40 p-4"
                     >
-                      <p className="text-xs font-semibold tracking-[0.18em] text-amber-300 uppercase">
+                      <p className="text-xs font-semibold tracking-[0.18em] text-amber-700 dark:text-amber-300 uppercase">
                         {reasonSectionLabel}
                       </p>
                       <div className="space-y-2">
@@ -537,7 +537,7 @@ export default function REDFormatsPage() {
                                 updateReason(index, e.target.value)
                               }
                               placeholder={`Reason ${index + 1}`}
-                              className="flex-1 border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-amber-500/50 focus-visible:ring-2 focus-visible:ring-amber-500/30"
+                              className="flex-1 border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-amber-500/50 focus-visible:ring-2 focus-visible:ring-amber-400/30 dark:focus-visible:ring-amber-500/30"
                             />
                             {reasons.length > 1 && (
                               <Button
@@ -545,7 +545,7 @@ export default function REDFormatsPage() {
                                 onClick={() => removeReason(index)}
                                 size="icon"
                                 variant="ghost"
-                                className="h-10 w-10 shrink-0 text-red-400 transition-all duration-200 hover:scale-[1.02] hover:bg-red-950/40 hover:text-red-300"
+                                className="h-10 w-10 shrink-0 text-red-600 dark:text-red-400 transition-all duration-200 hover:scale-[1.02] hover:bg-red-50/40 dark:hover:bg-red-950/40 hover:text-red-300"
                               >
                                 <X className="h-4 w-4" />
                               </Button>
@@ -558,7 +558,7 @@ export default function REDFormatsPage() {
                         onClick={addReason}
                         variant="outline"
                         size="sm"
-                        className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-amber-500/40 hover:bg-amber-950/20 hover:text-amber-200"
+                        className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-amber-500/40 hover:bg-amber-50/20 dark:hover:bg-amber-950/20 hover:text-amber-200"
                       >
                         <Plus className="mr-1.5 h-3.5 w-3.5" />
                         Add reason
@@ -571,7 +571,7 @@ export default function REDFormatsPage() {
                       key="denied"
                       className="animate-fade-up space-y-4 rounded-xl border border-border bg-surface-hover/40 p-4"
                     >
-                      <p className="text-xs font-semibold tracking-[0.18em] text-red-300 uppercase">
+                      <p className="text-xs font-semibold tracking-[0.18em] text-red-700 dark:text-red-300 uppercase">
                         Denial details
                       </p>
                       <div className="space-y-2">
@@ -640,7 +640,7 @@ export default function REDFormatsPage() {
                                 : Number(e.target.value),
                             )}
                           placeholder="2, 4, or more"
-                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-500/30"
+                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-400/30 dark:focus-visible:ring-red-500/30"
                         />
                         <p className="text-xs text-muted-foreground">
                           Standard cooldown is 2 or 4 weeks.
@@ -664,7 +664,7 @@ export default function REDFormatsPage() {
                                   updateReason(index, e.target.value)
                                 }
                                 placeholder={`Reason ${index + 1}`}
-                                className="flex-1 border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-500/30"
+                                className="flex-1 border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-400/30 dark:focus-visible:ring-red-500/30"
                               />
                               {reasons.length > 1 && (
                                 <Button
@@ -672,7 +672,7 @@ export default function REDFormatsPage() {
                                   onClick={() => removeReason(index)}
                                   size="icon"
                                   variant="ghost"
-                                  className="h-10 w-10 shrink-0 text-red-400 transition-all duration-200 hover:scale-[1.02] hover:bg-red-950/40 hover:text-red-300"
+                                  className="h-10 w-10 shrink-0 text-red-600 dark:text-red-400 transition-all duration-200 hover:scale-[1.02] hover:bg-red-50/40 dark:hover:bg-red-950/40 hover:text-red-300"
                                 >
                                   <X className="h-4 w-4" />
                                 </Button>
@@ -685,7 +685,7 @@ export default function REDFormatsPage() {
                           onClick={addReason}
                           variant="outline"
                           size="sm"
-                          className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-red-500/40 hover:bg-red-950/20 hover:text-red-200"
+                          className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-red-500/40 hover:bg-red-50/20 dark:hover:bg-red-950/20 hover:text-red-200"
                         >
                           <Plus className="mr-1.5 h-3.5 w-3.5" />
                           Add reason
@@ -831,7 +831,7 @@ export default function REDFormatsPage() {
                         }
                         variant="outline"
                         size="sm"
-                        className="border-violet-600/50 text-violet-300 transition-all duration-200 hover:scale-[1.02] hover:border-violet-500 hover:bg-violet-950/40 hover:text-violet-200"
+                        className="border-violet-600/50 text-violet-700 dark:text-violet-300 transition-all duration-200 hover:scale-[1.02] hover:border-violet-500 hover:bg-violet-50/40 dark:hover:bg-violet-950/40 hover:text-violet-200"
                       >
                         <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
                         Info Topic
@@ -848,7 +848,7 @@ export default function REDFormatsPage() {
                           size="sm"
                           className={`transition-all duration-200 hover:scale-[1.02] ${
                             copiedTitleTag
-                              ? "border-emerald-500/60 bg-emerald-950/30 text-emerald-300"
+                              ? "border-emerald-300/60 dark:border-emerald-500/60 bg-emerald-50/30 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300"
                               : "border-border text-muted-foreground hover:bg-surface-hover hover:text-foreground"
                           }`}
                           title={`Copies "${fullTitle}" to your clipboard`}

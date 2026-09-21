@@ -27,7 +27,7 @@ export function DiscordContactIndicator({
         title={accessibleLabel}
         aria-label={accessibleLabel}
         className={
-          "flex justify-center rounded-lg p-2 text-indigo-400/80 transition-colors hover:text-indigo-300" +
+          "flex justify-center rounded-lg p-2 text-indigo-600/80 dark:text-indigo-400/80 transition-colors hover:text-indigo-300" +
           (className ? ` ${className}` : "")
         }
       >
@@ -45,7 +45,7 @@ export function DiscordContactIndicator({
     >
       <DiscordIcon
         className={
-          iconClassName ?? "h-3.5 w-3.5 shrink-0 text-indigo-400/80"
+          iconClassName ?? "h-3.5 w-3.5 shrink-0 text-indigo-600/80 dark:text-indigo-400/80"
         }
       />
       <span className="truncate">

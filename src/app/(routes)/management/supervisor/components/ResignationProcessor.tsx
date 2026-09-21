@@ -440,19 +440,18 @@ export function ResignationProcessor() {
       <ToastContainer
         position="top-right"
         autoClose={2000}
-        theme="dark"
         transition={Bounce}
       />
 
       {/* Credentials Warning */}
       {isCredentialsEmpty && (
-        <div className="flex items-center gap-3 rounded-xl border border-amber-500/20 bg-amber-500/10 p-4">
-          <AlertTriangle className="h-5 w-5 shrink-0 text-amber-400" />
+        <div className="flex items-center gap-3 rounded-xl border border-amber-300/20 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/10 p-4">
+          <AlertTriangle className="h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" />
           <div>
-            <p className="text-sm font-medium text-amber-300">
+            <p className="text-sm font-medium text-amber-700 dark:text-amber-300">
               Staff credentials not set
             </p>
-            <p className="text-xs text-amber-400/70">
+            <p className="text-xs text-amber-600/70 dark:text-amber-400/70">
               Set your name, signature, and rank in the{" "}
               <Link
                 href="/workspace/staff"
@@ -497,8 +496,8 @@ export function ResignationProcessor() {
                   className={`flex-1 rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
                     dischargeType === type
                       ? type === "Honorable"
-                        ? "border-emerald-500/40 bg-emerald-500/20 text-emerald-300"
-                        : "border-red-500/40 bg-red-500/20 text-red-300"
+                        ? "border-emerald-300/40 dark:border-emerald-500/40 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300"
+                        : "border-red-300/40 dark:border-red-500/40 bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-300"
                       : "border-border bg-surface-raised text-muted-foreground hover:bg-surface-hover hover:text-foreground"
                   }`}
                 >
@@ -591,7 +590,7 @@ export function ResignationProcessor() {
                 key={step.id}
                 className={`rounded-lg border bg-background/50 p-4 transition-colors ${
                   step.warning
-                    ? "border-red-500/20 hover:border-red-500/40"
+                    ? "border-red-300/20 dark:border-red-500/20 hover:border-red-500/40"
                     : "border-border hover:border-border"
                 }`}
               >
@@ -603,7 +602,7 @@ export function ResignationProcessor() {
                     onClick={() => toggleStep(step.id)}
                     className={`mt-0.5 transition-colors ${
                       step.warning
-                        ? "text-red-400/70 hover:text-red-300"
+                        ? "text-red-600/70 dark:text-red-400/70 hover:text-red-300"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
@@ -619,7 +618,7 @@ export function ResignationProcessor() {
                         isDone
                           ? "text-muted-foreground line-through"
                           : step.warning
-                            ? "text-red-300"
+                            ? "text-red-700 dark:text-red-300"
                             : "text-foreground"
                       }`}
                     >
@@ -646,7 +645,7 @@ export function ResignationProcessor() {
                       </ul>
                     )}
                     {step.note && !isDone && (
-                      <p className="mt-2 text-xs font-medium text-red-400">
+                      <p className="mt-2 text-xs font-medium text-red-600 dark:text-red-400">
                         {step.note}
                       </p>
                     )}
@@ -670,7 +669,7 @@ export function ResignationProcessor() {
                           {step.titleText && (
                             <button
                               onClick={() => copyPlain(step.titleText!)}
-                              className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs text-emerald-300 transition-colors hover:bg-emerald-500/20 hover:text-emerald-200"
+                              className="inline-flex items-center gap-1.5 rounded-md border border-emerald-300/30 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 text-xs text-emerald-700 dark:text-emerald-300 transition-colors hover:bg-emerald-500/20 hover:text-emerald-200"
                             >
                               <Copy className="h-3 w-3" />
                               Copy Title
@@ -681,7 +680,7 @@ export function ResignationProcessor() {
                               href={step.action.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-1 text-xs text-indigo-300 transition-colors hover:bg-indigo-500/20 hover:text-indigo-200"
+                              className="inline-flex items-center gap-1.5 rounded-md border border-indigo-300/30 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 text-xs text-indigo-700 dark:text-indigo-300 transition-colors hover:bg-indigo-500/20 hover:text-indigo-200"
                             >
                               <ExternalLink className="h-3 w-3" />
                               {step.action.label}
@@ -692,7 +691,7 @@ export function ResignationProcessor() {
                               href={step.secondaryAction.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-1 text-xs text-indigo-300 transition-colors hover:bg-indigo-500/20 hover:text-indigo-200"
+                              className="inline-flex items-center gap-1.5 rounded-md border border-indigo-300/30 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 text-xs text-indigo-700 dark:text-indigo-300 transition-colors hover:bg-indigo-500/20 hover:text-indigo-200"
                             >
                               <ExternalLink className="h-3 w-3" />
                               {step.secondaryAction.label}
@@ -774,7 +773,7 @@ export function ResignationProcessor() {
                             href={item.action.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-1 text-xs text-indigo-300 transition-colors hover:bg-indigo-500/20 hover:text-indigo-200"
+                            className="inline-flex items-center gap-1.5 rounded-md border border-indigo-300/30 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 text-xs text-indigo-700 dark:text-indigo-300 transition-colors hover:bg-indigo-500/20 hover:text-indigo-200"
                           >
                             <ExternalLink className="h-3 w-3" />
                             {item.action.label}

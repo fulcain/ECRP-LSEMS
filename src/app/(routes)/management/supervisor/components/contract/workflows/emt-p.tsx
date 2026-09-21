@@ -9,9 +9,9 @@ export const emtpWorkflow: ContractWorkflow = {
   label: "EMT-P Contract",
   description:
     "Process a contract switch from Master EMT to EMT-P (part-time contract).",
-  accent: "border-violet-400/40 bg-violet-500/20 text-violet-300",
-  border: "border-violet-400/30",
-  badge: "bg-violet-500/20 text-violet-100 ring-1 ring-violet-400/40",
+  accent: "border-violet-300/40 dark:border-violet-400/40 bg-violet-100 dark:bg-violet-500/20 text-violet-700 dark:text-violet-300",
+  border: "border-violet-300/30 dark:border-violet-400/30",
+  badge: "bg-violet-100 dark:bg-violet-500/20 text-violet-100 ring-1 ring-violet-400/40",
   icon: <Stethoscope className="h-4 w-4" />,
   steps: [
     {

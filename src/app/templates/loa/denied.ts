@@ -4,8 +4,8 @@ export const deniedLOATemplate: LOATemplateDefinition = {
   value: "denied",
   label: "LOA Denied",
   accent: "from-red-500/25 via-rose-500/15 to-transparent",
-  border: "border-red-400/30",
-  badge: "bg-red-500/20 text-red-100 ring-1 ring-red-400/40",
+  border: "border-red-300/30 dark:border-red-400/30",
+  badge: "bg-red-100 dark:bg-red-500/20 text-red-100 ring-1 ring-red-400/40",
   bannerImg: "https://i.ibb.co/Hf4PmVjY/y-S0uc-UE.png",
   divboxColor: "darkred",
   renderBody: ({

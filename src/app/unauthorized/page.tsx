@@ -67,8 +67,8 @@ export default async function UnauthorizedPage({
     <div className="flex min-h-[calc(100vh-3rem)] items-center justify-center p-6">
       <div className="w-full max-w-sm rounded-lg border border-border/40 bg-surface p-8 text-center space-y-6">
         <div className="flex flex-col items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/10 ring-1 ring-amber-500/20">
-            <ShieldAlert className="h-6 w-6 text-amber-500" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-50 dark:bg-amber-500/10 ring-1 ring-amber-300/20 dark:ring-amber-500/20">
+            <ShieldAlert className="h-6 w-6 text-amber-600 dark:text-amber-500" />
           </div>
           <h1 className="text-lg font-semibold">{heading}</h1>
         </div>

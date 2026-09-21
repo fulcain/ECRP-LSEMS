@@ -5,8 +5,8 @@ export const emtAEmailTemplate: PromotionEmailDefinition = {
   label: "EMT-A Email",
   rankLabel: "EMT-Advanced",
   accent: "from-purple-500/25 via-violet-500/15 to-transparent",
-  border: "border-purple-400/30",
-  badge: "bg-purple-500/20 text-purple-100 ring-1 ring-purple-400/40",
+  border: "border-purple-300/30 dark:border-purple-400/30",
+  badge: "bg-purple-100 dark:bg-purple-500/20 text-purple-100 ring-1 ring-purple-400/40",
   renderBody: ({ personnelName, title, medicName, medicRank, medicSignature }) => {
     const displayName = personnelName || "[i]NAME[/i]";
     const signatureImg = medicSignature

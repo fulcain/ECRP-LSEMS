@@ -14,7 +14,7 @@ const templatesTabs: Tab<TemplatesTab>[] = [
     value: "loa",
     label: "LOA",
     icon: <FileText className="h-4 w-4" />,
-    accent: "border-emerald-400/40 bg-emerald-500/20 text-emerald-300",
+    accent: "border-emerald-300/40 dark:border-emerald-400/40 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300",
   },
 ];
 

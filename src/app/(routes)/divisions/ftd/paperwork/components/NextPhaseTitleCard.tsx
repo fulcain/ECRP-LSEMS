@@ -339,7 +339,7 @@ export function NextPhaseTitleCard() {
           )}
 
           {safeNextPhaseDropdown === "pending-mandatory" && (
-            <div className="text-xs rounded-md border border-amber-500/20 bg-amber-500/5 px-3 py-2 text-amber-700 dark:text-amber-300">
+            <div className="text-xs rounded-md border border-amber-300/20 dark:border-amber-500/20 bg-amber-500/5 px-3 py-2 text-amber-700 dark:text-amber-300">
               Go to the Next Session Focus Section and choose amount of
               Additional Mandatories they have to do.
             </div>

@@ -5,8 +5,8 @@ export const masterEMTEmailTemplate: PromotionEmailDefinition = {
   label: "Master EMT Email",
   rankLabel: "Master EMT",
   accent: "from-amber-500/25 via-yellow-500/15 to-transparent",
-  border: "border-amber-400/30",
-  badge: "bg-amber-500/20 text-amber-100 ring-1 ring-amber-400/40",
+  border: "border-amber-300/30 dark:border-amber-400/30",
+  badge: "bg-amber-100 dark:bg-amber-500/20 text-amber-100 ring-1 ring-amber-400/40",
   renderBody: ({ personnelName, title, medicName, medicRank, medicSignature }) => {
     const displayName = personnelName || "[i]NAME[/i]";
     const signatureImg = medicSignature

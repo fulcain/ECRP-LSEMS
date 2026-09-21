@@ -16,7 +16,7 @@ import { useMemo, useState } from "react";
 /** A small rounded tag for a Discord role the member holds. */
 function RoleTag({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-indigo-400/25 bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-100">
+    <span className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-indigo-300/25 dark:border-indigo-400/25 bg-indigo-50 dark:bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-100">
       {children}
     </span>
   );
@@ -167,8 +167,8 @@ export function DiscordProfileCard() {
               </p>
               {/* The one value the app reads off the roles, so it belongs with
                   the name rather than in a section of its own. */}
-              <span className="mt-2 inline-flex max-w-full items-center gap-1.5 rounded-full border border-indigo-400/25 bg-indigo-500/10 px-2.5 py-1 text-xs font-medium text-indigo-100">
-                <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-indigo-300" />
+              <span className="mt-2 inline-flex max-w-full items-center gap-1.5 rounded-full border border-indigo-300/25 dark:border-indigo-400/25 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 text-xs font-medium text-indigo-100">
+                <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-indigo-700 dark:text-indigo-300" />
                 <span className="min-w-0 truncate">
                   {identity.rankLabel ?? "No rank detected"}
                 </span>
@@ -180,7 +180,7 @@ export function DiscordProfileCard() {
             variant="outline"
             onClick={handleSync}
             disabled={syncing}
-            className="whitespace-nowrap border-indigo-400/30 bg-surface/40 text-indigo-200 transition-all duration-200 hover:scale-[1.02] hover:border-indigo-300/50 hover:bg-indigo-950/30 active:scale-[0.98] disabled:opacity-60"
+            className="whitespace-nowrap border-indigo-300/30 dark:border-indigo-400/30 bg-surface/40 text-indigo-800 dark:text-indigo-200 transition-all duration-200 hover:scale-[1.02] hover:border-indigo-300/50 hover:bg-indigo-50/30 dark:hover:bg-indigo-950/30 active:scale-[0.98] disabled:opacity-60"
           >
             <RefreshCw
               className={`mr-2 h-4 w-4 ${syncing ? "animate-spin" : ""}`}
@@ -195,7 +195,7 @@ export function DiscordProfileCard() {
 
         <div>
           <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
-            <Sparkles className="h-4 w-4 text-indigo-300" />
+            <Sparkles className="h-4 w-4 text-indigo-700 dark:text-indigo-300" />
             Roles the app recognises
             <span className="rounded-full border border-border bg-surface/70 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
               {roles.length}
