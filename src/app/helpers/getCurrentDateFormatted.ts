@@ -1,6 +1,7 @@
+const DAY_SUFFIXES = ["th", "st", "nd", "rd"];
+
 export const getCurrentDateFormatted = (): string => {
   const now = new Date();
-  const day = now.getUTCDate().toString()
   const monthNames = [
     "January",
     "February",
@@ -18,14 +19,11 @@ export const getCurrentDateFormatted = (): string => {
   const month = monthNames[now.getUTCMonth()];
   const year = now.getUTCFullYear();
 
-  let daySuffix = "th";
-  if (day === "1") {
-    daySuffix = "st";
-  } else if (day === "2") {
-    daySuffix = "nd";
-  } else if (day === "3") {
-    daySuffix = "rd";
-  }
+  // 11th-13th take "th"; the teens are the exception to the 1/2/3 rule.
+  const day = now.getUTCDate();
+  const suffix = day % 100 === 11 || day % 100 === 12 || day % 100 === 13
+    ? "th"
+    : DAY_SUFFIXES[Math.min(day % 10, 4)];
 
-  return `${month} ${day}${daySuffix}, ${year}`;
+  return `${month} ${day}${suffix}, ${year}`;
 };
