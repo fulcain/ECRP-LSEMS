@@ -20,6 +20,11 @@ export const changeLog: ChangeLogEntry[] = [
         description:
           "Division Email Templates gained signature options: two toggles that leave the 'Be well' sign-off out of the email body, and drop the recipient 'Dear' line together with the bottom signature bar - each on its own, and remembered with your compose session.",
       },
+      {
+        type: "feature",
+        description:
+          "Added a light theme. Switch between dark and light with the sun/moon toggle in the sidebar - your choice is remembered, and dark stays the default.",
+      },
     ],
   },
   {
