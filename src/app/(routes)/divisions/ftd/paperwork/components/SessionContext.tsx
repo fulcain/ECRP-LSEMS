@@ -173,6 +173,18 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     );
   }, [medicCredentials.signature]);
 
+  // The "Your Name" dropdown lists the FT roster; the member's own Staff Page
+  // name is preselected into it, so the empty dropdown is one click instead of
+  // a scroll-and-pick. A restored or picked name is left alone.
+  const nameSeeded = useRef(false);
+  useEffect(() => {
+    if (nameSeeded.current) return;
+    const saved = medicCredentials.name;
+    if (!saved) return; // credentials still hydrating
+    nameSeeded.current = true;
+    setDetails((prev) => (prev.ftoName ? prev : { ...prev, ftoName: saved }));
+  }, [medicCredentials.name]);
+
   // Write the session back, but never the values of a render that predates the
   // restore: those are the empty defaults, and persisting them is what made
   // these fields look like they were never saved.

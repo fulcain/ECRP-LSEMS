@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import {
   BookOpen,
@@ -21,20 +21,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useLocalStorage, useSharedLocalStorageString } from "@/app/hooks/useLocalStorage";
+import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import { useMedic } from "@/app/context/MedicContext";
+import { DIVISIONS } from "@/configs/roles";
 
-import {
-  SHARED_SIG_NAME_KEY,
-  SHARED_SIG_RANK_KEY,
-  SHARED_SIGNATURE_KEY,
-  SHARED_FTD_RANK_KEY,
-} from "@/components/employee-stats/lib/generate-fti-promotion-bbcode";
 import {
   generateCertificationPaperwork,
   generateDivisionalFile,
   generateTrainerInfoBBCode,
 } from "@/components/employee-stats/lib/generate-fti-certification-bbcode";
-import { SharedSignatureBar } from "@/components/employee-stats/components/SharedSignatureBar";
 
 /* ------------------------------------------------------------------ */
 /*  Form persistence key                                                */
@@ -223,11 +218,12 @@ function PhaseTwoNotes() {
 /* ------------------------------------------------------------------ */
 
 export default function FtiPage() {
-  /* ---- Shared signature data ---- */
-  const [sigName] = useSharedLocalStorageString(SHARED_SIG_NAME_KEY, "");
-  const [sigRank] = useSharedLocalStorageString(SHARED_SIG_RANK_KEY, "");
-  const [ftdRank] = useSharedLocalStorageString(SHARED_FTD_RANK_KEY, "");
-  const [signature] = useSharedLocalStorageString(SHARED_SIGNATURE_KEY, "");
+  /* ---- The member's own details, straight from the Staff Page ---- */
+  const { medicCredentials, divisionRanks } = useMedic();
+  const sigName = medicCredentials.name;
+  const sigRank = medicCredentials.rank;
+  const ftdRank = divisionRanks[DIVISIONS.ftd.label] || "";
+  const signature = medicCredentials.signature;
 
   /* ---- Per-page form state ---- */
   const [savedForm, setSavedForm] = useLocalStorage(FORM_KEY, {
@@ -245,19 +241,24 @@ export default function FtiPage() {
   // The fields read straight off the stored form and write back one at a time.
   // Giving each its own `useState` and persisting those lost the stored answers:
   // the mount pass wrote the empty defaults over them before they were applied.
-  const setField = (
-    field:
-      | "studentName"
-      | "studentRank"
-      | "certifiedBy"
-      | "completionDate"
-      | "answer1"
-      | "answer2"
-      | "answer3"
-      | "answer4"
-      | "answer5",
-    value: string,
-  ) => setSavedForm((prev) => ({ ...prev, [field]: value }));
+  // Wrapped so an effect can depend on it (exhaustive-deps sees a fresh
+  // function identity every render otherwise).
+  const setField = useCallback(
+    (
+      field:
+        | "studentName"
+        | "studentRank"
+        | "certifiedBy"
+        | "completionDate"
+        | "answer1"
+        | "answer2"
+        | "answer3"
+        | "answer4"
+        | "answer5",
+      value: string,
+    ) => setSavedForm((prev) => ({ ...prev, [field]: value })),
+    [setSavedForm],
+  );
 
   const studentName = savedForm.studentName;
   const studentRank = savedForm.studentRank;
@@ -280,17 +281,14 @@ export default function FtiPage() {
   const setAnswer4 = (value: string) => setField("answer4", value);
   const setAnswer5 = (value: string) => setField("answer5", value);
 
-  /* Auto-fill certifiedBy from shared bar on first mount (only if empty) */
-  const [certByInitDone, setCertByInitDone] = useState(false);
+  /* Auto-fill certifiedBy from the Staff Page whenever it has something to
+   * offer and the field is empty - re-running until it can write, because the
+   * provider hydrates a render after this page mounts. */
   useEffect(() => {
-    if (certByInitDone) return;
-    const sharedFull = [sigRank, sigName].filter(Boolean).join(" ");
-    if (sharedFull && !certifiedBy) {
-      setCertifiedBy(sharedFull);
-    }
-    setCertByInitDone(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const staffFull = [sigRank, sigName].filter(Boolean).join(" ");
+    if (!staffFull || certifiedBy) return;
+    setField("certifiedBy", staffFull);
+  }, [sigRank, sigName, certifiedBy, setField]);
 
   /* ---- BBCode generation ---- */
   const certifierRank = ftdRank ? `${sigRank} | ${ftdRank}` : sigRank;
@@ -342,8 +340,6 @@ export default function FtiPage() {
   return (
     <div className="space-y-6">
       <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
-
-      <SharedSignatureBar subtitle="applies to all paperwork on this page" />
 
       {/* ---- Phase Notes ---- */}
       <Card>
@@ -440,7 +436,7 @@ export default function FtiPage() {
             </div>
 
             <p className="text-xs text-muted-foreground">
-              Fill in the five evaluation answers below. Signature, your name and rank are pulled from the Shared Signature bar above.
+              Fill in the five evaluation answers below. Signature, your name and rank come from your Staff Page.
             </p>
 
             <div className="grid gap-4 sm:grid-cols-1">

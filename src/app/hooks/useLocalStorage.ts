@@ -10,8 +10,13 @@ import { useEffect, useState } from "react";
  * value before anything can apply it, and the write-back then persists the
  * defaults - the stored data is gone and every reload loses it again. Derive
  * what you need from the value, and write back per field.
+ *
+ * The third element is true once the stored value has been read. An effect
+ * that compares the value against storage or writes a derived value must wait
+ * for it: before hydration the value is the default, and acting on that would
+ * clobber what is stored.
  */
-export function useLocalStorage<T>(key: string, defaultValue: T): [T, React.Dispatch<React.SetStateAction<T>>] {
+export function useLocalStorage<T>(key: string, defaultValue: T): [T, React.Dispatch<React.SetStateAction<T>>, boolean] {
   const [value, setValue] = useState<T>(defaultValue);
   const [isHydrated, setIsHydrated] = useState(false);
   useEffect(() => {
@@ -24,10 +29,5 @@ export function useLocalStorage<T>(key: string, defaultValue: T): [T, React.Disp
     try { localStorage.setItem(key, JSON.stringify(value)); }
     catch (error) { console.error(`Error writing to localStorage key “${key}”:`, error); }
   }, [key, value, isHydrated]);
-  return [value, setValue];
-}
-
-/** Shared string storage used by FTD communication cards. */
-export function useSharedLocalStorageString(key: string, defaultValue = "") {
-  return useLocalStorage<string>(`shared-${key}`, defaultValue);
+  return [value, setValue, isHydrated];
 }
