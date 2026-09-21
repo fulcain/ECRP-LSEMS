@@ -1,6 +1,6 @@
 import { ROUTES } from "@/configs/routes";
 import type { LucideIcon } from "lucide-react";
-import { Activity, BookOpen, Clock3, FileText, Link2, Settings2, Shield, UsersRound, ClipboardList, LayoutDashboard } from "lucide-react";
+import { Activity, BookOpen, Clock3, FileText, GraduationCap, Link2, Settings2, Shield, UsersRound, ClipboardList } from "lucide-react";
 
 export type HeaderLink = {
   label: string;
@@ -51,7 +51,7 @@ export const headerLinks: HeaderLink[] = [
   {
     label: "FTD",
     href: ROUTES.divisions.ftd.sessions,
-    icon: LayoutDashboard,
+    icon: GraduationCap,
     group: "Divisions",
     // Stays lit for the whole workspace, not just the Sessions page.
     match: [ROUTES.divisions.ftd.base],
