@@ -11,7 +11,6 @@ import { FtoManagementCard } from "@/components/employee-stats/components/FtoMan
 import { FtiPromotionCard } from "@/components/employee-stats/components/FtiPromotionCard";
 import { EmrTrainingTimeCard } from "@/components/employee-stats/components/EmrTrainingTimeCard";
 import { EmrDischargeCard } from "@/components/employee-stats/components/EmrDischargeCard";
-import { SharedSignatureBar } from "@/components/employee-stats/components/SharedSignatureBar";
 
 type CommandTab = "emrs" | "ftos" | "emails";
 
@@ -93,13 +92,10 @@ function CommandPageContent() {
       {tab === "emrs" && <CurrentEMRsTable />}
       {tab === "ftos" && <FtoManagementCard />}
       {tab === "emails" && (
-        <div className="space-y-6">
-          <SharedSignatureBar />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <FtiPromotionCard />
-            <EmrTrainingTimeCard />
-            <EmrDischargeCard />
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <FtiPromotionCard />
+          <EmrTrainingTimeCard />
+          <EmrDischargeCard />
         </div>
       )}
     </>

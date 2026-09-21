@@ -8,23 +8,21 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useLocalStorage, useSharedLocalStorageString } from "@/app/hooks/useLocalStorage";
+import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import { useMedic } from "@/app/context/MedicContext";
+import { DIVISIONS } from "@/configs/roles";
+import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
 
 import {
   generateEmrTrainingTimeEmailBBCode,
   generateEmrTrainingTimeProfileBBCode,
 } from "@/components/employee-stats/lib/generate-emr-training-time-bbcode";
-import {
-  SHARED_SIG_NAME_KEY,
-  SHARED_SIG_RANK_KEY,
-  SHARED_FTD_RANK_KEY,
-  SHARED_SIGNATURE_KEY,
-  SHARED_EMAIL_DATE_KEY,
-} from "@/components/employee-stats/lib/generate-fti-promotion-bbcode";
 
 const FORM_STORAGE_KEY = "ftd-emr-training-time-form-v1";
 
 export function EmrTrainingTimeCard() {
+  const { medicCredentials, divisionRanks } = useMedic();
+
   const [savedForm, setSavedForm] = useLocalStorage(FORM_STORAGE_KEY, {
     emrName: "",
     daysLeft: "",
@@ -42,15 +40,17 @@ export function EmrTrainingTimeCard() {
   const setEmrName = (value: string) => setField("emrName", value);
   const setDaysLeft = (value: string) => setField("daysLeft", value);
 
-  const [sigName] = useSharedLocalStorageString(SHARED_SIG_NAME_KEY, "");
-  const [sigRank] = useSharedLocalStorageString(SHARED_SIG_RANK_KEY, "");
-  const [ftdRank] = useSharedLocalStorageString(SHARED_FTD_RANK_KEY, "");
-  const [signature] = useSharedLocalStorageString(SHARED_SIGNATURE_KEY, "");
-  const [date] = useSharedLocalStorageString(SHARED_EMAIL_DATE_KEY, "");
-
   const values = useMemo(
-    () => ({ emrName, daysLeft, sigName, sigRank, ftdRank, signature, date }),
-    [emrName, daysLeft, sigName, sigRank, ftdRank, signature, date],
+    () => ({
+      emrName,
+      daysLeft,
+      sigName: medicCredentials.name,
+      sigRank: medicCredentials.rank,
+      ftdRank: divisionRanks[DIVISIONS.ftd.label] || "",
+      signature: medicCredentials.signature,
+      date: getCurrentDateFormatted(),
+    }),
+    [emrName, daysLeft, medicCredentials, divisionRanks],
   );
 
   const emailBB = useMemo(() => generateEmrTrainingTimeEmailBBCode(values), [values]);
@@ -96,7 +96,7 @@ export function EmrTrainingTimeCard() {
         </div>
 
         <p className="text-[11px] text-muted-foreground italic">
-          Date, name, rank, FTD rank and signature are pulled from the Shared Signature bar above.
+          Date, name, rank, FTD rank and signature come from your Staff Page.
         </p>
 
         <div className="flex flex-wrap gap-2">

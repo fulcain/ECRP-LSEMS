@@ -15,18 +15,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useLocalStorage, useSharedLocalStorageString } from "@/app/hooks/useLocalStorage";
+import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import { useMedic } from "@/app/context/MedicContext";
+import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
 
 import {
   generateDischargeEmailBBCode,
   DISCHARGE_EMAIL_TITLE,
 } from "@/components/employee-stats/lib/generate-discharge-email-bbcode";
-import {
-  SHARED_SIG_NAME_KEY,
-  SHARED_SIG_RANK_KEY,
-  SHARED_SIGNATURE_KEY,
-  SHARED_EMAIL_DATE_KEY,
-} from "@/components/employee-stats/lib/generate-fti-promotion-bbcode";
 
 const FORM_STORAGE_KEY = "ftd-discharge-email-form-v1";
 
@@ -38,6 +34,8 @@ function todayFormatted(): string {
 }
 
 export function EmrDischargeCard() {
+  const { medicCredentials } = useMedic();
+
   const [savedForm, setSavedForm] = useLocalStorage(FORM_STORAGE_KEY, {
     name: "",
     reason: "",
@@ -61,14 +59,19 @@ export function EmrDischargeCard() {
   const setSalutation = (value: string) => setField("salutation", value);
   const setDischargeDate = (value: string) => setField("dischargeDate", value);
 
-  const [sigName] = useSharedLocalStorageString(SHARED_SIG_NAME_KEY, "");
-  const [sigRank] = useSharedLocalStorageString(SHARED_SIG_RANK_KEY, "");
-  const [signature] = useSharedLocalStorageString(SHARED_SIGNATURE_KEY, "");
-  const [mdhDate] = useSharedLocalStorageString(SHARED_EMAIL_DATE_KEY, "");
-
   const bbcode = useMemo(
-    () => generateDischargeEmailBBCode({ name, mdhDate, dischargeDate, reason, salutation, sigName, sigRank, signature }),
-    [name, mdhDate, dischargeDate, reason, salutation, sigName, sigRank, signature],
+    () =>
+      generateDischargeEmailBBCode({
+        name,
+        mdhDate: getCurrentDateFormatted(),
+        dischargeDate,
+        reason,
+        salutation,
+        sigName: medicCredentials.name,
+        sigRank: medicCredentials.rank,
+        signature: medicCredentials.signature,
+      }),
+    [name, dischargeDate, reason, salutation, medicCredentials],
   );
 
   const handleCopy = async () => {
@@ -171,7 +174,7 @@ export function EmrDischargeCard() {
         </div>
 
         <p className="text-[11px] text-muted-foreground italic">
-          Header title date, name, rank and signature are pulled from the Shared Signature bar above.
+          Header title date, name, rank and signature come from your Staff Page.
         </p>
 
         <Button size="sm" onClick={handleCopy} className="px-6">

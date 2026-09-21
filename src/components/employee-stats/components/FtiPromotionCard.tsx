@@ -6,28 +6,28 @@ import { Check, Copy, Mail } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useSharedLocalStorageString } from "@/app/hooks/useLocalStorage";
+import { useMedic } from "@/app/context/MedicContext";
+import { DIVISIONS } from "@/configs/roles";
+import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
 
 import {
   generateFtiPromotionEmailBBCode,
   FTI_PROMOTION_TITLE,
-  SHARED_SIG_NAME_KEY,
-  SHARED_SIG_RANK_KEY,
-  SHARED_FTD_RANK_KEY,
-  SHARED_SIGNATURE_KEY,
-  SHARED_EMAIL_DATE_KEY,
 } from "@/components/employee-stats/lib/generate-fti-promotion-bbcode";
 
 export function FtiPromotionCard() {
-  const [sigName] = useSharedLocalStorageString(SHARED_SIG_NAME_KEY, "");
-  const [sigRank] = useSharedLocalStorageString(SHARED_SIG_RANK_KEY, "");
-  const [ftdRank] = useSharedLocalStorageString(SHARED_FTD_RANK_KEY, "");
-  const [signature] = useSharedLocalStorageString(SHARED_SIGNATURE_KEY, "");
-  const [date] = useSharedLocalStorageString(SHARED_EMAIL_DATE_KEY, "");
+  const { medicCredentials, divisionRanks } = useMedic();
 
   const bbcode = useMemo(
-    () => generateFtiPromotionEmailBBCode({ name: sigName, rank: sigRank, ftdRank, signature, date }),
-    [sigName, sigRank, ftdRank, signature, date],
+    () =>
+      generateFtiPromotionEmailBBCode({
+        name: medicCredentials.name,
+        rank: medicCredentials.rank,
+        ftdRank: divisionRanks[DIVISIONS.ftd.label] || "",
+        signature: medicCredentials.signature,
+        date: getCurrentDateFormatted(),
+      }),
+    [medicCredentials, divisionRanks],
   );
 
   const copyToClipboard = async () => {
@@ -79,7 +79,7 @@ export function FtiPromotionCard() {
         </div>
 
         <p className="text-[11px] text-muted-foreground italic">
-          Date, name, rank, FTD rank and signature are pulled from the Shared Signature bar above.
+          Date, name, rank, FTD rank and signature come from your Staff Page.
         </p>
 
         <Button size="sm" onClick={copyToClipboard} className="px-6" variant="gradient">

@@ -43,14 +43,6 @@ ${FTI_PROMOTION_EMAIL_BODY}
 [/code]
 [/spoil]`;
 
-/** Shared localStorage keys for signature fields so the Emails tab
- * shared bar and all email cards stay in sync. */
-export const SHARED_FTD_RANK_KEY = "ftd-shared-ftd-rank";
-export const SHARED_SIG_NAME_KEY = "ftd-shared-sig-name";
-export const SHARED_SIG_RANK_KEY = "ftd-shared-sig-rank";
-export const SHARED_SIGNATURE_KEY = "ftd-shared-signature";
-export const SHARED_EMAIL_DATE_KEY = "ftd-shared-email-date";
-
 /** The post title that goes in [code] tags - shown in the UI with its own copy button. */
 export const FTI_PROMOTION_TITLE = "FTD Rank Adjustment";
 
