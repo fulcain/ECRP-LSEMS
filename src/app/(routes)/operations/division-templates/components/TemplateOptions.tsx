@@ -1,6 +1,7 @@
 import { Divisions } from "@/app/constants/divisions";
 import BBCodeEditor from "@/app/(routes)/operations/division-templates/components/BBCodeEditor";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Ambulance, RotateCcw } from "lucide-react";
 import Image from "next/image";
@@ -13,6 +14,10 @@ interface TemplateOptionsProps {
   setSubject: (subject: string) => void;
   recipient: string;
   setRecipient: (recipient: string) => void;
+  omitBodySignature: boolean;
+  setOmitBodySignature: (omit: boolean) => void;
+  omitClosingSignature: boolean;
+  setOmitClosingSignature: (omit: boolean) => void;
   handleGenerateSignature: () => void;
   handleCopyTemplate: () => void;
   previewBody: string;
@@ -27,6 +32,10 @@ export default function TemplateOptions({
   setSubject,
   recipient,
   setRecipient,
+  omitBodySignature,
+  setOmitBodySignature,
+  omitClosingSignature,
+  setOmitClosingSignature,
   handleGenerateSignature,
   handleCopyTemplate,
   previewBody,
@@ -105,6 +114,33 @@ export default function TemplateOptions({
                 onChange={(e) => setSubject(e.target.value)}
                 className="w-full border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
               />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-muted-foreground">
+                Signature options
+              </label>
+              <div className="space-y-3 rounded-xl border border-border bg-surface-hover/40 p-4 transition-all duration-200 hover:border-border">
+                <label className="flex cursor-pointer items-center gap-3 text-sm text-foreground">
+                  <Checkbox
+                    checked={omitBodySignature}
+                    onCheckedChange={(checked) => setOmitBodySignature(checked === true)}
+                  />
+                  <span>
+                    No signature in the email body (removes &quot;Be well&quot; and the image)
+                  </span>
+                </label>
+                <label className="flex cursor-pointer items-center gap-3 text-sm text-foreground">
+                  <Checkbox
+                    checked={omitClosingSignature}
+                    onCheckedChange={(checked) => setOmitClosingSignature(checked === true)}
+                  />
+                  <span>
+                    No recipient section (removes the &quot;Dear&quot; line and
+                    the bottom signature bar)
+                  </span>
+                </label>
+              </div>
             </div>
 
             <div>

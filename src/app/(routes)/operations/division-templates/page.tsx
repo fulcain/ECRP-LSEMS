@@ -17,7 +17,9 @@ import { useMemo, useEffect, useRef, useCallback } from "react";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 
 // Re-inject the live structured fields (subject/recipient) into a preview
-// body while preserving all other user edits.
+// body while preserving all other user edits. The greeting is only injected
+// when the body still shows one - a template generated with the recipient
+// section omitted has none, and must not have it resurrected.
 const applyLiveFields = (
   body: string,
   subject: string,
@@ -31,7 +33,12 @@ const applyLiveFields = (
   if (/\[b\]Dear [^\n]*\n/.test(out)) {
     out = out.replace(/\[b\]Dear [^\n]*\n/, greeting ? `${greeting}\n` : "");
   } else if (greeting) {
-    out = out.replace(/(\[divbox4=eeeeee\]\r?\n)/, `$1${greeting}\n`);
+    // Count the [mdsig] bars: a template built without the recipient section
+    // has none, so leave greeting-less bodies alone.
+    const mdsigCount = (out.match(/\[mdsig\b/g) ?? []).length;
+    if (mdsigCount > 0) {
+      out = out.replace(/(\[divbox4=eeeeee\]\r?\n)/, `$1${greeting}\n`);
+    }
   }
   return out;
 };
@@ -44,6 +51,8 @@ type PreviewSession = {
   divisionLabel?: string;
   subject?: string;
   recipient?: string;
+  omitBodySignature?: boolean;
+  omitClosingSignature?: boolean;
   body?: string;
   edited?: boolean;
 };
@@ -56,6 +65,8 @@ export default function Home() {
   const [selectedRank, setSelectedRank] = useState("");
   const [subject, setSubject] = useState("");
   const [recipient, setRecipient] = useState("");
+  const [omitBodySignature, setOmitBodySignature] = useState(false);
+  const [omitClosingSignature, setOmitClosingSignature] = useState(false);
   const [previewBody, setPreviewBody] = useState("");
   const [previewEdited, setPreviewEdited] = useState(false);
   const [sessionRestored, setSessionRestored] = useState(false);
@@ -69,6 +80,8 @@ export default function Home() {
     divisionLabel: selectedDivision?.label,
     subject,
     recipient,
+    omitBodySignature,
+    omitClosingSignature,
     body: previewBody,
     edited: previewEdited,
   };
@@ -127,8 +140,18 @@ export default function Home() {
       subject: subject.trim(),
       recipient: recipient.trim(),
       date: getCurrentDateFormatted(),
+      omitBodySignature,
+      omitRecipientSection: omitClosingSignature,
     });
-  }, [selectedDivision, effectiveRank, medicCredentials, subject, recipient]);
+  }, [
+    selectedDivision,
+    effectiveRank,
+    medicCredentials,
+    subject,
+    recipient,
+    omitBodySignature,
+    omitClosingSignature,
+  ]);
 
   // Keep the preview in sync with the generated template until the user edits.
   useEffect(() => {
@@ -180,6 +203,8 @@ export default function Home() {
       }
       if (saved.subject) setSubject(saved.subject);
       if (saved.recipient) setRecipient(saved.recipient);
+      if (saved.omitBodySignature) setOmitBodySignature(true);
+      if (saved.omitClosingSignature) setOmitClosingSignature(true);
       if (saved.body) {
         setPreviewBody(saved.body);
         setPreviewEdited(Boolean(saved.edited));
@@ -206,6 +231,8 @@ export default function Home() {
     selectedDivision?.label,
     subject,
     recipient,
+    omitBodySignature,
+    omitClosingSignature,
     previewBody,
     previewEdited,
   ]);
@@ -282,6 +309,10 @@ export default function Home() {
             setSubject={setSubject}
             recipient={recipient}
             setRecipient={setRecipient}
+            omitBodySignature={omitBodySignature}
+            setOmitBodySignature={setOmitBodySignature}
+            omitClosingSignature={omitClosingSignature}
+            setOmitClosingSignature={setOmitClosingSignature}
             handleGenerateSignature={handleGenerateSignature}
             handleCopyTemplate={handleCopyTemplate}
             previewBody={previewBody}

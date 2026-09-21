@@ -13,6 +13,8 @@ export const generateEmailTemplate = ({
   date,
   division,
   divisionLabel,
+  omitBodySignature = false,
+  omitRecipientSection = false,
 }: {
   medicCredentials: MedicCredentials;
   selectedRank: string;
@@ -21,6 +23,8 @@ export const generateEmailTemplate = ({
   recipient: string;
   division?: DivisionData;
   divisionLabel?: string;
+  omitBodySignature?: boolean;
+  omitRecipientSection?: boolean;
 }) => {
   const isGeneralDivision = divisionLabel?.trim().toLowerCase() === "general";
 
@@ -39,6 +43,8 @@ export const generateEmailTemplate = ({
     ? "Pillbox Hill Medical Center | Paleto Bay Medical Center"
     : division?.divisionName;
 
+  // omitRecipientSection drops the "Dear …," greeting and the closing
+  // signature bar; omitBodySignature drops the body sign-off.
   return `[mdheader2
 title="${subject ? `${subject} | ${date}` : `${date}`}"
 location="${locationParam}"
@@ -47,17 +53,26 @@ logo="${division?.image || "https://i.ibb.co/3mzQcHXM/QYXPM0p.png"}"
 department="One Team, One Mission, Saving Lives"
 ][/mdheader2]
 [divbox4=eeeeee]
-${recipient ? `[b]Dear ${recipient}[/b],` : ""}
+${!omitRecipientSection && recipient ? `[b]Dear ${recipient}[/b],` : ""}
 
 MESSAGE TEXT GOES HERE
 
-Be well,
+${
+    omitBodySignature
+      ? ""
+      : `Be well,
 
 [img]${medicCredentials.signature || "https://i.ibb.co/8DqJghtt/7flpkan.png"}[/img]
 [i]${medicCredentials.name || "Name"}[/i]
-[/divbox4]
-[divbox=#8d1717][color=transparent]spacer[/color][/divbox]
+`
+  }[/divbox4]
+${
+    omitRecipientSection
+      ? ""
+      : `[divbox=#8d1717][color=transparent]spacer[/color][/divbox]
 [divbox4=eeeeee]
 [mdsig name="${medicCredentials.name || "Name"}" role="${roleLine}" img="${medicCredentials.signature || "https://i.ibb.co/8DqJghtt/7flpkan.png"}" height=38]
-[/divbox4]`;
+[/divbox4]
+`
+  }`;
 };
