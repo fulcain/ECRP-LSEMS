@@ -13,6 +13,16 @@ export type ChangeLogEntry = {
 
 export const changeLog: ChangeLogEntry[] = [
   {
+    date: "Sep 21, 2026",
+    changes: [
+      {
+        type: "feature",
+        description:
+          "Division Email Templates gained signature options: two toggles that leave the 'Be well' sign-off out of the email body, and drop the recipient 'Dear' line together with the bottom signature bar - each on its own, and remembered with your compose session.",
+      },
+    ],
+  },
+  {
     date: "Sep 19, 2026",
     changes: [
       {
