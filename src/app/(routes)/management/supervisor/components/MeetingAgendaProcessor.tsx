@@ -112,7 +112,10 @@ export function MeetingAgendaProcessor() {
     const urlDate = `${year}-${monthNum}-${dayNum}`;
 
     const meetingDate = formatDateForDisplay(date);
-    const meetingTime = `${hours}:${minutes}`;
+    const hour24 = Number(hhRaw || 0);
+    const meridiem = hour24 < 12 ? "AM" : "PM";
+    const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
+    const meetingTime = `${hour12}:${minutes} ${meridiem}`;
 
     const subject =
       activeTemplate?.renderSubject(formatDateForSubject(date)) || "";
