@@ -71,27 +71,25 @@ export function MeetingAgendaProcessor() {
     }
   };
 
+  // The calendar hands back the picked day at local midnight, so read it back
+  // with local getters - UTC getters print the previous day east of UTC.
   const formatDateForDisplay = (d: Date) => {
-    const weekday = d.toLocaleString("en-GB", {
-      weekday: "long",
-      timeZone: "UTC",
-    });
-    const dayNum = d.getUTCDate();
+    const weekday = d.toLocaleString("en-GB", { weekday: "long" });
+    const dayNum = d.getDate();
     const dayOrdinal = getOrdinal(dayNum);
-    const month = d.toLocaleString("en-GB", {
-      month: "long",
-      timeZone: "UTC",
-    });
-    const year = d.getUTCFullYear();
+    const month = d.toLocaleString("en-GB", { month: "long" });
+    const year = d.getFullYear();
     return `${weekday}, ${dayOrdinal} ${month} ${year}`;
   };
 
   const formatDateForSubject = (d: Date) => {
-    const day = pad(d.getUTCDate());
+    const day = pad(d.getDate());
+    // en-GB abbreviates September as "Sept"; slice keeps every month at 3.
     const month = d
-      .toLocaleString("en-GB", { month: "short", timeZone: "UTC" })
+      .toLocaleString("en-US", { month: "short" })
+      .slice(0, 3)
       .toUpperCase();
-    const year = d.getUTCFullYear();
+    const year = d.getFullYear();
     return `${day}/${month}/${year}`;
   };
 
@@ -108,9 +106,9 @@ export function MeetingAgendaProcessor() {
     const [hhRaw, miRaw] = time.split(":");
     const hours = pad(Number(hhRaw || 0));
     const minutes = pad(Number(miRaw || 0));
-    const dayNum = pad(date.getUTCDate());
-    const monthNum = pad(date.getUTCMonth() + 1);
-    const year = date.getUTCFullYear();
+    const dayNum = pad(date.getDate());
+    const monthNum = pad(date.getMonth() + 1);
+    const year = date.getFullYear();
     const urlDate = `${year}-${monthNum}-${dayNum}`;
 
     const meetingDate = formatDateForDisplay(date);
