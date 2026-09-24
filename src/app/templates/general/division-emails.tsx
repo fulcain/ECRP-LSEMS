@@ -15,6 +15,7 @@ export const generateEmailTemplate = ({
   divisionLabel,
   omitBodySignature = false,
   omitRecipientSection = false,
+  bodySignOffText,
 }: {
   medicCredentials: MedicCredentials;
   selectedRank: string;
@@ -25,6 +26,7 @@ export const generateEmailTemplate = ({
   divisionLabel?: string;
   omitBodySignature?: boolean;
   omitRecipientSection?: boolean;
+  bodySignOffText?: string;
 }) => {
   const isGeneralDivision = divisionLabel?.trim().toLowerCase() === "general";
 
@@ -48,9 +50,11 @@ export const generateEmailTemplate = ({
   // inside the kept branches, so an omitted piece leaves no blank line behind.
   const greeting =
     !omitRecipientSection && recipient ? `[b]Dear ${recipient}[/b],\n\n` : "";
+  // The closing line is the member's own when typed, the default otherwise.
+  const bodySignOffLine = bodySignOffText?.trim() || "Be well,";
   const bodySignOff = omitBodySignature
     ? ""
-    : `\nBe well,\n\n[img]${medicCredentials.signature || "https://i.ibb.co/8DqJghtt/7flpkan.png"}[/img]\n[i]${medicCredentials.name || "Name"}[/i]\n`;
+    : `\n${bodySignOffLine}\n\n[img]${medicCredentials.signature || "https://i.ibb.co/8DqJghtt/7flpkan.png"}[/img]\n[i]${medicCredentials.name || "Name"}[/i]\n`;
   const closingBar = omitRecipientSection
     ? ""
     : `\n[divbox=#8d1717][color=transparent]spacer[/color][/divbox]\n[divbox4=eeeeee]\n[mdsig name="${medicCredentials.name || "Name"}" role="${roleLine}" img="${medicCredentials.signature || "https://i.ibb.co/8DqJghtt/7flpkan.png"}" height=38]\n[/divbox4]`;

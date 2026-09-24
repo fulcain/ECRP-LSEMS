@@ -53,6 +53,7 @@ type PreviewSession = {
   recipient?: string;
   omitBodySignature?: boolean;
   omitClosingSignature?: boolean;
+  bodySignOffText?: string;
   body?: string;
   edited?: boolean;
 };
@@ -67,6 +68,7 @@ export default function Home() {
   const [recipient, setRecipient] = useState("");
   const [omitBodySignature, setOmitBodySignature] = useState(false);
   const [omitClosingSignature, setOmitClosingSignature] = useState(false);
+  const [bodySignOffText, setBodySignOffText] = useState("");
   const [previewBody, setPreviewBody] = useState("");
   const [previewEdited, setPreviewEdited] = useState(false);
   const [sessionRestored, setSessionRestored] = useState(false);
@@ -82,6 +84,7 @@ export default function Home() {
     recipient,
     omitBodySignature,
     omitClosingSignature,
+    bodySignOffText,
     body: previewBody,
     edited: previewEdited,
   };
@@ -142,6 +145,7 @@ export default function Home() {
       date: getCurrentDateFormatted(),
       omitBodySignature,
       omitRecipientSection: omitClosingSignature,
+      bodySignOffText,
     });
   }, [
     selectedDivision,
@@ -151,6 +155,7 @@ export default function Home() {
     recipient,
     omitBodySignature,
     omitClosingSignature,
+    bodySignOffText,
   ]);
 
   // Keep the preview in sync with the generated template until the user edits.
@@ -205,6 +210,7 @@ export default function Home() {
       if (saved.recipient) setRecipient(saved.recipient);
       if (saved.omitBodySignature) setOmitBodySignature(true);
       if (saved.omitClosingSignature) setOmitClosingSignature(true);
+      if (saved.bodySignOffText) setBodySignOffText(saved.bodySignOffText);
       if (saved.body) {
         setPreviewBody(saved.body);
         setPreviewEdited(Boolean(saved.edited));
@@ -233,6 +239,7 @@ export default function Home() {
     recipient,
     omitBodySignature,
     omitClosingSignature,
+    bodySignOffText,
     previewBody,
     previewEdited,
   ]);
@@ -312,6 +319,8 @@ export default function Home() {
             setOmitBodySignature={setOmitBodySignature}
             omitClosingSignature={omitClosingSignature}
             setOmitClosingSignature={setOmitClosingSignature}
+            bodySignOffText={bodySignOffText}
+            setBodySignOffText={setBodySignOffText}
             handleGenerateSignature={handleGenerateSignature}
             handleCopyTemplate={handleCopyTemplate}
             previewBody={previewBody}

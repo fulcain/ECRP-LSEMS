@@ -18,6 +18,8 @@ interface TemplateOptionsProps {
   setOmitBodySignature: (omit: boolean) => void;
   omitClosingSignature: boolean;
   setOmitClosingSignature: (omit: boolean) => void;
+  bodySignOffText: string;
+  setBodySignOffText: (text: string) => void;
   handleGenerateSignature: () => void;
   handleCopyTemplate: () => void;
   previewBody: string;
@@ -36,6 +38,8 @@ export default function TemplateOptions({
   setOmitBodySignature,
   omitClosingSignature,
   setOmitClosingSignature,
+  bodySignOffText,
+  setBodySignOffText,
   handleGenerateSignature,
   handleCopyTemplate,
   previewBody,
@@ -120,14 +124,31 @@ export default function TemplateOptions({
               <label className="mb-2 block text-sm font-medium text-muted-foreground">
                 Signature options
               </label>
-              <div className="space-y-3 rounded-xl border border-border bg-surface-hover/40 p-4 transition-all duration-200 hover:border-border">
+              <div className="space-y-4 rounded-xl border border-border bg-surface-hover/40 p-4 transition-all duration-200 hover:border-border">
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-muted-foreground">
+                    Closing message
+                  </label>
+                  <Input
+                    placeholder="Be well,"
+                    value={bodySignOffText}
+                    onChange={(e) => setBodySignOffText(e.target.value)}
+                    disabled={omitBodySignature}
+                    className="w-full border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
+                  />
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Leave empty to use the default &quot;Be well,&quot;. Reset
+                    the preview to apply a change to an edited template.
+                  </p>
+                </div>
                 <label className="flex cursor-pointer items-center gap-3 text-sm text-foreground">
                   <Checkbox
                     checked={omitBodySignature}
                     onCheckedChange={(checked) => setOmitBodySignature(checked === true)}
                   />
                   <span>
-                    No signature in the email body (removes &quot;Be well&quot; and the image)
+                    No signature in the email body (removes the closing
+                    message and the image)
                   </span>
                 </label>
                 <label className="flex cursor-pointer items-center gap-3 text-sm text-foreground">

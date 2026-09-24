@@ -23,6 +23,11 @@ export const changeLog: ChangeLogEntry[] = [
       {
         type: "feature",
         description:
+          "Division Email Templates let you write your own closing message: type it and it replaces the default 'Be well,' - leave it empty to keep the default. Saved with your compose session like the other fields.",
+      },
+      {
+        type: "feature",
+        description:
           "Added a light theme. Switch between dark and light with the sun/moon toggle in the sidebar - your choice is remembered, and dark stays the default.",
       },
     ],
