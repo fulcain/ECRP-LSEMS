@@ -2,12 +2,14 @@
 
 import { useMemo, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { Check, ClipboardList, Copy, ExternalLink, Mail } from "lucide-react";
+import { Check, Copy, ExternalLink, Mail } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useEmrProfileLinks } from "@/components/current-emrs/useEmrProfileLinks";
+import { EmrNameSelect } from "@/components/employee-stats/components/EmrNameSelect";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { useMedic } from "@/app/context/MedicContext";
 import { DIVISIONS } from "@/configs/roles";
@@ -29,8 +31,14 @@ export function EmrTrainingTimeCard() {
 
   const [savedForm, setSavedForm] = useLocalStorage(FORM_STORAGE_KEY, {
     emrName: "",
+    emrNameManual: "",
     daysLeft: "",
   });
+
+  // The same list the paperwork picks an EMR from. It is the only place the
+  // profile links live, so choosing here is what lets the button open the right
+  // profile instead of the whole forum.
+  const emrList = useEmrProfileLinks();
 
   // Read from the stored form, write back per field. Mirroring it into its own
   // `useState`s lost the stored values: the mount pass persisted the empty
@@ -39,14 +47,21 @@ export function EmrTrainingTimeCard() {
     setSavedForm((prev) => ({ ...prev, [field]: value }));
 
   const emrName = savedForm.emrName;
+  // Stored forms predate the manual field, so it is read with a fallback.
+  const emrNameManual = savedForm.emrNameManual ?? "";
+  const resolvedEmr = emrName || emrNameManual;
   const daysLeft = savedForm.daysLeft;
 
+  const selectedProfileLink =
+    emrList.find((entry) => entry.EMR === emrName)?.profileLink ?? "";
+
   const setEmrName = (value: string) => setField("emrName", value);
+  const setEmrNameManual = (value: string) => setField("emrNameManual", value);
   const setDaysLeft = (value: string) => setField("daysLeft", value);
 
   const values = useMemo(
     () => ({
-      emrName,
+      emrName: resolvedEmr,
       daysLeft,
       sigName: medicCredentials.name,
       sigRank: medicCredentials.rank,
@@ -54,7 +69,7 @@ export function EmrTrainingTimeCard() {
       signature: medicCredentials.signature,
       date: getCurrentDateFormatted(),
     }),
-    [emrName, daysLeft, medicCredentials, divisionRanks],
+    [resolvedEmr, daysLeft, medicCredentials, divisionRanks],
   );
 
   const emailBB = useMemo(() => generateEmrTrainingTimeEmailBBCode(values), [values]);
@@ -80,6 +95,21 @@ export function EmrTrainingTimeCard() {
         subject: TRAINING_REMINDER_TITLE,
         feature: "the EMR training reminder card",
         url: pickPostTarget(GOV_PM_COMPOSE_URL),
+      },
+    });
+  };
+
+  // The profile post belongs in the EMR's own profile, so one button takes
+  // both: the post is copied (and handed to the extension) and that profile
+  // opens with it ready to fill.
+  const copyAndOpenProfile = () => {
+    if (!profileBB || !selectedProfileLink) return;
+    copyBBCodeAndOpen({
+      bbCodeText: profileBB,
+      url: selectedProfileLink,
+      post: {
+        feature: "the EMR training reminder card",
+        url: pickPostTarget(selectedProfileLink),
       },
     });
   };
@@ -124,14 +154,13 @@ export function EmrTrainingTimeCard() {
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="space-y-1.5">
-            <Label className="text-[11px] text-muted-foreground">EMR Name</Label>
-            <Input
-              value={emrName}
-              onChange={(e) => setEmrName(e.target.value)}
-              placeholder="Lastname"
-            />
-          </div>
+          <EmrNameSelect
+            emrs={emrList}
+            value={emrName}
+            onValueChange={setEmrName}
+            manualValue={emrNameManual}
+            onManualChange={setEmrNameManual}
+          />
           <div className="space-y-1.5">
             <Label className="text-[11px] text-muted-foreground">Days Left</Label>
             <Input
@@ -154,21 +183,29 @@ export function EmrTrainingTimeCard() {
           <Button
             size="sm"
             variant="secondary"
-            onClick={() => handleCopy("Profile post", profileBB)}
-            className="px-6"
-          >
-            <ClipboardList className="h-4 w-4 mr-1.5" />
-            Copy Profile Post
-          </Button>
-          <Button
-            size="sm"
-            variant="secondary"
             onClick={copyAndOpenPm}
             className="px-6"
             title="Copies the email and opens a new GOV private message, titled with it"
           >
             <ExternalLink className="h-4 w-4 mr-1.5" />
             Copy &amp; Open PM
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={!selectedProfileLink}
+            onClick={copyAndOpenProfile}
+            className="px-6"
+            title={
+              !emrName
+                ? "Choose an EMR from the list above first"
+                : selectedProfileLink
+                  ? "Copies the profile post and opens this EMR's profile with it"
+                  : "This EMR has no profile link in the list"
+            }
+          >
+            <ExternalLink className="h-4 w-4 mr-1.5" />
+            Copy &amp; Open EMR Profile
           </Button>
         </div>
       </CardContent>

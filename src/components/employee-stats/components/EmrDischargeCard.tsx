@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useEmrProfileLinks } from "@/components/current-emrs/useEmrProfileLinks";
+import { EmrNameSelect } from "@/components/employee-stats/components/EmrNameSelect";
+import { emrSurname } from "@/components/employee-stats/lib/emr-name";
 import {
   Select,
   SelectContent,
@@ -41,10 +44,15 @@ export function EmrDischargeCard() {
 
   const [savedForm, setSavedForm] = useLocalStorage(FORM_STORAGE_KEY, {
     name: "",
+    emrName: "",
     reason: "",
     salutation: "",
     dischargeDate: "",
   });
+
+  // The same list the paperwork picks an EMR from, so the name on the letter is
+  // spelled the way the roster spells it.
+  const emrList = useEmrProfileLinks();
 
   // Read from the stored form, write back per field. Mirroring it into its own
   // `useState`s lost the stored values: the mount pass persisted the empty
@@ -53,11 +61,18 @@ export function EmrDischargeCard() {
     setSavedForm((prev) => ({ ...prev, [field]: value }));
 
   const name = savedForm.name;
+  // Stored forms predate the EMR field, so it is read with a fallback.
+  const emrName = savedForm.emrName ?? "";
+  const resolvedName = emrName || name;
+  // The letter addresses the member by surname - "Dear Mr. Ryder" - so a full
+  // name picked from the list prints as the surname alone.
+  const letterName = emrSurname(resolvedName);
   const reason = savedForm.reason;
   const salutation = savedForm.salutation;
   const dischargeDate = savedForm.dischargeDate;
 
   const setName = (value: string) => setField("name", value);
+  const setEmrName = (value: string) => setField("emrName", value);
   const setReason = (value: string) => setField("reason", value);
   const setSalutation = (value: string) => setField("salutation", value);
   const setDischargeDate = (value: string) => setField("dischargeDate", value);
@@ -65,7 +80,7 @@ export function EmrDischargeCard() {
   const bbcode = useMemo(
     () =>
       generateDischargeEmailBBCode({
-        name,
+        name: letterName,
         mdhDate: getCurrentDateFormatted(),
         dischargeDate,
         reason,
@@ -74,7 +89,7 @@ export function EmrDischargeCard() {
         sigRank: medicCredentials.rank,
         signature: medicCredentials.signature,
       }),
-    [name, dischargeDate, reason, salutation, medicCredentials],
+    [letterName, dischargeDate, reason, salutation, medicCredentials],
   );
 
   const handleCopy = async () => {
@@ -152,14 +167,21 @@ export function EmrDischargeCard() {
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-1.5">
-            <Label className="text-[11px] text-muted-foreground">Name</Label>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Lastname"
-            />
-          </div>
+          <EmrNameSelect
+            emrs={emrList}
+            value={emrName}
+            onValueChange={setEmrName}
+            manualValue={name}
+            onManualChange={setName}
+            label="Name"
+            manualPlaceholder="Or type the lastname"
+          >
+            {letterName && (
+              <p className="text-[11px] text-muted-foreground">
+                Prints as: {savedForm.salutation} {letterName}
+              </p>
+            )}
+          </EmrNameSelect>
           <div className="space-y-1.5">
             <Label className="text-[11px] text-muted-foreground">Discharge Date</Label>
             <div className="flex gap-1.5">

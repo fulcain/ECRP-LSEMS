@@ -1,3 +1,5 @@
+import { emrSurname } from "@/components/employee-stats/lib/emr-name";
+
 const TRAINING_TIME_EMAIL_BODY = `[mdheader2
 title="{DATE}"
 location="Field Training Division"
@@ -27,9 +29,12 @@ Be well,
 [mdsig name="{SIG_NAME}" role="{SIG_RANK} / {FTD_RANK}" img="{SIGNATURE}" height=38]
 [/divbox4]`;
 
+// The profile is the EMR's own, so the entry names them the way the profile
+// does - rank and surname ("EMR Ryder") - rather than leaving a bare "EMR" that
+// reads as if a name were missing.
 const TRAINING_TIME_PROFILE_TEMPLATE = `[lsemssubtitle]Training Time[/lsemssubtitle]
 [divbox=white]
-EMR has been sent the [i]Training Time Reminder[/i] Email.
+EMR {EMR_SURNAME} has been sent the [i]Training Time Reminder[/i] Email.
 [b]{DAYS_LEFT} days[/b] remaining to complete training.
 [/divbox]`;
 
@@ -48,13 +53,15 @@ export interface EmrTrainingTimeValues {
 
 function substitute(template: string, values: EmrTrainingTimeValues): string {
   return template.replace(
-    /\{DATE\}|\{EMR_NAME\}|\{DAYS_LEFT\}|\{SIG_NAME\}|\{SIG_RANK\}|\{FTD_RANK\}|\{SIGNATURE\}/g,
+    /\{DATE\}|\{EMR_NAME\}|\{EMR_SURNAME\}|\{DAYS_LEFT\}|\{SIG_NAME\}|\{SIG_RANK\}|\{FTD_RANK\}|\{SIGNATURE\}/g,
     (token) => {
       switch (token) {
         case "{DATE}":
           return values.date;
         case "{EMR_NAME}":
           return values.emrName;
+        case "{EMR_SURNAME}":
+          return emrSurname(values.emrName);
         case "{DAYS_LEFT}":
           return values.daysLeft;
         case "{SIG_NAME}":
