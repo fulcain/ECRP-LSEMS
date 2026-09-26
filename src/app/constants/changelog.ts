@@ -18,27 +18,22 @@ export const changeLog: ChangeLogEntry[] = [
       {
         type: "feature",
         description:
-          "New under Management: Access Manager. CommandPlusTeam - and the developer ids in DISCORD_ADMIN_IDS - can now decide, in the app, which ranks may open which tabs and pages, and the change is live for everyone within a few seconds, with no deploy. It covers the four FTD tabs and every sidebar page, a rank with no Discord id is flagged because granting it would do nothing, and the Access Manager itself is locked so the page that decides access cannot be edited away by the people using it.",
+          "New under Management: Access Manager. Command+ Team and Developer can now decide, in the app, which ranks may open which tabs and pages, and the change is live for everyone within a few seconds, with no deploy.",
       },
       {
-        type: "change",
+        type: "feature",
         description:
-          "Nothing changes until someone edits a row: the rules in configs/roles.ts stay the default, only what you change is stored, and with no store connected the app behaves exactly as before while the editor says so.",
+          "Add an extention so it makes it easier to fill in the data in the gov website with one click on the extention.",
       },
       {
-        type: "change",
+        type: "feature",
         description:
-          "A row now tells you when it decides nothing. A stored row that adds or drops only ranks the gate cannot see - no Discord id - or ranks that keep every page anyway is marked no effect, so a change that changes nothing no longer looks like a change.",
+          "Copy & Open buttons across the tools: the BLS, RED, FTD paperwork, ride-along, supervisor, email and LOA pages now copy the generated post, hand it to the extension, and open the GOV page it belongs to.",
       },
       {
-        type: "change",
+        type: "feature",
         description:
-          "Access now lives in one place. The per-route rules are gone from configs/roles.ts - the permission matrix decides every page, and a page with no row is open to every employee rather than following a rule in the code, so the same page can no longer be described two ways. Command+ keeps every page, the Access Manager stays locked in the code, and the divisions, ranks and directors are untouched: they are what the Staff Page, the templates and the paperwork read.",
-      },
-      {
-        type: "change",
-        description:
-          "CommandPlusTeam now keeps every page, like the Command ranks do. The role that administers the permission matrix could previously be locked out of the app by a row - it reached the FTD section only because it happens to be an FTD rank, and was refused the Staff Page, Change Log, Templates and Quick Links. An edit can narrow a page, but never against the people deciding it.",
+          "Every time field gained a Copy Now button that fills in the current UTC time.",
       },
     ],
   },
