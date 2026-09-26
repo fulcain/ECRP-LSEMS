@@ -1,6 +1,7 @@
 import { Stethoscope } from "lucide-react";
 import type { ContractWorkflow } from "../types";
 import { DASHBOARD_URL, staffRosterEntry } from "../constants";
+import { GOV_STAFF_ROSTER_EDIT_URL } from "@/app/helpers/govLinks";
 
 
 export const emtpWorkflow: ContractWorkflow = {
@@ -95,7 +96,7 @@ export const emtpWorkflow: ContractWorkflow = {
       actions: [
         {
           label: "Copy & Open Staff Roster",
-          url: "https://gov.eclipse-rp.net/viewtopic.php?t=9497",
+          url: GOV_STAFF_ROSTER_EDIT_URL,
           description:
             "Copy this employee's Staff Roster entry at EMT-P and open the roster topic to paste it into.",
           requiresMetadata: ["employeeProfileLink", "personnelFileLink"],

@@ -1,7 +1,10 @@
 import { RefreshCcw } from "lucide-react";
 import type { ContractWorkflow } from "../types";
 import { DASHBOARD_URL, staffRosterEntry } from "../constants";
-import { GOV_PM_COMPOSE_URL } from "@/app/helpers/govLinks";
+import {
+  GOV_PM_COMPOSE_URL,
+  GOV_STAFF_ROSTER_EDIT_URL,
+} from "@/app/helpers/govLinks";
 
 
 export const reinstatementWorkflow: ContractWorkflow = {
@@ -749,7 +752,7 @@ RANK
       actions: [
         {
           label: "Copy & Open Staff Roster",
-          url: "https://gov.eclipse-rp.net/viewtopic.php?t=9497",
+          url: GOV_STAFF_ROSTER_EDIT_URL,
           description:
             "Copy the reinstatee's Staff Roster entry and open the roster topic to paste it into.",
           requiresMetadata: ["employeeProfileLink", "personnelFileLink"],

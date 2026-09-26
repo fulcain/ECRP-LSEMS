@@ -10,3 +10,11 @@
  */
 export const GOV_PM_COMPOSE_URL =
   "https://gov.eclipse-rp.net/ucp.php?i=pm&mode=compose";
+
+/**
+ * The Staff Roster is one post that every roster change edits, so a roster step
+ * opens its editor rather than the topic - the extension can fill an editor,
+ * and the member lands on the field they came to change.
+ */
+export const GOV_STAFF_ROSTER_EDIT_URL =
+  "https://gov.eclipse-rp.net/posting.php?mode=edit&p=126127";

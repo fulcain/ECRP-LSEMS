@@ -4,6 +4,7 @@ import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { useMedic } from "@/app/context/MedicContext";
 import { copyBBCode } from "@/app/helpers/copyBBCode";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
+import { GOV_STAFF_ROSTER_EDIT_URL } from "@/app/helpers/govLinks";
 import { handOffForumPost, pickPostTarget } from "@/app/helpers/forumHandoff";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -265,7 +266,7 @@ export function ResignationProcessor() {
         icon: Users,
         action: {
           label: "Open Staff Roster",
-          url: "https://gov.eclipse-rp.net/viewtopic.php?f=570&t=9497",
+          url: GOV_STAFF_ROSTER_EDIT_URL,
         },
       },
       {
