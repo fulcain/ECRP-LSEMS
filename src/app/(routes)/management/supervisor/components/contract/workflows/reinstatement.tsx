@@ -1,6 +1,7 @@
 import { RefreshCcw } from "lucide-react";
 import type { ContractWorkflow } from "../types";
-import { DASHBOARD_URL } from "../constants";
+import { DASHBOARD_URL, staffRosterEntry } from "../constants";
+import { GOV_PM_COMPOSE_URL } from "@/app/helpers/govLinks";
 
 
 export const reinstatementWorkflow: ContractWorkflow = {
@@ -67,9 +68,11 @@ export const reinstatementWorkflow: ContractWorkflow = {
         "Copy the reintroduction email and send it to the reinstatee so they can re-familiarise themselves with the department before reinstatement training.",
       actions: [
         {
-          label: "Copy Reintroduction Email",
+          label: "Copy & Open Reintroduction Email",
           description:
-            "Copy the full reintroduction email BBCode to your clipboard.",
+            "Copy the reintroduction email and open a new GOV private message with its title and body ready to fill.",
+          url: GOV_PM_COMPOSE_URL,
+          postTitle: "Reintroduction Email",
           copyText: `[img]https://i.ibb.co/0xLYT0g/up3t-Iuh.png[/img]
 [lsemssubtitle]Introduction[/lsemssubtitle]
 [divbox=white]
@@ -217,16 +220,12 @@ If you would like to resign from LSEMS, as sad as it'll be to see you go, please
         "Create the Reinstatement Training Program profile for the EMR following the standard format.",
       actions: [
         {
-          label: "Open Reinstatement Profile Template",
-          url: "https://gov.eclipse-rp.net/viewtopic.php?t=90535",
-          description: "Standard reinstatement profile template on the forum.",
-        },
-        {
-          label: "Copy Reinstatement Profile",
+          label: "Copy & Open Reinstatement Profile",
           description:
-            "Copy the full reinstatement training profile BBCode and open the posting page.",
+            "Copy the reinstatement training profile and open its posting page with the title and body ready to fill.",
           requiresName: true,
           url: "https://gov.eclipse-rp.net/posting.php?mode=post&f=601",
+          postTitle: "Reinstatee Profile | {{applicantName}}",
           copyText: `[img]https://i.ibb.co/6cq7Dhpd/Do3CJ9e.png[/img]
 [lsemssubtitle]REINSTATEE INFORMATION[/lsemssubtitle]
 [divbox=white]
@@ -749,9 +748,12 @@ RANK
         "Add the reinstatee to the Staff Roster using the same format used for regular hires.",
       actions: [
         {
-          label: "Open Staff Roster",
+          label: "Copy & Open Staff Roster",
           url: "https://gov.eclipse-rp.net/viewtopic.php?t=9497",
-          description: "Official LSEMS Staff Roster topic.",
+          description:
+            "Copy the reinstatee's Staff Roster entry and open the roster topic to paste it into.",
+          requiresMetadata: ["employeeProfileLink", "personnelFileLink"],
+          copyText: staffRosterEntry("EMR"),
         },
         {
           label: "Copy Roster Entry",

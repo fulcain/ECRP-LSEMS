@@ -17,6 +17,13 @@ export type ExternalLink = {
   description: string;
   internal?: { href: string; label: string };
   copyText?: string;
+  /**
+   * The post title handed to the browser extension alongside `copyText`. Use it
+   * when a step posts a body and a title at once (a profile thread, a rank
+   * adjustment); without it a body is copied as a body and a bare line as a
+   * title.
+   */
+  postTitle?: string;
   /** Copy/button stays disabled until all of these metadata fields are filled. */
   requiresMetadata?: MetadataKey[];
   /** Copy/button stays disabled until the applicant name is filled in. */

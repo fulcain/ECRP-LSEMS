@@ -11,6 +11,7 @@ import {
   Square,
 } from "lucide-react";
 import Link from "next/link";
+import { useMedic } from "@/app/context/MedicContext";
 import { handleContractAction } from "./actions";
 import type {
   ContractStep,
@@ -130,6 +131,9 @@ const METADATA_LABELS: Record<string, string> = {
 };
 
 function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, employeeNumber, employeeProfileLink, personnelFileLink, badgeNumber }: StepRowProps) {
+  // The supervisor's own rank, name and signature fill the signature lines, so
+  // they come from the Staff Page rather than being typed into the card again.
+  const { medicCredentials } = useMedic();
   const trimmedName = personnelName.trim();
   const passedName = trimmedName.length > 0 ? trimmedName : null;
   const metadata = { dateHired: dateHired || null, phone: phone || null, employeeNumber: employeeNumber || null, employeeProfileLink: employeeProfileLink || null, personnelFileLink: personnelFileLink || null, badgeNumber: badgeNumber || null, personnelFileNumber: personnelFileLink ? ((() => { try { return new URL(personnelFileLink).searchParams.get('u') ?? null; } catch { return null; } })()) : null };
@@ -199,7 +203,11 @@ function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, empl
                     disabled={disabled}
                     onClick={() => {
                       if (disabled) return;
-                      handleContractAction(action, passedName, metadata);
+                      handleContractAction(action, passedName, metadata, {
+                        name: medicCredentials.name,
+                        rank: medicCredentials.rank,
+                        signature: medicCredentials.signature,
+                      });
                     }}
                     className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs transition-colors ${
                       disabled

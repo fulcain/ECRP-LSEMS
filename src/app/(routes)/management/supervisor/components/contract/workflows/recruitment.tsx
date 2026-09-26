@@ -1,6 +1,7 @@
 import { UserPlus } from "lucide-react";
 import type { ContractWorkflow } from "../types";
-import { DASHBOARD_URL } from "../constants";
+import { DASHBOARD_URL, staffRosterEntry } from "../constants";
+import { GOV_PM_COMPOSE_URL } from "@/app/helpers/govLinks";
 
 
 export const recruitmentWorkflow: ContractWorkflow = {
@@ -54,9 +55,11 @@ export const recruitmentWorkflow: ContractWorkflow = {
         "Copy the introduction email and send it to the applicant so they can read every section before any training begins.",
       actions: [
         {
-          label: "Copy Introduction Email",
+          label: "Copy & Open Introduction Email",
           description:
-            "Copy the full introduction email BBCode to your clipboard.",
+            "Copy the introduction email and open a new GOV private message with its title and body ready to fill.",
+          url: GOV_PM_COMPOSE_URL,
+          postTitle: "Introduction Email",
           copyText: `[img]https://i.ibb.co/TBb1HVWP/CMVEk-E1.png[/img]
 
 [lsemssubtitle]Introduction[/lsemssubtitle]
@@ -297,8 +300,12 @@ If you would like to resign from LSEMS, as sad as it'll be to see you go, please
           description: "Open the posting page for Field Training Program profiles.",
         },
           {
-          label: "Field Training Profile BBCode",
-          description: "Field Training Program profiles BBCode",
+          label: "Copy & Open Field Training Profile",
+          description:
+            "Copy the Field Training profile and open its posting page with the title and body ready to fill.",
+          requiresName: true,
+          url: "https://gov.eclipse-rp.net/posting.php?mode=post&f=617",
+          postTitle: "[Pending Introduction] {{applicantName}}",
           copyText:`[img]https://i.ibb.co/0R8458jJ/f-SVDi7f.png[/img]
 [lsemssubtitle]STUDENT INFORMATION[/lsemssubtitle]
 [divbox=white]
@@ -1405,8 +1412,12 @@ Rank
           description: "Sub-forum for all LSEMS personnel files.",
         },
         {
-          label:"Personnel file BBCode",
-          "description":"Copy the personnel file BBCode.",
+          label:"Copy & Open Personnel File",
+          description:
+            "Copy the personnel file and open its posting page with the title and body ready to fill.",
+          requiresName: true,
+          url: "https://gov.eclipse-rp.net/posting.php?mode=post&f=605",
+          postTitle: "EMR | {{applicantName}}",
           copyText:`[img]https://i.ibb.co/FL4nLkwT/nh3xp60.png[/img]
 [lsemssubtitle]EMPLOYEE DETAILS[/lsemssubtitle]
 [divbox=white]
@@ -1469,9 +1480,12 @@ Rank
         "Add the new EMR to the Staff Roster using the standard format (badge number, callsign placeholder, rank, name).",
       actions: [
         {
-          label: "Open Staff Roster",
+          label: "Copy & Open Staff Roster",
           url: "https://gov.eclipse-rp.net/viewtopic.php?t=9497",
-          description: "Official LSEMS Staff Roster topic.",
+          description:
+            "Copy this hire's Staff Roster entry and open the roster topic to paste it into.",
+          requiresMetadata: ["employeeProfileLink", "personnelFileLink"],
+          copyText: staffRosterEntry("EMR"),
         },
         {
           label: "Copy Roster Entry",

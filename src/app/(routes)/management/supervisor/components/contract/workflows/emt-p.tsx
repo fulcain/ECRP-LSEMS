@@ -1,6 +1,6 @@
 import { Stethoscope } from "lucide-react";
 import type { ContractWorkflow } from "../types";
-import { DASHBOARD_URL } from "../constants";
+import { DASHBOARD_URL, staffRosterEntry } from "../constants";
 
 
 export const emtpWorkflow: ContractWorkflow = {
@@ -94,9 +94,12 @@ export const emtpWorkflow: ContractWorkflow = {
         "Edit the Staff Roster entry to reflect the new callsign and rank under the EMT-P section.",
       actions: [
         {
-          label: "Open Staff Roster",
+          label: "Copy & Open Staff Roster",
           url: "https://gov.eclipse-rp.net/viewtopic.php?t=9497",
-          description: "Official LSEMS Staff Roster topic.",
+          description:
+            "Copy this employee's Staff Roster entry at EMT-P and open the roster topic to paste it into.",
+          requiresMetadata: ["employeeProfileLink", "personnelFileLink"],
+          copyText: staffRosterEntry("EMT-P"),
         },
       ],
     },
@@ -107,9 +110,28 @@ export const emtpWorkflow: ContractWorkflow = {
         "Post the rank adjustment paperwork under Employee Adjustments using the title 'Rank Adjustment | FName LName'.",
       actions: [
         {
-          label: "Open Employee Adjustments",
-          url: "https://gov.eclipse-rp.net/viewforum.php?f=573",
-          description: "Sub-forum used for rank adjustments.",
+          label: "Copy & Open Employee Adjustment",
+          url: "https://gov.eclipse-rp.net/posting.php?mode=post&f=573",
+          description:
+            "Copy the rank adjustment and open a new Employee Adjustments topic with the title and body ready to fill.",
+          requiresName: true,
+          postTitle: "Rank Adjustment | {{applicantName}}",
+          copyText: `[img]https://i.ibb.co/7Nj9qvT5/Fim-Ceol.png[/img]
+[divbox=white]
+
+[b]NAME:[/b] {{applicantName}}
+[b]PREVIOUS RANK:[/b] N/A
+
+[b]ASSUMING RANK:[/b] EMT-P
+[b]DATE OF ADJUSTMENT:[/b] {{dateHired}}
+[hr][/hr]
+
+[img]{{medic.sig}}[/img]
+[i]{{medic.name}}[/i]
+[b]{{medic.rank}}[/b]
+[b]Los Santos Emergency Medical Services[/b]
+[/divbox]
+[lsemsfooter]`,
         },
       ],
     },
@@ -119,9 +141,12 @@ export const emtpWorkflow: ContractWorkflow = {
       description:"After posting the promotion paperwork, link it from the Personnel File (Operational Adjustments section).",
       actions:[
         {
-          label:"Open Personnel files",
+          label:"Copy & Open Promotion Link",
           url:"https://gov.eclipse-rp.net/viewforum.php?f=605",
-          description:"LSEMS Personnel files section"
+          description:
+            "Copy the EMT-P promotion entry and open the Personnel Files section to paste it into Operational Adjustments.",
+          copyText:
+            "[url=https://gov.eclipse-rp.net/posting.php?mode=reply&t=220705#preview]EMT-P[/url]",
         }
       ]
     },
