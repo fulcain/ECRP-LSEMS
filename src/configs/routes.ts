@@ -41,6 +41,8 @@ export const ROUTES = {
   },
   management: {
     supervisor: "/management/supervisor",
+    /** The live tab-permission editor - CommandPlusTeam and admins only. */
+    access: "/management/access",
   },
   system: {
     changelog: "/system/changelog",

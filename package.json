@@ -7,8 +7,9 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint src",
-    "routes:report": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/routes-report.ts",
-    "routes:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/access-check.ts"
+    "routes:report": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file-if-exists=.env --import ./scripts/lib/ts-config-loader.mjs scripts/routes-report.ts",
+    "routes:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/access-check.ts",
+    "matrix:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/access-matrix-check.ts"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.11",
@@ -22,6 +23,7 @@
     "@radix-ui/react-separator": "^1.1.8",
     "@radix-ui/react-slot": "^1.2.3",
     "@tanstack/react-table": "^8.21.3",
+    "@vercel/global-config": "^1.5.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",

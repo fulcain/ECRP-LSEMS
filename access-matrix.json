@@ -1,0 +1,62 @@
+{
+  "/divisions/ftd": [
+    "FTHead",
+    "FTAssHead",
+    "FTI",
+    "FTO",
+    "CommandPlusTeam",
+    "DirectorOfOperations"
+  ],
+  "/divisions/ftd/ft-session": [
+    "FTHead",
+    "FTAssHead",
+    "FTI",
+    "FTO",
+    "CommandPlusTeam",
+    "DirectorOfOperations"
+  ],
+  "/divisions/ftd/paperwork": [
+    "FTHead",
+    "FTAssHead",
+    "FTI",
+    "FTO",
+    "CommandPlusTeam",
+    "DirectorOfOperations"
+  ],
+  "/divisions/ftd/fd-command": [
+    "FTHead",
+    "FTAssHead",
+    "CommandPlusTeam",
+    "DirectorOfOperations"
+  ],
+  "/divisions/ftd/fti": [
+    "FTHead",
+    "FTAssHead",
+    "FTI",
+    "CommandPlusTeam",
+    "DirectorOfOperations"
+  ],
+  "/workspace/staff": ["Employee"],
+  "/operations/division-templates": ["Employee"],
+  "/operations/templates": ["Employee"],
+  "/resources/quick-links": ["Employee"],
+  "/resources/availability": ["Employee"],
+  "/system/changelog": ["Employee"],
+  "/management/supervisor": ["Supervisor", "CommandPlusTeam"],
+  "/divisions/bls": [
+    "HeadOfBLS",
+    "AssistantHeadOfBLS",
+    "SeniorBLSInstructor",
+    "BLSDivision",
+    "CommandPlusTeam",
+    "DirectorOfAdministration"
+  ],
+  "/divisions/red": [
+    "HeadOfRED",
+    "AssistantHeadOfRED",
+    "SeniorHandler",
+    "REDDivision",
+    "CommandPlusTeam",
+    "DirectorOfAdministration"
+  ]
+}

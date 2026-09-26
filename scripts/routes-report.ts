@@ -1,136 +1,135 @@
 #!/usr/bin/env node
 /**
- * Prints the route access model as the app actually enforces it.
+ * Prints the live access model: who each page opens to, as the app enforces it.
  *
- * Every line is derived from `src/configs/roles.ts` - the same `ROUTE_ACCESS`,
- * `DIVISIONS` and registry the middleware reads - so this can't disagree with
- * the running app. The `@/` alias is resolved by the loader in
- * `scripts/lib/`, which is why this needs no build step. Run it after adding a
- * route or a division:
+ * The rules are not in the repository any more - they are the `access-matrix`
+ * item of the Vercel Global Config, edited in the app - so this reads the store
+ * and prints what it actually holds, filling in the fallback for the pages
+ * nobody has ruled on. Run it after changing the matrix, or when a member asks
+ * why a page refused them:
  *
  *   npm run routes:report
+ *
+ * Rows come from `src/configs/access-matrix.ts` and the merge from
+ * `src/configs/roles.ts`, both through the `@/` alias
+ * (`scripts/lib/ts-config-loader.mjs`), so this cannot disagree with the running
+ * app. Set `GLOBAL_CONFIG` to read a store; with none configured every page
+ * stands at its fallback.
  */
 
 import {
+  EDITABLE_ENTRIES,
+  LOCKED_ROUTES,
+  effectiveRoleIds,
+  fallbackRolesForRoute,
+  MANAGED_ENTRIES,
+  rowHasNoEffect,
+  type AccessMatrix,
+} from "@/configs/access-matrix";
+import {
+  ADMIN_PAGES,
+  ADMIN_USER_IDS,
   COMMAND_ACCESS,
+  DEFAULT_PAGE_ROLES,
   DIVISION_ENTRIES,
+  EVERY_PAGE_ROLES,
   ROLES,
-  ROUTE_ACCESS,
-  divisionForRoute,
   type RoleName,
 } from "@/configs/roles";
+import { isMatrixStoreConfigured, readAccessMatrixDetailed } from "@/lib/access-matrix-store";
 
-const commandPlus = new Set<RoleName>(COMMAND_ACCESS);
+const read = await readAccessMatrixDetailed();
+const stored: AccessMatrix = read.ok ? (read.matrix ?? {}) : {};
+const store = isMatrixStoreConfigured()
+  ? read.ok
+    ? `connected - ${Object.keys(stored).length} row(s) stored`
+    : `UNREADABLE (${read.reason}) - every page is at its fallback`
+  : "not configured - every page is at its fallback";
 
-/** `Name` plus a marker when the registry has no snowflake for it. */
+/** `Name`, with `*` when the registry has no snowflake for it. */
 function roleName(alias: RoleName): string {
   return ROLES[alias].id ? ROLES[alias].name : `${ROLES[alias].name}*`;
 }
 
-function aliases(...names: readonly RoleName[]): string {
-  return names.map(roleName).join(", ");
+function aliases(names: readonly RoleName[]): string {
+  return names.length === 0 ? "(nobody)" : names.map(roleName).join(", ");
 }
-
-function withIds(names: readonly RoleName[]): string {
-  const collected = names.filter((alias) => ROLES[alias].id).length;
-  return `${collected}/${names.length} ids`;
-}
-
-type Rule = { path: string; roles: readonly RoleName[] };
-
-const rules: Rule[] = Object.entries(ROUTE_ACCESS).map(([path, rule]) => ({
-  path,
-  roles: rule.requireAnyRole,
-}));
-
-const isShared = (rule: Rule) => rule.roles.includes("Employee");
-const isSupervisor = (rule: Rule) => rule.roles.includes("Supervisor");
-const rest = (rule: Rule) =>
-  rule.roles.filter((alias) => alias !== "Employee" && alias !== "Supervisor");
-
-const shared = rules.filter(isShared).sort((a, b) => a.path.localeCompare(b.path));
-const supervisor = rules
-  .filter(isSupervisor)
-  .sort((a, b) => a.path.localeCompare(b.path));
-const divisionRules = rules.filter((rule) => !isShared(rule) && !isSupervisor(rule));
 
 const line = (text = "") => console.log(text);
 
 line();
-line("Route access model");
-line("  source: src/configs/roles.ts (ROUTE_ACCESS, derived from DIVISIONS)");
-line("  * = that role has no Discord id yet, so the gate cannot see it");
+line("Live access model");
+line("  source: the `access-matrix` item in the Vercel Global Config");
+line(`  store : ${store}`);
+line("  * = that role has no Discord id, so the gate cannot see it");
 line();
-line(`Command+ - opens every page below`);
-line(`  ${aliases(...COMMAND_ACCESS)}`);
-line(`  ${withIds(COMMAND_ACCESS)}`);
 
+line(`No row for a page -> ${aliases(DEFAULT_PAGE_ROLES)}`);
+line("  (a page nobody has ruled on is open to every employee, never closed)");
 line();
-line("Shared department pages - any LSEMS employee, or Command+");
-for (const rule of shared) line(`  ${rule.path}`);
-line(`  Employee + Command+ (${withIds(["Employee"])})`);
+line("Every managed page also opens to - a row cannot take this away:");
+line(`  ${aliases(EVERY_PAGE_ROLES)}`);
+line();
+line("Locked in the code, and never stored - the permission editor itself:");
+for (const path of ADMIN_PAGES) {
+  line(`  ${path}  ->  ${aliases(["CommandPlusTeam"])}`);
+}
+line(`  plus ${ADMIN_USER_IDS.size} DISCORD_ADMIN_IDS entr(ies), which bypass every rule`);
+line();
 
-line();
-line(
-  "Division sections - the division's members and ranks, or Command+, or its director",
-);
-for (const rule of divisionRules) {
-  const division = divisionForRoute(rule.path);
-  const invited = rest(rule);
-  const entry = division
-    ? DIVISION_ENTRIES.find(([key]) => key === division.key)?.[1]
-    : undefined;
-  const ownRanks = entry?.ranks ?? [];
-  const membership = entry?.membership;
-  const extras = invited.filter(
-    (alias) =>
-      alias !== membership &&
-      !ownRanks.includes(alias) &&
-      !commandPlus.has(alias),
+line("Pages, and who each one opens to today");
+for (const entry of MANAGED_ENTRIES) {
+  const rows = stored[entry.route];
+  const locked = LOCKED_ROUTES.has(entry.route);
+  const roles = locked
+    ? (["CommandPlusTeam"] as RoleName[])
+    : (rows ?? fallbackRolesForRoute(entry.route));
+  const ids = effectiveRoleIds(entry.route, roles).length;
+
+  line(`  ${entry.label}  (${entry.route})`);
+  line(`      ${aliases(roles)}`);
+  line(
+    `      ${ids} Discord id${ids === 1 ? "" : "s"} can open it${
+      locked
+        ? "  [locked in the code]"
+        : rows
+          ? rowHasNoEffect(entry.route, roles)
+            ? "  [stored, but no different from the fallback]"
+            : "  [stored]"
+          : "  [no row: the fallback]"
+    }`,
   );
-  const heading = division ? division.label : "(no division declares this route)";
+}
 
-  line(`  ${rule.path}`);
-  line(`      section  ${heading}`);
+line();
+line("Division pages, and the ranks/roles that identify their members");
+for (const [, division] of DIVISION_ENTRIES) {
+  if (!division.route) continue;
+  const withIds = division.ranks.filter((alias) => ROLES[alias].id).length;
+  line(`  ${division.label}  (${division.route})`);
+  line(
+    `      ranks    ${
+        division.ranks.length === 0
+          ? "none declared"
+          : `${aliases(division.ranks)}  (${withIds}/${division.ranks.length} with an id)`
+      }`,
+  );
   line(
     `      members  ${
-        membership
-          ? `${roleName(membership)} - every member of the division`
-          : "no membership role: leadership ranks only"
+        division.membership
+          ? roleName(division.membership)
+          : "no membership role: a rank is the only way to be recognised"
       }`,
   );
-  line(
-    `      ranks    ${ownRanks.length === 0 ? "none declared" : aliases(...ownRanks)}`,
-  );
-  line(
-    `      also     Command+${
-        extras.length > 0 ? `, or ${aliases(...extras)}` : ""
-      }`,
-  );
-  line(`      coverage ${withIds(ownRanks)}`);
+  line(`      directors ${aliases(division.directors ?? [])}`);
 }
 
-line();
-line("Supervisor tools - the Supervisor role, or Command+");
-for (const rule of supervisor) {
-  // Everything in the rule that isn't Command+, i.e. the Supervisor role.
-  const own = rule.roles.filter((alias) => !commandPlus.has(alias));
-  line(`  ${rule.path}`);
-  line(`      ${aliases(...own)} (${withIds(own)}), or Command+`);
-}
-
-const routelessDivisions = DIVISION_ENTRIES.filter(
-  ([, division]) => !division.route,
-);
-line();
-line("Declared without a page yet (rank lists only)");
-line(`  ${routelessDivisions.map(([, d]) => `${d.label}${d.dormant ? " (dormant)" : ""}`).join(", ")}`);
-
-const allNames = Object.keys(ROLES) as RoleName[];
-const blanks = allNames.filter((alias) => !ROLES[alias].id);
+const allAliases = Object.keys(ROLES) as RoleName[];
+const blanks = allAliases.filter((alias) => !ROLES[alias].id);
 line();
 line(
-  `Registry: ${allNames.length} roles, ${allNames.length - blanks.length} with an id, ${blanks.length} without`,
+  `Registry: ${allAliases.length} roles, ${allAliases.length - blanks.length} with an id, ${blanks.length} without`,
 );
 line("  a role with no id is inert - it identifies nobody, and the gate ignores it");
+line(`  Command+ is ${COMMAND_ACCESS.length} of them; ${EDITABLE_ENTRIES.length} pages are editable`);
 line();

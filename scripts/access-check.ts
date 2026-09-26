@@ -1,27 +1,39 @@
 #!/usr/bin/env node
 /**
- * Asserts the route access model, and prints it as a table.
+ * Asserts the shape of the access decision, and prints it as a table.
  *
- * The rules live in `src/configs/roles.ts` and this reads them through the
- * app's own `@/` alias (`scripts/lib/ts-config-loader.mjs`), so it checks what
- * the middleware actually enforces. Run it after touching a division, a rank
- * list or an access list:
+ * Access is the permission matrix - the `access-matrix` item of the Vercel Global
+ * Config, edited in the app - and not a table in the repository any more, so what
+ * this pins is the *shape* of that decision rather than a list of pages:
+ *
+ *   • a page with no stored row opens to every employee, never to nobody;
+ *   • a stored row is the rule, but it can never take a page from HQ;
+ *   • the permission editor is the one page no stored value may touch;
+ *   • the sidebar and the gate answer the same question.
+ *
+ * Run it after touching `src/configs/roles.ts` or the merge in
+ * `src/lib/role-config.ts`:
  *
  *   npm run routes:check
  *
- * Ranks with no Discord id can't identify anyone, so this gives them throwaway
- * snowflakes in memory - nothing on disk is written, and a division's gate can
- * be tested as if every rank had one.
+ * Everything is read through the app's own `@/` alias
+ * (`scripts/lib/ts-config-loader.mjs`), so this checks what the middleware
+ * enforces. Ranks with no Discord id can't identify anyone, so this gives them
+ * throwaway snowflakes in memory - nothing on disk is written, and a page can be
+ * tested as if every rank had one.
  */
 
 import { headerLinks } from "@/components/layout/header/configs/HeaderLinks";
 import { ROUTES } from "@/configs/routes";
-import { ROLES, type RoleName } from "@/configs/roles";
+import { ADMIN_USER_IDS, ROLES, type RoleName } from "@/configs/roles";
+import {
+  EDITABLE_ENTRIES,
+  LOCKED_ROUTES,
+  MANAGED_ENTRIES,
+  fallbackRolesForRoute,
+  type AccessMatrix,
+} from "@/configs/access-matrix";
 
-// Importing role-config logs one warning per division whose ranks have no ids.
-// This run hands those ranks throwaway ids, so that warning would contradict
-// the table below - silence it and keep the boot behaviour where it belongs,
-// in the app.
 const bootWarnings = console.warn;
 console.warn = () => {};
 const { filterAccessibleLinks, landingRouteFor, userHasAccess } = await import(
@@ -38,6 +50,12 @@ for (const [index, alias] of (Object.keys(ROLES) as RoleName[]).entries()) {
   ).padStart(3, "0")}`;
 }
 
+// `DISCORD_ADMIN_IDS` is read once, when `configs/roles.ts` loads - which was
+// before this script could set an env var. Adding an id to the same set is how
+// the admin bypass gets exercised here; nothing on disk is written.
+const ADMIN_ID = "990000000000009999";
+(ADMIN_USER_IDS as Set<string>).add(ADMIN_ID);
+
 /** The snowflakes a persona holds, from the registry. */
 function member(...aliases: RoleName[]): string[] {
   return aliases.map((alias) => {
@@ -47,138 +65,8 @@ function member(...aliases: RoleName[]): string[] {
   });
 }
 
-interface Section {
-  name: string;
-  paths: readonly string[];
-}
-
-const SHARED_PATHS = [
-  ROUTES.workspace.staff,
-  ROUTES.operations.divisionTemplates,
-  ROUTES.operations.templates,
-  ROUTES.resources.quickLinks,
-  ROUTES.resources.availability,
-  ROUTES.system.changelog,
-] as const;
-
-const sections: Section[] = [
-  { name: "shared", paths: SHARED_PATHS },
-  { name: "RED", paths: [ROUTES.divisions.red] },
-  { name: "BLS", paths: [ROUTES.divisions.bls] },
-  {
-    name: "FTD",
-    paths: [
-      ROUTES.divisions.ftd.sessions,
-      ROUTES.divisions.ftd.paperwork,
-      ROUTES.divisions.ftd.command,
-      ROUTES.divisions.ftd.fti,
-    ],
-  },
-  { name: "supervisor", paths: [ROUTES.management.supervisor] },
-];
-
-interface Persona {
-  name: string;
-  roles: string[];
-  /** "yes" = every page in the section, "-" = none of them. */
-  expected: Record<string, string>;
-  landsOn: string;
-}
-
-const employeeOnly: Record<string, string> = {
-  shared: "yes",
-  RED: "-",
-  BLS: "-",
-  FTD: "-",
-  supervisor: "-",
-};
-
-const personas: Persona[] = [
-  { name: "Employee", roles: member("Employee"), expected: employeeOnly, landsOn: ROUTES.workspace.staff },
-  {
-    name: "Employee + FTO",
-    roles: member("Employee", "FTO"),
-    expected: { ...employeeOnly, FTD: "yes" },
-    landsOn: ROUTES.divisions.ftd.sessions,
-  },
-  {
-    name: "RED rank",
-    roles: member("ApplicationHandler"),
-    expected: { ...employeeOnly, shared: "-", RED: "yes" },
-    landsOn: ROUTES.divisions.red,
-  },
-  {
-    name: "BLS rank",
-    roles: member("BLSInstructor"),
-    expected: { ...employeeOnly, shared: "-", BLS: "yes" },
-    landsOn: ROUTES.divisions.bls,
-  },
-  // A division's rank list only names its leadership, so these two are the
-  // case that a rank-only model gets wrong: an ordinary member holds the
-  // division's membership role and nothing else.
-  {
-    name: "RED member (no rank)",
-    roles: member("REDDivision"),
-    expected: { ...employeeOnly, shared: "-", RED: "yes" },
-    landsOn: ROUTES.divisions.red,
-  },
-  {
-    name: "BLS member (no rank)",
-    roles: member("BLSDivision"),
-    expected: { ...employeeOnly, shared: "-", BLS: "yes" },
-    landsOn: ROUTES.divisions.bls,
-  },
-  {
-    name: "Employee + RED member",
-    roles: member("Employee", "REDDivision"),
-    expected: { ...employeeOnly, RED: "yes" },
-    landsOn: ROUTES.divisions.red,
-  },
-  {
-    name: `${"Command+"}`,
-    roles: member("Lieutenant"),
-    expected: {
-      shared: "yes",
-      RED: "yes",
-      BLS: "yes",
-      FTD: "yes",
-      supervisor: "yes",
-    },
-    landsOn: ROUTES.divisions.ftd.sessions,
-  },
-  {
-    name: "Supervisor role",
-    roles: member("Supervisor"),
-    expected: {
-      shared: "-",
-      RED: "-",
-      BLS: "-",
-      FTD: "-",
-      supervisor: "yes",
-    },
-    landsOn: ROUTES.management.supervisor,
-  },
-  {
-    name: "Director of Operations",
-    roles: member("DirectorOfOperations"),
-    expected: { ...employeeOnly, shared: "-", FTD: "yes" },
-    landsOn: ROUTES.divisions.ftd.sessions,
-  },
-  {
-    name: "Director of Administration",
-    roles: member("DirectorOfAdministration"),
-    expected: { ...employeeOnly, shared: "-", RED: "yes", BLS: "yes" },
-    landsOn: ROUTES.divisions.red,
-  },
-];
-
-/** "yes" when every page opens, "-" when none do, "mixed" otherwise. */
-function accessTo(section: Section, roles: readonly string[]): string {
-  const open = section.paths.filter((path) => userHasAccess(path, roles)).length;
-  if (open === 0) return "-";
-  if (open === section.paths.length) return "yes";
-  return `mixed (${open}/${section.paths.length})`;
-}
+/** An unauthenticated visitor: no roles, and no way to see the nav. */
+const NOBODY: readonly string[] = [];
 
 let checks = 0;
 let failures = 0;
@@ -187,80 +75,261 @@ function expect(description: string, actual: unknown, wanted: unknown): void {
   checks += 1;
   if (actual === wanted) return;
   failures += 1;
-  console.log(`FAIL  ${description}: got ${String(actual)}, wanted ${String(wanted)}`);
+  console.log(
+    `FAIL  ${description}: got ${String(actual)}, wanted ${String(wanted)}`,
+  );
 }
 
-const columnWidth = 28;
-const header = ["persona".padEnd(columnWidth), ...sections.map((s) => s.name.padEnd(11))].join("");
+const line = (text = "") => console.log(text);
 
-console.log("\nRoute access check  (the rules live in src/configs/roles.ts)\n");
-console.log("Ranks with no collected Discord id get throwaway ids for this run.\n");
-console.log(header);
-for (const persona of personas) {
-  const cells = sections.map((section) =>
-    accessTo(section, persona.roles).padEnd(11),
-  );
-  console.log([persona.name.padEnd(columnWidth), ...cells].join(""));
+line();
+line("Access model  (the permission matrix, in the Global Config)");
+line(`  no stored row   every employee  (${fallbackRolesForRoute(ROUTES.workspace.staff).join(", ")})`);
+line("  never locked out   the Command ranks and CommandPlusTeam");
+line(`  always in the code   ${[...LOCKED_ROUTES].join(", ")} - CommandPlusTeam only, never stored`);
+line(
+  `  pages   ${EDITABLE_ENTRIES.length} editable, ${MANAGED_ENTRIES.length - EDITABLE_ENTRIES.length} locked`,
+);
+line();
 
-  for (const section of sections) {
-    expect(
-      `${persona.name} -> ${section.name}`,
-      accessTo(section, persona.roles),
-      persona.expected[section.name],
-    );
-  }
+// ── No stored rows: every page is open to every employee ───────────────────
+
+const editableRoutes = EDITABLE_ENTRIES.map((entry) => entry.route);
+
+expect(
+  "an employee opens every page when the store holds no rows",
+  editableRoutes.filter((path) => !userHasAccess(path, member("Employee"))).length,
+  0,
+);
+expect(
+  "a member with no roles at all opens nothing",
+  editableRoutes.filter((path) => userHasAccess(path, NOBODY)).length,
+  0,
+);
+expect(
+  "an unreadable store is the same answer as an empty one",
+  userHasAccess(ROUTES.workspace.staff, member("Employee"), undefined, null),
+  true,
+);
+
+// ── HQ, which no row can narrow away from a page ───────────────────────────
+
+for (const alias of ["Command", "Lieutenant", "CommandPlusTeam"] as const) {
   expect(
-    `${persona.name} lands on the right page`,
-    landingRouteFor(persona.roles),
-    persona.landsOn,
+    `${alias} opens every page with no rows stored`,
+    editableRoutes.filter((path) => !userHasAccess(path, member(alias))).length,
+    0,
   );
 }
 
-// A gate whose rank ids are all blank must deny rather than open. FTD is the
-// division with no membership role, so it is the one to check it on.
+const everythingStored: AccessMatrix = Object.fromEntries(
+  EDITABLE_ENTRIES.map((entry) => [entry.route, [] as RoleName[]]),
+);
 expect(
-  "an unknown member is refused a gated page",
-  userHasAccess(ROUTES.divisions.ftd.sessions, []),
+  "a row of nobody still leaves HQ every page",
+  editableRoutes.filter(
+    (path) => !userHasAccess(path, member("CommandPlusTeam"), undefined, everythingStored),
+  ).length,
+  0,
+);
+expect(
+  "a row of nobody closes the page to everyone else",
+  userHasAccess(ROUTES.workspace.staff, member("Employee"), undefined, everythingStored),
   false,
+);
+expect(
+  "an admin id opens a page a row gives to nobody",
+  userHasAccess(ROUTES.workspace.staff, NOBODY, ADMIN_ID, everythingStored),
+  true,
 );
 
-// Membership must not leak across divisions: RED's role opens RED and nothing
-// else, even though both are "in a division".
+// ── A stored row is the rule ───────────────────────────────────────────────
+
+const sessionsRow: AccessMatrix = { [ROUTES.divisions.ftd.sessions]: ["FTO"] };
+
 expect(
-  "RED membership does not open BLS",
-  userHasAccess(ROUTES.divisions.bls, member("REDDivision")),
+  "a stored row opens the page to the rank it names",
+  userHasAccess(ROUTES.divisions.ftd.sessions, member("FTO"), undefined, sessionsRow),
+  true,
+);
+expect(
+  "a stored row closes the page to everyone else",
+  userHasAccess(ROUTES.divisions.ftd.sessions, member("Employee"), undefined, sessionsRow),
   false,
 );
 expect(
-  "RED membership does not open FTD",
-  userHasAccess(ROUTES.divisions.ftd.sessions, member("REDDivision")),
+  "a stored row reaches pages beneath its route",
+  userHasAccess(`${ROUTES.divisions.ftd.sessions}/detail`, member("FTO"), undefined, sessionsRow),
+  true,
+);
+expect(
+  "a stored row leaves the section around it alone",
+  userHasAccess(ROUTES.divisions.ftd.paperwork, member("Employee"), undefined, sessionsRow),
+  true,
+);
+expect(
+  "a stored row on a tab does not change its section",
+  userHasAccess(ROUTES.divisions.ftd.base, member("Employee"), undefined, sessionsRow),
+  true,
+);
+expect(
+  "an empty row closes the page to everyone but HQ",
+  userHasAccess(ROUTES.workspace.staff, member("Employee"), undefined, {
+    [ROUTES.workspace.staff]: [],
+  }),
   false,
+);
+expect(
+  "a query string does not defeat a row",
+  userHasAccess(
+    `${ROUTES.management.supervisor}?tab=loa`,
+    member("Supervisor"),
+    undefined,
+    { [ROUTES.management.supervisor]: ["Supervisor"] },
+  ),
+  true,
 );
 
-/** Sidebar labels are the same decision, so check the nav the server sends. */
-function navLabels(roles: readonly string[] | null): string {
-  return filterAccessibleLinks(headerLinks, roles)
+// ── The permission editor, decided in the code and nowhere else ────────────
+
+const [adminRoute] = [...LOCKED_ROUTES];
+expect("there is exactly one locked page", LOCKED_ROUTES.size, 1);
+expect("the locked page is the access manager", adminRoute, ROUTES.management.access);
+for (const alias of ["Employee", "Command", "Lieutenant", "Consultant", "HighCommand"] as const) {
+  expect(
+    `${alias} cannot open the access manager`,
+    userHasAccess(adminRoute, member(alias)),
+    false,
+  );
+}
+expect(
+  "CommandPlusTeam opens the access manager",
+  userHasAccess(adminRoute, member("CommandPlusTeam")),
+  true,
+);
+expect(
+  "a stored row cannot open the access manager to a Command rank",
+  userHasAccess(adminRoute, member("Command"), undefined, {
+    [adminRoute]: ["Command"],
+  }),
+  false,
+);
+expect(
+  "a stored row cannot close the access manager to CommandPlusTeam",
+  userHasAccess(adminRoute, member("CommandPlusTeam"), undefined, {
+    [adminRoute]: [],
+  }),
+  true,
+);
+expect(
+  "an admin id opens the access manager",
+  userHasAccess(adminRoute, NOBODY, ADMIN_ID),
+  true,
+);
+
+// ── Landing ────────────────────────────────────────────────────────────────
+
+const ftdRow: AccessMatrix = {
+  [ROUTES.divisions.ftd.base]: ["FTO"],
+  [ROUTES.divisions.ftd.sessions]: ["FTO"],
+  [ROUTES.workspace.staff]: ["Employee"],
+};
+expect(
+  "with no rows, a member lands on the page the department shares",
+  landingRouteFor(member("Employee")),
+  ROUTES.workspace.staff,
+);
+expect(
+  "an FTD rank lands in the FTD section when the matrix grants it",
+  landingRouteFor(member("Employee", "FTO"), undefined, ftdRow),
+  ROUTES.divisions.ftd.sessions,
+);
+expect(
+  "a RED member lands in RED when the matrix grants it",
+  landingRouteFor(member("REDDivision", "Employee"), undefined, {
+    [ROUTES.divisions.red]: ["REDDivision"],
+    [ROUTES.workspace.staff]: ["Employee"],
+  }),
+  ROUTES.divisions.red,
+);
+// The pass that prefers a grant is what makes the RED case above land in RED
+// rather than in the FTD section, which is open to every employee by fallback.
+expect(
+  "a section row covers the tabs beneath it",
+  landingRouteFor(member("FTO"), undefined, ftdRow),
+  ROUTES.divisions.ftd.sessions,
+);
+expect(
+  "CommandPlusTeam lands somewhere it can open",
+  userHasAccess(landingRouteFor(member("CommandPlusTeam")), member("CommandPlusTeam")),
+  true,
+);
+
+// ── The sidebar is the same decision, read for rendering ───────────────────
+
+const navLabels = (roles: readonly string[] | null): string =>
+  filterAccessibleLinks(headerLinks, roles, undefined)
     .map((link) => link.label)
     .join(", ");
-}
 
+const allLabels = headerLinks.map((link) => link.label);
 expect(
-  "employee sidebar",
+  "with no rows, an employee's sidebar is every item but the access manager",
   navLabels(member("Employee")),
-  "Staff Page, Division Templates, Templates, Quick Links, Availability, Change Log",
+  allLabels.filter((label) => label !== "Access Manager").join(", "),
 );
 expect(
-  "trainer sidebar",
-  navLabels(member("Employee", "FTO")),
-  "Staff Page, FTD, Division Templates, Templates, Quick Links, Availability, Change Log",
+  "an employee is never offered the access manager",
+  navLabels(member("Employee")).includes("Access Manager"),
+  false,
 );
 expect(
-  "RED member sidebar names the division",
-  navLabels(member("REDDivision")),
-  "RED",
+  "CommandPlusTeam is offered everything",
+  navLabels(member("CommandPlusTeam")),
+  allLabels.join(", "),
 );
-expect("supervisor sidebar", navLabels(member("Supervisor")), "Supervisor");
-expect("signed-out sidebar", navLabels(null), "");
+expect("a signed-out visitor is offered nothing", navLabels(null), "");
 
-console.log(`\n${checks - failures}/${checks} checks passed`);
+const redRow: AccessMatrix = { [ROUTES.divisions.red]: ["REDDivision"] };
+const redHref = ROUTES.divisions.red;
+expect(
+  "a narrowed section is not rendered for a rank it excludes",
+  filterAccessibleLinks(headerLinks, member("Employee"), undefined, redRow)
+    .some((link) => (link.href ?? "").startsWith(redHref)),
+  false,
+);
+expect(
+  "a narrowed section is rendered for the rank the row names",
+  filterAccessibleLinks(headerLinks, member("REDDivision"), undefined, redRow)
+    .some((link) => (link.href ?? "").startsWith(redHref)),
+  true,
+);
+expect(
+  "the FTD tab bar honours a tab's own row",
+  userHasAccess(
+    ROUTES.divisions.ftd.command,
+    member("FTI"),
+    undefined,
+    { [ROUTES.divisions.ftd.command]: ["FTHead"] },
+  ),
+  false,
+);
+
+// ── No stored row is invented from nothing ─────────────────────────────────
+
+expect(
+  "the fallback is the same for every editable page",
+  new Set(editableRoutes.map((path) => fallbackRolesForRoute(path).join("|"))).size,
+  1,
+);
+expect(
+  "the fallback names a role the guild can actually match",
+  fallbackRolesForRoute(ROUTES.workspace.staff).every(
+    (alias) => ROLES[alias].id !== null,
+  ),
+  true,
+);
+
+line(`${checks - failures}/${checks} checks passed`);
+line();
 if (failures > 0) process.exitCode = 1;

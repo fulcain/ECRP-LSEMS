@@ -7,6 +7,7 @@ import { MedicProvider } from "@/app/context/MedicContext";
 import { headerLinks } from "@/components/layout/header/configs/HeaderLinks";
 import { filterAccessibleLinks } from "@/lib/role-config";
 import { getSession } from "@/lib/session";
+import { readAccessMatrix } from "@/lib/access-matrix-store";
 
 export const metadata: Metadata = {
   // The brand is written down once. Every route's layout declares only its own
@@ -37,10 +38,14 @@ export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const session = await getSession();
+  // The same matrix the middleware gates on, so a hidden page is never left in
+  // the sidebar and a granted one is never left out of it.
+  const overrides = await readAccessMatrix();
   const links = filterAccessibleLinks(
     headerLinks,
     session?.roles ?? null,
     session?.discordId,
+    overrides,
   );
   // Only the hrefs travel to the sidebar: the icons are components and can't
   // cross into a client component, so the shell pairs them up on its side.

@@ -1,6 +1,6 @@
 import { ROUTES } from "@/configs/routes";
 import type { LucideIcon } from "lucide-react";
-import { Activity, BookOpen, Clock3, FileText, GraduationCap, Link2, Settings2, Shield, UsersRound, ClipboardList } from "lucide-react";
+import { Activity, BookOpen, Clock3, FileText, GraduationCap, Link2, Settings2, Shield, ShieldCheck, UsersRound, ClipboardList } from "lucide-react";
 
 export type HeaderLink = {
   label: string;
@@ -84,6 +84,15 @@ export const headerLinks: HeaderLink[] = [
     label: "Supervisor",
     href: `${ROUTES.management.supervisor}?tab=loa`,
     icon: ClipboardList,
+    group: "Management",
+  },
+  {
+    // Rendered only for CommandPlusTeam: the sidebar is filtered with the same
+    // rule the route gate enforces, and `/management/access` opens to no one
+    // else. Every other member never sees this entry.
+    label: "Access Manager",
+    href: ROUTES.management.access,
+    icon: ShieldCheck,
     group: "Management",
   },
   {

@@ -2,8 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { verifySessionToken } from "@/lib/jwt";
 import { readAuthCookie, AUTH_COOKIE_NAME, authCookieOptions } from "@/lib/cookies";
 import { refreshSessionIfStale } from "@/lib/session-refresh";
+import { readAccessMatrix } from "@/lib/access-matrix-store";
 import {
-  matchRoleRule,
   userHasAccess,
   divisionForRoute,
   landingRouteFor,
@@ -55,11 +55,15 @@ function replaceAuthCookie(header: string | null, token: string): string {
 }
 
 /**
- * Edge-runtime middleware. Reads the `ftd_auth` cookie, verifies the JWT,
- * checks the user's Discord role IDs against the route-role rules in
- * `src/configs/roles.ts` (a division's pages are gated on that division's
- * ranks), and redirects to /login or /unauthorized as appropriate.
- * `/api/auth/*` is explicitly allowed through so the OAuth flow works.
+ * Edge-runtime middleware. Reads the `ftd_auth` cookie, verifies the JWT, and
+ * checks the user's Discord role IDs against the permission matrix, redirecting
+ * to /login or /unauthorized as appropriate. `/api/auth/*` is explicitly allowed
+ * through so the OAuth flow works.
+ *
+ * The matrix is read **here**, because this is the one place that enforces a
+ * route: a matrix only the sidebar honoured would hide a tab and still serve the
+ * page behind it. A page with no stored row opens to every employee, so an
+ * unreadable store widens access rather than closing the app.
  *
  * A page load also catches the session up with Discord before anything is
  * decided: roles granted since the last visit are in the payload this request
@@ -87,6 +91,11 @@ export async function middleware(req: NextRequest) {
   });
   const refreshed = outcome.ok ? outcome : null;
   const payload = refreshed?.payload ?? verified;
+
+  // `null` whenever the store is unset or unreachable, which means "no rows" -
+  // every page then opens to every employee. A store outage must never be what
+  // closes a page.
+  const overrides = await readAccessMatrix();
 
   /** Carry the re-signed cookie on whatever this request answers with. */
   const respond = <T extends NextResponse>(res: T): T => {
@@ -117,18 +126,20 @@ export async function middleware(req: NextRequest) {
   // member. Send each one to the first page their own roles open, which is
   // also where login lands when it has nothing better to go on.
   if (pathname === ENTRY_ROUTE) {
-    const destination = landingRouteFor(payload.roles, payload.discordId);
+    const destination = landingRouteFor(
+      payload.roles,
+      payload.discordId,
+      overrides,
+    );
     return respond(NextResponse.redirect(new URL(destination, req.url)));
   }
 
-  if (!userHasAccess(pathname, payload.roles, payload.discordId)) {
-    const rule = matchRoleRule(pathname);
+  if (!userHasAccess(pathname, payload.roles, payload.discordId, overrides)) {
     const url = req.nextUrl.clone();
     url.pathname = "/unauthorized";
     url.searchParams.set("path", pathname);
-    if (rule?.requireAnyRole?.length) {
-      url.searchParams.set("hint", "role");
-    }
+    // Every page here is decided by roles, so a refusal is always about them.
+    url.searchParams.set("hint", "role");
     // Name the division so the denied page can say which members the page is
     // for - "RED is for Recruitment and Employment Division members".
     const division = divisionForRoute(pathname);

@@ -382,6 +382,9 @@ export const DIVISIONS = {
       "FTI",
       "FTO",
       "FTOInTraining",
+      "Command",
+      "CommandPlusTeam",
+      "HighCommand",
     ],
     // Being in Field Training opens the whole workspace, every tab of it.
     directors: ["DirectorOfOperations"],
@@ -584,34 +587,34 @@ export function membershipForDivision(key: DivisionKey): RoleRef | undefined {
   return { name: ROLES[alias].name, id: ROLES[alias].id };
 }
 
-// ─── Route access ─────────────────────────────────────────────────────────
-
-/** A single route role rule: which roles unlock a path (any-of). */
-export interface RouteRoleRule {
-  requireAnyRole: RoleName[];
-}
+// ─── Access invariants ────────────────────────────────────────────────────
+//
+// **Who may open what does not live in this file.** It lives in the
+// `access-matrix` item of the Vercel Global Config, edited in the app.
+//
+// This file used to declare a rule per route (`ROUTE_ACCESS`, derived from the
+// divisions below), and that rule was the second copy of every decision: the
+// editor showed a row's config rule, a stored row replaced it, and the two could
+// describe the same page differently. There is one answer now, and it is the
+// store's.
+//
+// What is left here is the part the store must never be able to decide:
+//
+//   • `EVERY_PAGE_ROLES` - HQ, which no row may take a page away from;
+//   • `DEFAULT_PAGE_ROLES` - what a page opens to when the store has no row for
+//     it, so a missing row reads as a wide default rather than a closed door;
+//   • `ADMIN_PAGES` - the permission editor itself, which no stored value can
+//     open or close, because a gate that can be edited away is not a gate.
+//
+// The rest of this file is the data everything else reads: `ROLES`, and the
+// divisions - each with its `ranks`, its `membership` role, its `directors` and
+// the page it owns. Those ranks are what templates, paperwork and the Staff Page
+// resolve members against, which is why they stay declared here.
 
 /**
- * Who may open what, in plain terms:
- *
- *   an LSEMS employee    the Staff Page, Division Templates, Templates, Quick
- *                        Links, Availability and the Change Log
- *   an FTD rank          the whole FTD section
- *   a RED rank           the whole RED section
- *   a BLS rank           the whole BLS section
- *   a director            the divisions their own role covers
- *   a Command+ rank      everything, in every section
- *   the Supervisor role  the Supervisor tools, and nothing else
- *
- * "Command+" is the ranks HQ is made of - Consultant, Lieutenant, Captain,
- * Command and the three Chief ranks - and it is the one list that opens every
- * page. The registry also names `Commander`, `HighCommand` and `CommandPlusTeam`,
- * which sit in that tier in Discord but are not in this list: they are
- * recognised in the Staff Page, and adding any of them here is what would let
- * them open every page.
- *
- * Every rule below is built from those lists, so no page carries a rule of its
- * own and a new division only needs its entry in `DIVISIONS`.
+ * The ranks HQ is made of: Consultant, Lieutenant, Captain, Command and the
+ * three Chief ranks. Listed here because it is the Command ranks' *membership*,
+ * read by more than the gate - and folded into `EVERY_PAGE_ROLES` below.
  */
 export const COMMAND_ACCESS: readonly RoleName[] = [
   "Consultant",
@@ -623,68 +626,68 @@ export const COMMAND_ACCESS: readonly RoleName[] = [
   "DeputyChiefOfEMS",
 ];
 
-/** The pages every LSEMS employee may open. */
-const EMPLOYEE_PAGES: readonly string[] = [
-  ROUTES.workspace.staff,
-  ROUTES.operations.divisionTemplates,
-  ROUTES.operations.templates,
-  ROUTES.resources.quickLinks,
-  ROUTES.resources.availability,
-  ROUTES.system.changelog,
+/**
+ * The roles no stored row may lock out of a page.
+ *
+ * `COMMAND_ACCESS` is the department's own command ladder, and `CommandPlusTeam`
+ * is the team that administers the permission matrix: a page can be narrowed,
+ * but never against HQ, and never against the people deciding. It is applied at
+ * decision time rather than written into each rule, so a row that leaves these
+ * roles out changes who *else* gets in and nothing more.
+ *
+ * The Access Manager is the deliberate exception - it is `CommandPlusTeam`'s own
+ * page and is closed to the Command ranks, the one route this list does not
+ * reach.
+ */
+export const EVERY_PAGE_ROLES: readonly RoleName[] = [
+  ...COMMAND_ACCESS,
+  "CommandPlusTeam",
 ];
 
-/** The pages only the Supervisor role (and Command+) may open. */
-const SUPERVISOR_PAGES: readonly string[] = [ROUTES.management.supervisor];
-
-/** Build a rule, dropping duplicates so a role is never listed twice. */
-function ruleNeeds(...roles: readonly RoleName[]): RouteRoleRule {
-  return { requireAnyRole: [...new Set(roles)] };
-}
+/**
+ * What a page opens to when the store holds no row for it.
+ *
+ * One role, deliberately: `Employee` is every member of the department, so a
+ * route nobody has ruled on is open to everyone rather than closed to everyone.
+ * Rotating the store's read token, or a page added before its row, then costs
+ * visibility nobody asked for instead of an outage - and the editor shows the
+ * fallback as the row's value, so narrowing one is a single edit away.
+ *
+ * This is the one place a wide default is the right answer; the editor is where
+ * it gets narrowed.
+ */
+export const DEFAULT_PAGE_ROLES: readonly RoleName[] = ["Employee"];
 
 /**
- * Division rules, one per division that has a page: the division's own ranks,
- * the role that marks plain membership of it, plus Command+ and whichever
- * director looks after it.
+ * The pages only `CommandPlusTeam` may open - the live permission editor.
  *
- * The membership role is what lets an ordinary member open their own
- * division's page - a division's rank list only names its leadership, so
- * without it someone holding nothing but "BLS Division" would be refused.
+ * Deliberately not store-driven: `isAdminOnlyPath` refuses a stored row for
+ * these paths, and `ADMIN_PAGE_ROLES` is what they are gated on instead, so the
+ * page that decides access can not be opened - or closed - from inside itself.
+ * `DISCORD_ADMIN_IDS` (`ADMIN_USER_IDS`) still bypasses every rule, which is how
+ * the developer reaches the page regardless of Discord roles.
  *
- * A division whose ranks all have a `null` id can't identify its members, so
- * its page falls back to its membership role, Command+ and that director - the
- * case the boot warning in `lib/role-config.ts` calls out.
+ * Deliberately *not* `...COMMAND_ACCESS` either: the Command ranks do not manage
+ * the matrix, and holding a Command rank must not become a way to grant yourself
+ * one.
  */
-const divisionRules: Record<string, RouteRoleRule> = {};
-for (const [key, division] of DIVISION_ENTRIES) {
-  if (!division.route) continue;
-  const membership = divisionFor(key).membership;
-  divisionRules[division.route] = ruleNeeds(
-    ...division.ranks,
-    ...(membership ? ([membership] as const) : []),
-    ...COMMAND_ACCESS,
-    ...(division.directors ?? []),
+export const ADMIN_PAGES: readonly string[] = [ROUTES.management.access];
+
+/** The roles a page in `ADMIN_PAGES` opens to. Never merged into, never stored. */
+export const ADMIN_PAGE_ROLES: readonly RoleName[] = ["CommandPlusTeam"];
+
+/**
+ * Whether `pathname` is one of `ADMIN_PAGES` - the CommandPlusTeam-only tools.
+ *
+ * Prefix-matched, with the trailing `/` so that a future `/management/access-…`
+ * page isn't caught by accident.
+ */
+export function isAdminOnlyPath(pathname: string): boolean {
+  const path = pathname.split("?")[0];
+  return ADMIN_PAGES.some(
+    (adminPath) => path === adminPath || path.startsWith(`${adminPath}/`),
   );
 }
-
-export const ROUTE_ACCESS: Record<string, RouteRoleRule> = {
-  // Division sections, derived above. `matchRoleRule` picks the longest
-  // matching prefix, so every page inside a section inherits its rule.
-  ...divisionRules,
-
-  // The pages the whole department shares, and the supervisor-only tools.
-  ...Object.fromEntries(
-    EMPLOYEE_PAGES.map((path) => [
-      path,
-      ruleNeeds("Employee", ...COMMAND_ACCESS),
-    ]),
-  ),
-  ...Object.fromEntries(
-    SUPERVISOR_PAGES.map((path) => [
-      path,
-      ruleNeeds("Supervisor", ...COMMAND_ACCESS),
-    ]),
-  ),
-};
 
 /** A division whose page `pathname` is (or is inside), for the denial hint. */
 export type DivisionRoute = {

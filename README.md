@@ -39,7 +39,7 @@ Every page lives under the sidebar section it belongs to, and the directory tree
 /system/changelog              System
 ```
 
-Nothing hardcodes these strings. `src/configs/routes.ts` is the single `ROUTES` registry - the sidebar, the FTD tab bar, `ROUTE_ACCESS` in `src/configs/roles.ts`, the 404 page and the login fallback all import from it, so a path changes in one place.
+Nothing hardcodes these strings. `src/configs/routes.ts` is the single `ROUTES` registry - the sidebar, the FTD tab bar, the matrix rows in `src/configs/access-matrix.ts`, the 404 page and the login fallback all import from it, so a path changes in one place.
 
 The FTD tabs are links between those four routes, and their bar renders once from `src/app/(routes)/divisions/ftd/layout.tsx` - the per-page layouts underneath only set metadata. Every pre-nesting URL (`/paperwork`, `/ft-session`, `/staff`, `/red-formats`, ...) is still a permanent redirect in `next.config.ts`, so bookmarks and older `returnTo` values keep working.
 
@@ -55,7 +55,7 @@ Every role id and every role display name the app uses is declared once, in `src
 HeadOfBLS: { id: "123456789012345678", name: "Head of BLS" },
 ```
 
-That one registry is both the **gate** - `ROUTE_ACCESS` names aliases, and `userHasAccess` resolves them to those snowflakes - and the **collection**: the department ladder (`app/constants/general/ranks.ts`), every division's rank list, the directors (`general/directorRoles.ts`) and the staff and paperwork templates read their id *and* their display name from it.
+That one registry is both the **gate** - the permission matrix names aliases, and `userHasAccess` resolves them to those snowflakes - and the **collection**: the department ladder (`app/constants/general/ranks.ts`), every division's rank list, the directors (`general/directorRoles.ts`) and the staff and paperwork templates read their id *and* their display name from it.
 
 A division is declared once too, in `DIVISIONS` in the same file: its label, its ranks in hierarchy order, and - when it has a page - the route that page lives at.
 
@@ -97,67 +97,66 @@ A rank granted in Discord shows up on the next page load, without signing out an
 
 ### Who can open what
 
-One table describes the whole app, and every rule is derived from it rather than written per page:
+**Access is the permission matrix, not a table in the repository.** The rules live
+in one item - `access-matrix` in the Vercel Global Config - and are edited in the
+app at `/management/access`. `src/configs/roles.ts` declares roles and divisions;
+it no longer says which page opens to which rank, so there is no second copy of a
+decision to drift out of step or to argue with the editor, and changing access
+does not need a deploy.
 
-| a member holds | and can open |
+What the code does still decide, because the store must not be able to:
+
+| rule | why |
 | --- | --- |
-| `Employee` | the Staff Page, Division Templates, Templates, Quick Links, Availability and the Change Log |
-| a division's membership role | that division's section |
-| a division's rank | that division's section |
-| a Command+ rank | everything, in every section |
-| the `Supervisor` role | the Supervisor tools, and nothing else |
-| a director role | the divisions that director covers |
+| a page with no stored row opens to `Employee` | so a missing row - or an unreadable store - widens access instead of closing the app |
+| `EVERY_PAGE_ROLES` (the Command ranks and `CommandPlusTeam`) keeps every page | a row decides who *else* gets in; it can never lock HQ, or the team running the matrix, out of the app |
+| `/management/access` is `CommandPlusTeam` only, and is never stored | the page that decides access cannot be opened, closed or granted from inside itself |
+| a `DISCORD_ADMIN_IDS` entry opens everything | the developer's way in, independent of Discord |
 
-Holding two of those sees the union, and nothing extra is needed for it: an employee who is also in RED gets the department pages *and* the RED section.
-
-**Belonging to a division is not the same as holding a rank in it.** A division's `ranks` list names only its leadership, so an ordinary member - who holds "BLS Division" or "Recruitment and Employment Division" and no rung at all - is recognised through the division's `membership` role instead. Both halves open the same pages, and `membership` is also what the Staff Page reads to say which divisions you are in.
-
-A division with no membership role (FTD today) is rank-only by design, so only its ranks, Command+ and its director can open it.
-
-The lists behind the table all live in `configs/roles.ts`:
-
-- **`EMPLOYEE_PAGES`** - the six shared pages, open to `Employee` (or Command+);
-- **`DIVISIONS`** - a division's `ranks` list and its `membership` role *are* its page's gate, so a division page opens to its own members, to Command+ and to the `directors` that cover it;
-- **`COMMAND_ACCESS`** - Consultant, Lieutenant, Captain, Command and the three Chief ranks; the one list that opens every page. `Commander`, `HighCommand` and `CommandPlusTeam` are in the registry but *not* in this list: they are recognised, and adding one here is what would let it open every page;
-- **`SUPERVISOR_PAGES`** - the Supervisor tools, open to the `Supervisor` role or to Command+.
-
-A director's coverage is written once, on the division (`directors: ["DirectorOfAdministration"]`), and `general/directorRoles.ts` reads the same fact the other way round - so the page a director can open and the divisions their signature says they cover can't disagree.
-
-`npm run routes:report` prints all of it straight from the config, so it can't drift from what the middleware enforces:
+Everything else is a row. `npm run routes:report` prints the live answer, read
+from the store itself (`--env-file-if-exists=.env`), so it can't drift from what
+the middleware enforces:
 
 ```text
-Division sections - the division's own ranks, or Command+, or its director
-  /divisions/ftd
-      section  Field Training
-      ranks    Head of FTD, Interim Head of FTD*, ...
-      also     Command+, or Director of Operations*
-      coverage 4/7 ids
+Pages, and who each one opens to today
+  Sessions  (/divisions/ftd/ft-session)
+      Head of FTD, Assistant Head of FTD, Field Training Instructor, ...
+      14 Discord ids can open it  [stored]
+  Staff Page  (/workspace/staff)
+      Employee
+      9 Discord ids can open it  [no row: the fallback]
 ```
 
-A `*` marks a rank whose id is `null`. The gate cannot see such a rank, so a division whose ranks all lack ids is unreachable by its own members, and one holding only roles the registry can't name is unreachable by anyone but Command+ and its director - `lib/role-config.ts` says so once at boot. When someone is refused, the middleware passes the division to `/unauthorized`, which names it: "that page belongs to the Field Training division" beats a bare "access denied".
+**Belonging to a division is not the same as holding a rank in it.** A division's
+`ranks` list names only its leadership, so an ordinary member - who holds "BLS
+Division" or "Recruitment and Employment Division" and no rung at all - is
+recognised through the division's `membership` role instead. A row that should let
+a division in usually wants both: its leadership ranks *and* its membership role.
+`membership` is also what the Staff Page reads to say which divisions you are in.
 
-`npm run routes:check` asserts that table and prints it, exiting non-zero if a change ever contradicts it:
+A division with no membership role (FTD today) is rank-only by design, so its
+rows name its ranks and nothing else.
 
-```text
-persona                   shared     RED        BLS        FTD        supervisor
-Employee                  yes        -          -          -          -
-Employee + FTO            yes        -          -          yes        -
-RED rank                  -          yes        -          -          -
-BLS rank                  -          -          yes        -          -
-RED member (no rank)      -          yes        -          -          -
-BLS member (no rank)      -          -          yes        -          -
-Employee + RED member     yes        yes        -          -          -
-Command+                  yes        yes        yes        yes        yes
-Supervisor role           -          -          -          -          yes
-Director of Operations    -          -          -          yes        -
-Director of Administration-          yes        yes        -          -
-```
+A director's coverage is written once, on the division
+(`directors: ["DirectorOfAdministration"]`), and `general/directorRoles.ts` reads
+the same fact the other way round - so the divisions a director's signature says
+they cover can't disagree with each other.
+
+A `*` in the report marks a rank whose id is `null`. The gate cannot see such a
+rank, so listing it in a row does nothing, and a row naming *only* id-less ranks
+closes the page to everyone but HQ - the editor flags both cases. When someone is
+refused, the middleware passes the division to `/unauthorized`, which names it:
+"that page belongs to the Field Training division" beats a bare "access denied".
+
+`npm run routes:check` asserts the shape of that decision - the fallback, the
+merge, the locked page, and the sidebar answering the same question as the gate -
+and exits non-zero if a change ever contradicts it.
 
 ### Maintaining the registry
 
-`src/configs/roles.ts` is edited by hand. There is no import step and no sync script: a new rank, division or director is one entry in that file, and a renamed role is one edit that the divisions, the ladder, the signature text, the paperwork dropdowns and the access table all follow. Adding a division to `DIVISIONS` needs one thing beside its `ranks`: the `membership` role its ordinary members hold, or only its leadership can open its page.
+`src/configs/roles.ts` is edited by hand. There is no import step and no sync script: a new rank, division or director is one entry in that file, and a renamed role is one edit that the divisions, the ladder, the signature text, the paperwork dropdowns and every matrix row all follow. A division needs two fields beside its `ranks`: the `route` of the page it owns, and the `membership` role its ordinary members hold - without the second, only its leadership can be named in a row.
 
-Nothing has to be kept in step by a tool, because the app checks the ids itself. On every page load the session refresh re-reads the member's roles from Discord and the registry resolves them (`src/lib/member-identity.ts`): a role whose id is wrong simply never matches its holder, who loses the pages it opens and sees a rank the app can't confirm. `npm run routes:report` and `npm run routes:check` then show which ranks have no id, and which division pages are therefore open to Command+ and its director alone.
+Nothing has to be kept in step by a tool, because the app checks the ids itself. On every page load the session refresh re-reads the member's roles from Discord and the registry resolves them (`src/lib/member-identity.ts`): a role whose id is wrong simply never matches its holder, who loses the pages it opens and sees a rank the app can't confirm. `npm run routes:report` shows every rank the matrix names that has no id, and the editor flags the rows they are listed in.
 
 `id: null` means "this rank has no Discord role" rather than "not collected yet" - an entry with no id is inert, it can't identify anyone, and it is skipped when the app resolves roles. It is the honest state for a rank the guild doesn't have (the interim rungs, the trainee rungs), and it is safe: a gated route whose required ids are all blank denies rather than silently opening.
 
@@ -165,7 +164,64 @@ Nothing has to be kept in step by a tool, because the app checks the ids itself.
 
 The navigation is filtered with the same rules as the routes. `src/app/layout.tsx` reads the session and runs `filterAccessibleLinks(headerLinks, ...)`, so the sidebar receives only the pages that member may open - signed out, that list is empty and the sidebar renders no navigation at all. The FTD tab bar works the same way in its section layout: an instructor sees Sessions and Paperwork, while the Command and FTI tabs are never rendered for them.
 
-The decision is the server's, because a nav item's icon is a component and components can't cross into the client sidebar. So the layout sends hrefs and the shell pairs them with its own icons - both reading the one `ROUTE_ACCESS` table, which is what stops a route from being reachable by URL but invisible in the nav, or listed for someone the gate would refuse.
+The decision is the server's, because a nav item's icon is a component and components can't cross into the client sidebar. So the layout sends hrefs and the shell pairs them with its own icons - both reading the one matrix, which is what stops a route from being reachable by URL but invisible in the nav, or listed for someone the gate would refuse.
+
+### The live permission matrix
+
+`/management/access` lets `CommandPlusTeam` (and any `DISCORD_ADMIN_IDS` developer) decide which ranks may open which tabs and pages, and the change takes effect for everyone within a few seconds - no deploy, no restart.
+
+The rows are declared in `src/configs/access-matrix.ts` (`ROUTE_META`), and the ranks it can grant are every alias in the registry - a ladder rung, a division's rank or membership role, or one of the guild roles nothing gates on. A rank the app can name is a rank the matrix can grant, and `npm run matrix:check` fails if a page in the sidebar or the FTD tab bar has no row.
+
+Because the FTD section gets a row of its own, an entry on it applies to every FTD page that has no row of its own, and an entry on a tab narrows just that tab.
+
+Three rules keep it honest:
+
+- **a row is the whole rule**, which is what "these ranks and no others" means - and a page with no row opens to every employee rather than to nobody;
+- **no row can take a page from HQ**, because `EVERY_PAGE_ROLES` is merged back in on every managed page - the Command ranks *and* `CommandPlusTeam`, so the matrix cannot lock the team that administers it out of the app either;
+- **the Access Manager is locked**, and is the one page the Command ranks are *not* merged into and the one page a stored row may never touch - it is shown in the editor but can never be edited, so the page that decides access can't be edited (or granted) away by the people using it. A rank with no Discord id is flagged in the editor, because granting it would do nothing.
+
+Only the rows someone actually changed are stored. Everything else keeps following `configs/roles.ts`, so a later registry edit still flows through.
+
+**A row can be stored and still move nobody**, and the editor says so: it resolves a row's ranks to Discord ids and, if the result is the same set the default already opens, marks the row "no effect". There are two ways to get there - the ranks it adds or drops have no id (so the gate never recognised them), or they are ranks that keep every page anyway. Without that verdict a stored row looks like a real decision that appears to do nothing, which is how a working store reads as a broken one.
+
+**`access-matrix.json`** at the repo root is the paste-ready value for the store's `access-matrix` item: the live matrix in one file, so the store can be restored - or set up on a new Vercel project - without walking the editor. It is a record of what is stored, not a second source of truth; the app reads the store, and every row in it is a pinned row.
+
+#### How a save works
+
+Three properties matter, and all three exist because the alternative was silent data loss:
+
+1. **One item, one write.** The store holds the whole matrix under a single key (`access-matrix`), and a save is an upsert of *that key only* - never `PATCH` of the whole config. Rewriting items nobody touched would be a way to destroy them for no gain, and there is nothing to gain: the failure modes here are a bad token, a bad scope or no network, and none of those improve by writing more keys. One item also means a save either lands complete or not at all.
+2. **The payload is the whole override set**, not the rows edited in this session. The item is *replaced*, so a "what just changed?" diff would discard every override made in an earlier visit.
+3. **It won't overwrite something it hasn't read.** The editor sends what it loaded (`base`), the route re-reads the stored value and compares: if they differ, the save is refused with a `409` and the current value returned, and the editor offers to load the latest. A store that cannot be read refuses the write too rather than treating an unreadable store as an empty one. Without this the store is last-write-wins, and two people editing at once means the slower save silently crumples the faster one's rows.
+
+
+**Where it lives, and why.** The decision has to be made in the middleware, which runs on the Edge runtime - a database read there would put a network hop in front of every navigation. The matrix is therefore stored in a **Vercel Global Config** (formerly Edge Config): globally replicated, readable from Edge in milliseconds, updates visible in seconds. Reads use the SDK and `GLOBAL_CONFIG`; writes use the Vercel REST API with `VERCEL_API_TOKEN`, only ever from the editor's API route on the Node runtime.
+
+**With no store configured the app is unchanged**: every page follows `configs/roles.ts`, the editor says so, and saving is disabled. That is deliberate - an unset, empty or unreachable store must never be what closes a page.
+
+`npm run matrix:check` asserts that every row the editor offers is a page the app really has, that it is labelled the way the sidebar or the tab bar labels it, and that the defaults are the registry's own rather than a second copy - so the editor can gain a code change without silently gaining a decision that does nothing.
+
+#### Connecting the store
+
+Four environment variables. The first is written for you when you create the store; the rest are yours to add, and only the first is needed for the app to *read* a matrix:
+
+| variable | what it is |
+| --- | --- |
+| `GLOBAL_CONFIG` | the **connection string** (config id + a read token). Created automatically when the store is connected to the project. Reads use it, in the middleware. |
+| `GLOBAL_CONFIG_ID` | the config's id - shown on the store's page (its **Tokens** tab, and its URL). Required to write. |
+| `VERCEL_API_TOKEN` | a Vercel access token that may update that config. Required to write. |
+| `VERCEL_TEAM_ID` | only for a **Full Account** token whose config lives in a team. A team- or project-scoped token infers the team, so leave this unset. Found at `vercel.com/teams/<team-slug>/settings#team-id`, or team dashboard → Settings → General → Team ID. |
+
+One-time setup:
+
+1. Open the project in the Vercel dashboard, click **Storage** → **Create Storage** → **Global Config**, name it, and create it. Vercel generates the read token, the connection string and the `GLOBAL_CONFIG` environment variable, so **the read side needs nothing from you**. (Creating it at the account level instead leaves it unconnected until you attach a project, and no variables are made until then.)
+2. Copy the config's id into `GLOBAL_CONFIG_ID` — **on the project**, not only in your local `.env`, or saving works locally and fails in production.
+3. Create an access token and set it as `VERCEL_API_TOKEN`. Scope it to the **team that owns the project** (scope → team → *All Projects*), or to **Full Account** if the project is on a personal account. Copy it immediately — Vercel shows the value once.
+4. Redeploy so the new variables reach the running app, then open `/management/access`.
+
+For local development, `vercel env pull` brings `GLOBAL_CONFIG` down into `.env` (and, since reads go over the public internet when you develop locally, expect higher latency than production).
+
+Without `GLOBAL_CONFIG` the editor renders read-only with a setup banner; without the two write variables it renders with a "store is read-only from here" banner. Either way the rest of the app is unaffected.
 
 
 ## Staff Page
