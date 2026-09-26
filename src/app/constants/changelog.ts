@@ -16,6 +16,11 @@ export const changeLog: ChangeLogEntry[] = [
     date: "Sep 26, 2026",
     changes: [
       {
+        type: "change",
+        description:
+          "Updated the Regular and Reinstatement training to the new Field Training Program: the guides, spoken notes and paperwork now match the latest templates, with TeamSpeak removed and the JTAC frequencies added.",
+      },
+      {
         type: "feature",
         description:
           "New under Management: Access Manager. Command+ Team and Developer can now decide, in the app, which ranks may open which tabs and pages, and the change is live for everyone within a few seconds, with no deploy.",
