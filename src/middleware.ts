@@ -12,7 +12,13 @@ import { ENTRY_ROUTE } from "@/configs/routes";
 
 /**
  * Paths that should NEVER go through Discord auth: OAuth flow itself,
- * public sign-in / denied pages, and the Next.js internals.
+ * public sign-in / denied pages, the extension download, and the Next.js
+ * internals.
+ *
+ * `/api/extension` is the zip of the extension folder - code only, nothing
+ * member-specific - and a browser fetching it through a direct link or a
+ * download manager carries no session cookie, so guarding it turned every
+ * signed-out download into an HTML login page under a `.zip` name.
  *
  * We deliberately use exact-match (`===`) rather than prefix-match here
  * so that any future `/login/<something>` or `/unauthorized/<something>`
@@ -22,6 +28,7 @@ function isPublicPath(pathname: string): boolean {
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api/auth") ||
+    pathname === "/api/extension" ||
     pathname === "/favicon.ico" ||
     pathname === "/login" ||
     pathname === "/unauthorized"
