@@ -7,6 +7,7 @@ import {
   CheckCircle,
   ChevronDown,
   Copy,
+  ExternalLink,
   FileText,
   UserCheck,
 } from "lucide-react";
@@ -21,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { handOffForumPost } from "@/app/helpers/forumHandoff";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { useMedic } from "@/app/context/MedicContext";
 import { DIVISIONS } from "@/configs/roles";
@@ -226,6 +228,13 @@ export default function FtiPage() {
   const signature = medicCredentials.signature;
 
   /* ---- Per-page form state ---- */
+  // The FTO's own profile post, pasted once per student and reused for every
+  // phase's paperwork - so the open button next to Copy Certification Paperwork
+  // knows where the certification belongs.
+  const [ftoProfileLink, setFtoProfileLink] = useLocalStorage<string>(
+    "fti-fto-profile-link",
+    "",
+  );
   const [savedForm, setSavedForm] = useLocalStorage(FORM_KEY, {
     studentName: "",
     studentRank: "",
@@ -327,10 +336,22 @@ export default function FtiPage() {
   );
 
   /* ---- Copy helpers ---- */
+  // Every one of these is a GOV post - trainer info, certification paperwork and
+  // the divisional file all get pasted into an FTO's profile - so the browser
+  // extension is handed the body and fills whichever editor opens next.
   const copyToClipboard = async (text: string, label: string) => {
+    const handedOff = handOffForumPost(
+      { feature: `the FTI ${label.toLowerCase()} card` },
+      text,
+    );
     try {
       await navigator.clipboard.writeText(text);
-      toast.success(`${label} copied to clipboard`, { theme: "dark" });
+      toast.success(
+        handedOff
+          ? `${label} copied - press Fill on the GOV page to put it in`
+          : `${label} copied to clipboard`,
+        { theme: "dark" },
+      );
     } catch {
       toast.error("Couldn't copy to clipboard - check browser permissions.", { theme: "dark" });
     }
@@ -500,14 +521,53 @@ export default function FtiPage() {
               </div>
             </div>
 
-            <Button
-              size="sm"
-              onClick={() => copyToClipboard(certBBCode, "Certification paperwork")}
-              className="px-6"
-            >
-              <Copy className="h-4 w-4 mr-2" />
-              Copy Certification Paperwork
-            </Button>
+            <div className="space-y-1.5">
+              <Label className="text-xs text-muted-foreground">
+                FTO Profile Link
+              </Label>
+              <Input
+                value={ftoProfileLink}
+                onChange={(e) => setFtoProfileLink(e.target.value)}
+                placeholder="Paste the FTO's student profile post URL"
+                className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground"
+              />
+              <p className="text-xs text-muted-foreground">
+                The profile this certification paperwork belongs in - Open FTO
+                Profile opens it.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <Button
+                size="sm"
+                onClick={() => copyToClipboard(certBBCode, "Certification paperwork")}
+                className="px-6"
+              >
+                <Copy className="h-4 w-4 mr-2" />
+                Copy Certification Paperwork
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={!ftoProfileLink.trim()}
+                onClick={() =>
+                  window.open(
+                    ftoProfileLink.trim(),
+                    "_blank",
+                    "noopener,noreferrer",
+                  )
+                }
+                className="px-6"
+                title={
+                  ftoProfileLink.trim()
+                    ? "Opens this FTO's profile post"
+                    : "Paste the FTO Profile Link above first"
+                }
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Open FTO Profile
+              </Button>
+            </div>
           </div>
 
           {/* ---- Divider ---- */}
@@ -524,14 +584,26 @@ export default function FtiPage() {
               signature.
             </p>
 
-            <Button
-              size="sm"
-              onClick={() => copyToClipboard(divisionalBBCode, "Divisional file")}
-              className="px-6"
-            >
-              <Copy className="h-4 w-4 mr-2" />
-              Copy Divisional File
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                size="sm"
+                onClick={() => copyToClipboard(divisionalBBCode, "Divisional file")}
+                className="px-6"
+              >
+                <Copy className="h-4 w-4 mr-2" />
+                Copy Divisional File
+              </Button>
+              <Button asChild variant="outline" size="sm" className="px-6">
+                <a
+                  href="https://gov.eclipse-rp.net/viewforum.php?f=4155"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  Divisional Personnel Files
+                </a>
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

@@ -31,6 +31,11 @@ import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { useHighestRank } from "@/app/hooks/useHighestRank";
 import { rankOptions } from "@/app/constants/general/ranks";
 import { useSession } from "@/app/(routes)/divisions/ftd/paperwork/components/SessionContext";
+import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
+import {
+  handOffForumPost,
+  pickPostTarget,
+} from "@/app/helpers/forumHandoff";
 
 import {
   civilianRideAlongConfig,
@@ -44,6 +49,18 @@ import { CivilianRideAlongGuideline } from "@/app/(routes)/divisions/ftd/paperwo
 
 const RIDE_ALONG_PROGRAM_URL =
   "https://gov.eclipse-rp.net/viewforum.php?f=577";
+
+/**
+ * Status tag each phase puts in front of the applicant's name. The ride-along
+ * report is not a decision on the application, so it carries no tag.
+ */
+const PHASE_TITLE_TAGS: Record<CivilianRideAlongPhaseKey, string | null> = {
+  accepted: "[ACCEPTED]",
+  expired: "[EXPIRED]",
+  denied: "[DENIED]",
+  onHold: "[ON-HOLD]",
+  rideAlongReport: null,
+};
 
 const defaultFormState = {
   applicantName: "",
@@ -70,6 +87,13 @@ export default function CivilianRideAlongForm() {
   const [form, setForm] = useLocalStorage<typeof defaultFormState>(
     "ftd-civilian-ridealong-form-data",
     { ...defaultFormState },
+  );
+
+  // The applicant's own thread: the decision is posted as a reply in it, so this
+  // is the page the extension opens and fills. No post id is guessed from a name.
+  const [govLink, setGovLink] = useLocalStorage<string>(
+    "ftd-ridealong-gov-link",
+    "",
   );
 
   // Auto-populate Rank from highest Discord role on hook resolve.
@@ -133,6 +157,15 @@ export default function CivilianRideAlongForm() {
   const config = civilianRideAlongConfig[phase];
   const sections = config.sections;
 
+  // "[ACCEPTED] Firstname Lastname" - the application's own title, retagged for
+  // whichever decision this phase carries.
+  const titleTag = PHASE_TITLE_TAGS[phase];
+  const fullTitle = titleTag
+    ? `${titleTag}${
+        form.applicantName.trim() ? ` ${form.applicantName.trim()}` : ""
+      }`
+    : null;
+
   const generate = () => {
     const values: CivilianRideAlongValues = {
       applicantName: form.applicantName,
@@ -146,11 +179,32 @@ export default function CivilianRideAlongForm() {
     setCopied(false);
   };
 
+  // The response is a reply in the applicant's own thread, so the post carries
+  // the body plus the status-tagged title for the extension to fill both.
+  const rideAlongPost = {
+    subject: fullTitle ?? undefined,
+    feature: "the civilian ride-along paperwork generator",
+    url: pickPostTarget(govLink.trim()),
+  };
+
   const copyToClipboard = async () => {
     if (!output) return;
+    handOffForumPost(rideAlongPost, output);
     await navigator.clipboard.writeText(output);
     setCopied(true);
     toast.success("Copied!", { theme: "dark" });
+  };
+
+  // Copies and opens the applicant's thread in one click, so the decision is
+  // written into the page that just opened.
+  const copyAndOpen = () => {
+    const url = govLink.trim();
+    if (!output || !url) return;
+    copyBBCodeAndOpen({
+      bbCodeText: output,
+      url,
+      post: { ...rideAlongPost, url: pickPostTarget(url) },
+    });
   };
 
   return (
@@ -176,6 +230,32 @@ export default function CivilianRideAlongForm() {
                 placeholder="Firstname Lastname"
                 className="bg-background"
               />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label
+                htmlFor="ridealong-gov-link"
+                className="text-xs text-muted-foreground flex items-center gap-1.5"
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+                GOV Application Link
+                {fullTitle && (
+                  <span className="ml-1 rounded-md bg-background px-1.5 py-0.5 font-mono text-[10px] tracking-wide text-muted-foreground">
+                    {fullTitle}
+                  </span>
+                )}
+              </Label>
+              <Input
+                id="ridealong-gov-link"
+                value={govLink}
+                onChange={(e) => setGovLink(e.target.value)}
+                placeholder="Paste the applicant's application post URL"
+                className="bg-background"
+              />
+              <p className="text-xs text-muted-foreground">
+                The browser extension opens this post and fills the decision and
+                its tagged title in. Leave it empty to keep the copy-only flow.
+              </p>
             </div>
 
             <div className="flex items-start gap-4 flex-wrap">
@@ -389,6 +469,23 @@ export default function CivilianRideAlongForm() {
           >
             <Copy className="h-4 w-4 mr-2" />
             {copied ? "Copied!" : "Copy"}
+          </Button>
+          <Button
+            disabled={!output || !govLink.trim()}
+            variant="secondary"
+            size="sm"
+            onClick={copyAndOpen}
+            className="px-6"
+            title={
+              !output
+                ? "Generate the paperwork first"
+                : govLink.trim()
+                  ? "Copies the paperwork and opens the application with it"
+                  : "Paste the GOV Application Link above first"
+            }
+          >
+            <ExternalLink className="h-4 w-4 mr-2" />
+            Copy &amp; Open
           </Button>
           <Button
             variant="ghost"

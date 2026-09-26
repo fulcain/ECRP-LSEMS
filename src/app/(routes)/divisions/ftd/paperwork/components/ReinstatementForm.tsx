@@ -7,6 +7,8 @@ import {
 } from "@/app/(routes)/divisions/ftd/paperwork/lib/reinstatementConfig";
 import { generateReinstatementBBCode } from "@/app/(routes)/divisions/ftd/paperwork/lib/generateReinstatementBBCode";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
+import { pickPostTarget } from "@/app/helpers/forumHandoff";
 import { toast, ToastContainer } from "react-toastify";
 
 import { Button } from "@/components/ui/button";
@@ -97,9 +99,18 @@ export default function ReinstatementForm() {
     };
   }, [setCurrentPhase]);
 
+  // Copy & open: the paperwork is pasted into the profile's reply, so the post
+  // travels with the click that opens it. No title - a profile reply has none.
   const openProfileLink = () => {
-    if (!selectedEMRProfileLink) return;
-    window.open(selectedEMRProfileLink, "_blank", "noopener,noreferrer");
+    if (!output || !selectedEMRProfileLink) return;
+    copyBBCodeAndOpen({
+      bbCodeText: output,
+      url: selectedEMRProfileLink,
+      post: {
+        feature: "the FTD reinstatement paperwork generator",
+        url: pickPostTarget(selectedEMRProfileLink),
+      },
+    });
   };
 
   // additionalMandatories lives in shared SessionContext, not on the form.
@@ -759,9 +770,16 @@ export default function ReinstatementForm() {
           <Button
             variant="secondary"
             size="sm"
-            disabled={!selectedEMRProfileLink}
+            disabled={!output || !selectedEMRProfileLink}
             onClick={openProfileLink}
             className="px-6"
+            title={
+              !output
+                ? "Generate the paperwork first"
+                : selectedEMRProfileLink
+                  ? "Copies the paperwork and opens this EMR's profile"
+                  : "Select an EMR with a profile link"
+            }
           >
             <ExternalLink className="h-4 w-4 mr-2" />
             Open EMR Profile
