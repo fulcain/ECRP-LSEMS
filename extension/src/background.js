@@ -3,8 +3,15 @@
  * command for whatever GOV tab is in front.
  *
  * Install/startup sync the badge once so it is right after a browser restart.
+ *
+ * Chrome loads this as a service worker, where `importScripts` brings
+ * `shared.js` in. Firefox loads it as a background script with `shared.js`
+ * already ahead of it in the manifest's `scripts` array, so the guard below
+ * skips the import there rather than throwing on the missing function.
  */
-importScripts("shared.js");
+if (typeof importScripts === "function") {
+  importScripts("shared.js");
+}
 
 async function syncBadge() {
   const pending = await LSEMS.getPending();

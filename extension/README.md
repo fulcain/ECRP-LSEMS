@@ -29,9 +29,11 @@ drives the whole handoff protocol with a stub browser (including that the versio
 in `shared.js` matches the manifest) and is worth running before anyone
 re-downloads the folder.
 
-Firefox runs the same files, but needs a `browser_specific_settings.gecko.id`
-block in `manifest.json` (Firefox refuses `storage` without it) before
-`about:debugging` → *Load Temporary Add-on* will work.
+Firefox runs the same files (its manifest carries the `browser_specific_settings.gecko`
+id Firefox requires, and Firefox 121+ loads the `background.scripts` entry). Loaded
+through `about:debugging` → *Load Temporary Add-on*, the install is temporary: it is
+gone when the browser closes. A permanent Firefox install needs the add-on reviewed
+on AMO - see `PUBLISHING.md`.
 
 ## How it works
 

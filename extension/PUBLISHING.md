@@ -246,5 +246,11 @@ the same folder in this repo - there is no second place to edit.
 - **Edge** - the same zip uploads to the Microsoft Partner Center (free, no fee),
   with a **Hidden** listing if you do not want it searchable. See the table above:
   this is the free route to one-click installs and auto-updates.
-- **Firefox** - needs a `browser_specific_settings.gecko.id` in the manifest and
-  AMO review. Ask before relying on it.
+- **Firefox** - the manifest is already Firefox-ready: the `gecko.id`, the
+  `data_collection_permissions: ["none"]` answer and the `background.scripts`
+  entry Firefox needs (it has no service workers) are all in place, and the code
+  sticks to the `chrome.*` namespace Firefox also provides. A hand-loaded copy via
+  `about:debugging` is temporary - it disappears when the browser closes. A
+  permanent install needs the AMO listing (free, with human review), the same zip
+  uploads as-is, and once a listing exists its URL can go in
+  `NEXT_PUBLIC_EXTENSION_STORE_URL` like any other.

@@ -1,14 +1,19 @@
 /**
  * Constants and storage helpers shared by the content scripts, the popup and the
- * service worker. Declared with `var` so every script gets the same object.
+ * background. Declared with `var` so every script gets the same object.
  *
  * The page <-> extension protocol lives here too: the app posts `MSG_HANDOFF`
  * on the window, the bridge stores it, and a GOV page reads it back. Nothing
  * crosses that boundary except plain data.
+ *
+ * Firefox is supported: it exposes the same `chrome.*` namespaces as Chrome,
+ * and since Firefox 121 an MV3 manifest may carry both a service worker (used
+ * by Chrome) and `background.scripts` (used by Firefox), which is the shape
+ * `manifest.json` has.
  */
 var LSEMS = {
   // Kept in step with `manifest.json` by `npm run extension:check`.
-  VERSION: "1.3.0",
+  VERSION: "1.4.0",
   APP_SOURCE: "lsems-app",
   EXT_SOURCE: "lsems-extension",
   MSG_HANDOFF: "lsems:handoff",
@@ -23,7 +28,7 @@ var LSEMS = {
   STORAGE_PENDING: "pendingPost",
   STORAGE_SETTINGS: "settings",
   READY_FLAG: "lsemsExtension",
-  DEFAULT_SETTINGS: { clearAfterFill: false },
+  DEFAULT_SETTINGS: { clearAfterFill: true },
 };
 
 LSEMS.makeId = function () {
@@ -46,7 +51,9 @@ LSEMS.postToPage = function (data) {
  */
 LSEMS.storageArea = function () {
   try {
-    return chrome && chrome.storage && chrome.storage.local
+    return typeof chrome !== "undefined" &&
+      chrome.storage &&
+      chrome.storage.local
       ? chrome.storage.local
       : null;
   } catch {
@@ -57,7 +64,9 @@ LSEMS.storageArea = function () {
 /** False once this script's extension has gone away underneath it. */
 LSEMS.isContextAlive = function () {
   try {
-    return Boolean(chrome && chrome.runtime && chrome.runtime.id);
+    return Boolean(
+      typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.id,
+    );
   } catch {
     return false;
   }

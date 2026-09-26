@@ -226,7 +226,7 @@ globalThis.chrome.runtime = { sendMessage() { workerMessages += 1; } };
 
 expect("the context is reported as gone", globalThis.LSEMS.isContextAlive(), false);
 expect("storage is reported missing", globalThis.LSEMS.storageArea(), null);
-expect("settings fall back to their defaults", (await globalThis.LSEMS.getSettings()).clearAfterFill, false);
+expect("settings fall back to their defaults", (await globalThis.LSEMS.getSettings()).clearAfterFill, true);
 expect("a pending post reads as none", await globalThis.LSEMS.getPending(), null);
 expect(
   "saving reports failure instead of pretending",

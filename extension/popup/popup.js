@@ -11,7 +11,6 @@ const els = {
   open: document.getElementById("open"),
   copy: document.getElementById("copy"),
   clear: document.getElementById("clear"),
-  clearAfterFill: document.getElementById("clearAfterFill"),
   status: document.getElementById("status"),
 };
 
@@ -67,9 +66,7 @@ async function render() {
     return;
   }
 
-  const [pending, settings] = await Promise.all([LSEMS.getPending(), LSEMS.getSettings()]);
-
-  els.clearAfterFill.checked = settings.clearAfterFill;
+  const pending = await LSEMS.getPending();
 
   if (!pending) {
     els.empty.hidden = false;
@@ -116,12 +113,5 @@ els.clear.onclick = async () => {
   say("Cleared.");
   await render();
 };
-
-for (const [key, input] of [["clearAfterFill", els.clearAfterFill]]) {
-  input.addEventListener("change", async () => {
-    await LSEMS.saveSettings({ [key]: input.checked });
-    say("Saved.");
-  });
-}
 
 render();
