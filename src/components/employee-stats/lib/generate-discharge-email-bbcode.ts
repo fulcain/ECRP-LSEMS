@@ -26,7 +26,7 @@ All the best in your future employment.
 [/divbox4]`;
 
 /** The post title shown in the UI with its own copy button. */
-export const DISCHARGE_EMAIL_TITLE = "EMR Discharge Email";
+export const DISCHARGE_EMAIL_TITLE = "Discharge Email";
 
 export interface DischargeEmailValues {
   name: string;

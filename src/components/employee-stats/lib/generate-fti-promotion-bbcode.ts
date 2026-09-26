@@ -44,7 +44,7 @@ ${FTI_PROMOTION_EMAIL_BODY}
 [/spoil]`;
 
 /** The post title that goes in [code] tags - shown in the UI with its own copy button. */
-export const FTI_PROMOTION_TITLE = "FTD Rank Adjustment";
+export const FTI_PROMOTION_TITLE = "FTI Promotion email";
 
 export interface FtiPromotionValues {
   name: string;

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { Check, Copy, UserX } from "lucide-react";
+import { Check, Copy, ExternalLink, UserX } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,6 +18,9 @@ import {
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { useMedic } from "@/app/context/MedicContext";
 import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
+import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
+import { pickPostTarget } from "@/app/helpers/forumHandoff";
+import { GOV_PM_COMPOSE_URL } from "@/app/helpers/govLinks";
 
 import {
   generateDischargeEmailBBCode,
@@ -81,6 +84,20 @@ export function EmrDischargeCard() {
     } catch {
       toast.error("Couldn't copy to clipboard - check browser permissions.", { theme: "dark" });
     }
+  };
+
+  // The email is sent as a GOV private message, so the title travels with the
+  // body and the composer opens with both ready to fill.
+  const copyAndOpenPm = () => {
+    copyBBCodeAndOpen({
+      bbCodeText: bbcode,
+      url: GOV_PM_COMPOSE_URL,
+      post: {
+        subject: DISCHARGE_EMAIL_TITLE,
+        feature: "the EMR discharge email card",
+        url: pickPostTarget(GOV_PM_COMPOSE_URL),
+      },
+    });
   };
 
   const [titleCopied, setTitleCopied] = useState(false);
@@ -177,10 +194,22 @@ export function EmrDischargeCard() {
           Header title date, name, rank and signature come from your Staff Page.
         </p>
 
-        <Button size="sm" onClick={handleCopy} className="px-6">
-          <Copy className="h-4 w-4 mr-1.5" />
-          Copy Discharge Email
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button size="sm" onClick={handleCopy} className="px-6">
+            <Copy className="h-4 w-4 mr-1.5" />
+            Copy Discharge Email
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={copyAndOpenPm}
+            className="px-6"
+            title="Copies the email and opens a new GOV private message, titled with it"
+          >
+            <ExternalLink className="h-4 w-4 mr-1.5" />
+            Copy &amp; Open PM
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

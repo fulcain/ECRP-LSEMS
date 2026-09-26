@@ -33,6 +33,9 @@ EMR has been sent the [i]Training Time Reminder[/i] Email.
 [b]{DAYS_LEFT} days[/b] remaining to complete training.
 [/divbox]`;
 
+/** The PM title shown in the UI with its own copy button. */
+export const TRAINING_REMINDER_TITLE = "Training Reminder";
+
 export interface EmrTrainingTimeValues {
   emrName: string;
   daysLeft: string;

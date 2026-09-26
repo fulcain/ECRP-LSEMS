@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import { handOffForumPost } from "@/app/helpers/forumHandoff";
 
 import {
   generateFtoCreationBBCode,
@@ -51,9 +52,24 @@ export function FtoCreationCard({ onRefresh }: { onRefresh?: () => void }) {
   const hasApplicationInfo = ftoTraineeName.trim() !== "";
 
   const copyToClipboard = async (alsoOpenGov: boolean) => {
+    const handedOff = handOffForumPost(
+      {
+        subject: ftoTraineeName.trim()
+          ? `FTO Student Profile | ${ftoTraineeName.trim()}`
+          : "",
+        url: GOV_FTO_CREATION_POST_URL,
+        feature: "the FTO creation card",
+      },
+      bbcode,
+    );
     try {
       await navigator.clipboard.writeText(bbcode);
-      toast.success("BBCode copied to clipboard", { theme: "dark" });
+      toast.success(
+        handedOff
+          ? "BBCode copied - press Fill on the GOV post to put it in"
+          : "BBCode copied to clipboard",
+        { theme: "dark" },
+      );
     } catch {
       toast.error("Couldn't copy to clipboard - check browser permissions.", {
         theme: "dark",

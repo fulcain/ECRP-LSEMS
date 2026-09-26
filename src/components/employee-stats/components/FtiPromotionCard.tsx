@@ -2,13 +2,16 @@
 
 import { useMemo, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { Check, Copy, Mail } from "lucide-react";
+import { Check, Copy, ExternalLink, Mail } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMedic } from "@/app/context/MedicContext";
 import { DIVISIONS } from "@/configs/roles";
 import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
+import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
+import { pickPostTarget } from "@/app/helpers/forumHandoff";
+import { GOV_PM_COMPOSE_URL } from "@/app/helpers/govLinks";
 
 import {
   generateFtiPromotionEmailBBCode,
@@ -37,6 +40,20 @@ export function FtiPromotionCard() {
     } catch {
       toast.error("Couldn't copy to clipboard - check browser permissions.", { theme: "dark" });
     }
+  };
+
+  // The email is sent as a GOV private message, so the title travels with the
+  // body and the composer opens with both ready to fill.
+  const copyAndOpenPm = () => {
+    copyBBCodeAndOpen({
+      bbCodeText: bbcode,
+      url: GOV_PM_COMPOSE_URL,
+      post: {
+        subject: FTI_PROMOTION_TITLE,
+        feature: "the FTI promotion email card",
+        url: pickPostTarget(GOV_PM_COMPOSE_URL),
+      },
+    });
   };
 
   const [titleCopied, setTitleCopied] = useState(false);
@@ -82,10 +99,22 @@ export function FtiPromotionCard() {
           Date, name, rank, FTD rank and signature come from your Staff Page.
         </p>
 
-        <Button size="sm" onClick={copyToClipboard} className="px-6" variant="gradient">
-          <Copy className="h-4 w-4 mr-1.5" />
-          Copy FTI Promotion Email
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button size="sm" onClick={copyToClipboard} className="px-6" variant="gradient">
+            <Copy className="h-4 w-4 mr-1.5" />
+            Copy FTI Promotion Email
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={copyAndOpenPm}
+            className="px-6"
+            title="Copies the email and opens a new GOV private message, titled with it"
+          >
+            <ExternalLink className="h-4 w-4 mr-1.5" />
+            Copy &amp; Open PM
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
