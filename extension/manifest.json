@@ -1,0 +1,49 @@
+{
+  "manifest_version": 3,
+  "name": "LSEMS Forum Poster",
+  "version": "1.3.0",
+  "description": "Fills GOV forum posts and PMs with the BBCode the ECRP LSEMS app prepared, so nothing has to be pasted by hand.",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "permissions": ["storage", "clipboardWrite", "clipboardRead"],
+  "host_permissions": ["https://gov.eclipse-rp.net/*"],
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "action": {
+    "default_title": "LSEMS Forum Poster",
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
+  },
+  "commands": {
+    "fill-post": {
+      "suggested_key": { "default": "Alt+Shift+F" },
+      "description": "Fill the GOV page you are on with the prepared post"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://localhost/*",
+        "http://127.0.0.1/*",
+        "https://*.vercel.app/*",
+        "https://ecrplsems.com/*",
+        "https://*.ecrplsems.com/*"
+      ],
+      "js": ["src/shared.js", "src/app-bridge.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://gov.eclipse-rp.net/*"],
+      "js": ["src/shared.js", "src/forum-fill.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

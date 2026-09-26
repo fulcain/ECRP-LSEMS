@@ -66,6 +66,7 @@
   - `npm run lint`
   - `npm run routes:check` after touching `configs/roles.ts` or the merge in `lib/role-config.ts` - it asserts the shape of the access decision (the employee fallback, the roles no row may lock out, the locked Access Manager, the sidebar agreeing with the gate) and exits non-zero on a regression
   - `npm run matrix:check` after adding a page or touching `configs/access-matrix.ts` - it asserts every page has a row, that the fallback is one role, and that a save can never drop another row's override
+  - `npm run extension:check` after touching the browser extension or `app/helpers/forumHandoff.ts` - it drives the handoff protocol with a stub browser and exits non-zero on a regression
 
 ### Discord roles
 

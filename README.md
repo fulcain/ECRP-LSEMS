@@ -35,6 +35,7 @@ Every page lives under the sidebar section it belongs to, and the directory tree
 /operations/templates          Operations
 /resources/quick-links         Resources
 /resources/availability        Resources
+/resources/browser-extension   Resources
 /management/supervisor         Management
 /system/changelog              System
 ```
@@ -240,6 +241,16 @@ Everything the member fills in is reused rather than re-typed, because one rank 
 - the shared signature bar above the FTD email tools fills its name, rank, FTD rank and signature from the same place, with a **From Staff Page** button to re-read it.
 
 So the Staff Page is the source of truth for an employee's own details, and `useGuildIdentity` is what proves them: the roles a signed-in member holds ride in their session, and `member-identity.ts` resolves them without a second Discord call.
+
+## GOV posting (browser extension)
+
+Most tools end in a **Copy & Open** button that copies BBCode and opens the gov.eclipse-rp.net page the post belongs on. `extension/` is a small MV3 browser extension that finishes that job: it takes the prepared post from the app and writes it into the forum's own posting or private-message form - title, recipients and body - so the member reviews it and presses the forum's Submit.
+
+The two sides talk over `window.postMessage` (`src/app/helpers/forumHandoff.ts` on one side, `extension/src/app-bridge.js` on the other), so the app never learns the extension's id and the extension never reads the app's DOM. Passing a `post` to `copyBBCode` / `copyBBCodeAndOpen` is what donates a copy as a post, which is why a copied signature or link is never offered as one. With the extension absent, every button behaves exactly as it did before.
+
+Nothing posts itself: the extension has no code path that submits a form, so the forum's own Submit button is always the member's click. Installing it and the one list of selectors to fix if the forum is ever re-templated are in `extension/README.md`.
+
+Two things in this repo exist to keep an install painless. `GET /api/extension` zips `extension/` on every request, so the folder someone downloads is never older than the source, and Resources -> Browser Extension is the page that hands it over and reports back whether the extension is alive in that browser. For a store release, `npm run extension:zip` writes the other archive shape - `manifest.json` at the root, docs removed - to `build/`, which is what a Web Store upload takes; the one-off account, the listing copy and the permission justifications are in `extension/PUBLISHING.md`. Once a listing exists, `NEXT_PUBLIC_EXTENSION_STORE_URL` switches the app's page to a single Add to Chrome button, and the zip becomes the manual fallback. The plan is a free hidden listing on the Edge Add-ons site, which costs nothing and installs the same zip; `npm run extension:assets` generates the icons, the listing logo and tile, and fits member screenshots to the exact sizes a store accepts, so a listing needs no hand-made art.
 
 ## Learn More
 

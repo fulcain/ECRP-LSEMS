@@ -9,7 +9,10 @@
     "lint": "eslint src",
     "routes:report": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file-if-exists=.env --import ./scripts/lib/ts-config-loader.mjs scripts/routes-report.ts",
     "routes:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/access-check.ts",
-    "matrix:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/access-matrix-check.ts"
+    "matrix:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/access-matrix-check.ts",
+    "extension:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/extension-check.mjs",
+    "extension:zip": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/extension-zip.ts",
+    "extension:assets": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/extension-assets.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.11",

@@ -38,6 +38,7 @@ export const ROUTES = {
   resources: {
     quickLinks: "/resources/quick-links",
     availability: "/resources/availability",
+    browserExtension: "/resources/browser-extension",
   },
   management: {
     supervisor: "/management/supervisor",

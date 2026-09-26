@@ -94,6 +94,10 @@ const ROUTE_META: Record<string, { label: string; group: AccessMatrixGroup }> = 
     label: "Availability",
     group: "Resources",
   },
+  [ROUTES.resources.browserExtension]: {
+    label: "Browser Extension",
+    group: "Resources",
+  },
 
   [ROUTES.management.supervisor]: { label: "Supervisor", group: "Management" },
   [ROUTES.management.access]: {

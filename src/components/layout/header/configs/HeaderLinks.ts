@@ -1,6 +1,6 @@
 import { ROUTES } from "@/configs/routes";
 import type { LucideIcon } from "lucide-react";
-import { Activity, BookOpen, Clock3, FileText, GraduationCap, Link2, Settings2, Shield, ShieldCheck, UsersRound, ClipboardList } from "lucide-react";
+import { Activity, BookOpen, Clock3, FileText, GraduationCap, Link2, Puzzle, Settings2, Shield, ShieldCheck, UsersRound, ClipboardList } from "lucide-react";
 
 export type HeaderLink = {
   label: string;
@@ -78,6 +78,12 @@ export const headerLinks: HeaderLink[] = [
     label: "Availability",
     href: ROUTES.resources.availability,
     icon: Clock3,
+    group: "Resources",
+  },
+  {
+    label: "Browser Extension",
+    href: ROUTES.resources.browserExtension,
+    icon: Puzzle,
     group: "Resources",
   },
   {
