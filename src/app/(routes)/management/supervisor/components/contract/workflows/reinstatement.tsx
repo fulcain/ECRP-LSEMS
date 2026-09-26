@@ -358,18 +358,13 @@ If you would like to resign from LSEMS, as sad as it'll be to see you go, please
 [*]Never drop the patient without asking PD/SD for permission.
 [/list]
 [*]Make sure the reinstatee knows that it's better to ask twice than get IA reported for stealing a 10-15.[/list]
-[*][color=#800000][b]((Teamspeak))[/b][/color]
-[list][*][ooc] Ask them to join TeamSpeak 3, make sure they are in Zulu unit
-[i]TS info - IP: ts.eclipse-rp.net ; Password: ecrpsagov[/i][/ooc].
-[*][ooc] Explain to them how to set up the unit tag before their name, for example, [Z-11] [/ooc].
-[*][ooc] Explain that if we use VOIP we say Zulu, if we use chat we type Z [/ooc].
-[/list]
 [*][color=#800000][b]Jointed Tac[/b][/color]
 [list]
 [*]Explain to the reinstatee what Jointed Tac (JTAC) is.
 [*]Inform the reinstatee on how it's used.
-[ooc]Make sure you explain and they understand JTAC is IC and they have to use IC VOIP as well when talking on it. Additionally, explain that using the TS VOIP without using in game VOIP at the same time can lead to a server punishment.[/ooc]
-[*]Make sure they understand respect and professionalism is [b]utterly[/b] important here.[/list]
+[ooc]Make sure you explain and they understand JTAC is IC and they have to use IC VOIP as well when talking on it.[/ooc]
+[*]Make sure they understand respect and professionalism is [b]utterly[/b] important here.
+[*]Tell the reinstatee that the JTAC frequencies are [b]910.1[/b] to [b]910.5[/b], giving a total of 5 JTAC channels.[/list]
 [*][color=#800000][b]On-Call Pager Program[/b][/color]
 [list]
 [*]Hand them an On-Call Program Pager (stored in the locker room) & explain the program. The EMR is not obliged to join, so do inform them of this as well. (( [b]Make sure you give them the discord role![/b] ))
@@ -812,8 +807,7 @@ RANK
     { id: "ooc-rei-1", label: "Discord: assign 'EMR Trainee' and 'Employee' roles." },
     {
       id: "ooc-rei-2",
-      label:
-        "TeamSpeak: rename to IC format and assign 'Emergency Medical Services' & '[LSEMS] EMR' server groups.",
+      label: "Discord: assign 'Emergency Medical Services' and '[LSEMS] EMR' roles if they are not set by the role assignment above.",
     },
     {
       id: "ooc-rei-3",

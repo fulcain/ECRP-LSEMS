@@ -82,12 +82,6 @@ export const INTRODUCTION_SPOKEN = [
 
   "Inside Paleto MD you can clock on, and the plastic surgeon is in there too. If you're clocking on at Paleto, park at Paleto Parking - it's not safe to park at the MD itself.",
 
-  "## TeamSpeak (OOC)",
-
-  "(( Jump into TeamSpeak 3 and make sure your IC name is correct. Put your unit tag before your name, like `[Z-11] John Doe`. ))",
-
-  "(( Two hard rules - you may NOT be on the TeamSpeak server while playing a criminal character - that leads to server punishments. And remember - on VOIP we say 'Zulu', in chat we type `Z`. ))",
-
   "## OOC corruption and faction commands (OOC)",
 
   "(( LSEMS has an OOC corruption ruling - we don't require IC evidence to terminate for any illegal activities. ))",

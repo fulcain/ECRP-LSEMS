@@ -421,12 +421,6 @@ Inform the EMR that anything acquired from this vending machine is for [b]LSEMS 
 [/list]
 [color=transparent]spacer[/color]
 [color=transparent]spacer[/color]
-[*][color=#800000][b][ooc]TeamSpeak[/ooc][/b][/color]
-[list][*][ooc]Ask them to join [b]TeamSpeak 3[/b], and make sure they have the correct IC name.[/ooc]
-[*][ooc]Explain to them how to set up the unit tag before their name in TeamSpeak, for example [Z-11] John Doe[/ooc]
-[*][ooc][b]Inform the EMR that they may not connect to the TeamSpeak server while on a criminal focused character. Doing so will lead to server punishments.[/b] [/ooc]
-[*][ooc]Explain that if we use VOIP we say, Zulu, if we use text chat we type Z instead of Zulu.[/ooc]
-[/list]
 [*][color=#800000][b][ooc]OOC Corruption + Faction Commands[/ooc][/b][/color][list]
 [*][ooc]Explain the OOC corruption ruling that LSEMS has in place to the EMR. Inform them we don't require IC evidence to terminate due to any illegal activities.[/ooc]
 [*][ooc]Explain that faction-related commands are a privilege and not given out to mess around with. Explain that they cannot use the commands without first doing the applicable roleplay before using the command. If found to have done so it can lead to Faction repercussions and/or server punishments.[/ooc]
@@ -961,9 +955,8 @@ Second reverse lap [b]Code 3[/b]
 [*]Inform the EMR on how it's used.
 [*]Explain that the highest rank on shift would be the unit to join JTAC if asked.
 [*]Make sure they understand respect and professionalism is [b]utterly[/b] important here.
-[ooc]Make sure you explain and they understand [b]JTAC is IC and they have to use IC VOIP[/b] as well when talking on it.
-Additionally, explain that using the TS VOIP without using in-game VOIP at the same time can lead to a server punishment[/ooc]
-[*][ooc]Inform the EMR that they can bind [c]P[/c] to Push To Talk in Teamspeak. Provided that you are [b]tabbed in[/b] to FiveM, pressing [c]P[/c] will use the "talk on phone" key as JTAC.[/ooc]
+[ooc]Make sure you explain and they understand [b]JTAC is IC and they have to use IC VOIP[/b] as well when talking on it.[/ooc]
+[*]Tell the EMR that the JTAC frequencies are [b]910.1[/b] to [b]910.5[/b], giving a total of 5 JTAC channels.
 [*][ooc]If the EMR does not use VOIP or do not wish to use VOIP, they [b]are not expected to[/b]; however having someone who can use VOIP who is on duty join JTAC with them would be ideal. 
 Non-VOIP individuals may use "/dep MD to JTAC-1 [msg]" or "/dep MD to SD/PD [unit]" to communicate with JTAC.[/ooc]
 [/list]
@@ -1174,7 +1167,7 @@ Rank
 [*]Inform the EMR that the leadership team may take them aside for an [b]informal[/b] 1 on 1 session around every 3 months. These are just a casual conversation to allow them the opportunity to communicate with the Leadership Team.
 [*]Inform the EMR that since they are now an EMT-B they can join divisions.
 [*]Ask them if they have a pager. If not, ask them if they want one. Explain what a pager is and make sure they know how to properly use it! (( Make sure they understand they have to RP pressing it with a simple /me, and check the discord if they have the 'On Call Program' role either way. ))
-[*] (( F4 rank adjustment, Discord, Teamspeak - reference [url=https://gov.eclipse-rp.net/viewtopic.php?t=74487]Section 5 of the Supervisor Handbook[/url] for detailed guidance for TeamSpeak while the person is offline. ))
+[*] (( F4 rank adjustment, Discord - reference [url=https://gov.eclipse-rp.net/viewtopic.php?t=74487]Section 5 of the Supervisor Handbook[/url] for detailed guidance while the person is offline. ))
 [*]Post the certification paperwork in the EMR Student Profile, and fill it out.
 [*]Archive the EMR Student Profile.
 [*] Update the [url=https://gov.eclipse-rp.net/viewtopic.php?t=9497]Staff Roster[/url] - You only need to adjust the Staff Roster (second post), copy the EMR entry into the appropriate numerical slot in the EMT section, edit the rank from "EMR" to "EMT-B"
@@ -1563,8 +1556,7 @@ Rank
     },
     {
       id: "ooc-rec-1",
-      label:
-        "On TeamSpeak, set the user's name to IC format and assign both 'Emergency Medical Services' and '[LSEMS] EMR' server groups.",
+      label: "On Discord, assign the 'Emergency Medical Services' and '[LSEMS] EMR' server-group roles if they are not set by the role assignment above.",
     },
     {
       id: "ooc-rec-2",

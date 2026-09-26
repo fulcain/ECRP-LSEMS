@@ -184,9 +184,5 @@ export const emtpWorkflow: ContractWorkflow = {
       id: "ooc-emtp-0",
       label: "Discord: change the user to the EMT-P role and remove the previous role.",
     },
-    {
-      id: "ooc-emtp-1",
-      label: "TeamSpeak: change the user to the EMT-P server group and remove the previous one.",
-    },
   ],
 };

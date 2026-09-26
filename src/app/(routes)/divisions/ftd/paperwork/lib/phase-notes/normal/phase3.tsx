@@ -352,23 +352,10 @@ export function Phase3Notes() {
         <Item>
           Make sure they understand respect and professionalism is{" "}
           <Bold>utterly</Bold> important here.
-          <div className="mt-1">
-            <OOC>
-              Make sure you explain and they understand{" "}
-              <Bold>JTAC is IC and they have to use IC VOIP</Bold> as well
-              when talking on it. Additionally, explain that using the TS
-              VOIP without using in-game VOIP at the same time can lead to
-              a server punishment.
-            </OOC>
-          </div>
         </Item>
         <Item>
-          <OOC>
-            Inform the EMR that they can bind <Command>P</Command> to Push To
-            Talk in Teamspeak. Provided that you are <Bold>tabbed in</Bold>{" "}
-            to FiveM, pressing <Command>P</Command> will use the
-            &ldquo;talk on phone&rdquo; key as JTAC.
-          </OOC>
+          Tell the EMR that the JTAC frequencies are <Bold>910.1</Bold> to{" "}
+          <Bold>910.5</Bold>, giving a total of 5 JTAC channels.
         </Item>
         <Item>
           <OOC>

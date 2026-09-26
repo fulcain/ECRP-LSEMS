@@ -87,9 +87,9 @@ export const PHASE3_SPOKEN = [
 
   "Jointed Tac - JTAC - I'll explain what it is and how it's used. The highest rank on shift is the unit that joins JTAC if asked.",
 
-  "Respect and professionalism are UTTERLY important here. (( JTAC is IC, so it's in-game VOIP. Using TS VOIP without in-game VOIP at the same time can lead to a server punishment. ))",
+  "Respect and professionalism are UTTERLY important here. (( JTAC is IC, so it's in-game VOIP. ))",
 
-  "(( You can bind `P` as push-to-talk in TeamSpeak. Tabbed into FiveM, pressing `P` uses the 'talk on phone' key as JTAC. ))",
+  "The JTAC frequencies are 910.1 to 910.5 - five channels in total.",
 
   "(( No VOIP? That's fine - not expected. But having someone on duty who can VOIP join JTAC with you is ideal. Otherwise - `/dep MD to JTAC-1 [msg]` or `/dep MD to SD/PD [unit]`. ))",
 

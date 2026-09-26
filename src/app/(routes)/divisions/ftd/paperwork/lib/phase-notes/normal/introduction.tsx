@@ -316,37 +316,6 @@ export function IntroductionNotes() {
           </Item>
         </Category>
 
-        <Category title="TeamSpeak (OOC)">
-          <Item>
-            <OOC>
-              Ask them to join <Bold>TeamSpeak 3</Bold>, and make sure they have
-              the correct IC name.
-            </OOC>
-          </Item>
-          <Item>
-            <OOC>
-              Explain to them how to set up the unit tag before their name in
-              TeamSpeak, for example{" "}
-              <Tinted tone="amber">[Z-11] John Doe</Tinted>.
-            </OOC>
-          </Item>
-          <Item>
-            <OOC>
-              <Bold>
-                Inform the EMR that they may not connect to the TeamSpeak
-                server while on a criminal focused character. Doing so will
-                lead to server punishments.
-              </Bold>
-            </OOC>
-          </Item>
-          <Item>
-            <OOC>
-              Explain that if we use VOIP we say, Zulu, if we use VOIP we type,{" "}
-              <Tinted tone="amber">Z</Tinted> instead of Zulu.
-            </OOC>
-          </Item>
-        </Category>
-
         <Category title="OOC Corruption + Faction Commands (OOC)">
           <Item>
             <OOC>

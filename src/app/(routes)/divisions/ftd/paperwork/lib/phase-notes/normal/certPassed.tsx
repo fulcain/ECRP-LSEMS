@@ -132,12 +132,11 @@ export function CertPassedNotes() {
             </Item>
             <Item>
               <Aside>
-                (( F4 rank adjustment, Discord, Teamspeak - reference{" "}
+                (( F4 rank adjustment, Discord - reference{" "}
                 <BbLink href="https://gov.eclipse-rp.net/viewtopic.php?t=74487">
                   Section 5 of the Supervisor Handbook
                 </BbLink>{" "}
-                for detailed guidance for TeamSpeak while the person is
-                offline. ))
+                for detailed guidance while the person is offline. ))
               </Aside>
             </Item>
             <Item>

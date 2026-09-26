@@ -133,17 +133,13 @@ export const REINSTATEMENT_PHASE1_SPOKEN = [
 
   "Ask twice rather than get IA'd for stealing a 10-15.",
 
-  "## Teamspeak (OOC)",
-
-  "(( Join TeamSpeak 3 and make sure you're in the Zulu unit - TS info - IP: ts.eclipse-rp.net ; Password: ecrpsagov. ))",
-  "(( Set up the unit tag before your name, for example [Z-11]. ))",
-  "(( If we use VOIP we say Zulu, if we use chat we type Z. ))",
-
   "## Jointed Tac",
 
-  "JTAC - what it is, and how it's used. (( JTAC is IC - in-game VOIP required. TS VOIP without in-game VOIP can be a server punishment. ))",
+  "JTAC - what it is, and how it's used. (( JTAC is IC - in-game VOIP required. ))",
 
   "Respect and professionalism are UTTERLY important here.",
+
+  "The JTAC frequencies are 910.1 to 910.5 - five channels in total.",
 
   "## On-call pager program",
 

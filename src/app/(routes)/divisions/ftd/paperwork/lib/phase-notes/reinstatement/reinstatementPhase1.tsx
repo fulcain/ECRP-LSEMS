@@ -461,29 +461,6 @@ export function ReinstatementPhase1Notes() {
         </BulletList>
       </Category>
 
-      <Category title="((Teamspeak))">
-        <BulletList>
-          <Item>
-            <OOC>
-              Ask them to join TeamSpeak 3, make sure they are in
-            Zulu unit <Em>TS info - IP: ts.eclipse-rp.net ; Password: ecrpsagov</Em>
-          </OOC>.
-        </Item>
-          <Item>
-            <OOC>
-              Explain to them how to set up the unit tag before
-              their name, for example,{" "}
-            <Tinted tone="amber">[Z-11]</Tinted>
-          </OOC>.
-        </Item>
-          <Item>
-            <OOC>
-            Explain that if we use VOIP we say Zulu, if we use
-            chat we type Z</OOC>.
-        </Item>
-        </BulletList>
-      </Category>
-
       <Category title="Jointed Tac">
         <BulletList>
           <Item>
@@ -494,14 +471,17 @@ export function ReinstatementPhase1Notes() {
             <OOC>
               Make sure you explain and they understand{" "}
               <Bold>JTAC is IC and they have to use IC VOIP</Bold>{" "}
-              as well when talking on it. Additionally, explain
-              that using the TS VOIP without using in game VOIP at
-              the same time can lead to a server punishment.
+              as well when talking on it.
             </OOC>
           </Item>
           <Item>
             Make sure they understand respect and professionalism
             is <Bold>utterly</Bold> important here.
+          </Item>
+          <Item>
+            Tell the reinstatee that the JTAC frequencies are{" "}
+            <Bold>910.1</Bold> to <Bold>910.5</Bold>, giving a total of 5
+            JTAC channels.
           </Item>
         </BulletList>
       </Category>
