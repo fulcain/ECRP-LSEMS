@@ -19,30 +19,6 @@ import {
 } from "@/app/helpers/forumHandoff";
 import { Button } from "@/components/ui/button";
 
-/** Where a prepared post says it belongs - the same three cases the extension fills. */
-function describeTarget(url: string): string {
-  if (!url) return "any editor you open";
-  try {
-    const parsed = new URL(url);
-    const params = parsed.searchParams;
-    if (params.get("mode") === "compose") return "the PM composer";
-    if (params.get("f")) return `section f=${params.get("f")}`;
-    if (params.get("t")) return `topic t=${params.get("t")}`;
-    return parsed.pathname;
-  } catch {
-    return url;
-  }
-}
-
-function describeAge(createdAt: number): string {
-  if (!createdAt) return "";
-  const minutes = Math.round((Date.now() - createdAt) / 60000);
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes} min ago`;
-  const hours = Math.round(minutes / 60);
-  return hours < 24 ? `${hours} h ago` : `${Math.round(hours / 24)} d ago`;
-}
-
 type Props = {
   /** From the archive itself, so the page cannot promise a version it lacks. */
   version: string;
@@ -274,36 +250,6 @@ export function ExtensionInstallCard({
                 "Looking for the extension…"
               )}
             </p>
-
-            {/* The live half of the diagnosis: what the extension is holding. */}
-            {status && (
-              <p className="mt-1 text-xs">
-                {status.pending ? (
-                  <>
-                    <span className="text-muted-foreground">
-                      Last prepared post:{" "}
-                    </span>
-                    <span className="font-medium text-foreground">
-                      {status.pending.subject || "(no title)"}
-                    </span>{" "}
-                    <span className="text-muted-foreground">
-                      → {describeTarget(status.pending.url)}
-                      {status.pending.feature
-                        ? `, from ${status.pending.feature}`
-                        : ""}
-                      {status.pending.createdAt
-                        ? ` · ${describeAge(status.pending.createdAt)}`
-                        : ""}
-                    </span>
-                  </>
-                ) : (
-                  <span className="text-muted-foreground">
-                    Nothing handed over yet - press any Copy or Copy &amp; Open
-                    button in a tool and this line will name the post it sent.
-                  </span>
-                )}
-              </p>
-            )}
           </div>
           <button
             type="button"
@@ -320,74 +266,122 @@ export function ExtensionInstallCard({
       </div>
 
       {/* With a store listing this is the fallback; without one it is the install. */}
-      <section
-        className={
-          storeUrl ? "mt-5 rounded-xl border border-border bg-surface-hover/30 p-3" : undefined
-        }
-      >
-        {storeUrl && (
-          <h3 className="text-xs font-medium text-foreground">
-            Installing by hand instead (another browser, or if the store is
-          blocked)
-          </h3>
-        )}
+      <section className="mt-5 rounded-xl border border-border bg-surface-hover/30 p-4">
+        <h3 className="text-sm font-semibold text-foreground">
+          {storeUrl
+            ? "Installing by hand instead"
+            : "How to install it - once, in six steps"}
+        </h3>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {storeUrl
+            ? "For another browser, or if the store is blocked."
+            : "Chrome and Edge load an unpacked folder, so the download gets unzipped on your computer and then pointed at from the extensions page. Nothing is uploaded anywhere and nothing else has to be installed first."}
+        </p>
 
-      <ol
-        className={
-          storeUrl ? "mt-3 space-y-3 text-sm" : "mt-5 space-y-3 text-sm"
-        }
-      >
-        <Step index={1} title="Download and unzip">
-          Chrome loads a <span className="font-medium">folder</span>, not a zip,
-          so unzip it somewhere permanent - the extension is read from that
-          folder every time the browser starts.
-        </Step>
+        <ol className="mt-4 space-y-3 text-sm">
+          <Step index={1} title="Download the zip">
+            Press the download button above - you get{" "}
+            <code className="font-mono text-xs">lsems-forum-poster.zip</code>.
+          </Step>
 
-        <Step index={2} title="Open the extensions page">
-          <code className="rounded-md bg-surface-hover px-1.5 py-0.5 font-mono text-xs text-foreground">
-            {EXTENSIONS_PAGE}
-          </code>{" "}
-          <button
-            type="button"
-            onClick={copyExtensionsPage}
-            className="ml-1 inline-flex cursor-pointer items-center gap-1 rounded-md border border-border bg-surface-raised px-1.5 py-0.5 text-[10px] text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
-          >
-            <Copy className="h-3 w-3" />
-            Copy
-          </button>{" "}
-          - browsers refuse to open it from a link, so paste it in the address
-          bar. On Edge it is{" "}
-          <code className="font-mono text-xs">edge://extensions</code>.
-        </Step>
+          <Step index={2} title="Unzip the downloaded file">
+            Unzipping gives you one folder called{" "}
+            <code className="font-mono text-xs">lsems-forum-poster</code>. Put
+            it somewhere permanent - Documents, not Downloads - and leave its
+            contents alone: the browser reads that folder from disk every time
+            it starts, so deleting, renaming or moving it later turns the
+            extension off.
+          </Step>
 
-        <Step index={3} title="Turn on Developer mode">
-          The toggle in the top-right corner of that page.
-        </Step>
+          <Step index={3} title="Open the extensions page">
+            <code className="rounded-md bg-surface-hover px-1.5 py-0.5 font-mono text-xs text-foreground">
+              {EXTENSIONS_PAGE}
+            </code>{" "}
+            <button
+              type="button"
+              onClick={copyExtensionsPage}
+              className="ml-1 inline-flex cursor-pointer items-center gap-1 rounded-md border border-border bg-surface-raised px-1.5 py-0.5 text-[10px] text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
+            >
+              <Copy className="h-3 w-3" />
+              Copy
+            </button>{" "}
+            - browsers refuse to open this one from a link, so paste it into the
+            address bar. On Edge the same page is{" "}
+            <code className="font-mono text-xs">edge://extensions</code>.
+          </Step>
 
-        <Step index={4} title="Load unpacked">
-          Pick the unzipped{" "}
-          <code className="font-mono text-xs">lsems-forum-poster</code> folder.
-          The card that appears is the extension.
-        </Step>
+          <Step index={4} title="Turn on Developer mode">
+            It is the toggle in the top-right corner of that page. Until it is
+            on, the{" "}
+            <span className="font-medium text-foreground">Load unpacked</span>{" "}
+            button is not on the page at all - this is the step people skip.
+          </Step>
 
-        <Step index={5} title="Try it">
-          Open any tool with a Copy &amp; Open button, press it, and the GOV page
-          it opens should already contain your post - title, recipients and all -
-          with the cursor waiting in it.
-        </Step>
-      </ol>
+          <Step index={5} title="Press Load unpacked, and pick that folder">
+            Choose the{" "}
+            <code className="font-mono text-xs">lsems-forum-poster</code> folder
+            from step 2 - the folder that directly contains{" "}
+            <code className="font-mono text-xs">manifest.json</code>, not the one
+            above it. A card appears in the list: that is the extension
+            installed and running.
+          </Step>
+        </ol>
 
-      <p className="mt-4 rounded-xl border border-border bg-surface-hover/40 p-3 text-xs text-muted-foreground">
-        <span className="font-medium text-foreground">
-          {storeUrl ? "Updating a hand install:" : "Updating it:"}
-        </span>{" "}
-        download the zip again and unzip over the old folder, then press the
-        reload arrow on the extension&apos;s card - a store install updates
-        itself. Firefox works too (
-        <code className="font-mono">about:debugging</code> → Load Temporary
-        Add-on → pick <code className="font-mono">manifest.json</code>), but its
-        manifest needs a gecko id first - ask before relying on it.
-      </p>
+        <p className="mt-3 text-xs text-muted-foreground">
+          From then on, every Copy &amp; Open button hands your post to the GOV
+          page it opens. The box at the top of this page switches to{" "}
+          <span className="font-medium text-foreground">
+            Running in this browser
+          </span>{" "}
+          once the extension answers - press{" "}
+          <span className="font-medium">Check again</span> if this tab was
+          already open.
+        </p>
+
+        <p className="mt-4 rounded-xl border border-border bg-surface-hover/40 p-3 text-xs text-muted-foreground">
+          <span className="font-medium text-foreground">
+            {storeUrl ? "Updating a hand install:" : "Updating it:"}
+          </span>{" "}
+          download the zip again, unzip it over the old folder, then press the
+          reload arrow on the extension&apos;s card.
+        </p>
+      </section>
+
+      <section className="panel p-5">
+        <h3 className="text-sm font-semibold text-foreground">What about Firefox?</h3>
+        <p className="mt-2 text-sm text-muted-foreground">
+          The same zip works in Firefox - the manifest now carries the id Firefox
+          requires, and Firefox loads the background script the manifest also
+          names. The difference is how it installs: Firefox signs everything it
+          keeps permanently, so without a store listing the load is
+          <span className="font-medium text-foreground"> temporary</span> -
+          the extension disappears when the browser closes and has to be loaded
+          again next time.
+        </p>
+        <ol className="mt-3 space-y-2 text-sm text-muted-foreground">
+          <li className="flex gap-2">
+            <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-muted-foreground" />
+            <span>
+              Steps 1 and 2 above are the same: download the zip and unzip the
+              folder.
+            </span>
+          </li>
+          <li className="flex gap-2">
+            <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-muted-foreground" />
+            <span>
+              Open <code className="font-mono text-xs">about:debugging</code>,
+              click <span className="font-medium text-foreground">This Firefox</span>,
+              then <span className="font-medium text-foreground">Load Temporary Add-on…</span>
+              {" "}and pick the folder&apos;s{" "}
+              <code className="font-mono text-xs">manifest.json</code>.
+            </span>
+          </li>
+        </ol>
+        <p className="mt-3 text-xs text-muted-foreground">
+          For a permanent Firefox install the extension would need to go through
+          Mozilla&apos;s free add-on review - say the word and it can be the next
+          store listing. Until then, Chrome and Edge install it permanently.
+        </p>
       </section>
     </section>
   );
