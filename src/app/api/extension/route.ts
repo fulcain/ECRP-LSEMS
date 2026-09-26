@@ -23,7 +23,9 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const files = await readExtensionFiles();
+    // The member download targets Chrome/Edge: the manifest without the
+    // Firefox-only keys, so Chrome's loader has nothing to warn about.
+    const files = await readExtensionFiles({ chromium: true });
     if (files.length === 0) {
       // A zip of nothing downloads as a corrupt archive; say so instead.
       return new Response(

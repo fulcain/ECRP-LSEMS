@@ -25,7 +25,33 @@ export type ExtensionPackOptions = {
   prefix?: string;
   /** Drop the folder's own markdown: Chrome never loads a `.md`. */
   runtimeOnly?: boolean;
+  /** Chrome target: strips the Firefox-only manifest keys Chrome warns about. */
+  chromium?: boolean;
 };
+
+/**
+ * The manifest keys Firefox needs and Chrome only tolerates with a warning.
+ * `background.scripts` in an MV3 manifest reads as an error in Chrome's loader
+ * ("requires manifest version of 2 or lower") even though the extension then
+ * loads fine on the service worker - a warning that reads as a failure to
+ * anyone following the install steps. The download route ships the Chromium
+ * manifest, the AMO upload ships the full one; both browsers run the same code.
+ */
+const FIREFOX_ONLY_MANIFEST_KEYS = new Set(["browser_specific_settings"]);
+
+function chromiumManifest(manifest: { [key: string]: unknown }): {
+  [key: string]: unknown;
+} {
+  const next: { [key: string]: unknown } = {};
+  for (const [key, value] of Object.entries(manifest)) {
+    if (FIREFOX_ONLY_MANIFEST_KEYS.has(key)) continue;
+    next[key] =
+      key === "background"
+        ? { service_worker: (value as { service_worker?: string }).service_worker }
+        : value;
+  }
+  return next;
+}
 
 /**
  * Listing paperwork, not extension code - `extension/store/` holds the logo and
@@ -55,7 +81,15 @@ async function walk(
       if (dir === EXTENSION_DIR && SKIP_DIRECTORIES.has(item.name)) continue;
       await walk(full, `${name}/`, options, into);
     } else if (!(options.runtimeOnly && item.name.endsWith(".md"))) {
-      into.push({ name, data: await readFile(full) });
+      if (options.chromium && item.name === "manifest.json") {
+        const parsed = JSON.parse(await readFile(full, "utf8")) as {
+          [key: string]: unknown;
+        };
+        const text = JSON.stringify(chromiumManifest(parsed), null, 2) + "\n";
+        into.push({ name, data: new TextEncoder().encode(text) });
+      } else {
+        into.push({ name, data: await readFile(full) });
+      }
     }
   }
 }

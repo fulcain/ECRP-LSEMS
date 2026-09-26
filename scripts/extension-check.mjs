@@ -309,6 +309,26 @@ const flat = (await readExtensionFiles({ prefix: "", runtimeOnly: true })).map(
   (file) => file.name,
 );
 const nested = (await readExtensionFiles()).map((file) => file.name);
+const chromiumPack = await readExtensionFiles({ chromium: true });
+const chromiumManifestText = JSON.parse(
+  new TextDecoder().decode(chromiumPack.find((f) => f.name.endsWith("manifest.json")).data),
+);
+const fullManifest = JSON.parse(readFileSync("extension/manifest.json", "utf8"));
+expect(
+  "the chromium download carries no gecko settings",
+  chromiumManifestText.browser_specific_settings,
+  undefined,
+);
+expect(
+  "the chromium download names only the service worker",
+  chromiumManifestText.background,
+  { service_worker: fullManifest.background.service_worker },
+);
+expect(
+  "the chromium download keeps the version",
+  chromiumManifestText.version,
+  fullManifest.version,
+);
 
 // The Web Store rejects a nested folder; it does not care where in the file
 // order the manifest sits, so this asserts the shape, not a position.

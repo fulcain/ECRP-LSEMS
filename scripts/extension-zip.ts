@@ -28,8 +28,13 @@ const ARCHIVE_NAME = "lsems-forum-poster";
 
 async function main() {
   const version = await readExtensionVersion();
-  // Flat and runtime-only: the docs in the folder are for us, not for Chrome.
-  const files = await readExtensionFiles({ prefix: "", runtimeOnly: true });
+  // Flat, runtime-only, and Chromium-shaped: the store manifest carries no
+  // Firefox-only keys, for the same reason the download route strips them.
+  const files = await readExtensionFiles({
+    prefix: "",
+    runtimeOnly: true,
+    chromium: true,
+  });
   const names = files.map((file) => file.name);
 
   if (!names.includes("manifest.json")) {

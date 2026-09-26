@@ -181,12 +181,13 @@ document.querySelector('input[name="username_list"]') // PM composer only
 ```
 
 **App origins.** `content_scripts[0].matches` in `manifest.json` lists where the
-app is served from: localhost on any port, `*.vercel.app` (the deploy and every
-preview) and `*.ecrplsems.com`. A bridge on an origin that is not listed never
-runs, the handoff silently does nothing, and posts fill by hand as they used to -
-so a new domain belongs in that list **before** wondering why nothing happens.
-The Browser Extension page in the app reports whether the bridge is alive in the
-browser you are looking at, which is the fastest way to tell the two apart.
+app is served from: localhost on any port and `*.vercel.app` (the production
+alias `ecrp-lsems.vercel.app` and every preview). A bridge on an origin that is
+not listed never runs, the handoff silently does nothing, and posts fill by hand
+as they used to - so a new domain belongs in that list **before** wondering why
+nothing happens. The Browser Extension page in the app reports whether the
+bridge is alive in the browser you are looking at, which is the fastest way to
+tell the two apart.
 
 ## Releasing it
 
