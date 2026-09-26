@@ -955,7 +955,6 @@ Second reverse lap [b]Code 3[/b]
 [*]Inform the EMR on how it's used.
 [*]Explain that the highest rank on shift would be the unit to join JTAC if asked.
 [*]Make sure they understand respect and professionalism is [b]utterly[/b] important here.
-[ooc]Make sure you explain and they understand [b]JTAC is IC and they have to use IC VOIP[/b] as well when talking on it.[/ooc]
 [*]Tell the EMR that the JTAC frequencies are [b]910.1[/b] to [b]910.5[/b], giving a total of 5 JTAC channels.
 [*][ooc]If the EMR does not use VOIP or do not wish to use VOIP, they [b]are not expected to[/b]; however having someone who can use VOIP who is on duty join JTAC with them would be ideal. 
 Non-VOIP individuals may use "/dep MD to JTAC-1 [msg]" or "/dep MD to SD/PD [unit]" to communicate with JTAC.[/ooc]

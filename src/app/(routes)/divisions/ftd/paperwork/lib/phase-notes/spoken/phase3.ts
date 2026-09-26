@@ -87,7 +87,7 @@ export const PHASE3_SPOKEN = [
 
   "Jointed Tac - JTAC - I'll explain what it is and how it's used. The highest rank on shift is the unit that joins JTAC if asked.",
 
-  "Respect and professionalism are UTTERLY important here. (( JTAC is IC, so it's in-game VOIP. ))",
+  "Respect and professionalism are UTTERLY important here.",
 
   "The JTAC frequencies are 910.1 to 910.5 - five channels in total.",
 
