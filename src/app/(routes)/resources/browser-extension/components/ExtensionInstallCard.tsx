@@ -136,7 +136,9 @@ export function ExtensionInstallCard({
                 </a>
               </Button>
               <Button asChild variant="outline" size="sm">
-                <a href="/api/extension" download>
+                {/* A query string keeps a cached redirect from ever answering
+                    the download: the route is dynamic, the cache is the enemy. */}
+                <a href={`/api/extension?t=${Date.now()}`} download>
                   <Download className="mr-2 h-3.5 w-3.5" />
                   Or install the zip by hand
                 </a>
@@ -148,7 +150,7 @@ export function ExtensionInstallCard({
               size="lg"
               className="border-emerald-600/50 bg-emerald-600 text-foreground transition-all duration-200 hover:scale-[1.02] hover:border-emerald-500 hover:bg-emerald-500 active:scale-[0.98]"
             >
-              <a href="/api/extension" download>
+              <a href={`/api/extension?t=${Date.now()}`} download>
                 <Download className="mr-2 h-4 w-4" />
                 Download extension
               </a>

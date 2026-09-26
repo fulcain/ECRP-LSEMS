@@ -21,6 +21,19 @@ import {
 
 export const dynamic = "force-dynamic";
 
+/** The failure answer. A named text file, so a failed download can never be
+ *  mistaken for a broken zip - and never saved as a bare "extension.txt". */
+function unavailable(message: string) {
+  return new Response(message, {
+    status: 503,
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Content-Disposition": 'attachment; filename="extension-unavailable.txt"',
+      "Cache-Control": "no-store",
+    },
+  });
+}
+
 export async function GET() {
   try {
     // The member download targets Chrome/Edge: the manifest without the
@@ -28,9 +41,8 @@ export async function GET() {
     const files = await readExtensionFiles({ chromium: true });
     if (files.length === 0) {
       // A zip of nothing downloads as a corrupt archive; say so instead.
-      return new Response(
+      return unavailable(
         "The extension folder is not available in this deployment.",
-        { status: 503 },
       );
     }
     const archive = createZip(files);
@@ -51,9 +63,8 @@ export async function GET() {
     });
   } catch (error) {
     console.error("[api/extension] could not package the extension:", error);
-    return new Response(
+    return unavailable(
       "The extension folder is not available in this deployment.",
-      { status: 503 },
     );
   }
 }
