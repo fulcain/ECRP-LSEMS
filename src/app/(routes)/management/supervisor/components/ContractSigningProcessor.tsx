@@ -9,7 +9,7 @@ import { WorkflowStepsList } from "./contract/WorkflowStepsList";
 import { TeamSpeakCredentialsCard } from "./TeamSpeakCredentialsCard";
 import type { ContractTab } from "./contract/types";
 import { workflowByValue } from "./contract/workflows";
-import { useMemo, useState, useEffect, useRef } from "react";
+import { useMemo, useEffect, useRef } from "react";
 import { format } from "date-fns";
 import { Bounce, ToastContainer } from "react-toastify";
 
@@ -61,7 +61,10 @@ export function ContractSigningProcessor() {
     "supervisor-contract-applicant-name",
     "",
   );
-  const [title, setTitle] = useState<ApplicantTitle>("Mr.");
+  const [title, setTitle] = useLocalStorage<ApplicantTitle>(
+    "supervisor-contract-honorific",
+    "Mr.",
+  );
   const [phoneNumber, setPhoneNumber] = useLocalStorage<string>(
     "supervisor-contract-phone-number",
     "",
@@ -92,7 +95,18 @@ export function ContractSigningProcessor() {
       return "";
     }
   }, [personnelFileLink]);
-  const [dateHired, setDateHired] = useState<Date | undefined>(() => getDefaultDateHired());
+  // An ISO string, because JSON has no Date: a picked date survives, and so does
+  // the "today" default when nothing was ever picked.
+  const [dateHiredIso, setDateHiredIso] = useLocalStorage<string>(
+    "supervisor-contract-date-hired",
+    getDefaultDateHired().toISOString(),
+  );
+  const dateHired = useMemo(() => {
+    const parsed = new Date(dateHiredIso);
+    return Number.isNaN(parsed.getTime()) ? getDefaultDateHired() : parsed;
+  }, [dateHiredIso]);
+  const setDateHired = (next: Date | undefined) =>
+    setDateHiredIso((next ?? getDefaultDateHired()).toISOString());
   const [manualDate, setManualDate] = useLocalStorage<string>(
     "supervisor-contract-manual-date-string",
     format(new Date(), "dd/MMM/yyyy").toUpperCase(),

@@ -28,9 +28,10 @@ import {
   FileText,
   AlertTriangle,
 } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { meetingTemplates, MeetingType } from "@/app/templates/meetings";
+import { forumPostToast, handOffForumPost } from "@/app/helpers/forumHandoff";
 import Link from "next/link";
 
 export function MeetingAgendaProcessor() {
@@ -47,10 +48,30 @@ export function MeetingAgendaProcessor() {
     "supervisor"
   );
 
-  const [date, setDate] = useState<Date | undefined>(undefined);
-  const [time, setTime] = useState<string>("");
-  const [output, setOutput] = useState("");
-  const [subjectLine, setSubjectLine] = useState("");
+  // The picked date and time are kept: an agenda is usually written the day
+  // before it is posted, and a refresh should not cost the member the meeting it
+  // already booked. Stored as an ISO string because JSON has no Date, and read
+  // back as a Date, so the picker and the local-date reads behave exactly as
+  // they do with a freshly picked date.
+  const [dateIso, setDateIso] = useLocalStorage<string>(
+    "supervisor-meeting-date",
+    "",
+  );
+  const [time, setTime] = useLocalStorage<string>("supervisor-meeting-time", "");
+  const date = useMemo(() => {
+    if (!dateIso) return undefined;
+    const parsed = new Date(dateIso);
+    return Number.isNaN(parsed.getTime()) ? undefined : parsed;
+  }, [dateIso]);
+  const setDate = (next: Date | undefined) =>
+    setDateIso(next ? next.toISOString() : "");
+  // The generated draft is kept too: the inputs above restore with it, so the
+  // page comes back to the agenda the member had finished, not an empty form.
+  const [output, setOutput] = useLocalStorage<string>("supervisor-meeting-body", "");
+  const [subjectLine, setSubjectLine] = useLocalStorage<string>(
+    "supervisor-meeting-subject",
+    "",
+  );
   const [copied, setCopied] = useState(false);
   const [copiedSubject, setCopiedSubject] = useState(false);
 
@@ -138,20 +159,40 @@ export function MeetingAgendaProcessor() {
     toast.success("Meeting agenda generated successfully!");
   };
 
+  //
+  // Every button in this section hands over the same whole post: the generated
+  // subject line *and* the agenda, aimed at this meeting's own section. The
+  // clipboard gets only what the button names - the subject line, or the body -
+  // but the extension always gets both, so the posting page fills both fields
+  // whichever one the member pressed.
+  const handOffAgenda = () => {
+    if (!output) return false;
+    return handOffForumPost(
+      {
+        subject: subjectLine,
+        url: activeTemplate?.forumUrl,
+        feature: "the meeting agenda generator",
+      },
+      output,
+    );
+  };
+
   const handleCopy = () => {
     if (!output) return;
+    const handedOff = handOffAgenda();
     navigator.clipboard.writeText(output).then(() => {
       setCopied(true);
-      toast.success("BBCode copied to clipboard!");
+      toast.success(forumPostToast(handedOff, "BBCode copied to clipboard!"));
       setTimeout(() => setCopied(false), 2000);
     });
   };
 
   const handleCopySubject = () => {
     if (!subjectLine) return;
+    const handedOff = handOffAgenda();
     navigator.clipboard.writeText(subjectLine).then(() => {
       setCopiedSubject(true);
-      toast.success("Subject line copied!");
+      toast.success(forumPostToast(handedOff, "Subject line copied!"));
       setTimeout(() => setCopiedSubject(false), 2000);
     });
   };
@@ -379,9 +420,14 @@ export function MeetingAgendaProcessor() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => {
+                  const handedOff = handOffAgenda();
                   navigator.clipboard.writeText(output).then(() => {
                     setCopied(true);
-                    toast.success("BBCode copied! Opening forum...");
+                    toast.success(
+                      handedOff
+                        ? "BBCode copied - press Fill on the meeting page to put it in."
+                        : "BBCode copied! Opening forum...",
+                    );
                     setTimeout(() => setCopied(false), 2000);
                   });
                 }}

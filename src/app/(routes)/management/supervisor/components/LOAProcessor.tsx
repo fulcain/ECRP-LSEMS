@@ -5,6 +5,9 @@ import { loaTemplates } from "@/app/templates/loa";
 import { rankOptions } from "@/app/constants/general/ranks";
 import { rankInfo } from "@/app/templates/promotions/rank-info";
 import { copyBBCode } from "@/app/helpers/copyBBCode";
+import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
+import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import { pickPostTarget } from "@/app/helpers/forumHandoff";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -111,25 +114,64 @@ function calculateDays(start: string, end: string): number {
 
 export function LOAProcessor() {
   const { medicCredentials } = useMedic();
-  const [selectedTemplate, setSelectedTemplate] = useState<string>("approved");
-  const [personnelName, setPersonnelName] = useState("");
-  const [title, setTitle] = useState<"Mr." | "Ms.">("Mr.");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [extendedStartDate, setExtendedStartDate] = useState("");
-  const [extendedEndDate, setExtendedEndDate] = useState("");
-  const [startWorkAt, setStartWorkAt] = useState("");
-  const [denialReasons, setDenialReasons] = useState<string[]>([""]);
-  const [loaType, setLoaType] = useState<"LOA" | "ROH">("LOA");
-  const [loaLink, setLoaLink] = useState("");
+  // Everything typed here survives a reload or a browser restart: an LOA is
+  // filled in over a shift, and losing half of it to a refresh is the worst
+  // thing this page can do to someone.
+  const [selectedTemplate, setSelectedTemplate] = useLocalStorage<string>(
+    "supervisor-loa-template",
+    "approved",
+  );
+  const [personnelName, setPersonnelName] = useLocalStorage<string>(
+    "supervisor-loa-name",
+    "",
+  );
+  const [title, setTitle] = useLocalStorage<"Mr." | "Ms.">(
+    "supervisor-loa-honorific",
+    "Mr.",
+  );
+  const [startDate, setStartDate] = useLocalStorage<string>(
+    "supervisor-loa-start-date",
+    "",
+  );
+  const [endDate, setEndDate] = useLocalStorage<string>(
+    "supervisor-loa-end-date",
+    "",
+  );
+  const [extendedStartDate, setExtendedStartDate] = useLocalStorage<string>(
+    "supervisor-loa-extended-start-date",
+    "",
+  );
+  const [extendedEndDate, setExtendedEndDate] = useLocalStorage<string>(
+    "supervisor-loa-extended-end-date",
+    "",
+  );
+  const [startWorkAt, setStartWorkAt] = useLocalStorage<string>(
+    "supervisor-loa-return-date",
+    "",
+  );
+  const [denialReasons, setDenialReasons] = useLocalStorage<string[]>(
+    "supervisor-loa-denial-reasons",
+    [""],
+  );
+  const [loaType, setLoaType] = useLocalStorage<"LOA" | "ROH">(
+    "supervisor-loa-type",
+    "LOA",
+  );
+  // Both links are pasted once and kept: the request topic is where the reply
+  // goes, the personnel file is where the LOA spoiler lives.
+  const [loaLink, setLoaLink] = useLocalStorage<string>(
+    "supervisor-loa-request-link",
+    "",
+  );
   const [quickFill, setQuickFill] = useState("");
   const [quickFillStatus, setQuickFillStatus] = useState<"idle" | "success" | "error">("idle");
 
+  // An expired LOA needs a return-to-work date, so default it to tomorrow - but
+  // never over a date that was already picked, which storage now restores.
   useEffect(() => {
-    if (selectedTemplate === "expired") {
-      setStartWorkAt(getTomorrowUTC());
-    }
-  }, [selectedTemplate]);
+    if (selectedTemplate !== "expired") return;
+    setStartWorkAt((current) => current || getTomorrowUTC());
+  }, [selectedTemplate, setStartWorkAt]);
 
   const handleQuickFill = (value: string) => {
     const trimmedValue = value.trim();
@@ -139,10 +181,11 @@ export function LOAProcessor() {
     }
 
     // LOA titles vary: a rank prefix, "|" or "l" as separator, month numbers
-    // or names in the dates. Find the date range anywhere, then take whatever
-    // precedes it as the rank + name part.
+    // or names in the dates, and each date often sits in brackets
+    // ("[25/SEP/2026] to [09/OCT/2026]"). Find the date range anywhere, then
+    // take the rank + name from the text around it.
     const rangeMatch = trimmedValue.match(
-      /(\d{1,2}\/(?:[A-Za-z]{3}|\d{1,2})\/\d{4})\s*(?:to|-|–|-)\s*(\d{1,2}\/(?:[A-Za-z]{3}|\d{1,2})\/\d{4})/i,
+      /(\d{1,2}\/(?:[A-Za-z]{3}|\d{1,2})\/\d{4})[\s\])}]*?(?:to|until|till|thru|through|-|\u2013|\u2014)[\s\[({]*?(\d{1,2}\/(?:[A-Za-z]{3}|\d{1,2})\/\d{4})/i,
     );
     if (!rangeMatch) {
       setQuickFillStatus("error");
@@ -155,7 +198,11 @@ export function LOAProcessor() {
       return;
     }
 
-    const name = extractName(trimmedValue.slice(0, rangeMatch.index));
+    // The name normally precedes the dates; a few titles put it after them.
+    const rangeStart = rangeMatch.index ?? 0;
+    const name =
+      extractName(trimmedValue.slice(0, rangeStart)) ??
+      extractName(trimmedValue.slice(rangeStart + rangeMatch[0].length));
     if (!name) {
       setQuickFillStatus("error");
       return;
@@ -217,7 +264,7 @@ export function LOAProcessor() {
     return {
       ready: true,
       title: "Personnel profile LOA section ready",
-      hint: 'Paste the snippet into the spoiler tagged "LOA/ROH" in the personnel file.',
+      hint: 'Copy Snippet, then paste it into the "LOA/ROH" spoiler of the member\'s file by hand.',
     };
   }, [loaLink, startDate, endDate]);
 
@@ -261,10 +308,39 @@ export function LOAProcessor() {
     loaLink,
   ]);
 
+  // The member's own request topic, as pasted above: the approval is a reply in
+  // it, so this is both the page to open and the page the extension fills.
+  const requestTopicUrl = loaLink.trim();
+
   const handleCopy = () => {
-    copyBBCode({ bbCodeText: generatedBBCode });
+    copyBBCode({
+      bbCodeText: generatedBBCode,
+      post: {
+        feature: "the LOA processor",
+        url: requestTopicUrl || undefined,
+      },
+    });
   };
 
+  // Same post, but it opens the request topic with it: the extension fills that
+  // topic's quick reply as the page loads, so the reply is written before the
+  // member has scrolled to it.
+  const handleCopyAndOpenRequest = () => {
+    if (!generatedBBCode || !requestTopicUrl) return;
+    copyBBCodeAndOpen({
+      bbCodeText: generatedBBCode,
+      url: requestTopicUrl,
+      post: {
+        feature: "the LOA processor",
+        url: pickPostTarget(requestTopicUrl, null),
+      },
+    });
+  };
+
+  // Copied, never handed over: the personnel file's LOA spoiler has to be edited
+  // by hand in the file's own post, which is an edit page - and there is no post
+  // id to open it with, so anything the extension did there could only replace
+  // the member's file. Plain clipboard copy, pasted into the spoiler.
   const handleCopySnippet = () => {
     copyBBCode({ bbCodeText: personnelSnippet });
   };
@@ -325,7 +401,7 @@ export function LOAProcessor() {
                   setQuickFill(value);
                   handleQuickFill(value);
                 }}
-                placeholder="Rank FirstName LastName | 17/SEP/2026 to 22/SEP/2026"
+                placeholder="Rank FirstName LastName | [25/SEP/2026] to [09/OCT/2026]"
                 className={`border-border bg-surface-hover/50 font-mono text-foreground placeholder:text-muted-foreground focus:border-cyan-500/50 ${
                   quickFillStatus === "success"
                     ? "border-emerald-300/50 dark:border-emerald-500/50"
@@ -348,7 +424,7 @@ export function LOAProcessor() {
                 )}
                 {quickFillStatus === "success"
                   ? "LOA fields filled successfully."
-                  : 'Format not recognized. Use: Rank FirstName LastName | 17/SEP/2026 to 22/SEP/2026.'}
+                  : 'Format not recognized. Use: Rank FirstName LastName | [25/SEP/2026] to [09/OCT/2026].'}
               </p>
             )}
             <p className="mt-2 text-[10px] text-muted-foreground">
@@ -734,41 +810,21 @@ export function LOAProcessor() {
                   type="button"
                   onClick={handleCopySnippet}
                   disabled={!personnelSnippet}
-                  className="whitespace-nowrap rounded-xl border border-blue-300/30 dark:border-blue-500/30 bg-blue-100 dark:bg-blue-500/15 px-4 py-2.5 text-sm font-medium text-blue-700 dark:text-blue-300 transition-all duration-200 hover:scale-[1.02] hover:border-blue-500/50 hover:bg-blue-500/25 hover:text-blue-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                  size="sm"
                 >
-                  <Copy className="mr-2 h-4 w-4" />
+                  <Copy className="h-4 w-4" />
                   Copy Snippet
                 </Button>
-                <a
-                  href="https://gov.eclipse-rp.net/viewforum.php?f=605"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-border bg-surface-hover/50 px-4 py-2.5 text-sm font-medium text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-border hover:bg-surface-hover hover:text-foreground active:scale-[0.98]"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  Personnel Files
-                </a>
-                <a
-                  href="https://gov.eclipse-rp.net/viewforum.php?f=615"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-emerald-300/30 dark:border-emerald-500/30 bg-emerald-100 dark:bg-emerald-500/15 px-4 py-2.5 text-sm font-medium text-emerald-700 dark:text-emerald-300 transition-all duration-200 hover:scale-[1.02] hover:border-emerald-500/50 hover:bg-emerald-500/25 hover:text-emerald-200 active:scale-[0.98]"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  Active LOA Section
-                </a>
-                <div className="flex flex-wrap items-center gap-2 rounded-xl border border-purple-300/20 dark:border-purple-500/20 bg-purple-50 dark:bg-purple-500/10 p-2">
+                <Button asChild variant="outline" size="sm">
                   <a
-                    href="https://ecrplsems.com/tasks"
+                    href="https://gov.eclipse-rp.net/viewforum.php?f=605"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-purple-300/30 dark:border-purple-500/30 bg-purple-100 dark:bg-purple-500/15 px-4 py-2.5 text-sm font-medium text-purple-700 dark:text-purple-300 transition-all duration-200 hover:scale-[1.02] hover:border-purple-500/50 hover:bg-purple-500/25 hover:text-purple-200 active:scale-[0.98]"
                   >
                     <ExternalLink className="h-4 w-4" />
-                    LSEMS Dashboard
+                    Personnel Files
                   </a>
-                  <span className="text-xs text-purple-700/70 dark:text-purple-300/70">Open dashboard and mark the task complete</span>
-                </div>
+                </Button>
               </div>
             </div>
           )}
@@ -788,50 +844,95 @@ export function LOAProcessor() {
                   </p>
                 </div>
               </div>
+
+              {/* The decision is a reply in the member's own request topic, so
+                  the field the approved flow uses is needed here too - without
+                  it Copy & Open Request has nothing to open. */}
+              <div className="mt-3">
+                <Label
+                  htmlFor="loa-request-link"
+                  className="mb-1.5 block text-xs text-muted-foreground"
+                >
+                  Request Form Link
+                </Label>
+                <Input
+                  id="loa-request-link"
+                  value={loaLink}
+                  onChange={(e) => setLoaLink(e.target.value)}
+                  placeholder="Paste the request form URL (e.g. https://gov.eclipse-rp.net/viewtopic.php?t=12345)"
+                  className="border-border bg-surface-hover/50 text-foreground placeholder:text-muted-foreground focus:border-blue-500/50"
+                />
+                <p className="mt-1.5 text-[10px] text-blue-600/70 dark:text-blue-400/70">
+                  Copy &amp; Open Request opens this topic and fills the reply
+                  body in - no title, the decision is a reply in the member&apos;s
+                  own request topic.
+                </p>
+              </div>
+
               <div className="mt-3 flex flex-wrap gap-2">
-                <a
-                  href="https://gov.eclipse-rp.net/viewforum.php?f=605"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-blue-300/30 dark:border-blue-500/30 bg-blue-100 dark:bg-blue-500/15 px-4 py-2.5 text-sm font-medium text-blue-700 dark:text-blue-300 transition-all duration-200 hover:border-blue-500/50 hover:bg-blue-500/25 hover:text-blue-200 hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  Open Personnel Files
-                </a>
-                <a
-                  href="https://gov.eclipse-rp.net/viewforum.php?f=615"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-emerald-300/30 dark:border-emerald-500/30 bg-emerald-100 dark:bg-emerald-500/15 px-4 py-2.5 text-sm font-medium text-emerald-700 dark:text-emerald-300 transition-all duration-200 hover:border-emerald-500/50 hover:bg-emerald-500/25 hover:text-emerald-200 hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  Active LOA Section
-                </a>
-                <div className="flex flex-wrap items-center gap-2 rounded-xl border border-purple-300/20 dark:border-purple-500/20 bg-purple-50 dark:bg-purple-500/10 p-2">
+                <Button asChild variant="outline" size="sm">
                   <a
-                    href="https://ecrplsems.com/tasks"
+                    href="https://gov.eclipse-rp.net/viewforum.php?f=605"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="whitespace-nowrap flex items-center justify-center gap-2 rounded-xl border border-purple-300/30 dark:border-purple-500/30 bg-purple-100 dark:bg-purple-500/15 px-4 py-2.5 text-sm font-medium text-purple-700 dark:text-purple-300 transition-all duration-200 hover:scale-[1.02] hover:border-purple-500/50 hover:bg-purple-500/25 hover:text-purple-200 active:scale-[0.98]"
                   >
                     <ExternalLink className="h-4 w-4" />
-                    LSEMS Dashboard
+                    Open Personnel Files
                   </a>
-                  <span className="text-xs text-purple-700/70 dark:text-purple-300/70">Open dashboard and mark the task complete</span>
-                </div>
+                </Button>
               </div>
             </div>
           )}
 
-          {/* Copy Button */}
-          <Button
-            onClick={handleCopy}
-            disabled={!generatedBBCode}
-            className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 py-6 text-base font-semibold text-foreground shadow-lg shadow-blue-950/30 transition-all duration-200 hover:from-blue-500 hover:to-purple-500 hover:shadow-xl hover:shadow-blue-950/40 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Copy className="mr-2 h-4 w-4" />
-            Copy BBCode
-          </Button>
+          {/* Copy Buttons */}
+          <div className="space-y-3">
+            {/* Wraps rather than overflows: the pair shares a row on a wide
+                screen and stacks on a narrow one. */}
+            <div className="flex flex-wrap gap-3">
+              <Button
+                onClick={handleCopy}
+                disabled={!generatedBBCode}
+                variant="gradient"
+                size="lg"
+                className="flex-1 basis-48"
+              >
+                <Copy className="h-4 w-4" />
+                Copy BBCode
+              </Button>
+              <Button
+                onClick={handleCopyAndOpenRequest}
+                disabled={!generatedBBCode || !requestTopicUrl}
+                variant="outline"
+                size="lg"
+                className="flex-1 basis-48"
+                title={
+                  requestTopicUrl
+                    ? "Opens the request topic with this reply filled in"
+                    : "Paste the Request Form Link above first"
+                }
+              >
+                <ExternalLink className="h-4 w-4" />
+                Copy &amp; Open Request
+              </Button>
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-[11px] text-muted-foreground">
+                {requestTopicUrl
+                  ? "Copy & Open Request opens the request topic with this reply ready: press Fill on the page to write it in, then Submit."
+                  : "Paste the Request Form Link above to unlock Copy & Open Request, which opens that topic with the reply already written into it."}
+              </p>
+              <Button asChild variant="ghost" size="sm">
+                <a
+                  href="https://ecrplsems.com/tasks"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Mark task complete on LSEMS
+                </a>
+              </Button>
+            </div>
+          </div>
         </div>
 
         {/* Right: Preview */}

@@ -3,11 +3,14 @@
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { useMedic } from "@/app/context/MedicContext";
 import { copyBBCode } from "@/app/helpers/copyBBCode";
+import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
+import { handOffForumPost, pickPostTarget } from "@/app/helpers/forumHandoff";
+import { GOV_PM_COMPOSE_URL } from "@/app/helpers/govLinks";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Bounce, ToastContainer } from "react-toastify";
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
 import {
   Copy,
@@ -62,7 +65,10 @@ export function PromotionProcessor() {
   const { medicCredentials } = useMedic();
 
   const [personnelName, setPersonnelName] = useLocalStorage("promo-personnel-name", "");
-  const [title, setTitle] = useState<"Mr." | "Ms.">("Mr.");
+  const [title, setTitle] = useLocalStorage<"Mr." | "Ms.">(
+    "supervisor-promotion-honorific",
+    "Mr.",
+  );
   const [newRank, setNewRank] = useLocalStorage<PromotionRank>("promo-new-rank", "emt-b");
   const [previousRank, setPreviousRank] = useLocalStorage("promo-previous-rank", "");
   const [promotionDate, setPromotionDate] = useLocalStorage("promo-date", "");
@@ -164,12 +170,33 @@ export function PromotionProcessor() {
   const icSteps: IcStep[] = useMemo(() => {
     const steps: IcStep[] = [];
     if (emailTemplate) {
-      steps.push({ id: "email", label: "Send the promotion email", copyText: emailBBCode, icon: Mail });
+      // The email goes out as a private message, titled for the rank the member
+      // is being promoted to - the dropdown above is what names it.
+      steps.push({
+        id: "email",
+        label: "Send the promotion email",
+        copyText: emailBBCode,
+        titleText: currentRankInfo
+          ? `${currentRankInfo.label} Promotion`
+          : undefined,
+        icon: Mail,
+        action: { label: "Open Promotion Email", url: GOV_PM_COMPOSE_URL },
+      });
     }
-    steps.push({ id: "personnel-post", label: "Post promotion format and update Personnel File (Title, Rank)", copyText: personnelBBCode, icon: FileText });
+    steps.push({
+      id: "personnel-post",
+      label: "Post promotion format and update Personnel File (Title, Rank)",
+      copyText: personnelBBCode,
+      icon: FileText,
+      action: {
+        label: "Open Personnel Files",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=605",
+      },
+    });
     steps.push({ id: "operationalAdjustments", label: "Update Operational Adjustments in Personnel File", copyText: operationalAdjustmentCopyText, icon: FileText, action: { label: "Open Personnel Files", url: "https://gov.eclipse-rp.net/viewforum.php?f=605" } });
-    steps.push({ id: "employeeAdjustments", label: "Post Employee Adjustment under Employee Adjustments", copyText: rankAdjustmentBBCode, titleText: `Rank Adjustment | ${personnelName}`, icon: ClipboardCheck, action: { label: "Open Employee Adjustments", url: "https://gov.eclipse-rp.net/posting.php?mode=post&f=573" } });
-    steps.push({ id: "rosterUpdate", label: "Adjust their rank on the Staff Roster", copyText: "", icon: Users, action: { label: "Open Staff Roster", url: "https://gov.eclipse-rp.net/viewtopic.php?t=9497" } });
+    steps.push({ id: "employeeAdjustments", label: "Post Employee Adjustment under Employee Adjustments", copyText: rankAdjustmentBBCode, titleText: `Rank Adjustment | ${personnelName}`, icon: ClipboardCheck, action: { label: "Copy & Open Employee Adjustment", url: "https://gov.eclipse-rp.net/posting.php?mode=post&f=573" } });
+    // The roster entry is one edited post, so this opens that post's editor.
+    steps.push({ id: "rosterUpdate", label: "Adjust their rank on the Staff Roster", copyText: "", icon: Users, action: { label: "Open Staff Roster", url: "https://gov.eclipse-rp.net/posting.php?mode=edit&p=126127" } });
     steps.push({ id: "dashboardSheets", label: "Use the 'Promote Employee' section on the Dashboard to update the sheets", copyText: "", icon: Globe, action: { label: "Open Dashboard", url: "https://ecrplsems.com/" } });
     steps.push({ id: "meetingAgenda", label: "Mark the promotion task as Done under the Supervisor Meeting Agenda", copyText: "", icon: CheckSquare });
     if (newRank === "master-emt") {
@@ -177,7 +204,7 @@ export function PromotionProcessor() {
       steps.push({ id: "oneToOneList", label: "Update their listing on the 1:1 list, moving it to the DELTA callsign section", copyText: "", icon: Users });
     }
     return steps;
-  }, [emailTemplate, emailBBCode, personnelBBCode, rankAdjustmentBBCode, operationalAdjustmentCopyText, personnelName, newRank]);
+  }, [emailTemplate, emailBBCode, personnelBBCode, rankAdjustmentBBCode, operationalAdjustmentCopyText, personnelName, newRank, currentRankInfo]);
 
   return (
     <div className="space-y-4">
@@ -323,7 +350,18 @@ export function PromotionProcessor() {
                         )}
                         {step.copyText.length > 0 && (
                           <button
-                            onClick={() => copyBBCode({ bbCodeText: step.copyText })}
+                            onClick={() =>
+                              copyBBCode({
+                                bbCodeText: step.copyText,
+                                post: {
+                                  subject: step.titleText,
+                                  feature: "the promotion processor",
+                                  // The personnel file link is on the same card,
+                                  // and that topic is where most steps post.
+                                  url: pickPostTarget(step.action?.url, personnelFileUrl),
+                                },
+                              })
+                            }
                             className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
                           >
                             <Copy className="h-3 w-3" />
@@ -332,7 +370,20 @@ export function PromotionProcessor() {
                         )}
                         {step.titleText && (
                           <button
-                            onClick={() => copyToClipboard(step.titleText!)}
+                            onClick={() => {
+                              // The whole step goes over, not just the title: the
+                              // member pastes this half by hand, and the extension
+                              // fills a posting page's subject and body together.
+                              handOffForumPost(
+                                {
+                                  subject: step.titleText,
+                                  url: pickPostTarget(step.action?.url, personnelFileUrl),
+                                  feature: "the promotion processor",
+                                },
+                                step.copyText ?? step.titleText!,
+                              );
+                              copyToClipboard(step.titleText!);
+                            }}
                             className="inline-flex items-center gap-1.5 rounded-md border border-emerald-300/30 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 text-xs text-emerald-700 dark:text-emerald-300 transition-colors hover:bg-emerald-500/20 hover:text-emerald-200"
                           >
                             <Copy className="h-3 w-3" />
@@ -341,7 +392,15 @@ export function PromotionProcessor() {
                         )}
                         {step.secondaryCopyText && (
                           <button
-                            onClick={() => copyBBCode({ bbCodeText: step.secondaryCopyText! })}
+                            onClick={() =>
+                              copyBBCode({
+                                bbCodeText: step.secondaryCopyText!,
+                                post: {
+                                  feature: "the promotion processor",
+                                  url: pickPostTarget(null, personnelFileUrl),
+                                },
+                              })
+                            }
                             className="inline-flex items-center gap-1.5 rounded-md border border-amber-300/30 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-2.5 py-1 text-xs text-amber-700 dark:text-amber-300 transition-colors hover:bg-amber-500/20 hover:text-amber-200"
                           >
                             <Copy className="h-3 w-3" />
@@ -353,6 +412,25 @@ export function PromotionProcessor() {
                             href={step.action.url}
                             target="_blank"
                             rel="noopener noreferrer"
+                            // One click does the whole step: the body (and its
+                            // title, when the step has one) is copied and the page
+                            // opens with the extension ready to fill both.
+                            onClick={(event) => {
+                              if (!step.copyText) return;
+                              event.preventDefault();
+                              copyBBCodeAndOpen({
+                                bbCodeText: step.copyText,
+                                url: step.action!.url,
+                                post: {
+                                  subject: step.titleText,
+                                  url: pickPostTarget(
+                                    step.action!.url,
+                                    personnelFileUrl,
+                                  ),
+                                  feature: "the promotion processor",
+                                },
+                              });
+                            }}
                             className="inline-flex items-center gap-1.5 rounded-md border border-indigo-300/30 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 text-xs text-indigo-700 dark:text-indigo-300 transition-colors hover:bg-indigo-500/20 hover:text-indigo-200"
                           >
                             <ExternalLink className="h-3 w-3" />

@@ -3,6 +3,8 @@
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { useMedic } from "@/app/context/MedicContext";
 import { copyBBCode } from "@/app/helpers/copyBBCode";
+import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
+import { handOffForumPost, pickPostTarget } from "@/app/helpers/forumHandoff";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -223,7 +225,7 @@ export function ResignationProcessor() {
         icon: ScrollText,
         action: {
           label: "Open Resignation Forum",
-          url: "https://gov.eclipse-rp.net/viewforum.php?f=614",
+          url: "https://gov.eclipse-rp.net/viewtopic.php?t=229964",
         },
         subItems: [
           {
@@ -358,7 +360,7 @@ export function ResignationProcessor() {
         titleText: dischargeTitle,
         icon: ClipboardCheck,
         action: {
-          label: "Open Employee Adjustments",
+          label: "Copy & Open Employee Adjustment",
           url: "https://gov.eclipse-rp.net/posting.php?mode=post&f=573",
         },
       },
@@ -368,9 +370,12 @@ export function ResignationProcessor() {
           "Respond to the resignation post with the remarks format before archiving it",
         copyText: resignationRemarksBBCode,
         icon: MessageSquare,
+        // The remarks are a reply in the member's own resignation topic, so the
+        // pasted link is what opens - the forum is only the fallback.
         action: {
-          label: "Open Resignation Forum",
-          url: "https://gov.eclipse-rp.net/viewforum.php?f=614",
+          label: "Copy & Open Resignation Post",
+          url:
+            resignationPostUrl || "https://gov.eclipse-rp.net/viewforum.php?f=614",
         },
       },
     ],
@@ -380,6 +385,7 @@ export function ResignationProcessor() {
       dischargeNoticeBBCode,
       resignationRemarksBBCode,
       dischargeTitle,
+      resignationPostUrl,
     ],
   );
 
@@ -632,7 +638,13 @@ export function ResignationProcessor() {
                             {sub.copyText && (
                               <button
                                 onClick={() =>
-                                  copyBBCode({ bbCodeText: sub.copyText! })
+                                  copyBBCode({
+                                    bbCodeText: sub.copyText!,
+                                    post: {
+                                      feature: "the resignation processor",
+                                      url: pickPostTarget(null, resignationPostUrl),
+                                    },
+                                  })
                                 }
                                 className="ml-2 inline-flex items-center gap-1 rounded-md border border-border bg-surface-raised px-2 py-0.5 text-[10px] text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
                               >
@@ -657,8 +669,20 @@ export function ResignationProcessor() {
                         <div className="mt-2 flex flex-wrap gap-2">
                           {step.copyText && (
                             <button
-                              onClick={() =>
-                                copyBBCode({ bbCodeText: step.copyText! })
+                              onClick={() =>                                  copyBBCode({
+                                    bbCodeText: step.copyText!,
+                                    post: {
+                                      subject: step.titleText,
+                                      feature: "the resignation processor",
+                                      // The resignation post link is on the same
+                                      // card, and that topic is where the
+                                      // paperwork is filed.
+                                      url: pickPostTarget(
+                                        step.action?.url,
+                                        resignationPostUrl,
+                                      ),
+                                    },
+                                  })
                               }
                               className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
                             >
@@ -668,7 +692,23 @@ export function ResignationProcessor() {
                           )}
                           {step.titleText && (
                             <button
-                              onClick={() => copyPlain(step.titleText!)}
+                              onClick={() => {
+                                // The whole step goes over, not just the title: the
+                                // member pastes this half by hand, and the extension
+                                // fills a posting page's subject and body together.
+                                handOffForumPost(
+                                  {
+                                    subject: step.titleText,
+                                    url: pickPostTarget(
+                                      step.action?.url,
+                                      resignationPostUrl,
+                                    ),
+                                    feature: "the resignation processor",
+                                  },
+                                  step.copyText ?? step.titleText!,
+                                );
+                                copyPlain(step.titleText!);
+                              }}
                               className="inline-flex items-center gap-1.5 rounded-md border border-emerald-300/30 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 text-xs text-emerald-700 dark:text-emerald-300 transition-colors hover:bg-emerald-500/20 hover:text-emerald-200"
                             >
                               <Copy className="h-3 w-3" />
@@ -680,6 +720,25 @@ export function ResignationProcessor() {
                               href={step.action.url}
                               target="_blank"
                               rel="noopener noreferrer"
+                              // One click does the whole step: the body (and its
+                              // title, when the step has one) is copied and the
+                              // page opens with the extension ready to fill both.
+                              onClick={(event) => {
+                                if (!step.copyText) return;
+                                event.preventDefault();
+                                copyBBCodeAndOpen({
+                                  bbCodeText: step.copyText,
+                                  url: step.action!.url,
+                                  post: {
+                                    subject: step.titleText,
+                                    url: pickPostTarget(
+                                      step.action!.url,
+                                      resignationPostUrl,
+                                    ),
+                                    feature: "the resignation processor",
+                                  },
+                                });
+                              }}
                               className="inline-flex items-center gap-1.5 rounded-md border border-indigo-300/30 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 text-xs text-indigo-700 dark:text-indigo-300 transition-colors hover:bg-indigo-500/20 hover:text-indigo-200"
                             >
                               <ExternalLink className="h-3 w-3" />
@@ -759,8 +818,16 @@ export function ResignationProcessor() {
                       <div className="mt-2 flex flex-wrap gap-2">
                         {item.copyText && (
                           <button
-                            onClick={() =>
-                              copyBBCode({ bbCodeText: item.copyText! })
+                            onClick={() =>                                copyBBCode({
+                                  bbCodeText: item.copyText!,
+                                  post: {
+                                    feature: "the resignation processor",
+                                    url: pickPostTarget(
+                                      item.action?.url,
+                                      resignationPostUrl,
+                                    ),
+                                  },
+                                })
                             }
                             className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
                           >
@@ -773,6 +840,18 @@ export function ResignationProcessor() {
                             href={item.action.url}
                             target="_blank"
                             rel="noopener noreferrer"
+                            onClick={() =>
+                              handOffForumPost(
+                                {
+                                  url: pickPostTarget(
+                                    item.action!.url,
+                                    resignationPostUrl,
+                                  ),
+                                  feature: "the resignation processor",
+                                },
+                                item.copyText ?? "",
+                              )
+                            }
                             className="inline-flex items-center gap-1.5 rounded-md border border-indigo-300/30 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 text-xs text-indigo-700 dark:text-indigo-300 transition-colors hover:bg-indigo-500/20 hover:text-indigo-200"
                           >
                             <ExternalLink className="h-3 w-3" />
