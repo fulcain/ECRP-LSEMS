@@ -19,11 +19,17 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, ExternalLink } from "lucide-react";
+import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
+import { pickPostTarget } from "@/app/helpers/forumHandoff";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { toast, ToastContainer } from "react-toastify";
 
 type UpcomingCourseType = "new" | "reschedule" | "cancelled";
+
+/** The single post the upcoming-courses listing is edited in. */
+const UPCOMING_COURSES_POST_URL =
+  "https://gov.eclipse-rp.net/posting.php?mode=edit&p=55540";
 
 const COURSE_TYPE_OPTIONS: {
   value: UpcomingCourseType;
@@ -224,6 +230,21 @@ export function UpcomingCourseProcessor() {
       setCopied(true);
       toast.success("Copied to clipboard!");
       setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  // Copy & open: the listing is one edited post, so the generated block is
+  // copied and that editor opens already holding it for the extension to fill.
+  // No title - an edit keeps the post's own.
+  const handleCopyAndOpen = () => {
+    if (!output) return;
+    copyBBCodeAndOpen({
+      bbCodeText: output,
+      url: UPCOMING_COURSES_POST_URL,
+      post: {
+        feature: "the BLS upcoming course generator",
+        url: pickPostTarget(UPCOMING_COURSES_POST_URL),
+      },
     });
   };
 
@@ -443,17 +464,30 @@ export function UpcomingCourseProcessor() {
                   {output}
                 </pre>
               </div>
-              <Button
-                onClick={handleCopy}
-                variant="secondary"
-                className={`transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
-                  copied
-                    ? "bg-emerald-600 text-foreground hover:bg-emerald-500"
-                    : "bg-surface-hover text-foreground hover:bg-surface-hover"
-                }`}
-              >
-                {copied ? "Copied!" : "Copy to Clipboard"}
-              </Button>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  onClick={handleCopy}
+                  variant="secondary"
+                  className={`transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
+                    copied
+                      ? "bg-emerald-600 text-foreground hover:bg-emerald-500"
+                      : "bg-surface-hover text-foreground hover:bg-surface-hover"
+                  }`}
+                >
+                  {copied ? "Copied!" : "Copy to Clipboard"}
+                </Button>
+                {/* The upcoming-courses listing lives in a single edited post. */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCopyAndOpen}
+                  className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-amber-500/40 hover:bg-amber-50/20 dark:hover:bg-amber-950/20 hover:text-amber-200 active:scale-[0.98]"
+                  title="Copies this block and opens the Upcoming Courses post with it"
+                >
+                  <ExternalLink className="mr-1.5 h-4 w-4" />
+                  Copy &amp; Open Upcoming Courses
+                </Button>
+              </div>
             </div>
           )}
         </div>

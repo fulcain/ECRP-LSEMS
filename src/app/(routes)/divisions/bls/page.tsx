@@ -16,7 +16,13 @@ import {
   X,
 } from "lucide-react";
 import { directorTitleForDivisionKey } from "@/app/constants/general/directorRoles";
+import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
+import {
+  handOffForumPost,
+  pickPostTarget,
+} from "@/app/helpers/forumHandoff";
 import { useMedic } from "@/app/context/MedicContext";
+import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { useTabParam } from "@/app/hooks/useTabParam";
 import { blsTemplates } from "@/app/templates/bls-formats";
 import { PageContainer } from "@/components/ui/page-container";
@@ -158,7 +164,16 @@ export default function BLSFormatsPage() {
       );
     }
   }, []);
-  const [applicantName, setApplicantName] = useState("");
+  const [applicantName, setApplicantName] = useLocalStorage<string>(
+    "bls-format-applicant-name",
+    "",
+  );
+  // The application post this format belongs on. Pasted once and reused, it is
+  // the page the extension opens and fills - no post id is guessed from a name.
+  const [govLink, setGovLink] = useLocalStorage<string>(
+    "bls-format-gov-link",
+    "",
+  );
   const [copied, setCopied] = useState(false);
   const [copiedTitleTag, setCopiedTitleTag] = useState(false);
   const [animKey, setAnimKey] = useState(0);
@@ -182,11 +197,27 @@ export default function BLSFormatsPage() {
     };
   }, []);
 
-  const [reasons, setReasons] = useState<string[]>([""]);
-  const [cooldownDays, setCooldownDays] = useState(7);
-  const [reapplyDate, setReapplyDate] = useState("");
-  const [courseDate, setCourseDate] = useState("01/FEB/2026");
-  const [courseTime, setCourseTime] = useState("12:00");
+  // Typed values survive a reload: a format is filled in over several minutes and
+  // copying one field at a time, so anything lost to a refresh has to be redone.
+  const [reasons, setReasons] = useLocalStorage<string[]>("bls-format-reasons", [
+    "",
+  ]);
+  const [cooldownDays, setCooldownDays] = useLocalStorage<number>(
+    "bls-format-cooldown-days",
+    7,
+  );
+  const [reapplyDate, setReapplyDate] = useLocalStorage<string>(
+    "bls-format-reapply-date",
+    "",
+  );
+  const [courseDate, setCourseDate] = useLocalStorage<string>(
+    "bls-format-course-date",
+    "01/FEB/2026",
+  );
+  const [courseTime, setCourseTime] = useLocalStorage<string>(
+    "bls-format-course-time",
+    "12:00",
+  );
 
   const addReason = () => setReasons((prev) => [...prev, ""]);
   const removeReason = (index: number) =>
@@ -269,7 +300,16 @@ export default function BLSFormatsPage() {
     );
   };
 
+  // The generated format is a GOV post, so the extension is told what to fill
+  // with it - the body from Copy BBCode, the title from Copy tag.
+  const formatPost = {
+    subject: fullTitle ?? undefined,
+    feature: "the BLS format generator",
+    url: pickPostTarget(govLink.trim()),
+  };
+
   const handleCopy = async () => {
+    handOffForumPost(formatPost, bbcodeOutput);
     await navigator.clipboard.writeText(bbcodeOutput);
     setCopiedTitleTag(false);
     flashCopied(setCopied);
@@ -277,9 +317,25 @@ export default function BLSFormatsPage() {
 
   const handleCopyTitleTag = async () => {
     if (!fullTitle) return;
+    // The body travels with it: the title is what reaches the clipboard, but a
+    // posting page this opens should get both fields filled.
+    handOffForumPost(formatPost, bbcodeOutput);
     await navigator.clipboard.writeText(fullTitle);
     setCopied(false);
     flashCopied(setCopiedTitleTag);
+  };
+
+  // Same post as Copy BBCode, but the pasted link is opened with it: the
+  // extension fills that page as it loads, so it is written before the member
+  // has scrolled to it.
+  const handleCopyAndOpen = () => {
+    const url = govLink.trim();
+    if (!url) return;
+    copyBBCodeAndOpen({
+      bbCodeText: bbcodeOutput,
+      url,
+      post: { ...formatPost, url: pickPostTarget(url) },
+    });
   };
 
   return (
@@ -406,6 +462,23 @@ export default function BLSFormatsPage() {
                         className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
                       />
                     </div>
+                  </div>
+
+                  {/* GOV application link - handed to the browser extension so
+                      it can open the post and fill this format into it. */}
+                  <div className="space-y-2">
+                    <Label htmlFor="gov-link">GOV Application Link</Label>
+                    <Input
+                      id="gov-link"
+                      value={govLink}
+                      onChange={(event) => setGovLink(event.target.value)}
+                      placeholder="Paste the GOV application post URL"
+                      className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      The browser extension opens this post and fills the format
+                      into it. Leave it empty to keep the copy-only flow.
+                    </p>
                   </div>
 
                   {/* ── Denial details ── */}
@@ -676,6 +749,21 @@ export default function BLSFormatsPage() {
                         Timezone Map
                       </Button>
                     )}
+                    <Button
+                      onClick={handleCopyAndOpen}
+                      disabled={!govLink.trim()}
+                      variant="outline"
+                      size="sm"
+                      className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+                      title={
+                        govLink.trim()
+                          ? "Opens the GOV application link with this format filled in"
+                          : "Paste the GOV Application Link above first"
+                      }
+                    >
+                      <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
+                      Copy &amp; Open
+                    </Button>
                     {activeFormat.titleTag && (
                       <>
                         <span className="min-w-0 flex-1 truncate rounded-md border border-border bg-surface/80 px-2.5 py-1 font-mono text-xs tracking-wide text-muted-foreground shadow-sm">

@@ -3,6 +3,7 @@
 import { useMedic } from "@/app/context/MedicContext";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { directorTitleForDivisionKey } from "@/app/constants/general/directorRoles";
+import { handOffForumPost } from "@/app/helpers/forumHandoff";
 import {
   renderCourseReport,
   type CourseReportType,
@@ -332,7 +333,16 @@ export function CourseReportsProcessor() {
     );
   };
 
+  // The browser extension fills the reply form from this, so the report never
+  // has to be pasted by hand. No subject: a course report is a reply into an
+  // existing topic, and filling a title there is noise the member has to clear.
+  const reportPost = {
+    url: REPORT_TOPIC_URLS[reportType],
+    feature: "the BLS course report generator",
+  };
+
   const handleCopy = async () => {
+    handOffForumPost(reportPost, bbcodeOutput);
     await navigator.clipboard.writeText(bbcodeOutput);
     flashCopied();
   };
@@ -341,6 +351,7 @@ export function CourseReportsProcessor() {
   // user-activation window, then copy.
   const handleCopyAndOpen = () => {
     window.open(REPORT_TOPIC_URLS[reportType], "_blank", "noopener,noreferrer");
+    handOffForumPost(reportPost, bbcodeOutput);
     void navigator.clipboard.writeText(bbcodeOutput).then(flashCopied);
   };
 
@@ -935,7 +946,7 @@ export function CourseReportsProcessor() {
                         <span className="font-mono">
                           [url=YOUR-URL]*Attachment*[/url]
                         </span>
-                        . Leave empty if there is no receipt — the report will
+                        . Leave empty if there is no receipt - the report will
                         print <span className="font-mono">N/A</span>.
                       </p>
                     </div>
@@ -959,7 +970,7 @@ export function CourseReportsProcessor() {
                         <span className="font-mono">
                           [url=YOUR-URL]*Attachment*[/url]
                         </span>
-                        . Leave empty if there is no receipt — the report will
+                        . Leave empty if there is no receipt - the report will
                         print <span className="font-mono">N/A</span>.
                       </p>
                     </div>

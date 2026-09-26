@@ -2,6 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
+import {
+  handOffForumPost,
+  pickPostTarget,
+} from "@/app/helpers/forumHandoff";
 import Image from "next/image";
 import {
   Check,
@@ -85,6 +90,21 @@ const formatHue: Record<string, string> = {
 };
 
 
+/**
+ * Where a format is posted. The buttons beside the output open exactly these
+ * places - a section for a new post, a topic to reply to - so the same target
+ * goes with the copied post and the extension can fill the right editor without
+ * being told twice.
+ */
+const FORMAT_POST_TARGETS: Partial<
+  Record<(typeof redTemplates)[number]["value"], string>
+> = {
+  "feedback-request":
+    "https://gov.eclipse-rp.net/posting.php?mode=post&f=2516",
+  "frd-feedback-request":
+    "https://gov.eclipse-rp.net/viewtopic.php?t=118519",
+};
+
 export default function REDFormatsPage() {
   const { medicCredentials, divisionRanks } = useMedic();
   const [selectedFormat, setSelectedFormat] = useState<
@@ -119,6 +139,13 @@ export default function REDFormatsPage() {
     genderOptions[0],
   );
   const [applicantName, setApplicantName] = useState("");
+  // The application post this format belongs on. Pasted once and reused, it is
+  // the page the extension opens and fills - a formatted target picks the
+  // member's own post over a section listing when they gave one.
+  const [govLink, setGovLink] = useLocalStorage<string>(
+    "red-formats:gov-link",
+    "",
+  );
   const [copied, setCopied] = useState(false);
   const [copiedTitleTag, setCopiedTitleTag] = useState(false);
   const [animKey, setAnimKey] = useState(0);
@@ -257,7 +284,16 @@ export default function REDFormatsPage() {
     );
   };
 
+  // The generated format is a GOV post, so the extension is told what to fill
+  // with it - the body from Copy BBCode, the title from Copy tag.
+  const formatPost = {
+    subject: fullTitle ?? undefined,
+    feature: "the RED format generator",
+    url: pickPostTarget(govLink.trim(), FORMAT_POST_TARGETS[selectedFormat]),
+  };
+
   const handleCopy = async () => {
+    handOffForumPost(formatPost, bbcodeOutput);
     await navigator.clipboard.writeText(bbcodeOutput);
     setCopiedTitleTag(false);
     flashCopied(setCopied);
@@ -265,9 +301,29 @@ export default function REDFormatsPage() {
 
   const handleCopyTitleTag = async () => {
     if (!fullTitle) return;
+    // The body travels with it: the title is what reaches the clipboard, but a
+    // posting page this opens should get both fields filled.
+    handOffForumPost(formatPost, bbcodeOutput);
     await navigator.clipboard.writeText(fullTitle);
     setCopied(false);
     flashCopied(setCopiedTitleTag);
+  };
+
+  // Same post as Copy BBCode, but the pasted link is opened with it: the
+  // extension fills that page as it loads, so it is written before the member
+  // has scrolled to it. The format's own target is the fallback when the pasted
+  // link is a listing rather than a page a post can land on.
+  const handleCopyAndOpen = () => {
+    const url = govLink.trim();
+    if (!url) return;
+    copyBBCodeAndOpen({
+      bbCodeText: bbcodeOutput,
+      url,
+      post: {
+        ...formatPost,
+        url: pickPostTarget(url, FORMAT_POST_TARGETS[selectedFormat]),
+      },
+    });
   };
 
   return (
@@ -418,6 +474,23 @@ export default function REDFormatsPage() {
                         className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-border focus-visible:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                     </div>
+                  </div>
+
+                  {/* GOV application link - handed to the browser extension so
+                      it can open the post and fill this format into it. */}
+                  <div className="space-y-2">
+                    <Label htmlFor="gov-link">GOV Application Link</Label>
+                    <Input
+                      id="gov-link"
+                      value={govLink}
+                      onChange={(event) => setGovLink(event.target.value)}
+                      placeholder="Paste the GOV application post URL"
+                      className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      The browser extension opens this post and fills the format
+                      into it. Leave it empty to keep the copy-only flow.
+                    </p>
                   </div>
 
                   {/* ── Conditional fields ── */}
@@ -837,6 +910,21 @@ export default function REDFormatsPage() {
                         Info Topic
                       </Button>
                     )}
+                    <Button
+                      onClick={handleCopyAndOpen}
+                      disabled={!govLink.trim()}
+                      variant="outline"
+                      size="sm"
+                      className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+                      title={
+                        govLink.trim()
+                          ? "Opens the GOV application link with this format filled in"
+                          : "Paste the GOV Application Link above first"
+                      }
+                    >
+                      <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
+                      Copy &amp; Open
+                    </Button>
                     {fullTitle && (
                       <>
                         <span className="min-w-0 flex-1 truncate rounded-md border border-border bg-surface/80 px-2.5 py-1 font-mono text-xs tracking-wide text-muted-foreground shadow-sm">
