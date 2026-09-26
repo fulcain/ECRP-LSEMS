@@ -25,6 +25,7 @@ import { useMedic } from "@/app/context/MedicContext";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { useTabParam } from "@/app/hooks/useTabParam";
 import { blsTemplates } from "@/app/templates/bls-formats";
+import { NowTimeButton } from "@/components/now-time-button";
 import { PageContainer } from "@/components/ui/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { CourseReportsProcessor } from "./components/CourseReportsProcessor";
@@ -559,15 +560,18 @@ export default function BLSFormatsPage() {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="course-time">Course time ((UTC))</Label>
-                        <Input
-                          id="course-time"
-                          value={courseTime}
-                          onChange={(event) =>
-                            setCourseTime(event.target.value)
-                          }
-                          placeholder="e.g. 12:00"
-                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-blue-400/30 dark:focus-visible:ring-blue-500/30"
-                        />
+                        <div className="flex gap-2">
+                          <Input
+                            id="course-time"
+                            value={courseTime}
+                            onChange={(event) =>
+                              setCourseTime(event.target.value)
+                            }
+                            placeholder="e.g. 12:00"
+                            className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-blue-400/30 dark:focus-visible:ring-blue-500/30"
+                          />
+                          <NowTimeButton onFill={setCourseTime} />
+                        </div>
                         <p className="text-xs text-muted-foreground">
                           24-hour, <span className="font-mono">HH:MM</span>.
                           Used to build the timezone image.

@@ -8,6 +8,7 @@ import {
   renderCourseReport,
   type CourseReportType,
 } from "@/app/templates/bls-formats/course-report";
+import { NowTimeButton } from "@/components/now-time-button";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
@@ -520,6 +521,7 @@ export function CourseReportsProcessor() {
                         onChange={(e) => setTime(e.target.value)}
                         className="w-[140px] border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
                       />
+                      <NowTimeButton onFill={setTime} />
                     </div>
                     <p className="text-xs text-muted-foreground">
                       Date renders as{" "}

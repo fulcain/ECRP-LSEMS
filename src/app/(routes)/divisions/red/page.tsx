@@ -25,6 +25,7 @@ import {
   OFFER_HOURS,
   OFFER_TIERS,
 } from "@/app/templates/red-formats";
+import { NowTimeButton } from "@/components/now-time-button";
 import { PageContainer } from "@/components/ui/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
@@ -520,15 +521,18 @@ export default function REDFormatsPage() {
                         <Label htmlFor="interview-time">
                           Interview time ((UTC))
                         </Label>
-                        <Input
-                          id="interview-time"
-                          value={interviewTime}
-                          onChange={(event) =>
-                            setInterviewTime(event.target.value)
-                          }
-                          placeholder="e.g. 14:00"
-                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-sky-400/30 dark:focus-visible:ring-sky-500/30"
-                        />
+                        <div className="flex gap-2">
+                          <Input
+                            id="interview-time"
+                            value={interviewTime}
+                            onChange={(event) =>
+                              setInterviewTime(event.target.value)
+                            }
+                            placeholder="e.g. 14:00"
+                            className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-sky-400/30 dark:focus-visible:ring-sky-500/30"
+                          />
+                          <NowTimeButton onFill={setInterviewTime} />
+                        </div>
                       </div>
                     </div>
                   )}

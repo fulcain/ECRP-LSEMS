@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
+import { NowTimeButton } from "@/components/now-time-button";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -229,23 +230,33 @@ export function EditSessionDialog({
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="flex flex-col gap-2">
                 <Label>Time Start (UTC)</Label>
-                <Input
-                  placeholder="Enter start time"
-                  value={form.timeStart}
-                  onChange={(e) =>
-                    setForm({ ...form, timeStart: e.target.value })
-                  }
-                />
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Enter start time"
+                    value={form.timeStart}
+                    onChange={(e) =>
+                      setForm({ ...form, timeStart: e.target.value })
+                    }
+                  />
+                  <NowTimeButton
+                    onFill={(timeStart) => setForm({ ...form, timeStart })}
+                  />
+                </div>
               </div>
               <div className="flex flex-col gap-2">
                 <Label>Time Finish (UTC)</Label>
-                <Input
-                  placeholder="Enter finish time"
-                  value={form.timeFinish}
-                  onChange={(e) =>
-                    setForm({ ...form, timeFinish: e.target.value })
-                  }
-                />
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Enter finish time"
+                    value={form.timeFinish}
+                    onChange={(e) =>
+                      setForm({ ...form, timeFinish: e.target.value })
+                    }
+                  />
+                  <NowTimeButton
+                    onFill={(timeFinish) => setForm({ ...form, timeFinish })}
+                  />
+                </div>
               </div>
             </div>
 

@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import { formatDateForSheet } from "@/lib/format-date";
 import { XCircle, RotateCcw } from "lucide-react";
 
+import { NowTimeButton } from "@/components/now-time-button";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -260,25 +261,31 @@ export function SessionDetailsCard() {
               <Label className="text-xs text-muted-foreground">
                 Time Start ((UTC))<span className="opacity-60">(24h)</span>
               </Label>
-              <Input
-                placeholder="00:00"
-                maxLength={5}
-                value={details.timeStart}
-                onChange={(e) => handleTimeChange('timeStart', e)}
-                onKeyDown={handleTimeKeyDown}
-              />
+              <div className="flex gap-2">
+                <Input
+                  placeholder="00:00"
+                  maxLength={5}
+                  value={details.timeStart}
+                  onChange={(e) => handleTimeChange('timeStart', e)}
+                  onKeyDown={handleTimeKeyDown}
+                />
+                <NowTimeButton onFill={(t) => update({ timeStart: t })} />
+              </div>
             </div>
             <div className="flex flex-col gap-2">
               <Label className="text-xs text-muted-foreground">
                 Time Finish ((UTC))<span className="opacity-60">(24h)</span>
               </Label>
-              <Input
-                placeholder="00:00"
-                maxLength={5}
-                value={details.timeFinish}
-                onChange={(e) => handleTimeChange('timeFinish', e)}
-                onKeyDown={handleTimeKeyDown}
-              />
+              <div className="flex gap-2">
+                <Input
+                  placeholder="00:00"
+                  maxLength={5}
+                  value={details.timeFinish}
+                  onChange={(e) => handleTimeChange('timeFinish', e)}
+                  onKeyDown={handleTimeKeyDown}
+                />
+                <NowTimeButton onFill={(t) => update({ timeFinish: t })} />
+              </div>
             </div>
           </div>
 
