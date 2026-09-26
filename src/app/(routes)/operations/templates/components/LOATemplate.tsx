@@ -24,6 +24,7 @@ import {
 import Link from "next/link";
 import { Bounce, ToastContainer } from "react-toastify";
 import { useEffect, useState } from "react";
+import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 
 const splitName = (name: string): { firstName: string; lastName: string } => {
   const parts = name.trim().split(/\s+/);
@@ -34,13 +35,31 @@ const splitName = (name: string): { firstName: string; lastName: string } => {
 export function LOATemplate() {
   const { medicCredentials } = useMedic();
 
-  const [rank, setRank] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [icReason, setIcReason] = useState("");
-  const [oocReason, setOocReason] = useState("");
+  // Kept in local storage: a request is written over minutes, and anything typed
+  // here used to be gone on a refresh. The touched flags stay in session state,
+  // because they only govern what the staff page is allowed to autofill.
+  const [rank, setRank, rankLoaded] = useLocalStorage<string>("loa-request-rank", "");
+  const [firstName, setFirstName, firstNameLoaded] = useLocalStorage<string>(
+    "loa-request-first-name",
+    "",
+  );
+  const [lastName, setLastName, lastNameLoaded] = useLocalStorage<string>(
+    "loa-request-last-name",
+    "",
+  );
+  const [startDate, setStartDate] = useLocalStorage<string>(
+    "loa-request-start-date",
+    "",
+  );
+  const [endDate, setEndDate] = useLocalStorage<string>(
+    "loa-request-end-date",
+    "",
+  );
+  const [icReason, setIcReason] = useLocalStorage<string>("loa-request-ic-reason", "");
+  const [oocReason, setOocReason] = useLocalStorage<string>(
+    "loa-request-ooc-reason",
+    "",
+  );
 
   // Auto-fill from the staff page until the user edits a field, so fields
   // populate even though credentials hydrate from localStorage after mount.
@@ -48,19 +67,32 @@ export function LOATemplate() {
   const [firstNameTouched, setFirstNameTouched] = useState(false);
   const [lastNameTouched, setLastNameTouched] = useState(false);
 
+  // The staff page fills a field only while it is still empty. A value that came
+  // back from storage was typed by the member, and must not be overwritten by a
+  // form that is just offering a default.
   useEffect(() => {
-    if (!rankTouched && medicCredentials.rank) {
-      setRank(medicCredentials.rank);
-    }
-  }, [medicCredentials.rank, rankTouched]);
+    if (!rankLoaded || rankTouched || rank) return;
+    if (medicCredentials.rank) setRank(medicCredentials.rank);
+  }, [rankLoaded, rank, rankTouched, medicCredentials.rank, setRank]);
 
   useEffect(() => {
+    if (!firstNameLoaded || !lastNameLoaded) return;
     const { firstName: first, lastName: last } = splitName(
       medicCredentials.name,
     );
-    if (!firstNameTouched && first) setFirstName(first);
-    if (!lastNameTouched && last) setLastName(last);
-  }, [medicCredentials.name, firstNameTouched, lastNameTouched]);
+    if (!firstNameTouched && first && !firstName) setFirstName(first);
+    if (!lastNameTouched && last && !lastName) setLastName(last);
+  }, [
+    medicCredentials.name,
+    firstNameTouched,
+    lastNameTouched,
+    firstNameLoaded,
+    lastNameLoaded,
+    firstName,
+    lastName,
+    setFirstName,
+    setLastName,
+  ]);
 
   const isCredentialsEmpty =
     !medicCredentials.name ||
@@ -95,14 +127,22 @@ export function LOATemplate() {
   // Both reasons are required before anything can be copied.
   const reasonsComplete = Boolean(context.icReason && context.oocReason);
 
+  // Both copies are a GOV post in the making, so the browser extension gets the
+  // title and the section with them.
+  const loaPost = {
+    subject: title,
+    url: GOV_LOA_POST_URL,
+    feature: "the LOA request form",
+  };
+
   const handleCopyTemplate = () => {
     if (!reasonsComplete) return;
-    copyBBCode({ bbCodeText: body });
+    copyBBCode({ bbCodeText: body, post: loaPost });
   };
 
   const handleCopyTitle = () => {
     if (!reasonsComplete) return;
-    copyBBCode({ bbCodeText: title });
+    copyBBCode({ bbCodeText: title, post: { ...loaPost, bbcode: "" } });
   };
 
   return (

@@ -22,6 +22,8 @@ interface TemplateOptionsProps {
   setBodySignOffText: (text: string) => void;
   handleGenerateSignature: () => void;
   handleCopyTemplate: () => void;
+  /** Copies the template and prepares it for the GOV PM composer. */
+  handleCopyToGov: () => void;
   previewBody: string;
   onPreviewChange: (value: string) => void;
   onPreviewReset: () => void;
@@ -42,6 +44,7 @@ export default function TemplateOptions({
   setBodySignOffText,
   handleGenerateSignature,
   handleCopyTemplate,
+  handleCopyToGov,
   previewBody,
   onPreviewChange,
   onPreviewReset,
@@ -211,7 +214,7 @@ export default function TemplateOptions({
                 <Button
                   size="lg"
                   className="w-full cursor-pointer border-emerald-600/50 bg-emerald-600 text-foreground transition-all duration-200 hover:scale-[1.02] hover:border-emerald-500 hover:bg-emerald-500 active:scale-[0.98]"
-                  onClick={handleCopyTemplate}
+                  onClick={handleCopyToGov}
                   disabled={
                     !selectedDivision ||
                     ((selectedDivision?.data?.ranks.length ?? 0) > 0 &&

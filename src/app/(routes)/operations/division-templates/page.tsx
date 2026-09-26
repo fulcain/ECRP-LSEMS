@@ -3,6 +3,10 @@ import { useState } from "react";
 
 import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
 import {
+  forumPostToast,
+  handOffForumPost,
+} from "@/app/helpers/forumHandoff";
+import {
   divisions,
   Divisions,
 } from "@/app/constants/divisions";
@@ -20,6 +24,10 @@ import { Bounce, ToastContainer, toast } from "react-toastify";
 // body while preserving all other user edits. The greeting is only injected
 // when the body still shows one - a template generated with the recipient
 // section omitted has none, and must not have it resurrected.
+/** GOV private-message composer - where an email template is sent from. */
+const GOV_PM_COMPOSE_URL =
+  "https://gov.eclipse-rp.net/ucp.php?i=pm&mode=compose";
+
 const applyLiveFields = (
   body: string,
   subject: string,
@@ -286,6 +294,22 @@ export default function Home() {
     copyToClipboard(previewBody, "BBCode Template Copied!");
   };
 
+  // The GOV button opens the PM composer next; the browser extension fills the
+  // recipient, the subject and the body there for whoever has it installed.
+  const handleCopyToGov = () => {
+    if (!previewBody) return;
+    const handedOff = handOffForumPost(
+      {
+        subject,
+        recipient,
+        url: GOV_PM_COMPOSE_URL,
+        feature: "division email templates",
+      },
+      previewBody,
+    );
+    copyToClipboard(previewBody, forumPostToast(handedOff, "BBCode Template Copied!"));
+  };
+
   return (
     <PageContainer>
       <PageHeader
@@ -323,6 +347,7 @@ export default function Home() {
             setBodySignOffText={setBodySignOffText}
             handleGenerateSignature={handleGenerateSignature}
             handleCopyTemplate={handleCopyTemplate}
+            handleCopyToGov={handleCopyToGov}
             previewBody={previewBody}
             onPreviewChange={handlePreviewChange}
             onPreviewReset={handlePreviewReset}
