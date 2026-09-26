@@ -1,4 +1,5 @@
-export const DASHBOARD_URL = "https://ecrplsems.com/";
+/** The app itself lives on its Vercel production alias - the old domain is gone. */
+export const DASHBOARD_URL = "https://ecrp-lsems.vercel.app/";
 
 /**
  * One Staff Roster line: badge, file number, rank, name. The rank differs by

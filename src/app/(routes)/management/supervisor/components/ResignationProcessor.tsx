@@ -5,6 +5,7 @@ import { useMedic } from "@/app/context/MedicContext";
 import { copyBBCode } from "@/app/helpers/copyBBCode";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
 import { GOV_STAFF_ROSTER_EDIT_URL } from "@/app/helpers/govLinks";
+import { DASHBOARD_URL } from "./contract/constants";
 import { handOffForumPost, pickPostTarget } from "@/app/helpers/forumHandoff";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -432,7 +433,7 @@ export function ResignationProcessor() {
         label:
           "Open the LSEMS Dashboard, find their name, click 'REMOVE', and follow the on-screen prompts.",
         icon: Globe,
-        action: { label: "Open Dashboard", url: "https://ecrplsems.com/" },
+        action: { label: "Open Dashboard", url: DASHBOARD_URL },
       },
     ],
     [revokeAccessBBCode, playerLogBBCode],
@@ -902,7 +903,7 @@ export function ResignationProcessor() {
             Staff Roster
           </a>
           <a
-            href="https://ecrplsems.com/"
+            href={DASHBOARD_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"

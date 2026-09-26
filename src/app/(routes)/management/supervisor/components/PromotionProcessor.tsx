@@ -2,6 +2,7 @@
 
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { useMedic } from "@/app/context/MedicContext";
+import { DASHBOARD_URL } from "./contract/constants";
 import { copyBBCode } from "@/app/helpers/copyBBCode";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
 import { handOffForumPost, pickPostTarget } from "@/app/helpers/forumHandoff";
@@ -200,7 +201,7 @@ export function PromotionProcessor() {
     steps.push({ id: "employeeAdjustments", label: "Post Employee Adjustment under Employee Adjustments", copyText: rankAdjustmentBBCode, titleText: `Rank Adjustment | ${personnelName}`, icon: ClipboardCheck, action: { label: "Copy & Open Employee Adjustment", url: "https://gov.eclipse-rp.net/posting.php?mode=post&f=573" } });
     // The roster entry is one edited post, so this opens that post's editor.
     steps.push({ id: "rosterUpdate", label: "Adjust their rank on the Staff Roster", copyText: "", icon: Users, action: { label: "Open Staff Roster", url: GOV_STAFF_ROSTER_EDIT_URL } });
-    steps.push({ id: "dashboardSheets", label: "Use the 'Promote Employee' section on the Dashboard to update the sheets", copyText: "", icon: Globe, action: { label: "Open Dashboard", url: "https://ecrplsems.com/" } });
+    steps.push({ id: "dashboardSheets", label: "Use the 'Promote Employee' section on the Dashboard to update the sheets", copyText: "", icon: Globe, action: { label: "Open Dashboard", url: DASHBOARD_URL } });
     steps.push({ id: "meetingAgenda", label: "Mark the promotion task as Done under the Supervisor Meeting Agenda", copyText: "", icon: CheckSquare });
     if (newRank === "master-emt") {
       steps.push({ id: "deltaCallsign", label: "Let them pick one of the available DELTA callsigns", copyText: "", icon: Star });
@@ -530,7 +531,7 @@ export function PromotionProcessor() {
             Staff Roster
           </a>
           <a
-            href="https://ecrplsems.com/"
+            href={DASHBOARD_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"

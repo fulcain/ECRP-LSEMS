@@ -3,6 +3,7 @@
 import { useMedic } from "@/app/context/MedicContext";
 import { loaTemplates } from "@/app/templates/loa";
 import { rankOptions } from "@/app/constants/general/ranks";
+import { DASHBOARD_URL } from "./contract/constants";
 import { rankInfo } from "@/app/templates/promotions/rank-info";
 import { copyBBCode } from "@/app/helpers/copyBBCode";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
@@ -923,7 +924,7 @@ export function LOAProcessor() {
               </p>
               <Button asChild variant="ghost" size="sm">
                 <a
-                  href="https://ecrplsems.com/tasks"
+                  href={DASHBOARD_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
