@@ -19,6 +19,9 @@
   };
 
   var barHost = null;
+  /** How long a confirmation of a paste nobody had to ask for stays. */
+  var CONFIRM_MS = 3000;
+  var confirmTimer = null;
 
   /** One stylesheet for both bars: the review bar and the clipboard one. */
   var BAR_CSS = [
@@ -43,6 +46,11 @@
     "</style>",
   ].join("");
 
+  /** Whether the member can actually see an element. */
+  function isVisible(el) {
+    return !!el && (el.offsetParent !== null || el.getClientRects().length > 0);
+  }
+
   /** Prefer a field the member can actually see: a page can carry two editors. */
   function firstMatch(selectors, root) {
     var scope = root || document;
@@ -51,7 +59,7 @@
       var candidates = scope.querySelectorAll(selectors[i]);
       for (var j = 0; j < candidates.length; j += 1) {
         var el = candidates[j];
-        if (el.offsetParent !== null || el.getClientRects().length > 0) return el;
+        if (isVisible(el)) return el;
         if (!found) found = el;
       }
     }
@@ -84,6 +92,20 @@
     }
   }
 
+  /**
+   * The topic a target key names, whichever shape it has: `topic:<t>` on a topic
+   * page, `post:<section>:<t>` on a posting form. Comparing the two has to go
+   * through this - the raw keys are never equal, and a surface whose own key is a
+   * topic key (a quick reply whose form action does not say where it posts) used
+   * to compare an undefined third field against the topic id and paste nothing.
+   */
+  function topicId(key) {
+    if (!key) return "";
+    if (key.indexOf("topic:") === 0) return key.slice(6);
+    var parts = key.split(":");
+    return parts[2] || "";
+  }
+
   function findSurface() {
     var message = firstMatch(SELECTORS.message);
     if (!message) return null;
@@ -91,16 +113,31 @@
     var host = form || document;
     var action = (form && form.getAttribute("action")) || location.href;
     var params = new URLSearchParams(location.search);
+    var actionKey = targetKey(action, location.href) || "";
+    var pageKey = actionKey || targetKey(location.href) || "";
+    // phpBB posts the topic in a hidden field, and a quick reply's action need
+    // only name the section: reading the topic off the action alone is what made
+    // a reply match nothing at all. The field is the authority.
+    var topicField = form ? form.querySelector('input[name="topic_id"]') : null;
+    var formTopic =
+      topicField && topicField.value ? String(topicField.value).trim() : "";
     return {
       kind: location.pathname.indexOf("ucp.php") !== -1 ? "pm" : "post",
       mode: (new URL(action, location.href).searchParams.get("mode")) || params.get("mode") || "",
-      quickReply: !!(form && /quickreply/i.test(form.id || "")),
+      // Prosilver includes the quick reply as `<form id="qr_postform">`, so the
+      // board's "quickreply" spelling is not the one that turns up.
+      quickReply: !!(form && /^(qr_|quickreply)/i.test(form.id || "")),
       form: form,
       message: message,
       subject: firstMatch(SELECTORS.subject, host),
       recipient: firstMatch(SELECTORS.recipient, host),
       submit: firstMatch(SELECTORS.submit, host),
-      pageKey: targetKey(action, location.href) || targetKey(location.href) || "",
+      pageKey: pageKey,
+      // Where the topic comes from, best first: the form's own hidden field, the
+      // topic the action names, and last the page's `viewtopic.php?t=…` - which
+      // is all a script-submitted quick reply leaves to go on.
+      topicId: formTopic || topicId(actionKey) || topicId(pageKey),
+      visible: isVisible(message),
     };
   }
 
@@ -183,11 +220,13 @@
       state.subject ? '<div class="subject" data-role="subject"></div>' : "",
       // One action and the way back from it. Jump to editor is redundant (a
       // fill already puts the caret there), and Copy/Clipboard only duplicated
-      // what the app's own buttons had just done.
-      '<div class="actions">',
-      state.canFill ? '<button class="primary" data-act="fill">Fill</button>' : "",
-      state.canUndo ? '<button data-act="undo">Undo</button>' : "",
-      "</div>",
+      // what the app's own buttons had just done. A confirmation of a paste the
+      // page did by itself carries no actions at all: the post is already in.
+      state.transient
+        ? ""
+        : '<div class="actions">' +
+          (state.canUndo ? '<button data-act="undo">Undo</button>' : "") +
+          "</div>",
       '<div class="hint">' + state.hint + "</div>",
       "</div>",
     ].join("");
@@ -196,35 +235,29 @@
     if (subjectNode) subjectNode.textContent = state.subject;
 
     shadow.querySelector('[data-act="dismiss"]').addEventListener("click", function () {
-      sessionStorage.setItem("lsems:barDismissed", state.payload.id);
-      host.remove();
-      barHost = null;
+      dismiss(host);
     });
-
-    var fillButton = shadow.querySelector('[data-act="fill"]');
-    if (fillButton) {
-      fillButton.addEventListener("click", function () {
-        var result = fill(state.surface, state.payload);
-        state.prefilled = result.before;
-        setStatus(
-          shadow,
-          result.wrote
-            ? "Filled - review, then press Submit."
-            : "Nothing to fill: the saved post is empty.",
-          result.wrote ? "ok" : "warn",
-        );
-        fillButton.remove();
-        addUndo(shadow, state);
-        placeCaret(state.surface);
-        void forgetWhenAsked();
-      });
-    }
 
     if (state.canUndo) addUndo(shadow, state);
 
     document.body.appendChild(host);
     barHost = host;
+    // A confirmation of a paste the page made by itself takes itself away: it
+    // is news, not a control panel.
+    if (state.transient) {
+      clearTimeout(confirmTimer);
+      confirmTimer = setTimeout(function () {
+        dismiss(host);
+      }, CONFIRM_MS);
+    }
     return host;
+  }
+
+  /** Take a bar away, timer and reference included. */
+  function dismiss(host) {
+    clearTimeout(confirmTimer);
+    if (host) host.remove();
+    if (barHost === host) barHost = null;
   }
 
   function setStatus(shadow, text, className) {
@@ -317,8 +350,7 @@
     ].join("");
 
     shadow.querySelector('[data-act="dismiss"]').addEventListener("click", function () {
-      host.remove();
-      barHost = null;
+      dismiss(host);
     });
     shadow.querySelector('[data-act="reload"]').addEventListener("click", function () {
       location.reload();
@@ -351,9 +383,7 @@
     ].join("");
 
     shadow.querySelector('[data-act="dismiss"]').addEventListener("click", function () {
-      sessionStorage.setItem("lsems:barDismissed", "clipboard");
-      host.remove();
-      barHost = null;
+      dismiss(host);
     });
 
     shadow.querySelector('[data-act="clip"]').addEventListener("click", async function () {
@@ -373,11 +403,18 @@
     return host;
   }
 
-  /** Drop the prepared post once it is in the editor, if the member asked for that. */
-  async function forgetWhenAsked() {
+  /**
+   * A fill spends the post. Marking it is what makes it fill once: the mark
+   * outlives the page, so a Preview, a reload or reopening the page finds a post
+   * that has already been pasted and leaves the editor alone. Pasting it again
+   * takes another Copy & Open in the app.
+   */
+  async function spendPost(payload) {
+    if (payload && payload.id) await LSEMS.markFilled(payload.id);
     var settings = await LSEMS.getSettings();
-    if (!settings.clearAfterFill) return;
-    await LSEMS.clearPending();
+    if (settings.clearAfterFill) {
+      await LSEMS.clearPending();
+    }
     LSEMS.syncBadge();
   }
 
@@ -390,134 +427,268 @@
     if (wanted.indexOf("topic:") === 0) {
       // Prepared to reply to a topic: only that topic's editor counts, whether it
       // is the quick reply or the full one.
-      return surface.pageKey.split(":")[2] === wanted.slice(6);
+      return surface.topicId === topicId(wanted);
     }
     return wanted === surface.pageKey;
   }
 
-  async function run(force) {
+  /**
+   * What a fill says it did. A box the member cannot see still submits - the text
+   * is in the form - so saying where it went is the difference between "it worked"
+   * and "nothing happened", which is exactly what a collapsed reply box looks
+   * like from the outside.
+   */
+  function fillStatus(surface, hidden) {
+    if (hidden) {
+      return (
+        "Filled the hidden " +
+        (surface.quickReply ? "quick reply" : "editor") +
+        " - open it to review, then press Submit."
+      );
+    }
+    return surface.quickReply
+      ? "Quick reply filled - review, then press Submit."
+      : "Filled from the LSEMS app - review, then press Submit.";
+  }
+
+  /** The transient bar that confirms what the page just did to itself. */
+  function confirmState(surface, payload, status, statusClass, hint) {
+    return {
+      surface: surface,
+      payload: payload,
+      feature: payload.feature || "",
+      subject: payload.subject || "",
+      prefilled: null,
+      canUndo: false,
+      transient: true,
+      status: status,
+      statusClass: statusClass,
+      hint: hint,
+    };
+  }
+
+  /**
+   * The one pass that writes into a page on its own, and it only runs for a post
+   * the member marked by pressing Copy & Open. A fill spends the post, so a forum
+   * Preview, a reload or the same page opened again finds it already pasted and
+   * leaves the editor alone - pasting it again takes another Copy & Open.
+   *
+   * Returns true when this page is done with. An empty read is not one of those:
+   * the app stores the post from its own tab, which may still be loading this one.
+   */
+  async function autoFill() {
+    var surface = findSurface();
+    if (!surface) return false;
+
+    // The extension was reloaded or updated under this page, so this copy has no
+    // storage and no way to get any. Saying so is all that can be done here.
+    if (!LSEMS.storageArea()) {
+      renderStaleBar(surface);
+      return true;
+    }
+
+    var payload = await LSEMS.getPending();
+    if (!payload) return false;
+    // A post nobody marked, or one that has already been pasted, is not this
+    // page's business - and nothing appears on the page to say so.
+    if (!payload.autoFill || payload.filledAt) return true;
+
+    var value = surface.message.value.trim();
+    var ours =
+      surface.message.dataset.lsemsFilled === payload.id ||
+      value === (payload.bbcode || "").trim();
+
+    // A Copy & Open this page cannot serve says why, once, and then goes away.
+    // Replacing a post somebody is editing, or a draft already in the editor, is
+    // never what that click meant.
+    if (surface.mode === "edit") {
+      renderBar(
+        confirmState(
+          surface,
+          payload,
+          "This is an edit page, so nothing was pasted.",
+          "warn",
+          "<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd> pastes it here anyway.",
+        ),
+      );
+      return true;
+    }
+    if (value && !ours) {
+      renderBar(
+        confirmState(
+          surface,
+          payload,
+          "This editor already has text, so nothing was pasted.",
+          "warn",
+          "<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd> replaces it with the saved post.",
+        ),
+      );
+      return true;
+    }
+    if (!matchesTarget(payload, surface)) {
+      renderBar(
+        confirmState(
+          surface,
+          payload,
+          "Prepared for " +
+            describeKey(targetKey(payload.url)) +
+            ", and you are on " +
+            describeKey(surface.pageKey) +
+            ".",
+          "warn",
+          "<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd> pastes it here anyway.",
+        ),
+      );
+      return true;
+    }
+
+    fill(surface, payload);
+    void spendPost(payload);
+    placeCaret(surface);
+    renderBar(
+      confirmState(
+        surface,
+        payload,
+        fillStatus(surface, !surface.visible),
+        "ok",
+        "Pasted once: a Preview or a reload leaves your edits alone.",
+      ),
+    );
+    return true;
+  }
+
+  /**
+   * A fill somebody asked for: the shortcut, or the toolbar popup. It writes what
+   * is prepared - or what is on the clipboard when nothing is - and waits to be
+   * dismissed, because that time the member asked for it outright.
+   */
+  async function run() {
     var surface = findSurface();
     if (!surface) return;
-
-    // The extension was reloaded or updated under this page, so this copy has
-    // no storage and no way to get any. Saying so is all that can be done here.
     if (!LSEMS.storageArea()) {
       renderStaleBar(surface);
       return;
     }
+    var bar = shadowBar();
+    if (bar) dismiss(bar);
 
     var payload = await LSEMS.getPending();
     if (!payload) {
-      // Nothing was prepared for this page: the clipboard is the fallback, and
-      // an edit page is never a paste target. Reading it on arrival was wrong:
-      // a clipboard still holding an old post filled a page nobody asked to
-      // fill, and a reload refilled it from the same stale copy. So the only
-      // pass left is the one the shortcut or the bar's button requests.
-      if (surface.mode === "edit" || shadowBar()) return;
-      if (!force && sessionStorage.getItem("lsems:barDismissed") === "clipboard") return;
-      renderClipboardBar(surface, force);
+      // Nothing prepared: the clipboard is the fallback, and this is the one
+      // moment reading it is right - somebody just asked.
+      renderClipboardBar(surface, true);
       return;
     }
-    if (!force && sessionStorage.getItem("lsems:barDismissed") === payload.id) return;
-    if (shadowBar()) return;
 
     var matches = matchesTarget(payload, surface);
-    // Overwriting a live edit is never what someone meant to ask for.
     var editing = surface.mode === "edit";
     var value = surface.message.value.trim();
     var ours =
       surface.message.dataset.lsemsFilled === payload.id ||
       value === (payload.bbcode || "").trim();
     var foreignDraft = value.length > 0 && !ours;
+    var where = describeKey(surface.pageKey);
 
     var state = {
       surface: surface,
       payload: payload,
       feature: payload.feature || "",
-      prefilled: null,
-      canFill: true,
-      canUndo: false,
       subject: payload.subject || "",
-      status: "",
-      statusClass: "",
-      hint:
-        "Nothing to paste: it is already written in. Press <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd> to fill any GOV page again.",
+      prefilled: fill(surface, payload).before,
+      canUndo: true,
+      status: fillStatus(surface, !surface.visible),
+      statusClass: "ok",
+      hint: "Post goes to " + where + ".",
     };
-
-    // Nothing is written into a page that did not ask for it. A prepared post
-    // waits in storage until the bar's Fill button or the shortcut is pressed,
-    // so a reload, a forum Preview, or the same page opened twice can never
-    // touch what is in the editor. The shortcut is the one pass that ignores
-    // every warning below, because that time the member asked for it outright.
-    var filled = false;
-    if (force) {
-      state.prefilled = fill(surface, payload).before;
-      filled = true;
-      state.canFill = false;
-      state.canUndo = true;
-      void forgetWhenAsked();
-    }
-
-    var where = describeKey(surface.pageKey);
-    if (filled) {
-      state.status = surface.quickReply
-        ? "Quick reply filled - review, then press Submit."
-        : "Filled from the LSEMS app - review, then press Submit.";
-      state.statusClass = "ok";
-      state.hint += " Post goes to " + where + ".";
-    } else if (!matches) {
-      state.status =
-        "Prepared for " + describeKey(targetKey(payload.url)) + ", and you are on " + where + ".";
-      state.statusClass = "warn";
-      state.hint = "Press Fill to use it here anyway.";
+    if (!matches) {
+      state.hint =
+        "It was prepared for " +
+        describeKey(targetKey(payload.url)) +
+        ", and this is " +
+        where +
+        ".";
     } else if (editing) {
-      state.status = "This is an edit page - Fill would replace the post.";
-      state.statusClass = "warn";
-      state.hint = "Press Fill only if you mean to overwrite it.";
-    } else if (ours && value) {
-      state.status = "This post is already in the editor.";
-      state.hint = "Fill writes it in again; nothing was changed by opening the page.";
+      state.hint = "This is an edit page, so it replaced what was in the editor.";
     } else if (foreignDraft) {
-      state.status = "There is already text in this editor.";
-      state.statusClass = "warn";
-      state.hint = "Press Fill to replace it with the saved post.";
-    } else {
-      state.status = "Saved post for " + where + ".";
-      state.hint = "Press Fill to put it in this editor.";
+      state.hint = "It replaced the text that was already in the editor.";
     }
+    void spendPost(payload);
 
     renderBar(state);
-
-    if (filled) placeCaret(surface);
+    placeCaret(surface);
   }
 
   function shadowBar() {
     return barHost && barHost.isConnected ? barHost : null;
   }
 
-  // The shortcut asks for a fill even where auto-fill was declined or dismissed.
-  // A stale context has no runtime to listen on, so this is skipped rather than
-  // thrown: `chrome.runtime` is exactly what a reload takes away.
+  // The shortcut and the popup ask for a fill: a page whose post was marked for
+  // somewhere else, or one where nothing was prepared at all. A stale context
+  // has no runtime to listen on, so this is skipped rather than thrown:
+  // `chrome.runtime` is exactly what a reload takes away.
   if (LSEMS.isContextAlive()) {
     chrome.runtime.onMessage.addListener(function (message) {
-      if (message && message.type === "lsems:fill-now") {
-        var bar = shadowBar();
-        if (bar) bar.remove();
-        run(true);
-      }
+      if (message && message.type === "lsems:fill-now") run();
     });
   }
 
-  // Editors can appear long after load (a quick reply form, an AJAX composer),
-  // so keep looking for a moment instead of only checking once.
-  var attempts = 0;
+  /**
+   * Editors can appear long after load (a quick reply form, an AJAX composer),
+   * and Copy & Open opens this tab before the app has stored the post, so keep
+   * looking for a moment instead of checking once.
+   */
+  var LOOK_ATTEMPTS = 40;
+  var WATCH_ATTEMPTS = 24;
+  var looks = 0;
+  var watched = 0;
+
   function boot() {
-    attempts += 1;
+    looks += 1;
     if (findSurface()) {
-      run(false);
+      watch();
       return;
     }
-    if (attempts < 40) setTimeout(boot, 500);
+    if (looks < LOOK_ATTEMPTS) setTimeout(boot, 500);
+  }
+
+  /**
+   * A marked post this page was opened for, and no editor ever turned up. Silence
+   * is the worst answer here: the member is looking at a page with nothing on it
+   * and no way to tell whether the extension ran at all.
+   */
+  async function reportNoEditor() {
+    if (!LSEMS.storageArea() || shadowBar()) return;
+    var payload = await LSEMS.getPending();
+    if (!payload || !payload.autoFill || payload.filledAt) return;
+    // A post prepared for somewhere else is not this page's business, and the
+    // member already knows why they opened this page.
+    var here = targetKey(location.href);
+    var wanted = targetKey(payload.url);
+    if (!wanted) return;
+    var sameTopic = topicId(here) && topicId(here) === topicId(wanted);
+    if (!sameTopic && here !== wanted) return;
+    renderBar(
+      confirmState(
+        null,
+        payload,
+        "This page has no editor, so the prepared post was not pasted.",
+        "warn",
+        "Open the reply form, then press <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd> to paste it in.",
+      ),
+    );
+  }
+
+  /** Wait for a marked post until one has been pasted or the window passes. */
+  function watch() {
+    watched += 1;
+    void autoFill().then(function (done) {
+      if (done) return;
+      if (watched >= WATCH_ATTEMPTS) {
+        void reportNoEditor();
+        return;
+      }
+      setTimeout(watch, 500);
+    });
   }
 
   if (document.readyState === "loading") {

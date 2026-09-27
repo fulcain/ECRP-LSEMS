@@ -187,23 +187,145 @@ expect("an empty clipboard does not", looksLikeTitle("   "), false);
 expect("nor does a wall of text", looksLikeTitle("x".repeat(200)), false);
 expect("but a plain sentence does", looksLikeTitle("Normal BLS Course Reports | 25/SEP/2026"), true);
 
-/* ---- nothing is ever filled behind the member's back ---- */
-// Filling used to happen on arrival: the clipboard was read on a page nobody
-// prepared, and a prepared post was written in as the page opened. Both were
-// wrong in the same way - a forum Preview reloads the page with your text in it,
-// and "this page just loaded" cannot be told apart from "this page just
-// reloaded" - so every fill is a click now. This is the structural half of that
-// promise: no auto-fill setting, no unasked branch, no guard for one.
+/* ---- pasted once, and only for the click that asked ---- */
+// A Copy & Open marks its post (`autoFill`), and the page it opens pastes it in
+// once: the fill spends the post, so a forum Preview - which reloads the page
+// with your text in it - or reopening the page finds it already pasted and
+// leaves the editor alone. Pasting it again takes another Copy & Open. Nothing
+// else is written into a page on arrival, and the clipboard is still only read
+// when somebody asks for it.
 const fillSource = readFileSync("extension/src/forum-fill.js", "utf8");
+const sharedSource = readFileSync("extension/src/shared.js", "utf8");
 expect(
   "the clipboard fill is always explicit",
   /function fillFromClipboard\(surface, shadow\)/.test(fillSource),
   true,
 );
-expect("no unasked clipboard pass is left", /if \(autoFill\)/.test(fillSource), false);
-expect("nothing is written into a page on arrival", /autoFill/.test(fillSource), false);
+expect(
+  "only a marked post pastes itself into a page",
+  /if \(!payload\.autoFill \|\| payload\.filledAt\)/.test(fillSource),
+  true,
+);
+expect(
+  "a fill spends the post through one shared path",
+  /void spendPost\(payload\)/.test(fillSource) && /LSEMS\.markFilled\(payload\.id\)/.test(fillSource),
+  true,
+);
+expect("and nothing else clears or forgets it", /forgetWhenAsked/.test(fillSource), false);
+expect(
+  "the confirmation of an unasked paste goes away by itself",
+  /state\.transient/.test(fillSource) && /CONFIRM_MS = 3000/.test(fillSource),
+  true,
+);
+expect("an editor with nothing prepared is left alone", /renderClipboardBar\(surface, true\)/.test(fillSource), true);
+// Prosilver's quick reply is `<form id="qr_postform">`, so a check for the
+// board's own spelling of "quickreply" never fires and a filled reply reports
+// itself as a full posting form instead.
+expect(
+  "a topic's quick reply is recognised by the forum's own form id",
+  /\^\(qr_\|quickreply\)\/i\.test\(form\.id/.test(fillSource),
+  true,
+);
+// A reply is prepared as `topic:<t>` and the editor that serves it reads
+// `post:<section>:<t>`, so the two keys are never equal: the topic has to be
+// pulled out of whichever shape each side has. Comparing a fixed field position
+// is what pasted nothing into a topic's quick reply.
+expect(
+  "a topic is compared by topic, not by key shape",
+  /function topicId\(key\)/.test(fillSource) &&
+    /surface\.topicId === topicId\(wanted\)/.test(fillSource),
+  true,
+);
+// phpBB sends the topic in a hidden field, and a quick reply's action need only
+// name the section - so the hidden field comes first, the action second, and the
+// page's own URL last. Reading the action alone is what pasted nothing into a
+// reply, which is the one page a member is most likely to be looking at.
+expect(
+  "the topic is read from the form's hidden field before anything else",
+  /input\[name="topic_id"\]/.test(fillSource) &&
+    /topicId: formTopic \|\| topicId\(actionKey\) \|\| topicId\(pageKey\)/.test(fillSource),
+  true,
+);
+expect(
+  "a fill into a box the member cannot see says where it went",
+  /function fillStatus\(surface, hidden\)/.test(fillSource) &&
+    /fillStatus\(surface, !surface\.visible\)/.test(fillSource),
+  true,
+);
+expect(
+  "a marked post with no editor to land in says so instead of nothing",
+  /function reportNoEditor\(/.test(fillSource) && /void reportNoEditor\(\)/.test(fillSource),
+  true,
+);
 expect("the auto-fill setting is gone with it", "autoFill" in globalThis.LSEMS.DEFAULT_SETTINGS, false);
 expect("the guard for an unasked paste is gone with it", "looksLikePost" in globalThis.LSEMS, false);
+expect(
+  "a filled post is kept, marked as pasted",
+  /LSEMS\.markFilled = async function/.test(sharedSource),
+  true,
+);
+
+app.handOffForumPost(
+  { subject: "Rank Adjustment | CeeCee Rhodes", url: TARGET, autoFill: true },
+  "[b]Rank Adjustment[/b]",
+);
+await tick();
+expect("a Copy & Open marks its post", store.pendingPost?.autoFill, true);
+expect("which has not been pasted yet", store.pendingPost?.filledAt, undefined);
+
+const markedId = store.pendingPost?.id;
+const marked = await globalThis.LSEMS.markFilled(markedId);
+expect("a fill marks the post as pasted", typeof marked?.filledAt, "number");
+expect("and the mark is the stored one", typeof store.pendingPost?.filledAt, "number");
+expect(
+  "marking a post that is no longer stored changes nothing",
+  await globalThis.LSEMS.markFilled("a-post-from-another-page"),
+  null,
+);
+expect(
+  "and marking it twice keeps the first mark",
+  (await globalThis.LSEMS.markFilled(markedId))?.filledAt,
+  store.pendingPost?.filledAt,
+);
+
+expect(
+  "the opening-handoff helper marks its post",
+  app.handOffAndOpenForumPost({ subject: "Notice | Opened" }, "[b]Notice[/b]"),
+  true,
+);
+await tick();
+expect("so the page it opens pastes it once", store.pendingPost?.autoFill, true);
+
+expect(
+  "a plain Copy is not marked",
+  app.handOffForumPost({ subject: "Notice | Plain copy" }, "[b]Notice[/b]"),
+  true,
+);
+await tick();
+expect("so it never pastes itself into a page", store.pendingPost?.autoFill, false);
+
+// A button that opens the GOV page it hands to has to mark its post, or nothing
+// on that page pastes - which is exactly how Copy & Open went quiet once, when
+// only one of its callers set the flag. So the marking is structural: the one
+// helper is the only place in the app that writes it.
+const autoFillWriters = [];
+const walkAppSources = (dir) => {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const path = `${dir}/${entry.name}`;
+    if (entry.isDirectory()) walkAppSources(path);
+    else if (/\.(ts|tsx)$/.test(entry.name)) {
+      if (/autoFill: true/.test(readFileSync(path, "utf8"))) {
+        autoFillWriters.push(path);
+      }
+    }
+  }
+};
+walkAppSources("src");
+expect(
+  "only the opening-handoff helper marks a post for auto-fill",
+  autoFillWriters,
+  ["src/app/helpers/forumHandoff.ts"],
+);
 
 // A payload with nothing in it must never wipe a good queued post.
 const queued = { ...store.pendingPost };
@@ -226,7 +348,7 @@ globalThis.chrome.runtime = { sendMessage() { workerMessages += 1; } };
 
 expect("the context is reported as gone", globalThis.LSEMS.isContextAlive(), false);
 expect("storage is reported missing", globalThis.LSEMS.storageArea(), null);
-expect("settings fall back to their defaults", (await globalThis.LSEMS.getSettings()).clearAfterFill, true);
+expect("settings fall back to their defaults", (await globalThis.LSEMS.getSettings()).clearAfterFill, false);
 expect("a pending post reads as none", await globalThis.LSEMS.getPending(), null);
 expect(
   "saving reports failure instead of pretending",

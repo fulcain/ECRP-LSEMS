@@ -13,7 +13,7 @@
  */
 var LSEMS = {
   // Kept in step with `manifest.json` by `npm run extension:check`.
-  VERSION: "1.4.0",
+  VERSION: "1.5.0",
   APP_SOURCE: "lsems-app",
   EXT_SOURCE: "lsems-extension",
   MSG_HANDOFF: "lsems:handoff",
@@ -28,7 +28,9 @@ var LSEMS = {
   STORAGE_PENDING: "pendingPost",
   STORAGE_SETTINGS: "settings",
   READY_FLAG: "lsemsExtension",
-  DEFAULT_SETTINGS: { clearAfterFill: true },
+  // A filled post is kept, marked as pasted: the marker is what makes it fill
+  // once, and keeping it means the shortcut can still paste it by hand.
+  DEFAULT_SETTINGS: { clearAfterFill: false },
 };
 
 LSEMS.makeId = function () {
@@ -123,6 +125,25 @@ LSEMS.setPending = async function (entry) {
   }
 };
 
+/**
+ * Mark the stored post as pasted. A fill spends the post, so a forum Preview, a
+ * reload or reopening the page can never paste the same one a second time.
+ */
+LSEMS.markFilled = async function (id) {
+  const area = LSEMS.storageArea();
+  if (!area || !id) return null;
+  try {
+    const stored = await area.get(LSEMS.STORAGE_PENDING);
+    const entry = stored[LSEMS.STORAGE_PENDING];
+    if (!entry || entry.id !== id) return null;
+    const next = Object.assign({}, entry, { filledAt: Date.now() });
+    await area.set({ [LSEMS.STORAGE_PENDING]: next });
+    return next;
+  } catch {
+    return null;
+  }
+};
+
 LSEMS.clearPending = async function () {
   const area = LSEMS.storageArea();
   if (!area) return;
@@ -174,5 +195,8 @@ LSEMS.normalisePayload = function (raw) {
     bbcode,
     recipient: typeof raw.recipient === "string" ? raw.recipient.trim() : "",
     url: typeof raw.url === "string" ? raw.url : "",
+    // Only Copy & Open marks a post, and only a marked post pastes itself into
+    // the page it opens.
+    autoFill: raw.autoFill === true,
   };
 };

@@ -1,12 +1,18 @@
 # LSEMS Forum Poster (browser extension)
 
 Fills GOV forum posts and private messages with the BBCode the LSEMS app just
-prepared, so a `Copy & Open` button means the post is waiting for one click
-instead of a paste: open the page, press **Fill**, review, Submit.
+prepared, so a `Copy & Open` button means the post is in the editor, reviewed and
+ready to submit instead of waiting for a paste.
 
-Nothing is ever written into a page on its own. A reload, a forum **Preview**, or
-the same page opened twice are all background noise to it - the prepared post sits
-in extension storage until someone presses Fill (or the shortcut).
+A `Copy & Open` marks the post it hands over, and the GOV page that opens pastes
+it in **once**. Any button that opens the GOV page it hands to is a `Copy & Open`
+in this sense, whatever its label says - the app marks the post in one helper
+(`handOffAndOpenForumPost`) and `npm run extension:check` fails if a second place
+starts writing the mark. That is the whole of it: a reload, a forum **Preview** (which
+reloads the page with your text in it) and the same page opened twice all find a
+post that has already been pasted and leave the editor alone. Pasting it again
+takes another `Copy & Open`, and nothing is ever written into a page that was not
+marked - a plain **Copy** waits in extension storage for the shortcut.
 
 It lives in this repo on purpose: the app and the extension share one protocol,
 and a change on either side is visible in the same commit.
@@ -47,13 +53,13 @@ gov.eclipse-rp.net  ◀── posting / PM page ─── forum-fill.js ─┘
   (`src/app/helpers/forumHandoff.ts`). No extension id, no shared secret, no
   host permission on the app itself beyond reading that one message.
 - `app-bridge.js` stores the payload as the pending post and answers `ready` /
-  `saved`, which is how the app knows to say "press Fill on the GOV page to put it
-  in" instead of "copied".
+  `saved`, which is how the app's toast knows whether to say "press
+  Alt+Shift+F" or just "copied".
 - `forum-fill.js` runs on every GOV page. Wherever there is a phpBB editor - the
-  full posting form, a **topic's quick reply**, or the PM composer - it shows a
-  small review bar whose button writes the subject, the recipients and the body.
-  A payload may only hold a title (workflow steps that copy just a title), in
-  which case only the subject is written.
+  full posting form, a **topic's quick reply**, or the PM composer - it writes the
+  subject, the recipients and the body in. A payload may only hold a title
+  (workflow steps that copy just a title), in which case only the subject is
+  written.
 
 **A tool hands over a whole post, not half of one.** Where a step has both a title
 and a body, every one of its copy buttons sends both - so pressing "Copy Title"
@@ -65,13 +71,22 @@ stale body under a fresh title is worse than an empty editor.
 The section a post belongs to is read from the **form's `action`**, not the URL:
 a topic's quick reply lives on `viewtopic.php?t=…` but posts to
 `posting.php?mode=reply&f=…&t=…`, which is what makes "Reply to the BLS report
-topic, press Fill, and the report is there" work. An editor that appears later (an
-AJAX-loaded quick reply) is picked up for up to twenty seconds after load.
+topic and the report is there" work. An editor that appears later (an AJAX-loaded
+quick reply) is picked up for up to twenty seconds after load.
 
 A post prepared for a *topic* (a course report into its report thread, an entry
-into a personnel file) belongs on that topic's editor; anywhere else the bar says
-which topic it was prepared for, and Fill still writes it in there if you tell it
-to. A post with no target at all fills whatever editor you open.
+into a personnel file) only pastes itself into that topic's editor; a page that
+was not what the button meant shows a moment of warning saying so. A post with no
+target at all fills whatever editor you open.
+
+The two sides of that comparison are keys of different shapes - the post was
+prepared as `topic:<t>` and the quick reply that serves it reads
+`post:<section>:<t>` - so the topic is pulled out of whichever shape each side has
+(`topicId`), never compared field by field. **A quick reply's action only has to
+name the section**, because phpBB posts the topic in a hidden field instead, so
+the topic is read from that field first, the action second, and the page's own
+`viewtopic.php?t=…` last. Reading the action alone is what made a reply match
+nothing at all, however clearly the post was prepared for it.
 
 **Tools that know where their post goes say so**, and the app picks that target
 for them: `posting.php` means a new post (subject + body), a `viewtopic.php` link
@@ -90,10 +105,14 @@ subject box, anything longer or tagged goes to the post. The bar says which one 
 did, and Undo puts the page back.
 
 After a fill the caret sits in the post so it can be edited straight away, and
-the Submit button is ringed so it is obvious which button finishes the job.
-`Alt`+`Shift`+`F` fills the page in front at any time without a bar at all -
-handy when the bar was dismissed, or when the post was prepared for a different
-section. The key is changeable at `chrome://extensions/shortcuts`.
+the Submit button is ringed so it is obvious which button finishes the job. The
+confirmation that a page pasted by itself stays for about three seconds and then
+gets out of the way - it is news, not a control panel.
+
+`Alt`+`Shift`+`F` fills the page in front at any time: the saved post, or the
+clipboard when nothing was prepared. That is the way back after a page declined
+to paste, and the way to write a post into a section it was not prepared for. The
+key is changeable at `chrome://extensions/shortcuts`.
 
 **This extension never submits anything.** It has no code path that clicks a
 post button: the post is written into the forum's own editor and Submit is always
@@ -102,41 +121,46 @@ your click, with the forum's own confirmation flow behind it.
 ### The clipboard fallback
 
 Every copy button in the app leaves a GOV post on the clipboard, so an editor can
-also be filled from there when nothing was handed over - a tool that is not wired
-yet, a stale prepared post, or a tool that only copies.
+also be filled from there - a tool that is not wired yet, a post marked for
+somewhere else, or a tool that only copies.
 
-**A fill only ever happens on a click.** The prepared-post bar offers **Fill**,
-and a GOV editor with no prepared post offers a single **Fill from clipboard**
-button; `Alt`+`Shift`+`F` does the same thing on any page. No pass reads the
-clipboard or writes the editor on arrival.
+**The clipboard is only read when somebody asks for it:** `Alt`+`Shift`+`F` on a
+page with nothing prepared opens a bar whose button does the same thing. No pass
+reads the clipboard on arrival.
 
-Both used to be automatic - a copied post was pasted as the page opened - and that
-was the wrong trade: a clipboard still holding an old post filled a page nobody
-asked to fill, and a forum **Preview** (which reloads the page with your text in
-it) had the post written over the top of it again. Nothing here can distinguish
-"this page just loaded" from "this page just reloaded", so it stopped guessing.
+The prepared post itself used to be written in on arrival too, and that was the
+wrong trade: a forum **Preview** reloads the page with your text in it, and
+nothing here can tell "this page just loaded" from "this page just reloaded", so
+the post was pasted over your edits again. The fix is not "never paste" but "paste
+once": a `Copy & Open` marks its post, the matching page pastes it in as it loads,
+and the fill is recorded against the post. The mark is what a Preview, a reload or
+a reopened page runs into, and it is why your edits survive them.
 
-So the fill is deliberate. It is also what makes the shortcut safe to use
-anywhere: it writes whatever is on the clipboard, because that time somebody
-asked, without asking whether the text looks like a post.
+That also makes the shortcut safe to use anywhere: it writes whatever is on the
+clipboard, because that time somebody asked, without asking whether the text looks
+like a post.
 
 Reading the clipboard is what the install prompt's *read data you copy and paste*
-covers, and it only ever happens for the two actions above.
+covers, and it only ever happens for the actions above.
 
-## Settings (popup)
-
-| Setting | Default | Effect |
-| --- | --- | --- |
-| Forget the post once it has been filled | off | Clears the saved post after it has been written into the page |
+**The saved post is kept after a fill.** That is what a marked post needs - the
+mark, not a deletion, is what stops a second paste - and it means the shortcut can
+still paste it by hand, or the popup can clear it.
 
 The extension asks for `storage` (the prepared post), `clipboardWrite` and
 `clipboardRead` (the fallback above). It has no host permission on the app beyond
 reading the one handoff message, and none at all on any other site.
 
-Nothing here fires on its own, even a saved post aimed at the page you are on: it
-waits for Fill. The bar only says when it would be a bad idea - the editor already
-has text in it, the page is an edit page, or the post was prepared for a different
-section - and Fill still does it if you insist.
+Nothing here ever opens a panel by itself. A page with an editor and nothing
+prepared for it is left completely alone: no bar, no popup, nothing to dismiss.
+The only thing a page load can show is a `Copy & Open`'s own paste, a warning when
+that paste would have replaced a draft or an edit, and two last-resort notes for a
+marked post that could not be pasted: **no editor appeared on the page**, so the
+reply form has to be opened first, and a fill that went into a **box the member
+cannot see** - a collapsed reply box submits fine, and saying so is the difference
+between "it worked" and "nothing happened". All of them take themselves away after
+a few seconds. Replacing text in the editor still takes the shortcut, which does
+exactly what it says because somebody asked.
 
 ## When it doesn't work
 
@@ -169,8 +193,10 @@ is ever re-templated, fix the first list in `src/forum-fill.js`:
 
 These match Eclipse's quick reply today (`<textarea name="message">` plus
 `<input name="subject" id="subject">`), which is also the full posting form's
-markup. Two editors on one page (a quick reply and a full editor) is handled: the
-visible one wins.
+markup - prosilver renders the quick reply as `<form id="qr_postform">` with the
+textarea directly inside it, and `quickReply` is read from that `qr_` prefix.
+Two editors on one page (a quick reply and a full editor) is handled: the visible
+one wins.
 
 To see what the forum really serves, open a posting page and run in the console:
 
@@ -218,5 +244,5 @@ than by a rejection email.
 | `src/shared.js` | everywhere | Message names, storage helpers, payload validation |
 | `src/background.js` | service worker | Keeps the toolbar badge in sync |
 | `src/app-bridge.js` | the LSEMS app | Receives handoffs, stores the pending post |
-| `src/forum-fill.js` | gov.eclipse-rp.net | Fills posting/PM forms, shows the review bar |
-| `popup/` | toolbar popup | Pending post, settings, manual open/copy/clear |
+| `src/forum-fill.js` | gov.eclipse-rp.net | Fills posting/PM forms, pastes a marked post, shows the confirmation |
+| `popup/` | toolbar popup | Pending post, manual open/copy/clear |
