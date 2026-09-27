@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
 import {
   forumPostToast,
-  handOffForumPost,
+  handOffAndOpenForumPost,
   type ForumPost,
 } from "@/app/helpers/forumHandoff";
 
@@ -25,20 +25,18 @@ export const copyBBCodeAndOpen = async ({
     toast.error("Invalid BBCode, try filling all the fields");
     return;
   }
-  // Open before the await: a click's permission to open a tab does not survive
-  // the clipboard write on every browser, and opening the page is the point of
-  // this button. The handoff below lands milliseconds later, well before the new
-  // tab's content script reads it.
+  // Both calls go before the first await: a click's permission to open a tab
+  // does not survive the clipboard write on every browser. The post's own target
+  // wins - a button can open a listing while the post belongs on the topic the
+  // member filled in.
+  const handedOff = handOffAndOpenForumPost(
+    { ...post, url: post?.url ?? url },
+    bbCodeText,
+  );
   window.open(url, "_blank");
   try {
     await navigator.clipboard.writeText(bbCodeText);
-    // The post's own target wins: a button can open a listing while the post
-    // itself belongs on the topic the member filled in.
-    const handedOff = handOffForumPost(
-      { ...post, url: post?.url ?? url },
-      bbCodeText,
-    );
-    toast.success(forumPostToast(handedOff, "BBCode copied to clipboard!"));
+    toast.success(forumPostToast(handedOff, "BBCode copied to clipboard!", true));
   } catch {
     toast.error("Failed to copy!");
   }

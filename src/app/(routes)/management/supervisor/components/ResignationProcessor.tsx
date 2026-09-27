@@ -6,7 +6,11 @@ import { copyBBCode } from "@/app/helpers/copyBBCode";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
 import { GOV_STAFF_ROSTER_EDIT_URL } from "@/app/helpers/govLinks";
 import { DASHBOARD_URL } from "./contract/constants";
-import { handOffForumPost, pickPostTarget } from "@/app/helpers/forumHandoff";
+import {
+  handOffAndOpenForumPost,
+  handOffForumPost,
+  pickPostTarget,
+} from "@/app/helpers/forumHandoff";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -842,8 +846,11 @@ export function ResignationProcessor() {
                             href={item.action.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            onClick={() =>
-                              handOffForumPost(
+                            // One click does the step and opens its page, so that
+                            // page pastes the post in once.
+                            onClick={() => {
+                              if (!item.copyText) return;
+                              handOffAndOpenForumPost(
                                 {
                                   url: pickPostTarget(
                                     item.action!.url,
@@ -851,9 +858,9 @@ export function ResignationProcessor() {
                                   ),
                                   feature: "the resignation processor",
                                 },
-                                item.copyText ?? "",
-                              )
-                            }
+                                item.copyText,
+                              );
+                            }}
                             className="inline-flex items-center gap-1.5 rounded-md border border-indigo-300/30 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 text-xs text-indigo-700 dark:text-indigo-300 transition-colors hover:bg-indigo-500/20 hover:text-indigo-200"
                           >
                             <ExternalLink className="h-3 w-3" />

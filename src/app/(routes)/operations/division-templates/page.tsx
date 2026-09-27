@@ -4,7 +4,7 @@ import { useState } from "react";
 import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
 import {
   forumPostToast,
-  handOffForumPost,
+  handOffAndOpenForumPost,
 } from "@/app/helpers/forumHandoff";
 import {
   divisions,
@@ -294,11 +294,12 @@ export default function Home() {
     copyToClipboard(previewBody, "BBCode Template Copied!");
   };
 
-  // The GOV button opens the PM composer next; the browser extension fills the
-  // recipient, the subject and the body there for whoever has it installed.
+  // The GOV button opens the PM composer next, so the post is marked: the
+  // browser extension fills the recipient, the subject and the body there once
+  // as it loads, for whoever has it installed.
   const handleCopyToGov = () => {
     if (!previewBody) return;
-    const handedOff = handOffForumPost(
+    const handedOff = handOffAndOpenForumPost(
       {
         subject,
         recipient,
@@ -307,7 +308,10 @@ export default function Home() {
       },
       previewBody,
     );
-    copyToClipboard(previewBody, forumPostToast(handedOff, "BBCode Template Copied!"));
+    copyToClipboard(
+      previewBody,
+      forumPostToast(handedOff, "BBCode Template Copied!", true),
+    );
   };
 
   return (

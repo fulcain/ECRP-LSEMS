@@ -239,8 +239,8 @@ export function ExtensionInstallCard({
                   {detected === version
                     ? ""
                     : `, this page has v${version} - unzip the download over the same folder and reload it`}
-                  ) - Copy &amp; Open buttons hand the post over, ready for the Fill
-                  button on that page.
+                  ) - Copy &amp; Open buttons hand the post over, and the GOV page
+                  they open pastes it in for you.
                 </>
               ) : checked ? (
                 <>
@@ -330,7 +330,7 @@ export function ExtensionInstallCard({
         </ol>
 
         <p className="mt-3 text-xs text-muted-foreground">
-          From then on, every Copy &amp; Open button hands your post to the GOV
+          From then on, every Copy &amp; Open button pastes your post into the GOV
           page it opens. The box at the top of this page switches to{" "}
           <span className="font-medium text-foreground">
             Running in this browser

@@ -32,7 +32,11 @@ import {
 import React, { useState, useEffect, useMemo } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { meetingTemplates, MeetingType } from "@/app/templates/meetings";
-import { forumPostToast, handOffForumPost } from "@/app/helpers/forumHandoff";
+import {
+  forumPostToast,
+  handOffAndOpenForumPost,
+  handOffForumPost,
+} from "@/app/helpers/forumHandoff";
 import Link from "next/link";
 
 export function MeetingAgendaProcessor() {
@@ -165,17 +169,19 @@ export function MeetingAgendaProcessor() {
   // subject line *and* the agenda, aimed at this meeting's own section. The
   // clipboard gets only what the button names - the subject line, or the body -
   // but the extension always gets both, so the posting page fills both fields
-  // whichever one the member pressed.
-  const handOffAgenda = () => {
+  // whichever one the member pressed. `opens` is the one thing that separates
+  // the buttons: the page this one's button opens pastes the post in once, while
+  // a plain Copy leaves it waiting for the shortcut.
+  const handOffAgenda = (opens = false) => {
     if (!output) return false;
-    return handOffForumPost(
-      {
-        subject: subjectLine,
-        url: activeTemplate?.forumUrl,
-        feature: "the meeting agenda generator",
-      },
-      output,
-    );
+    const post = {
+      subject: subjectLine,
+      url: activeTemplate?.forumUrl,
+      feature: "the meeting agenda generator",
+    };
+    return opens
+      ? handOffAndOpenForumPost(post, output)
+      : handOffForumPost(post, output);
   };
 
   const handleCopy = () => {
@@ -422,13 +428,15 @@ export function MeetingAgendaProcessor() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => {
-                  const handedOff = handOffAgenda();
+                  const handedOff = handOffAgenda(true);
                   navigator.clipboard.writeText(output).then(() => {
                     setCopied(true);
                     toast.success(
-                      handedOff
-                        ? "BBCode copied - press Fill on the meeting page to put it in."
-                        : "BBCode copied! Opening forum...",
+                      forumPostToast(
+                        handedOff,
+                        "BBCode copied! Opening forum...",
+                        true,
+                      ),
                     );
                     setTimeout(() => setCopied(false), 2000);
                   });

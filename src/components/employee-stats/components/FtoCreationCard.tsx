@@ -9,7 +9,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
-import { handOffForumPost } from "@/app/helpers/forumHandoff";
+import {
+  handOffAndOpenForumPost,
+  handOffForumPost,
+} from "@/app/helpers/forumHandoff";
 
 import {
   generateFtoCreationBBCode,
@@ -51,22 +54,27 @@ export function FtoCreationCard({ onRefresh }: { onRefresh?: () => void }) {
 
   const hasApplicationInfo = ftoTraineeName.trim() !== "";
 
+  // One button, two behaviours: when it opens the GOV post too, the post is
+  // marked so that page pastes it in once; a plain Copy leaves it for the
+  // shortcut.
   const copyToClipboard = async (alsoOpenGov: boolean) => {
-    const handedOff = handOffForumPost(
-      {
-        subject: ftoTraineeName.trim()
-          ? `FTO Student Profile | ${ftoTraineeName.trim()}`
-          : "",
-        url: GOV_FTO_CREATION_POST_URL,
-        feature: "the FTO creation card",
-      },
-      bbcode,
-    );
+    const post = {
+      subject: ftoTraineeName.trim()
+        ? `FTO Student Profile | ${ftoTraineeName.trim()}`
+        : "",
+      url: GOV_FTO_CREATION_POST_URL,
+      feature: "the FTO creation card",
+    };
+    const handedOff = alsoOpenGov
+      ? handOffAndOpenForumPost(post, bbcode)
+      : handOffForumPost(post, bbcode);
     try {
       await navigator.clipboard.writeText(bbcode);
       toast.success(
         handedOff
-          ? "BBCode copied - press Fill on the GOV post to put it in"
+          ? alsoOpenGov
+            ? "BBCode copied - the GOV post that opened will paste it in"
+            : "BBCode copied - press Alt+Shift+F on the GOV post to put it in"
           : "BBCode copied to clipboard",
         { theme: "dark" },
       );

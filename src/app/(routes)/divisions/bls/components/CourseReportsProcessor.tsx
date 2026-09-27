@@ -3,7 +3,7 @@
 import { useMedic } from "@/app/context/MedicContext";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { directorTitleForDivisionKey } from "@/app/constants/general/directorRoles";
-import { handOffForumPost } from "@/app/helpers/forumHandoff";
+import { handOffAndOpenForumPost, handOffForumPost } from "@/app/helpers/forumHandoff";
 import {
   renderCourseReport,
   type CourseReportType,
@@ -349,10 +349,11 @@ export function CourseReportsProcessor() {
   };
 
   // Open first so the popup is not blocked by the await below losing the
-  // user-activation window, then copy.
+  // user-activation window, then copy. The post is marked as this button's, so
+  // the page that just opened pastes it in once.
   const handleCopyAndOpen = () => {
     window.open(REPORT_TOPIC_URLS[reportType], "_blank", "noopener,noreferrer");
-    handOffForumPost(reportPost, bbcodeOutput);
+    handOffAndOpenForumPost(reportPost, bbcodeOutput);
     void navigator.clipboard.writeText(bbcodeOutput).then(flashCopied);
   };
 

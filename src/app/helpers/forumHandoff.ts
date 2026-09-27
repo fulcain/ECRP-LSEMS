@@ -1,6 +1,7 @@
 /**
  * Hands a prepared GOV post to the LSEMS Forum Poster browser extension, which
- * holds it until the member presses Fill on the posting or PM page.
+ * holds it until the member presses Fill on the posting or PM page - or, when the
+ * post is marked, pastes it in once as that page opens.
  *
  * The extension is optional: every helper still copies to the clipboard, so a
  * member without it keeps the old paste-it-yourself flow. The handoff travels as
@@ -54,6 +55,11 @@ export type ForumPost = {
   feature?: string;
   /** Overrides the copied text as the post body, for callers that copy a title only. */
   bbcode?: string;
+  /**
+   * Set by Copy & Open: the page that button opens pastes the post in as it
+   * loads, once. A plain Copy leaves it alone and it waits for the shortcut.
+   */
+  autoFill?: boolean;
 };
 
 /**
@@ -222,6 +228,7 @@ export function handOffForumPost(post: ForumPost, bbcode: string): boolean {
         recipient: post.recipient,
         url: post.url,
         feature: post.feature,
+        autoFill: post.autoFill === true,
         source: PAGE_SOURCE,
       },
     },
@@ -231,16 +238,40 @@ export function handOffForumPost(post: ForumPost, bbcode: string): boolean {
 }
 
 /**
- * The message a copy button shows. A post handed to the extension says so, and
- * says what to do with it - the fill is a click on the GOV page, never something
- * that happens on its own; a post that nobody collected says so too, once a
+ * A handoff from a button that also opens the GOV page - a Copy & Open, whatever
+ * it is called. Marking the post is what makes that page paste it in once as it
+ * loads, so this is the only handoff form an opening button may use: a handoff
+ * that leaves the member to open the page themselves must not mark it, or a post
+ * they only copied would paste itself into a page nobody asked for.
+ */
+export function handOffAndOpenForumPost(
+  post: ForumPost,
+  bbcode: string,
+): boolean {
+  return handOffForumPost({ ...post, autoFill: true }, bbcode);
+}
+
+/**
+ * The message a copy button shows, which depends on how the button hands over.
+ * Copy & Open opens the page itself, so its post pastes itself in; every other
+ * copy waits for the shortcut, because nothing on a GOV page pastes a post
+ * nobody asked for. A post that nobody collected is said out loud, once a
  * session, because a silent "copied" is what an extension that isn't running
  * looks like from here.
  */
 let nudgeShown = false;
 
-export function forumPostToast(isHandedOff: boolean, fallback: string): string {
-  if (isHandedOff) return "Copied - press Fill on the GOV page to put it in.";
+export function forumPostToast(
+  isHandedOff: boolean,
+  fallback: string,
+  /** True for Copy & Open, whose page pastes the post in as it opens. */
+  autoFill = false,
+): string {
+  if (isHandedOff) {
+    return autoFill
+      ? "Copied - the GOV page that opened will paste it in for you."
+      : "Copied - press Alt+Shift+F on the GOV page to paste it in.";
+  }
   if (nudgeShown) return fallback;
   nudgeShown = true;
   return `${fallback} (No browser extension detected - install it from Resources → Browser Extension to have GOV filled for you.)`;

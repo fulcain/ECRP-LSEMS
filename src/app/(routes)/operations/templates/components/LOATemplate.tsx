@@ -3,6 +3,10 @@
 import { useMedic } from "@/app/context/MedicContext";
 import { copyBBCode } from "@/app/helpers/copyBBCode";
 import {
+  forumPostToast,
+  handOffAndOpenForumPost,
+} from "@/app/helpers/forumHandoff";
+import {
   generateLOARequestBody,
   generateLOATitle,
   GOV_LOA_POST_URL,
@@ -22,7 +26,7 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
-import { Bounce, ToastContainer } from "react-toastify";
+import { Bounce, ToastContainer, toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 
@@ -138,6 +142,26 @@ export function LOATemplate() {
   const handleCopyTemplate = () => {
     if (!reasonsComplete) return;
     copyBBCode({ bbCodeText: body, post: loaPost });
+  };
+
+  // The link around this button is what opens the posting page, so the post is
+  // marked as that page's: it pastes itself in once as it loads. A plain Copy
+  // leaves it for the shortcut instead.
+  const handleCopyToGov = () => {
+    if (!reasonsComplete) return;
+    const handedOff = handOffAndOpenForumPost(loaPost, body);
+    navigator.clipboard
+      .writeText(body)
+      .then(() =>
+        toast.success(
+          forumPostToast(
+            handedOff,
+            "BBCode copied - opening the LOA posting page...",
+            true,
+          ),
+        ),
+      )
+      .catch(() => toast.error("Failed to copy!"));
   };
 
   const handleCopyTitle = () => {
@@ -394,7 +418,7 @@ export function LOATemplate() {
               >
                 <Button
                   type="button"
-                  onClick={handleCopyTemplate}
+                  onClick={handleCopyToGov}
                   disabled={!reasonsComplete}
                   className="w-full cursor-pointer border-emerald-600/50 bg-emerald-600 py-6 text-sm font-semibold text-foreground shadow-lg shadow-emerald-950/30 transition-all duration-200 hover:scale-[1.02] hover:border-emerald-500 hover:bg-emerald-500 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -412,8 +436,9 @@ export function LOATemplate() {
             )}
 
             <p className="text-[10px] leading-relaxed text-muted-foreground">
-              Copy to GOV copies the template and opens the LOA posting page -
-              paste the body there and use the post title above.
+              Copy to GOV copies the template and opens the LOA posting page
+              with it: the title and the body are written into the post for you,
+              ready to review and submit.
             </p>
           </div>
         </div>
