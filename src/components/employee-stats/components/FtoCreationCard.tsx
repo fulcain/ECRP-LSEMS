@@ -1,8 +1,16 @@
 "use client";
 
 import { useMemo } from "react";
+import Link from "next/link";
 import { toast, ToastContainer } from "react-toastify";
-import { Copy, ExternalLink, User, Calendar, RefreshCw } from "lucide-react";
+import {
+  Copy,
+  ExternalLink,
+  User,
+  Calendar,
+  RefreshCw,
+  Users,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +21,8 @@ import {
   handOffAndOpenForumPost,
   handOffForumPost,
 } from "@/app/helpers/forumHandoff";
+import { govGroupSetOf } from "@/app/constants/gov-groups";
+import { userGroupsHref } from "@/lib/user-groups";
 
 import {
   generateFtoCreationBBCode,
@@ -53,6 +63,11 @@ export function FtoCreationCard({ onRefresh }: { onRefresh?: () => void }) {
 
 
   const hasApplicationInfo = ftoTraineeName.trim() !== "";
+
+  // Creating an FTO ends with this member needing the division's forum groups,
+  // so the card hands the name over the way every other group-changing tool
+  // does - named from the declaration, never typed out here.
+  const ftdGroups = govGroupSetOf("ftd");
 
   // One button, two behaviours: when it opens the GOV post too, the post is
   // marked so that page pastes it in once; a plain Copy leaves it for the
@@ -204,6 +219,24 @@ export function FtoCreationCard({ onRefresh }: { onRefresh?: () => void }) {
           </Button>
           <span className="text-xs text-muted-foreground italic">
             Also copies the application name.
+          </span>
+        </div>
+
+        <div className="flex flex-col items-start gap-1">
+          <Button asChild size="sm" variant="outline" className="px-6">
+            <Link
+              href={userGroupsHref({
+                member: ftoTraineeName,
+                search: ftdGroups?.label,
+              })}
+            >
+              <Users className="h-4 w-4 mr-2" />
+              Add to the FTD groups
+            </Link>
+          </Button>
+          <span className="text-xs text-muted-foreground italic">
+            Opens User Groups with the name in place and the list filtered to
+            the division.
           </span>
         </div>
       </div>

@@ -6,6 +6,11 @@
  * phpBB keeps raw BBCode in `textarea[name="message"]`, so writing the app's
  * BBCode there is exactly what pasting it by hand does.
  *
+ * One page is not a post at all: a user group's manage page, where the app's
+ * User Groups tool hands over a member's name and it goes into the group's own
+ * `usernames` box. It is filled the same way and spent the same way; only what
+ * the bar calls it differs.
+ *
  * The selectors are the only theme-dependent part of the extension, and the
  * quick reply's form `action` is what tells us which section it posts into (the
  * page URL is just `viewtopic.php?t=…`). See README.md before changing them.
@@ -16,6 +21,9 @@
     subject: ['input[name="subject"]', "#subject"],
     recipient: ['input[name="username_list"]', "#username_list"],
     submit: ['input[name="post"]', 'button[name="post"]'],
+    // The "add members" box on a user group's manage page. Not a post editor:
+    // what goes in it is a list of names.
+    usernames: ['textarea[name="usernames"]', "#usernames"],
   };
 
   var barHost = null;
@@ -51,14 +59,20 @@
     return !!el && (el.offsetParent !== null || el.getClientRects().length > 0);
   }
 
-  /** Prefer a field the member can actually see: a page can carry two editors. */
-  function firstMatch(selectors, root) {
+  /**
+   * Prefer a field the member can actually see: a page can carry two editors.
+   * `accept` rejects a candidate outright, because a selector list is only a
+   * guess at the theme's markup and an id like `#message` can be something else
+   * entirely on a page that has no editor at all.
+   */
+  function firstMatch(selectors, root, accept) {
     var scope = root || document;
     var found = null;
     for (var i = 0; i < selectors.length; i += 1) {
       var candidates = scope.querySelectorAll(selectors[i]);
       for (var j = 0; j < candidates.length; j += 1) {
         var el = candidates[j];
+        if (accept && !accept(el)) continue;
         if (isVisible(el)) return el;
         if (!found) found = el;
       }
@@ -66,11 +80,17 @@
     return found;
   }
 
+  /** A post body is always a textarea; anything else wearing the id is not one. */
+  function isEditor(el) {
+    return !!el && el.tagName === "TEXTAREA";
+  }
+
   /**
    * What a URL says it is: "post:<section>:<topic>" for a posting page (read from
    * the form's own action, so a quick reply on a topic page resolves to the topic
    * it replies to), "topic:<topic>" for a topic that is read rather than posted
-   * to, and "pm" for the composer.
+   * to, "pm" for the composer, and "group:<g>" for a user group's manage page -
+   * which is what keeps a name prepared for one group from landing in another.
    */
   function targetKey(href, base) {
     try {
@@ -79,8 +99,10 @@
       if (url.pathname.indexOf("posting.php") !== -1) {
         return "post:" + (url.searchParams.get("f") || "") + ":" + (url.searchParams.get("t") || "");
       }
-      if (url.pathname.indexOf("ucp.php") !== -1 && url.searchParams.get("mode") === "compose") {
-        return "pm";
+      if (url.pathname.indexOf("ucp.php") !== -1) {
+        if (url.searchParams.get("mode") === "compose") return "pm";
+        var group = url.searchParams.get("g");
+        if (group && url.searchParams.get("i") === "ucp_groups") return "group:" + group;
       }
       if (url.pathname.indexOf("viewtopic.php") !== -1) {
         var topic = url.searchParams.get("t");
@@ -106,9 +128,8 @@
     return parts[2] || "";
   }
 
-  function findSurface() {
-    var message = firstMatch(SELECTORS.message);
-    if (!message) return null;
+  /** The posting form, the quick reply or the PM composer this page carries. */
+  function findPostSurface(message) {
     var form = message.form || message.closest("form");
     var host = form || document;
     var action = (form && form.getAttribute("action")) || location.href;
@@ -141,10 +162,50 @@
     };
   }
 
+  /**
+   * A user group's page: the UCP's "add members" form, where the names go in one
+   * box. It answers the same surface shape with `message` pointing at that box,
+   * so a name the app prepared is written, marked and spent exactly like a post.
+   */
+  function findGroupSurface(usernames) {
+    var form = usernames.form || usernames.closest("form");
+    var host = form || document;
+    var action = (form && form.getAttribute("action")) || location.href;
+    var params = new URLSearchParams(location.search);
+    return {
+      kind: "group",
+      mode: (new URL(action, location.href).searchParams.get("mode")) || params.get("mode") || "",
+      quickReply: false,
+      form: form,
+      message: usernames,
+      subject: null,
+      recipient: null,
+      submit: firstMatch(SELECTORS.submit, host),
+      pageKey: targetKey(action, location.href) || targetKey(location.href) || "",
+      topicId: "",
+      visible: isVisible(usernames),
+    };
+  }
+
+  /**
+   * The one box this page offers the app: a post editor first, and the user
+   * group's member box when the page is not a post at all.
+   */
+  function findSurface() {
+    // Only a textarea can be the editor. `#message` is an id a theme also puts
+    // on a notice box, and taking that for an editor would hide the group's
+    // member box - the one other box the app fills - on any page carrying it.
+    var message = firstMatch(SELECTORS.message, null, isEditor);
+    if (message) return findPostSurface(message);
+    var usernames = firstMatch(SELECTORS.usernames);
+    return usernames ? findGroupSurface(usernames) : null;
+  }
+
   function describeKey(key) {
     if (!key) return "this page";
     if (key === "pm") return "Private message";
     if (key.indexOf("topic:") === 0) return "Topic t=" + key.slice(6);
+    if (key.indexOf("group:") === 0) return "User group g=" + key.slice(6);
     var parts = key.split(":");
     if (parts[1]) return "Section f=" + parts[1];
     if (parts[2]) return "Topic t=" + parts[2];
@@ -439,6 +500,11 @@
    * like from the outside.
    */
   function fillStatus(surface, hidden) {
+    if (surface.kind === "group") {
+      return hidden
+        ? "Filled the group's member box, which is hidden on this page - open it to review, then press Submit."
+        : "Name filled in - review, then press Submit.";
+    }
     if (hidden) {
       return (
         "Filled the hidden " +
@@ -518,7 +584,9 @@
         confirmState(
           surface,
           payload,
-          "This editor already has text, so nothing was pasted.",
+          surface.kind === "group"
+            ? "This box already has a name in it, so nothing was filled in."
+            : "This editor already has text, so nothing was pasted.",
           "warn",
           "<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd> replaces it with the saved post.",
         ),
@@ -551,7 +619,9 @@
         payload,
         fillStatus(surface, !surface.visible),
         "ok",
-        "Pasted once: a Preview or a reload leaves your edits alone.",
+        surface.kind === "group"
+          ? "Filled once: loading this page again leaves your edits alone."
+          : "Pasted once: a Preview or a reload leaves your edits alone.",
       ),
     );
     return true;
@@ -648,7 +718,14 @@
       watch();
       return;
     }
-    if (looks < LOOK_ATTEMPTS) setTimeout(boot, 500);
+    if (looks < LOOK_ATTEMPTS) {
+      setTimeout(boot, 500);
+      return;
+    }
+    // Out of patience with no box in sight at all: a page opened for a post that
+    // never got one says so, rather than going quiet the way a wrong selector
+    // silently has in the past.
+    void reportNoEditor();
   }
 
   /**
@@ -667,13 +744,18 @@
     if (!wanted) return;
     var sameTopic = topicId(here) && topicId(here) === topicId(wanted);
     if (!sameTopic && here !== wanted) return;
+    var forGroup = String(wanted).indexOf("group:") === 0;
     renderBar(
       confirmState(
         null,
         payload,
-        "This page has no editor, so the prepared post was not pasted.",
+        forGroup
+          ? "This page has no box for adding a member, so the name was not filled in."
+          : "This page has no editor, so the prepared post was not pasted.",
         "warn",
-        "Open the reply form, then press <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd> to paste it in.",
+        forGroup
+          ? "Check the group's page is the one that takes names, then paste the name from the clipboard."
+          : "Open the reply form, then press <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd> to paste it in.",
       ),
     );
   }

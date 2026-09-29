@@ -1,10 +1,12 @@
 "use client";
 
+import { FT } from "@/app/constants/divisions/ft";
 import { FTD_TABS, type FtdTabConfig, type FtdTabValue } from "@/configs/ftd-tabs";
 import { BarChart3, Command, FileText, GraduationCap } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { PageHeader } from "@/components/ui/page-header";
-import { TabBar, type Tab } from "@/components/ui/tab-bar";
+import { DivisionQuickLinksLink } from "@/components/division-quick-links-link";
+import { DivisionHeader } from "@/components/division/division-header";
+import type { Tab } from "@/components/ui/tab-bar";
 
 /** Icons are elements, so they are paired up here rather than in the config. */
 const ICONS: Record<FtdTabValue, typeof BarChart3> = {
@@ -60,9 +62,16 @@ export function FtdSectionHeader({ available }: FtdSectionHeaderProps) {
   }));
 
   return (
-    <>
-      <PageHeader title={current.title} subtitle={current.description} />
-      <TabBar tabs={tabs} active={active} ariaLabel="FTD workspace" />
-    </>
+    <DivisionHeader
+      label={FT.label}
+      emblem={FT.image}
+      title={current.title}
+      purpose={current.description}
+      // The section's own links, one click away from every FTD tab.
+      actions={<DivisionQuickLinksLink division="ftd" />}
+      tabs={tabs}
+      active={active}
+      tabAriaLabel="FTD workspace"
+    />
   );
 }

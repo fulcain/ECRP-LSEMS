@@ -188,14 +188,14 @@ function PresetPopover({
   );
 }
 
-interface BBCodeEditorProps {
+export interface BBCodeEditorProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
   rows?: number;
 }
 
-export default function BBCodeEditor({
+export function BBCodeEditor({
   value,
   onChange,
   placeholder,

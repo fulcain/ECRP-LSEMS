@@ -20,7 +20,7 @@ export default async function BrowserExtensionPage() {
       <PageHeader
         eyebrow="LSEMS Resources"
         title="Browser Extension"
-        subtitle="A one-time install that turns every Copy & Open button into a ready-to-fill GOV post: open the page, press Fill, and the title, recipients and BBCode are written in for you to review and Submit."
+        subtitle="A one-time install that turns every Copy & Open button into a ready-to-fill GOV post: the page it opens arrives with the title, recipients and BBCode already written in for you to review and Submit."
       />
 
       <div className="space-y-6">

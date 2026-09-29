@@ -27,7 +27,18 @@ const defaultDetails: SessionDetails = {
   signature: "",
 };
 
-export type FormType = "normal" | "reinstatement" | "civilianRideAlong";
+/**
+ * The forms the Paperwork tab offers. The FTD discussion board is here rather
+ * than beside the paperwork: it is written in the FTD house style and belongs to
+ * the same "write something for GOV" job, and it carries none of the session
+ * fields the actual paperwork does. The instructors' own board is not a form at
+ * all - it lives on the FTI page, where its readers already are.
+ */
+export type FormType =
+  | "normal"
+  | "reinstatement"
+  | "civilianRideAlong"
+  | "ftdDiscussionBoard";
 
 /** The persisted session blob. This key and shape are shared with older
  *  builds, so stored sessions survive a deploy. */
@@ -83,6 +94,7 @@ interface AdditionalMandatoriesState {
   normal: string;
   reinstatement: string;
   civilianRideAlong: string;
+  ftdDiscussionBoard: string;
 }
 
 interface SessionContextValue {
@@ -236,7 +248,12 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [additionalMandatoriesByType, setAdditionalMandatoriesByType] =
     useLocalStorage<AdditionalMandatoriesState>(
       "ftd-additional-mandatories",
-      { normal: "", reinstatement: "", civilianRideAlong: "" },
+      {
+        normal: "",
+        reinstatement: "",
+        civilianRideAlong: "",
+        ftdDiscussionBoard: "",
+      },
     );
 
   const additionalMandatories =

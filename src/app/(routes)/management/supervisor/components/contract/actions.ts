@@ -4,6 +4,26 @@ import { isTitleOnlyText, pickPostTarget } from "@/app/helpers/forumHandoff";
 import type { ExternalLink } from "./types";
 
 /**
+ * An internal action's declared `href` with the applicant's name put in.
+ *
+ * A workflow is declared before anybody types a name, so a step that leads to
+ * one of the app's own tools - the User Groups tool, which asks who the member
+ * is - writes the same `{{applicantName}}` token its copy buttons use, and the
+ * renderer fills it in. The name is encoded, because it is going into a query
+ * string; a step with no name yet simply carries none.
+ */
+export function internalHrefFor(
+  href: string,
+  personnelName: string | null,
+): string {
+  const name = personnelName?.trim();
+  if (!href.includes("{{")) return href;
+  return href
+    .split("{{applicantName}}")
+    .join(name ? encodeURIComponent(name) : "");
+}
+
+/**
  * Applicant-name placeholder tokens. The primary, canonical one is
  * `{{applicantName}}` - write it in any template and it will be replaced
  * with the name typed into the Applicant Info card at copy time.

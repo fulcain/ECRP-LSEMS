@@ -5,6 +5,7 @@ import {
   GOV_PM_COMPOSE_URL,
   GOV_STAFF_ROSTER_EDIT_URL,
 } from "@/app/helpers/govLinks";
+import { userGroupsHref } from "@/lib/user-groups";
 
 
 export const recruitmentWorkflow: ContractWorkflow = {
@@ -28,6 +29,18 @@ export const recruitmentWorkflow: ContractWorkflow = {
           label: "User Control Panel",
           url: "https://gov.eclipse-rp.net/ucp.php",
           description: "Open the government site User Control Panel.",
+        },
+        {
+          label: "Open User Groups",
+          description:
+            "Open the app's User Groups tool with this applicant's name and the EMR group ready to add them to.",
+          internal: {
+            href: userGroupsHref({
+              member: "{{applicantName}}",
+              group: "emr",
+            }),
+            label: "User Groups",
+          },
         },
       ],
     },

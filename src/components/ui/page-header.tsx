@@ -3,8 +3,11 @@ import { cn } from "@/lib/utils";
 type PageHeaderProps = {
   title: string;
   subtitle?: string;
-  /** Small line above the title. Same wording on every page by default. */
-  eyebrow?: string;
+  /**
+   * Small line above the title. Same wording on every page by default; a
+   * division workspace passes its emblem and name instead of a string.
+   */
+  eyebrow?: React.ReactNode;
   /**
    * Primary page actions, rendered on the right on wide screens and stacked
    * under the title otherwise. A page-level action belongs here rather than

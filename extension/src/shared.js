@@ -13,7 +13,7 @@
  */
 var LSEMS = {
   // Kept in step with `manifest.json` by `npm run extension:check`.
-  VERSION: "1.5.0",
+  VERSION: "1.6.0",
   APP_SOURCE: "lsems-app",
   EXT_SOURCE: "lsems-extension",
   MSG_HANDOFF: "lsems:handoff",

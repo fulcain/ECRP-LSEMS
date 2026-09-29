@@ -7,19 +7,19 @@ import {
   handOffForumPost,
   pickPostTarget,
 } from "@/app/helpers/forumHandoff";
-import Image from "next/image";
 import {
   Check,
   ClipboardCopy,
   ExternalLink,
   Plus,
   ShieldCheck,
-  Signature,
   Tag,
   X,
 } from "lucide-react";
+import { RED } from "@/app/constants/divisions/red";
 import { directorTitleForDivisionKey } from "@/app/constants/general/directorRoles";
 import { useMedic } from "@/app/context/MedicContext";
+import { GOV_PM_COMPOSE_URL } from "@/app/helpers/govLinks";
 import {
   redTemplates,
   OFFER_HOURS,
@@ -27,7 +27,17 @@ import {
 } from "@/app/templates/red-formats";
 import { NowTimeButton } from "@/components/now-time-button";
 import { PageContainer } from "@/components/ui/page-container";
-import { PageHeader } from "@/components/ui/page-header";
+import { DivisionQuickLinksLink } from "@/components/division-quick-links-link";
+import { DivisionHeader } from "@/components/division/division-header";
+import { DivisionUserGroupsLink } from "@/components/division/division-user-groups-link";
+import { DocumentPicker } from "@/components/division/document-picker";
+import { DiscussionBoardComposer } from "@/components/discussion-board-composer";
+import {
+  isREDBoardKey,
+  isREDDocument,
+  RED_PAPERWORK,
+  type REDWorkItem,
+} from "./components/paperwork-documents";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -67,75 +77,61 @@ function formatTitleCase(input: string): string {
     .replace(/\s+/g, " ");
 }
 
-/** Maps a format value to a distinct hue for lifecycle styling */
-const formatHue: Record<string, string> = {
-  "pending-review": "142",
-  "pending-edit": "45",
-  denied: "0",
-  withdrawn: "30",
-  "pending-interview": "190",
-  "interview-scheduled": "200",
-  "pending-decision": "270",
-  "pending-contract": "170",
-  accepted: "160",
-  "feedback-request": "210",
-  "frd-feedback-request": "250",
-  "pending-employer-feedback": "40",
-  "discord-invite": "220",
-  "reinstatement-on-hold": "28",
-  "reinstatement-received": "142",
-  "reinstatement-offer": "16",
-  "reinstatement-contract": "16",
-  "reinstatement-accepted": "142",
-  "reinstatement-denied": "0",
-};
-
 
 /**
  * Where a format is posted. The buttons beside the output open exactly these
  * places - a section for a new post, a topic to reply to - so the same target
  * goes with the copied post and the extension can fill the right editor without
  * being told twice.
+ *
+ * The two feedback requests are letters to a person rather than forum posts:
+ * they go out as private messages, so their target is the composer - which the
+ * extension opens with the recipient and the letter already in it.
  */
 const FORMAT_POST_TARGETS: Partial<
   Record<(typeof redTemplates)[number]["value"], string>
 > = {
-  "feedback-request":
-    "https://gov.eclipse-rp.net/posting.php?mode=post&f=2516",
-  "frd-feedback-request":
-    "https://gov.eclipse-rp.net/viewtopic.php?t=118519",
+  "feedback-request": GOV_PM_COMPOSE_URL,
+  "frd-feedback-request": GOV_PM_COMPOSE_URL,
 };
 
 export default function REDFormatsPage() {
   const { medicCredentials, divisionRanks } = useMedic();
-  const [selectedFormat, setSelectedFormat] = useState<
-    (typeof redTemplates)[number]["value"]
-  >(redTemplates[0].value);
+  // Nothing is chosen until the member picks a card, so the page opens on the
+  // picker alone - no builder is filled in for a document nobody asked for.
+  const [selectedDocument, setSelectedDocument] = useState<REDWorkItem | null>(
+    null,
+  );
 
-  // Sync initial format from URL query param
+  // Sync the initial document from the URL. `?format=` names any document the
+  // picker offers, the board included, so a link to one still opens it.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const fromUrl = params.get("format") as (typeof redTemplates)[number]["value"] | null;
-    if (fromUrl && redTemplates.some((t) => t.value === fromUrl)) {
-      setSelectedFormat(fromUrl);
+    const fromUrl = params.get("format") as REDWorkItem | null;
+    if (fromUrl && isREDDocument(fromUrl)) setSelectedDocument(fromUrl);
+    // The board used to be its own tab; an old `?tab=discussion-board` link
+    // opens the board it named rather than the first application format.
+    if (params.get("tab") === "discussion-board") {
+      setSelectedDocument("redDiscussionBoard");
     }
   }, []);
 
-  // Sync URL when format changes (skip initial mount)
-  const isFirstRender = useRef(true);
+  // The picker's value is the page's `?format=`, so a link someone shares opens
+  // the document they were looking at - and a page with nothing picked carries
+  // no `?format=` at all. `?tab=` is retired with the bar it came from: it is
+  // read once on mount and dropped.
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
     const params = new URLSearchParams(window.location.search);
-    params.set("format", selectedFormat);
+    params.delete("tab");
+    if (selectedDocument) params.set("format", selectedDocument);
+    else params.delete("format");
+    const query = params.toString();
     window.history.replaceState(
       null,
       "",
-      `${window.location.pathname}?${params.toString()}`,
+      `${window.location.pathname}${query ? `?${query}` : ""}`,
     );
-  }, [selectedFormat]);
+  }, [selectedDocument]);
   const [gender, setGender] = useState<(typeof genderOptions)[number]>(
     genderOptions[0],
   );
@@ -147,19 +143,22 @@ export default function REDFormatsPage() {
     "red-formats:gov-link",
     "",
   );
+  // A feedback request is sent to somebody, so who it is addressed to is a
+  // field of its own - the composer opens with it already in the username box.
+  const [recipient, setRecipient] = useState("");
   const [copied, setCopied] = useState(false);
   const [copiedTitleTag, setCopiedTitleTag] = useState(false);
   const [animKey, setAnimKey] = useState(0);
   const copyTimerRef = useRef<number | undefined>(undefined);
-  const prevFormatRef = useRef(selectedFormat);
+  const prevFormatRef = useRef(selectedDocument);
 
   // Trigger a subtle re-animation when the format changes
   useEffect(() => {
-    if (prevFormatRef.current !== selectedFormat) {
+    if (prevFormatRef.current !== selectedDocument) {
       setAnimKey((k) => k + 1);
-      prevFormatRef.current = selectedFormat;
+      prevFormatRef.current = selectedDocument;
     }
-  }, [selectedFormat]);
+  }, [selectedDocument]);
 
   // Clear any in-flight "Copied!" flash if the component unmounts mid-flash.
   useEffect(() => {
@@ -181,7 +180,6 @@ export default function REDFormatsPage() {
     "red-formats:weeks",
     2,
   );
-  const [employeeName] = useState("");
   const [employmentRank, setEmploymentRank] = useState("");
   const [offerTier, setOfferTier] = useState("");
   const [interviewDate, setInterviewDate] = useState("");
@@ -193,22 +191,36 @@ export default function REDFormatsPage() {
   const updateReason = (index: number, value: string) =>
     setReasons((prev) => prev.map((r, i) => (i === index ? value : r)));
 
+  // A board is not a template, so this falls back to the first format - the
+  // builder below is only rendered when a format is the selected document.
+  // The format builder is only for a format: the board has a composer of its
+  // own, and a page with nothing picked has neither.
   const activeFormat =
-    redTemplates.find((format) => format.value === selectedFormat) ??
-    redTemplates[0];
+    redTemplates.find((format) => format.value === selectedDocument) ?? null;
+  const boardKey =
+    selectedDocument && isREDBoardKey(selectedDocument)
+      ? selectedDocument
+      : null;
   const redRank = divisionRanks.RED ?? "";
+  // The two letters that leave the forum: they are private messages to a
+  // person, so they take a recipient instead of an application link.
+  const isFeedbackRequest =
+    selectedDocument === "feedback-request" ||
+    selectedDocument === "frd-feedback-request";
+  const feedbackRecipient = isFeedbackRequest ? recipient.trim() : "";
   const supportsReasons =
-    selectedFormat === "pending-edit" ||
-    selectedFormat === "reinstatement-on-hold" ||
-    selectedFormat === "reinstatement-denied";
-  const supportsEmploymentRank = selectedFormat === "reinstatement-offer";
+    selectedDocument === "pending-edit" ||
+    selectedDocument === "reinstatement-on-hold" ||
+    selectedDocument === "reinstatement-denied";
+  const supportsEmploymentRank = selectedDocument === "reinstatement-offer";
   // What the offer will actually list: the picked tier, or the default when none.
   const offerHours = OFFER_HOURS[offerTier] ?? OFFER_HOURS.EMTs;
-  const isReinstatement = selectedFormat.startsWith("reinstatement-");
+  const isReinstatement =
+    selectedDocument?.startsWith("reinstatement-") ?? false;
   const reasonSectionLabel =
-    selectedFormat === "reinstatement-denied"
+    selectedDocument === "reinstatement-denied"
       ? "Reasons for denial"
-      : selectedFormat === "reinstatement-on-hold"
+      : selectedDocument === "reinstatement-on-hold"
         ? "Reinstatement concerns"
         : "Hold reasons";
 
@@ -217,16 +229,16 @@ export default function REDFormatsPage() {
   // template; the suffix is the title-cased applicant name. When no name
   // is entered, only the status prefix is shown - so the pill clearly
   // signals that the suffix is still missing.
-  const fullTitle = !isReinstatement && activeFormat.titleTag
+  const fullTitle = !isReinstatement && activeFormat?.titleTag
     ? `${activeFormat.titleTag}${
         applicantName.trim() ? ` - ${formatTitleCase(applicantName)}` : ""
       }`
     : null;
 
-  const hue = formatHue[activeFormat.value] ?? "0";
-  const hsl = `${hue} 70% 55%`;
 
   const bbcodeOutput = useMemo(() => {
+    // Nothing is being written yet: the picker is on its own.
+    if (!activeFormat) return "";
     const applicant = `${gender} ${applicantName.trim() || "Applicant Name"}`;
     // A director covering RED signs as the director, not as a RED rank they
     // don't hold.
@@ -248,7 +260,6 @@ export default function REDFormatsPage() {
       denialType,
       applyOtherChar,
       weeks,
-      employeeName: employeeName || undefined,
       employmentRank: employmentRank || undefined,
       offerTier: offerTier || undefined,
       interviewDate: interviewDate || undefined,
@@ -267,7 +278,6 @@ export default function REDFormatsPage() {
     denialType,
     applyOtherChar,
     weeks,
-    employeeName,
     employmentRank,
     offerTier,
     interviewDate,
@@ -285,12 +295,27 @@ export default function REDFormatsPage() {
     );
   };
 
+  // Where a format posts, when it names a place itself. It follows the chosen
+  // template, not whatever the picker last held.
+  const formatPostTarget = activeFormat
+    ? FORMAT_POST_TARGETS[activeFormat.value]
+    : undefined;
+
+  // Where Copy & Open lands for this format. A feedback request is a message to
+  // a person, so a link pasted for some earlier post must not win over the
+  // composer - the member is writing to somebody, not replying on their thread.
+  const formatUrl = isFeedbackRequest
+    ? GOV_PM_COMPOSE_URL
+    : govLink.trim() || formatPostTarget;
+
   // The generated format is a GOV post, so the extension is told what to fill
-  // with it - the body from Copy BBCode, the title from Copy tag.
+  // with it - the body from Copy BBCode, the title from Copy tag, and, for a
+  // letter to somebody, who it is addressed to.
   const formatPost = {
     subject: fullTitle ?? undefined,
     feature: "the RED format generator",
-    url: pickPostTarget(govLink.trim(), FORMAT_POST_TARGETS[selectedFormat]),
+    recipient: feedbackRecipient || undefined,
+    url: pickPostTarget(formatUrl, formatPostTarget),
   };
 
   const handleCopy = async () => {
@@ -315,14 +340,16 @@ export default function REDFormatsPage() {
   // has scrolled to it. The format's own target is the fallback when the pasted
   // link is a listing rather than a page a post can land on.
   const handleCopyAndOpen = () => {
-    const url = govLink.trim();
-    if (!url) return;
+    // A format can name its own posting page, so its Copy & Open works without
+    // the member pasting a link first - the button would otherwise be the only
+    // way to reach that page, and a plain link copies nothing.
+    if (!formatUrl) return;
     copyBBCodeAndOpen({
       bbCodeText: bbcodeOutput,
-      url,
+      url: formatUrl,
       post: {
         ...formatPost,
-        url: pickPostTarget(url, FORMAT_POST_TARGETS[selectedFormat]),
+        url: pickPostTarget(formatUrl, formatPostTarget),
       },
     });
   };
@@ -349,19 +376,30 @@ export default function REDFormatsPage() {
       `}</style>
 
       <PageContainer>
-        <PageHeader
-          title="RED"
-          subtitle="Build RED application responses with saved staff credentials and quick-swap BBCode placeholders."
+        <DivisionHeader
+          label={RED.label}
+          emblem={RED.image}
+          title="Paperwork"
+          purpose="Every reply a RED application can get - pick the stage the applicant is at, then copy it into GOV."
+          actions={
+            <>
+              <DivisionUserGroupsLink group="red" />
+              <DivisionQuickLinksLink division="red" />
+            </>
+          }
         />
-        <div key={animKey} className="panel relative overflow-hidden">
-          {/* The format's lifecycle colour used to repaint the entire panel, so
-              the page changed character with every selection and the content
-              sat on a palette of its own. As one accent line the signal
-              survives without competing with the page around it. */}
-          <div
-            className="absolute inset-x-0 top-0 h-0.5"
-            style={{ background: `hsl(${hue} 70% 50% / 0.7)` }}
-          />
+
+        <DocumentPicker
+          groups={RED_PAPERWORK}
+          value={selectedDocument}
+          onChange={setSelectedDocument}
+          className="mb-6"
+        />
+
+        {boardKey ? (
+          <DiscussionBoardComposer boardKey={boardKey} />
+        ) : activeFormat ? (
+        <div key={animKey} className="panel overflow-hidden">
 
           <div className="relative grid gap-6 p-4 sm:p-5 lg:grid-cols-[1.1fr_0.9fr] lg:p-6">
             {/* ════ LEFT COLUMN ════ */}
@@ -369,11 +407,8 @@ export default function REDFormatsPage() {
               {/* ── Application Builder ── */}
               <div className="panel-inner p-5 transition-colors hover:border-primary/30">
                 <div className="mb-4 flex items-center gap-2">
-                  <div
-                    className="flex h-7 w-7 items-center justify-center rounded-lg"
-                    style={{ backgroundColor: `hsl(${hsl} / 0.2)` }}
-                  >
-                    <ShieldCheck className="h-4 w-4" style={{ color: `hsl(${hsl})` }} />
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-surface-hover text-muted-foreground">
+                    <ShieldCheck className="h-4 w-4" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground">
@@ -383,52 +418,9 @@ export default function REDFormatsPage() {
                 </div>
 
                 <div className="space-y-4">
-                  {/* Format Selector */}
-                  <div className="space-y-2">
-                    <Label htmlFor="red-format">Format</Label>
-                    <Select
-                      value={selectedFormat}
-                      onValueChange={(value) =>
-                        setSelectedFormat(
-                          value as (typeof redTemplates)[number]["value"],
-                        )
-                      }
-                    >
-                      <SelectTrigger
-                        id="red-format"
-                        className="w-full border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
-                      >
-                        <SelectValue placeholder="Select a format" />
-                      </SelectTrigger>
-                      <SelectContent className="border-border/80 bg-surface text-foreground">
-                        {redTemplates.map((option) => {
-                          const optHue =
-                            formatHue[option.value] ?? "0";
-                          return (
-                            <SelectItem
-                              key={option.value}
-                              value={option.value}
-                              className="transition-all duration-200 hover:bg-surface-hover/60"
-                            >
-                              <span className="flex min-w-0 items-center gap-2.5">
-                                <span
-                                  className="inline-block h-2.5 w-2.5 shrink-0 rounded-full ring-1 ring-border"
-                                  style={{
-                                    backgroundColor: `hsl(${optHue} 70% 55%)`,
-                                  }}
-                                />
-                                <span className="truncate">{option.label}</span>
-                              </span>
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
                   {/* Gender & Name - animated wrapper */}
                   <div
-                    key={selectedFormat + "-fields"}
+                    key={selectedDocument + "-fields"}
                     className="animate-fade-up space-y-4"
                   >
                     <div className="space-y-2">
@@ -442,11 +434,11 @@ export default function REDFormatsPage() {
                             value as (typeof genderOptions)[number],
                           )
                         }
-                        disabled={selectedFormat === "discord-invite"}
+                        disabled={selectedDocument === "discord-invite"}
                       >
                         <SelectTrigger
                           id="applicant-gender"
-                          className="w-full border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border data-[disabled]:opacity-50"
+                          className="w-full border-border bg-surface-hover text-foreground transition-colors data-[disabled]:opacity-50"
                         >
                           <SelectValue placeholder="Select title" />
                         </SelectTrigger>
@@ -471,36 +463,62 @@ export default function REDFormatsPage() {
                           setApplicantName(event.target.value)
                         }
                         placeholder="Enter the applicant's name"
-                        disabled={selectedFormat === "discord-invite"}
-                        className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-border focus-visible:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={selectedDocument === "discord-invite"}
+                        className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                     </div>
+
+                    {/* Who the letter goes to. It is not a post anybody can
+                        reply to on a thread, so the only name this format
+                        needs beyond the applicant's is the recipient's. */}
+                    {isFeedbackRequest && (
+                      <div className="space-y-2">
+                        <Label htmlFor="feedback-recipient">Recipient</Label>
+                        <Input
+                          id="feedback-recipient"
+                          value={recipient}
+                          onChange={(event) =>
+                            setRecipient(event.target.value)
+                          }
+                          placeholder="Their name on GOV"
+                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Sent as a private message: Copy &amp; Open writes this
+                          name into the composer&apos;s recipient box.
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   {/* GOV application link - handed to the browser extension so
-                      it can open the post and fill this format into it. */}
-                  <div className="space-y-2">
-                    <Label htmlFor="gov-link">GOV Application Link</Label>
-                    <Input
-                      id="gov-link"
-                      value={govLink}
-                      onChange={(event) => setGovLink(event.target.value)}
-                      placeholder="Paste the GOV application post URL"
-                      className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      The browser extension opens this post and fills the format
-                      into it. Leave it empty to keep the copy-only flow.
-                    </p>
-                  </div>
+                      it can open the post and fill this format into it. A
+                      feedback request has no post to reply on. */}
+                  {!isFeedbackRequest && (
+                    <div className="space-y-2">
+                      <Label htmlFor="gov-link">GOV Application Link</Label>
+                      <Input
+                        id="gov-link"
+                        value={govLink}
+                        onChange={(event) => setGovLink(event.target.value)}
+                        placeholder="Paste the GOV application post URL"
+                        className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        The browser extension opens this post and fills the
+                        format into it. Leave it empty to keep the copy-only
+                        flow.
+                      </p>
+                    </div>
+                  )}
 
                   {/* ── Conditional fields ── */}
-                  {selectedFormat === "interview-scheduled" && (
+                  {selectedDocument === "interview-scheduled" && (
                     <div
                       key="interview"
                       className="animate-fade-up space-y-3 rounded-xl border border-border bg-surface-hover/40 p-4"
                     >
-                      <p className="text-xs font-semibold tracking-[0.18em] text-primary uppercase">
+                      <p className="eyebrow text-muted-foreground">
                         Interview details
                       </p>
                       <div className="space-y-2">
@@ -514,7 +532,7 @@ export default function REDFormatsPage() {
                             setInterviewDate(event.target.value)
                           }
                           placeholder="e.g. 15 JUL 2026"
-                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-sky-400/30 dark:focus-visible:ring-sky-500/30"
+                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
                         />
                       </div>
                       <div className="space-y-2">
@@ -529,7 +547,7 @@ export default function REDFormatsPage() {
                               setInterviewTime(event.target.value)
                             }
                             placeholder="e.g. 14:00"
-                            className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-sky-400/30 dark:focus-visible:ring-sky-500/30"
+                            className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
                           />
                           <NowTimeButton onFill={setInterviewTime} />
                         </div>
@@ -542,7 +560,7 @@ export default function REDFormatsPage() {
                       key="employment-rank"
                       className="animate-fade-up space-y-3 rounded-xl border border-border bg-surface-hover/40 p-4"
                     >
-                      <p className="text-xs font-semibold tracking-[0.18em] text-rose-700 dark:text-rose-300 uppercase">
+                      <p className="eyebrow text-rose-700 dark:text-rose-300">
                         Reinstatement offer details
                       </p>
                       <div className="space-y-2">
@@ -552,7 +570,7 @@ export default function REDFormatsPage() {
                           value={employmentRank}
                           onChange={(event) => setEmploymentRank(event.target.value)}
                           placeholder="Decided Rank"
-                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-rose-400/30 dark:focus-visible:ring-rose-500/30"
+                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
                         />
                       </div>
                       <div className="space-y-2">
@@ -560,7 +578,7 @@ export default function REDFormatsPage() {
                           <Label htmlFor="offer-tier">
                             Activity requirement
                           </Label>
-                          <span className="rounded-full bg-rose-100 dark:bg-rose-500/15 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-rose-800 dark:text-rose-200 ring-1 ring-rose-400/30">
+                          <span className="chip rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide">
                             {offerHours}
                           </span>
                         </div>
@@ -570,7 +588,7 @@ export default function REDFormatsPage() {
                         >
                           <SelectTrigger
                             id="offer-tier"
-                            className="w-full border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border"
+                            className="w-full border-border bg-surface-hover text-foreground transition-colors"
                           >
                             <SelectValue placeholder="Select activity tier" />
                           </SelectTrigger>
@@ -593,10 +611,10 @@ export default function REDFormatsPage() {
 
                   {supportsReasons && (
                     <div
-                      key={selectedFormat}
+                      key={selectedDocument}
                       className="animate-fade-up space-y-3 rounded-xl border border-border bg-surface-hover/40 p-4"
                     >
-                      <p className="text-xs font-semibold tracking-[0.18em] text-amber-700 dark:text-amber-300 uppercase">
+                      <p className="eyebrow text-amber-700 dark:text-amber-300">
                         {reasonSectionLabel}
                       </p>
                       <div className="space-y-2">
@@ -614,7 +632,7 @@ export default function REDFormatsPage() {
                                 updateReason(index, e.target.value)
                               }
                               placeholder={`Reason ${index + 1}`}
-                              className="flex-1 border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-amber-500/50 focus-visible:ring-2 focus-visible:ring-amber-400/30 dark:focus-visible:ring-amber-500/30"
+                              className="flex-1 border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
                             />
                             {reasons.length > 1 && (
                               <Button
@@ -622,7 +640,7 @@ export default function REDFormatsPage() {
                                 onClick={() => removeReason(index)}
                                 size="icon"
                                 variant="ghost"
-                                className="h-10 w-10 shrink-0 text-red-600 dark:text-red-400 transition-all duration-200 hover:scale-[1.02] hover:bg-red-50/40 dark:hover:bg-red-950/40 hover:text-red-300"
+                                className="h-10 w-10 shrink-0 text-muted-foreground transition-colors hover:text-red-600 dark:hover:text-red-400"
                               >
                                 <X className="h-4 w-4" />
                               </Button>
@@ -635,7 +653,7 @@ export default function REDFormatsPage() {
                         onClick={addReason}
                         variant="outline"
                         size="sm"
-                        className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-amber-500/40 hover:bg-amber-50/20 dark:hover:bg-amber-950/20 hover:text-amber-200"
+                        className="border-border text-muted-foreground hover:bg-surface-hover hover:text-foreground"
                       >
                         <Plus className="mr-1.5 h-3.5 w-3.5" />
                         Add reason
@@ -643,12 +661,12 @@ export default function REDFormatsPage() {
                     </div>
                   )}
 
-                  {selectedFormat === "denied" && (
+                  {selectedDocument === "denied" && (
                     <div
                       key="denied"
                       className="animate-fade-up space-y-4 rounded-xl border border-border bg-surface-hover/40 p-4"
                     >
-                      <p className="text-xs font-semibold tracking-[0.18em] text-red-700 dark:text-red-300 uppercase">
+                      <p className="eyebrow text-red-700 dark:text-red-300">
                         Denial details
                       </p>
                       <div className="space-y-2">
@@ -661,7 +679,7 @@ export default function REDFormatsPage() {
                         >
                           <SelectTrigger
                             id="denial-type"
-                            className="w-full border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-red-500/50"
+                            className="w-full border-border bg-surface-hover text-foreground transition-colors"
                           >
                             <SelectValue placeholder="Select denial type" />
                           </SelectTrigger>
@@ -688,7 +706,7 @@ export default function REDFormatsPage() {
                         >
                           <SelectTrigger
                             id="apply-other-char"
-                            className="w-full border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-red-500/50"
+                            className="w-full border-border bg-surface-hover text-foreground transition-colors"
                           >
                             <SelectValue placeholder="Select permission" />
                           </SelectTrigger>
@@ -717,7 +735,7 @@ export default function REDFormatsPage() {
                                 : Number(e.target.value),
                             )}
                           placeholder="2, 4, or more"
-                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-400/30 dark:focus-visible:ring-red-500/30"
+                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
                         />
                         <p className="text-xs text-muted-foreground">
                           Standard cooldown is 2 or 4 weeks.
@@ -741,7 +759,7 @@ export default function REDFormatsPage() {
                                   updateReason(index, e.target.value)
                                 }
                                 placeholder={`Reason ${index + 1}`}
-                                className="flex-1 border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-400/30 dark:focus-visible:ring-red-500/30"
+                                className="flex-1 border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
                               />
                               {reasons.length > 1 && (
                                 <Button
@@ -749,7 +767,7 @@ export default function REDFormatsPage() {
                                   onClick={() => removeReason(index)}
                                   size="icon"
                                   variant="ghost"
-                                  className="h-10 w-10 shrink-0 text-red-600 dark:text-red-400 transition-all duration-200 hover:scale-[1.02] hover:bg-red-50/40 dark:hover:bg-red-950/40 hover:text-red-300"
+                                  className="h-10 w-10 shrink-0 text-muted-foreground transition-colors hover:text-red-600 dark:hover:text-red-400"
                                 >
                                   <X className="h-4 w-4" />
                                 </Button>
@@ -762,7 +780,7 @@ export default function REDFormatsPage() {
                           onClick={addReason}
                           variant="outline"
                           size="sm"
-                          className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-red-500/40 hover:bg-red-50/20 dark:hover:bg-red-950/20 hover:text-red-200"
+                          className="border-border text-muted-foreground hover:bg-surface-hover hover:text-foreground"
                         >
                           <Plus className="mr-1.5 h-3.5 w-3.5" />
                           Add reason
@@ -770,99 +788,6 @@ export default function REDFormatsPage() {
                       </div>
                     </div>
                   )}
-                </div>
-              </div>
-
-              {/* ── Live Format Card ── */}
-              <div>
-                <div
-                  className={`rounded-[1.5rem] border bg-gradient-to-br p-5 transition-colors duration-200 ${activeFormat.border} ${activeFormat.accent} hover:brightness-110`}
-                >
-                  <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                    <h3 className="font-semibold text-foreground">
-                      Live Format Card
-                    </h3>
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${activeFormat.badge}`}
-                    >
-                      {activeFormat.label}
-                    </span>
-                  </div>
-
-                  <div className="space-y-3 text-sm text-foreground">
-                    {/* Applicant */}
-                    <div className="group min-w-0 rounded-2xl border border-border bg-background/45 p-4 transition-all duration-200 hover:border-border hover:bg-background/60">
-                      <p className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
-                        <span
-                          className="inline-block h-1.5 w-1.5 rounded-full"
-                          style={{ backgroundColor: `hsl(${hsl})` }}
-                        />
-                        Applicant
-                      </p>
-                      <p className="text-xl font-semibold tracking-tight text-foreground [overflow-wrap:anywhere]">
-                        {gender}{" "}
-                        {applicantName.trim() || "Applicant Name"}
-                      </p>
-                    </div>
-
-                    {/* Ranks */}
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      <div className="min-w-0 rounded-2xl border border-border bg-background/45 p-4 transition-all duration-200 hover:border-border hover:bg-background/60">
-                        <p className="mb-1 text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
-                          Saved Rank
-                        </p>
-                        <p className="truncate font-medium text-foreground">
-                          {medicCredentials.rank || (
-                            <span className="text-muted-foreground italic">
-                              Not set
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                      <div className="min-w-0 rounded-2xl border border-border bg-background/45 p-4 transition-all duration-200 hover:border-border hover:bg-background/60">
-                        <p className="mb-1 text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
-                          RED Rank
-                        </p>
-                        <p className="truncate font-medium text-foreground">
-                          {redRank || (
-                            <span className="text-muted-foreground italic">
-                              Not set
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Signature */}
-                    <div className="group min-w-0 rounded-2xl border border-border bg-background/45 p-4 transition-all duration-200 hover:border-border hover:bg-background/60">
-                      <div className="mb-2 flex items-center gap-2 text-foreground">
-                        <Signature
-                          className="h-4 w-4"
-                          style={{ color: `hsl(${hsl})` }}
-                        />
-                        <span className="font-semibold">
-                          Saved Signature
-                        </span>
-                      </div>
-                      {medicCredentials.signature ? (
-                        <Image
-                          src={medicCredentials.signature}
-                          alt="Saved signature"
-                          width={260}
-                          height={70}
-                          className="h-auto max-h-20 max-w-full w-auto rounded-md bg-white/95 p-2 object-contain ring-1 ring-border transition-all duration-200 group-hover:ring-border"
-                        />
-                      ) : (
-                        <p className="text-sm leading-relaxed text-muted-foreground">
-                          Add your signature from the{" "}
-                          <span className="font-medium text-muted-foreground">
-                            Staff Page
-                          </span>{" "}
-                          to have it dropped into each RED format.
-                        </p>
-                      )}
-                    </div>
-                  </div>
                 </div>
               </div>
             </section>
@@ -882,7 +807,7 @@ export default function REDFormatsPage() {
                   </div>
 
                   <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:w-auto">
-                    {selectedFormat === "feedback-request" && (
+                    {selectedDocument === "feedback-request" && (
                       <Button
                         onClick={() =>
                           window.open(
@@ -892,13 +817,13 @@ export default function REDFormatsPage() {
                         }
                         variant="outline"
                         size="sm"
-                        className="border-primary/40 text-primary transition-all duration-200 hover:scale-[1.02] hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+                        className="border-primary/40 text-primary hover:bg-primary/10"
                       >
                         <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
                         Open Forum
                       </Button>
                     )}
-                    {selectedFormat === "frd-feedback-request" && (
+                    {selectedDocument === "frd-feedback-request" && (
                       <Button
                         onClick={() =>
                           window.open(
@@ -908,7 +833,7 @@ export default function REDFormatsPage() {
                         }
                         variant="outline"
                         size="sm"
-                        className="border-violet-600/50 text-violet-700 dark:text-violet-300 transition-all duration-200 hover:scale-[1.02] hover:border-violet-500 hover:bg-violet-50/40 dark:hover:bg-violet-950/40 hover:text-violet-200"
+                        className="border-border text-muted-foreground hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
                       >
                         <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
                         Info Topic
@@ -916,14 +841,16 @@ export default function REDFormatsPage() {
                     )}
                     <Button
                       onClick={handleCopyAndOpen}
-                      disabled={!govLink.trim()}
+                      disabled={!formatUrl}
                       variant="outline"
                       size="sm"
-                      className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+                      className="border-border text-muted-foreground hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
                       title={
-                        govLink.trim()
-                          ? "Opens the GOV application link with this format filled in"
-                          : "Paste the GOV Application Link above first"
+                        isFeedbackRequest
+                          ? "Opens a new GOV private message with the letter pasted in"
+                          : formatUrl
+                            ? "Opens the GOV page with this format filled in"
+                            : "Paste the GOV Application Link above first"
                       }
                     >
                       <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
@@ -938,7 +865,7 @@ export default function REDFormatsPage() {
                           onClick={handleCopyTitleTag}
                           variant="outline"
                           size="sm"
-                          className={`transition-all duration-200 hover:scale-[1.02] ${
+                          className={`${
                             copiedTitleTag
                               ? "border-emerald-300/60 dark:border-emerald-500/60 bg-emerald-50/30 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300"
                               : "border-border text-muted-foreground hover:bg-surface-hover hover:text-foreground"
@@ -957,18 +884,10 @@ export default function REDFormatsPage() {
                     <Button
                       onClick={handleCopy}
                       size="default"
-                      className={`transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
+                      className={
                         copied
-                          ? "bg-emerald-600 text-foreground hover:bg-emerald-500"
+                          ? "bg-emerald-600 text-white hover:bg-emerald-500"
                           : ""
-                      }`}
-                      style={
-                        !copied
-                          ? {
-                              backgroundColor: `hsl(${hsl})`,
-                              color: "white",
-                            }
-                          : {}
                       }
                     >
                       {copied ? (
@@ -991,6 +910,7 @@ export default function REDFormatsPage() {
             </section>
           </div>
         </div>
+        ) : null}
       </PageContainer>
     </>
   );

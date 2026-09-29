@@ -152,20 +152,21 @@ export function userHasAccess(
 }
 
 /**
- * Whether the member may edit the permission matrix: `CommandPlusTeam`, or a
- * developer id in `DISCORD_ADMIN_IDS`.
+ * Whether the member may edit the permission matrix: the roles
+ * `ADMIN_PAGE_ROLES` names, or a developer id in `DISCORD_ADMIN_IDS`.
  *
- * This is the same rule `ROUTE_ACCESS` enforces on the manager page, read
- * forwards - the page gate and the API route must not be able to disagree about
- * who may save.
+ * This is the rule the middleware enforces on the manager page, read forwards -
+ * derived from the same list rather than naming a role, so the page gate and the
+ * API route cannot disagree about who may save.
  */
 export function canManageAccess(
   userRoleIds: readonly string[],
   discordId?: string,
 ): boolean {
   if (discordId && ADMIN_USER_IDS.has(discordId)) return true;
-  const id = ROLES.CommandPlusTeam.id;
-  return Boolean(id) && userRoleIds.includes(id);
+  return userRoleIds.some((id) =>
+    ADMIN_PAGE_ROLES.some((alias) => ROLES[alias].id === id),
+  );
 }
 
 /**

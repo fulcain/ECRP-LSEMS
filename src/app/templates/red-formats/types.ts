@@ -7,7 +7,6 @@ export type REDTemplateContext = {
   denialType?: "IC" | "OOC";
   applyOtherChar?: "may" | "may not";
   weeks?: number;
-  employeeName?: string;
   employmentRank?: string;
   /** Activity tier selected for the reinstatement offer (e.g. "EMT-P"). */
   offerTier?: string;

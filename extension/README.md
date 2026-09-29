@@ -60,6 +60,10 @@ gov.eclipse-rp.net  ◀── posting / PM page ─── forum-fill.js ─┘
   subject, the recipients and the body in. A payload may only hold a title
   (workflow steps that copy just a title), in which case only the subject is
   written.
+  It also serves one page that is not a post at all: a **user group's manage
+  page**, where the app's User Groups tool sends a member's name and it goes into
+  the forum's own member box. Same fill, same one-paste rule, same bar - only the
+  wording differs.
 
 **A tool hands over a whole post, not half of one.** Where a step has both a title
 and a body, every one of its copy buttons sends both - so pressing "Copy Title"
@@ -90,7 +94,10 @@ nothing at all, however clearly the post was prepared for it.
 
 **Tools that know where their post goes say so**, and the app picks that target
 for them: `posting.php` means a new post (subject + body), a `viewtopic.php` link
-means that topic's quick reply, and `ucp.php` means the PM composer. Where a tool
+means that topic's quick reply, `ucp.php?mode=compose` means the PM composer, and
+`ucp.php?i=ucp_groups&g=<id>` means that group's manage page - so a name prepared
+for one group is compared against the group it was prepared for, and never lands
+in another. Where a tool
 only links a listing (`viewforum.php`), the topic the member pasted - the LOA
 request, the applicant's personnel file, the resignation post - is used instead,
 because that is where the content actually goes.
@@ -114,9 +121,10 @@ clipboard when nothing was prepared. That is the way back after a page declined
 to paste, and the way to write a post into a section it was not prepared for. The
 key is changeable at `chrome://extensions/shortcuts`.
 
-**This extension never submits anything.** It has no code path that clicks a
-post button: the post is written into the forum's own editor and Submit is always
-your click, with the forum's own confirmation flow behind it.
+**This extension never submits anything** - not a post, and not the group page's
+add-member form. It has no code path that clicks a submit button: the text is
+written into the forum's own box and Submit is always your click, with the
+forum's own confirmation flow behind it.
 
 ### The clipboard fallback
 
@@ -190,6 +198,7 @@ is ever re-templated, fix the first list in `src/forum-fill.js`:
 | Subject | `input[name="subject"]`, `#subject` |
 | PM recipients | `input[name="username_list"]`, `#username_list` |
 | Submit button | `input[name="post"]`, `button[name="post"]` - only ever ringed, never clicked |
+| User group members | `textarea[name="usernames"]`, `#usernames` - a group's manage page, not a post |
 
 These match Eclipse's quick reply today (`<textarea name="message">` plus
 `<input name="subject" id="subject">`), which is also the full posting form's
@@ -204,6 +213,7 @@ To see what the forum really serves, open a posting page and run in the console:
 document.querySelector('textarea[name="message"], #message')
 document.querySelector('input[name="subject"]')
 document.querySelector('input[name="username_list"]') // PM composer only
+document.querySelector('textarea[name="usernames"]') // a group's manage page
 ```
 
 **App origins.** `content_scripts[0].matches` in `manifest.json` lists where the

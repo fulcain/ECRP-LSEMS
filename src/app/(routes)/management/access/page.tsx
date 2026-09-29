@@ -16,10 +16,11 @@ import { AccessMatrixEditor } from "./components/AccessMatrixEditor";
 /**
  * The live permission editor.
  *
- * The middleware already refuses this page to anyone without `CommandPlusTeam`
- * (or a `DISCORD_ADMIN_IDS` bypass), so the check below is a second lock on the
- * same door rather than the lock itself - and the page is the one route the
- * stored matrix may never rule on, so no edit made here can open or close it.
+ * The middleware already refuses this page to anyone without `ADMIN_PAGE_ROLES`
+ * or a `DISCORD_ADMIN_IDS` bypass, and `canManageAccess` reads that same list,
+ * so the check below is a second lock on the same door rather than the lock
+ * itself - and the page is the one route the stored matrix may never rule on, so
+ * no edit made here can open or close it.
  */
 
 export const metadata: Metadata = {

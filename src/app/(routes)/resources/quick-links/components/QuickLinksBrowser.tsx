@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { Clock, CornerDownLeft, Search, Star, X } from "lucide-react";
 import {
   Accordion,
@@ -12,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState, PageSection } from "@/components/ui/surface";
 import { Input } from "@/components/ui/input";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import { ROUTES } from "@/configs/routes";
 import { LinkRow } from "./LinkRow";
 import {
   linkById,
@@ -27,6 +29,12 @@ const RECENT_LIMIT = 8;
 
 type QuickLinksBrowserProps = {
   divisions: QuickLinkDivision[];
+  /**
+   * True when the caller handed one division on purpose, because a division's
+   * own section asked for just its links: the list is then that division, so
+   * there is nothing to expand and a way back to the full directory to show.
+   */
+  scoped?: boolean;
 };
 
 /**
@@ -39,7 +47,11 @@ type QuickLinksBrowserProps = {
  * anywhere, arrow keys and Enter work without the mouse, and the links a
  * member actually uses are pinned or remembered instead of hunted for again.
  */
-export function QuickLinksBrowser({ divisions }: QuickLinksBrowserProps) {
+export function QuickLinksBrowser({
+  divisions,
+  scoped = false,
+}: QuickLinksBrowserProps) {
+  const only = divisions[0];
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const [pinned, setPinned] = useLocalStorage<string[]>(PINNED_KEY, []);
@@ -161,9 +173,17 @@ export function QuickLinksBrowser({ divisions }: QuickLinksBrowserProps) {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           onKeyDown={handleSearchKeyDown}
-          aria-label="Search every division and link"
+          aria-label={
+            scoped
+              ? `Search ${only?.label ?? "this division"} links`
+              : "Search every division and link"
+          }
           aria-controls="quick-links-results"
-          placeholder="Search links, divisions or an acronym..."
+          placeholder={
+            scoped
+              ? `Search ${only?.label ?? "this division"} links...`
+              : "Search links, divisions or an acronym..."
+          }
           className="h-11 pl-9 pr-24 text-base md:text-sm"
         />
         <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1">
@@ -198,7 +218,11 @@ export function QuickLinksBrowser({ divisions }: QuickLinksBrowserProps) {
             <EmptyState
               icon={Search}
               title={`No link matches "${query.trim()}"`}
-              description="Try a shorter word, or an acronym such as BLS or FTD."
+              description={
+                scoped
+                  ? `Try a shorter word, or clear the search to see all ${only?.links.length ?? 0} of ${only?.label ?? "this division"}'s links.`
+                  : "Try a shorter word, or an acronym such as BLS or FTD."
+              }
               action={
                 <Button variant="outline" onClick={() => setQuery("")}>
                   Clear search
@@ -286,53 +310,82 @@ export function QuickLinksBrowser({ divisions }: QuickLinksBrowserProps) {
             </PageSection>
           )}
 
-          <PageSection
-            title="All divisions"
-            description="Open a division to see everything in it."
-            bodyClassName="p-0"
-          >
-            <Accordion type="multiple" className="w-full">
-              {divisions.map((division) => (
-                <AccordionItem
-                  key={division.label}
-                  value={division.label}
-                  className="border-b border-border last:border-b-0"
-                >
-                  <AccordionTrigger className="px-5 py-3.5 text-sm font-medium text-foreground hover:no-underline">
-                    <span className="flex min-w-0 items-center gap-3">
-                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface-hover">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={division.image}
-                          alt=""
-                          className="h-5 w-5 object-contain"
-                        />
-                      </span>
-                      <span className="truncate">{division.label}</span>
-                      <span className="shrink-0 rounded-md bg-surface-hover px-1.5 py-0.5 text-[11px] text-muted-foreground">
-                        {division.links.length}
-                      </span>
-                    </span>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-2 pb-3 pt-0">
-                    <ul className="space-y-0.5">
-                      {division.links.map((entry) => (
-                        <li key={entry.id}>
-                          <LinkRow
-                            entry={entry}
-                            terms={[]}
-                            pinned={pinned.includes(entry.id)}
-                            onTogglePin={togglePin}
-                            onOpen={recordOpen}
+          {scoped && only ? (
+            <PageSection
+              title={`All ${only.label} links`}
+              description="Search, pins and recents on this page cover this division only."
+              action={
+                <Button asChild variant="ghost" size="sm">
+                  <Link href={ROUTES.resources.quickLinks}>
+                    Show every division
+                  </Link>
+                </Button>
+              }
+              bodyClassName="p-2"
+            >
+              <ul className="space-y-0.5">
+                {only.links.map((entry) => (
+                  <li key={entry.id}>
+                    <LinkRow
+                      entry={entry}
+                      terms={[]}
+                      pinned={pinned.includes(entry.id)}
+                      onTogglePin={togglePin}
+                      onOpen={recordOpen}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </PageSection>
+          ) : (
+            <PageSection
+              title="All divisions"
+              description="Open a division to see everything in it."
+              bodyClassName="p-0"
+            >
+              <Accordion type="multiple" className="w-full">
+                {divisions.map((division) => (
+                  <AccordionItem
+                    key={division.label}
+                    value={division.label}
+                    className="border-b border-border last:border-b-0"
+                  >
+                    <AccordionTrigger className="px-5 py-3.5 text-sm font-medium text-foreground hover:no-underline">
+                      <span className="flex min-w-0 items-center gap-3">
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface-hover">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={division.image}
+                            alt=""
+                            className="h-5 w-5 object-contain"
                           />
-                        </li>
-                      ))}
-                    </ul>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </PageSection>
+                        </span>
+                        <span className="truncate">{division.label}</span>
+                        <span className="shrink-0 rounded-md bg-surface-hover px-1.5 py-0.5 text-[11px] text-muted-foreground">
+                          {division.links.length}
+                        </span>
+                      </span>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-2 pb-3 pt-0">
+                      <ul className="space-y-0.5">
+                        {division.links.map((entry) => (
+                          <li key={entry.id}>
+                            <LinkRow
+                              entry={entry}
+                              terms={[]}
+                              pinned={pinned.includes(entry.id)}
+                              onTogglePin={togglePin}
+                              onOpen={recordOpen}
+                            />
+                          </li>
+                        ))}
+                      </ul>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </PageSection>
+          )}
         </>
       )}
     </div>

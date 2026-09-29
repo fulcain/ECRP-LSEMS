@@ -4,6 +4,8 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Mail, UserPlus, Users } from "lucide-react";
 
+import { DiscussionBoardComposer } from "@/components/discussion-board-composer";
+
 import { TabBar, type Tab } from "@/components/ui/tab-bar";
 
 import { CurrentEMRsTable } from "@/components/current-emrs/current-emrs-table";
@@ -31,7 +33,9 @@ const TABS: Tab<CommandTab>[] = [
   },
   {
     value: "emails",
-    label: "Emails",
+    // The value stays "emails": it is what the stored tab and any bookmarked
+    // `?tab=` say, and only the label moved.
+    label: "Emails & Boards",
     icon: Mail,
     accent: "border-amber-300/40 dark:border-amber-400/40 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300",
   },
@@ -92,10 +96,13 @@ function CommandPageContent() {
       {tab === "emrs" && <CurrentEMRsTable />}
       {tab === "ftos" && <FtoManagementCard />}
       {tab === "emails" && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <FtiPromotionCard />
-          <EmrTrainingTimeCard />
-          <EmrDischargeCard />
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <FtiPromotionCard />
+            <EmrTrainingTimeCard />
+            <EmrDischargeCard />
+          </div>
+          <DiscussionBoardComposer boardKey="ftdCommandBoard" />
         </div>
       )}
     </>

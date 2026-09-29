@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { Check, Copy, ExternalLink, Mail } from "lucide-react";
+import Link from "next/link";
+import { Check, Copy, ExternalLink, Mail, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +13,7 @@ import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
 import { pickPostTarget } from "@/app/helpers/forumHandoff";
 import { GOV_PM_COMPOSE_URL } from "@/app/helpers/govLinks";
+import { userGroupsHref } from "@/lib/user-groups";
 
 import {
   generateFtiPromotionEmailBBCode,
@@ -113,6 +115,17 @@ export function FtiPromotionCard() {
           >
             <ExternalLink className="h-4 w-4 mr-1.5" />
             Copy &amp; Open PM
+          </Button>
+          {/* The promotion is the email; the forum group is the other half of it.
+              No name travels - this card holds the sender's details, not the
+              member's - so the tool opens on the right group with the box empty. */}
+          <Button asChild size="sm" variant="outline" className="px-6">
+            <Link
+              href={userGroupsHref({ group: "ftd-instructor" })}
+            >
+              <Users className="h-4 w-4 mr-1.5" />
+              Add to the FTD Instructor group
+            </Link>
           </Button>
         </div>
       </CardContent>

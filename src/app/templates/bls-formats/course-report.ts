@@ -1,5 +1,28 @@
 export type CourseReportType = "joint" | "normal" | "ots";
 
+/**
+ * The three reports this module renders, with the name the workspace shows for
+ * each. The paperwork picker reads its cards from here, so a report cannot be
+ * named in one place and left stale in the other.
+ */
+export const COURSE_REPORTS: readonly {
+  value: CourseReportType;
+  label: string;
+}[] = [
+  {
+    value: "joint",
+    label: "Joint BLS Course Reports",
+  },
+  {
+    value: "normal",
+    label: "Normal BLS Course Reports",
+  },
+  {
+    value: "ots",
+    label: "On the Spot Classes",
+  },
+];
+
 export type CourseReportContext = {
   type: CourseReportType;
   /** "11/JUL/2026" */

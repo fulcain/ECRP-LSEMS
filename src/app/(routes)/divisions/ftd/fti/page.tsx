@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { toast, ToastContainer } from "react-toastify";
 import {
   BookOpen,
@@ -10,6 +11,7 @@ import {
   ExternalLink,
   FileText,
   UserCheck,
+  Users,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -22,10 +24,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { handOffForumPost } from "@/app/helpers/forumHandoff";
+import {
+  handOffAndOpenForumPost,
+  handOffForumPost,
+} from "@/app/helpers/forumHandoff";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { useMedic } from "@/app/context/MedicContext";
 import { DIVISIONS } from "@/configs/roles";
+import { DiscussionBoardComposer } from "@/components/discussion-board-composer";
+import { userGroupsHref } from "@/lib/user-groups";
 
 import {
   generateCertificationPaperwork,
@@ -339,22 +346,35 @@ export default function FtiPage() {
   // Every one of these is a GOV post - trainer info, certification paperwork and
   // the divisional file all get pasted into an FTO's profile - so the browser
   // extension is handed the body and fills whichever editor opens next.
+  const lastCopyRef = useRef<{ post: { feature: string }; text: string } | null>(
+    null,
+  );
   const copyToClipboard = async (text: string, label: string) => {
-    const handedOff = handOffForumPost(
-      { feature: `the FTI ${label.toLowerCase()} card` },
-      text,
-    );
+    const post = { feature: `the FTI ${label.toLowerCase()} card` };
+    const handedOff = handOffForumPost(post, text);
+    lastCopyRef.current = { post, text };
     try {
       await navigator.clipboard.writeText(text);
       toast.success(
         handedOff
-          ? `${label} copied - press Fill on the GOV page to put it in`
+          ? `${label} copied - press Alt+Shift+F on the GOV page to put it in`
           : `${label} copied to clipboard`,
         { theme: "dark" },
       );
     } catch {
       toast.error("Couldn't copy to clipboard - check browser permissions.", { theme: "dark" });
     }
+  };
+
+  // Opening the profile is the other half of those copies: it hands the page the
+  // body Copy was pressed for last, marked, so the profile pastes it in once.
+  // Nothing copied yet means there is nothing to paste, so it only opens.
+  const openFtoProfile = () => {
+    const url = ftoProfileLink.trim();
+    if (!url) return;
+    const last = lastCopyRef.current;
+    if (last) handOffAndOpenForumPost({ ...last.post, url }, last.text);
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   // Content only: the FTD section layout owns the container and the heading.
@@ -550,13 +570,7 @@ export default function FtiPage() {
                 size="sm"
                 variant="outline"
                 disabled={!ftoProfileLink.trim()}
-                onClick={() =>
-                  window.open(
-                    ftoProfileLink.trim(),
-                    "_blank",
-                    "noopener,noreferrer",
-                  )
-                }
+                onClick={openFtoProfile}
                 className="px-6"
                 title={
                   ftoProfileLink.trim()
@@ -566,6 +580,19 @@ export default function FtiPage() {
               >
                 <ExternalLink className="h-4 w-4 mr-2" />
                 Open FTO Profile
+              </Button>
+              {/* Certified today means a forum group changes today, and this
+                  page already knows the student - so it hands the name over. */}
+              <Button asChild size="sm" variant="outline" className="px-6">
+                <Link
+                  href={userGroupsHref({
+                    member: studentName,
+                    group: "ftd-instructor",
+                  })}
+                >
+                  <Users className="h-4 w-4 mr-2" />
+                  Add them to the FTD Instructor group
+                </Link>
               </Button>
             </div>
           </div>
@@ -607,6 +634,11 @@ export default function FtiPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* ---- Instructor Discussion Board ---- */}
+      {/* The instructors' board: it used to be a card in the paperwork picker,
+          where a member writing a session had to go looking for it. */}
+      <DiscussionBoardComposer boardKey="ftdInstructorBoard" />
     </div>
   );
 }

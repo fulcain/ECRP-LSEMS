@@ -39,6 +39,8 @@ export const ROUTES = {
     quickLinks: "/resources/quick-links",
     availability: "/resources/availability",
     browserExtension: "/resources/browser-extension",
+    /** Adding a member to one of the forum's own groups - open to all staff. */
+    userGroups: "/resources/user-groups",
   },
   management: {
     supervisor: "/management/supervisor",

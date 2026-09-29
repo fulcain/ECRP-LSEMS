@@ -193,15 +193,15 @@ Fills GOV forum posts and PMs with the BBCode the LSEMS app prepared - title, re
 **Single purpose:**
 
 ```
-Fill the GOV forum's own post and private-message editors with the BBCode an LSEMS member prepared in the LSEMS app, so a prepared post never has to be pasted by hand: open the posting page, press Fill, and the title, recipients and body are written in.
+Fill the GOV forum's own post and private-message editors with the BBCode an LSEMS member prepared in the LSEMS app, so a prepared post never has to be pasted by hand: the page Copy & Open opens arrives with the title, recipients and body written in, and anything else is one shortcut away.
 ```
 
 **Detailed description:**
 
 ```
-The LSEMS app writes the paperwork - promotion and resignation steps, LOA approvals, meeting agendas, course reports, division emails, FTO requests. This extension carries that text into the GOV forum's own editor: press Copy & Open in the app, land on the forum page, and press Fill on the bar in the corner - the subject, the recipients and the BBCode are written into the form for you to review.
+The LSEMS app writes the paperwork - promotion and resignation steps, LOA approvals, meeting agendas, course reports, division emails, FTO requests. This extension carries that text into the GOV forum's own editor: press Copy & Open in the app and the page it opens fills itself in, or copy a post and press Alt+Shift+F on the page you are on - the subject, the recipients and the BBCode are written into the form for you to review.
 
-It writes nothing on its own. Opening a page, reloading it, or using the forum's own Preview never fills anything: the post waits until you press Fill. It never posts either - the Submit button is always yours to press.
+It only ever pastes a post you asked for, and only once: Copy & Open marks the post for the one page it opens, and a post that has already been pasted stays put, so a reload, a forum Preview or reopening the page leaves the editor alone. Any other page waits for Alt+Shift+F. It never posts either - the Submit button is always yours to press.
 
 What it fills:
 - a posting page (posting.php?mode=post): subject and message
@@ -223,7 +223,7 @@ Built by and for the LSEMS department of Eclipse RP.
 | --- | --- |
 | `storage` | Holds the prepared post - title, BBCode, target page - in the browser's own extension storage until it is filled or cleared. |
 | `clipboardWrite` | Keeps the app's copy buttons working when the page's own clipboard write is blocked, and lets the popup re-copy a post. |
-| `clipboardRead` | The clipboard fallback: a fill from the clipboard happens only when the member presses Fill or Alt+Shift+F, never on its own. |
+| `clipboardRead` | The clipboard fallback: a fill from the clipboard happens only when the member presses Fill from clipboard or Alt+Shift+F, never on its own. |
 | `https://gov.eclipse-rp.net/*` | The only site the extension writes to - the forum whose editor it fills. |
 | App origins (content script) | Receives the prepared post, and nothing else, from the LSEMS app's own pages. |
 | Remote code | **No.** Everything it runs is inside the package; it fetches nothing and loads no remote scripts. |

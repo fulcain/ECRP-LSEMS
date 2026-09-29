@@ -7,7 +7,7 @@ export const frdFeedbackRequestTemplate: REDTemplateDefinition = {
   border: "border-violet-300/30 dark:border-violet-400/30",
   badge: "bg-violet-100 dark:bg-violet-500/20 text-violet-100 ring-1 ring-violet-400/40",
   renderBody: ({
-    employeeName,
+    applicant,
     medicName,
     medicRank,
     medicSignature,
@@ -17,7 +17,7 @@ export const frdFeedbackRequestTemplate: REDTemplateDefinition = {
       : `[b]Signature[/b]: [Add your saved signature in Staff Page]`;
     const nameLine = medicName || "[i]Your Name[/i]";
     const rankLine = medicRank || "Rank, Recruitment Division";
-    const applicant = employeeName?.trim() || "Firstname Lastname";
+    const reformee = applicant?.trim() || "Firstname Lastname";
 
     return `[img]https://i.ibb.co/7xQvQQQR/HNP4ks-W.png[/img]
 [divbox=white]
@@ -28,7 +28,7 @@ export const frdFeedbackRequestTemplate: REDTemplateDefinition = {
 [hr][/hr]
 Good Day,
 
-I am reaching out to you today as a representative from the LSEMS Recruitment and Employment Division. One of our Applicants, [b]${applicant}[/b], has indicated that they have undergone the SADOC's Felon Reformation Program, and we would like to request your feedback on them, along with access to their FRD File.
+I am reaching out to you today as a representative from the LSEMS Recruitment and Employment Division. One of our Applicants, [b]${reformee}[/b], has indicated that they have undergone the SADOC's Felon Reformation Program, and we would like to request your feedback on them, along with access to their FRD File.
 
 [ooc]We are requesting both IC and OOC feedback.[/ooc]
 

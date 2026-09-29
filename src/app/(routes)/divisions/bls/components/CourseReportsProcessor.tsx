@@ -25,7 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TabBar, type Tab } from "@/components/ui/tab-bar";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -45,28 +44,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 const COPIED_FLASH_MS = 1800;
 
-const REPORT_OPTIONS: Tab<CourseReportType>[] = [
-  {
-    value: "joint",
-    label: "Joint BLS Course Reports",
-    icon: GraduationCap,
-    accent: "border-cyan-300/40 dark:border-cyan-400/40 bg-cyan-100 dark:bg-cyan-500/20 text-cyan-700 dark:text-cyan-300",
-  },
-  {
-    value: "normal",
-    label: "Normal BLS Course Reports",
-    icon: GraduationCap,
-    accent: "border-emerald-300/40 dark:border-emerald-400/40 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300",
-  },
-  {
-    value: "ots",
-    label: "On the Spot Classes",
-    icon: GraduationCap,
-    accent: "border-violet-300/40 dark:border-violet-400/40 bg-violet-100 dark:bg-violet-500/20 text-violet-700 dark:text-violet-300",
-  },
-];
-
-const HUE = 190; // cyan accent for the course reports tab
+const HUE = 190; // cyan accent for the course report builder
 
 /** Strips non-digits and groups with commas: "10000" → "10,000" */
 function formatFunds(raw: string): string {
@@ -105,38 +83,12 @@ const REPORT_TOPIC_URLS: Record<CourseReportType, string> = {
   ots: "https://gov.eclipse-rp.net/viewtopic.php?t=129042",
 };
 
-export function CourseReportsProcessor() {
+export function CourseReportsProcessor({
+  reportType,
+}: {
+  reportType: CourseReportType;
+}) {
   const { medicCredentials, divisionRanks } = useMedic();
-  const [reportType, setReportType] = useLocalStorage<CourseReportType>(
-    "bls-course-report-type",
-    "joint",
-  );
-
-  // Sync initial report type from URL query param (takes priority over localStorage)
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const fromUrl = params.get("type") as CourseReportType | null;
-    if (fromUrl && REPORT_OPTIONS.some((o) => o.value === fromUrl)) {
-      setReportType(fromUrl);
-    }
-  }, [setReportType]);
-
-  // Sync URL when report type changes (skip initial mount)
-  const reportFirstRender = useRef(true);
-  useEffect(() => {
-    if (reportFirstRender.current) {
-      reportFirstRender.current = false;
-      return;
-    }
-    const params = new URLSearchParams(window.location.search);
-    params.delete("format");
-    params.set("type", reportType);
-    window.history.replaceState(
-      null,
-      "",
-      `${window.location.pathname}?${params.toString()}`,
-    );
-  }, [reportType]);
 
   // Every input persists to localStorage so a refresh never wipes the draft.
   const [dateIso, setDateIso] = useLocalStorage<string>("bls-cr-date", "");
@@ -379,15 +331,6 @@ export function CourseReportsProcessor() {
           animation: crCheckPop 0.4s ease-out both;
         }
       `}</style>
-      {/* ── Sub-tab selector (Joint / Normal) ── */}
-      <TabBar
-        tabs={REPORT_OPTIONS}
-        active={reportType}
-        onChange={setReportType}
-        ariaLabel="BLS course report type"
-        className="mb-6"
-      />
-
       {/* ── Course Pricing Guide ── */}
       <div
         className="cr-animate-fade-up relative mb-6 overflow-hidden rounded-[1.5rem] border bg-[linear-gradient(135deg,hsl(190_80%_96%_/_0.9),hsl(190_85%_90%_/_0.95))] border-[hsl(190_70%_55%_/_0.4)] transition-colors duration-200 dark:bg-[linear-gradient(135deg,hsl(190_65%_8%_/_0.9),hsl(190_50%_3%_/_0.95))]"

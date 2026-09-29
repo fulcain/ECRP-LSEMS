@@ -919,7 +919,7 @@ export function LOAProcessor() {
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-[11px] text-muted-foreground">
                 {requestTopicUrl
-                  ? "Copy & Open Request opens the request topic with this reply ready: press Fill on the page to write it in, then Submit."
+                  ? "Copy & Open Request opens the request topic with this reply already written into its reply box - review it, then Submit."
                   : "Paste the Request Form Link above to unlock Copy & Open Request, which opens that topic with the reply already written into it."}
               </p>
               <Button asChild variant="ghost" size="sm">

@@ -2,6 +2,7 @@ import { Stethoscope } from "lucide-react";
 import type { ContractWorkflow } from "../types";
 import { DASHBOARD_URL, staffRosterEntry } from "../constants";
 import { GOV_STAFF_ROSTER_EDIT_URL } from "@/app/helpers/govLinks";
+import { userGroupsHref } from "@/lib/user-groups";
 
 
 export const emtpWorkflow: ContractWorkflow = {
@@ -38,6 +39,18 @@ export const emtpWorkflow: ContractWorkflow = {
           label: "User Control Panel",
           url: "https://gov.eclipse-rp.net/ucp.php",
           description: "Open the government site User Control Panel.",
+        },
+        {
+          label: "Open User Groups",
+          description:
+            "Open the app's User Groups tool with this employee's name and the EMT-P group ready to add them to.",
+          internal: {
+            href: userGroupsHref({
+              member: "{{applicantName}}",
+              group: "emt-p",
+            }),
+            label: "User Groups",
+          },
         },
       ],
     },

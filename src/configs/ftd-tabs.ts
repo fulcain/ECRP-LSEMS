@@ -45,7 +45,8 @@ export const FTD_TABS = [
     label: "Paperwork",
     href: ROUTES.divisions.ftd.paperwork,
     title: "Paperwork",
-    description: "Choose a paperwork format to begin.",
+    description:
+      "Everything you write for GOV - sessions, ride-alongs and the boards - chosen in one place.",
     accent: "border-sky-300/40 dark:border-sky-400/40 bg-sky-100 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300",
   },
   {

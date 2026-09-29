@@ -25,7 +25,14 @@
 
 import { headerLinks } from "@/components/layout/header/configs/HeaderLinks";
 import { ROUTES } from "@/configs/routes";
-import { ADMIN_USER_IDS, ROLES, type RoleName } from "@/configs/roles";
+import {
+  ADMIN_USER_IDS,
+  ADMIN_PAGE_ROLES,
+  EVERY_PAGE_ROLES,
+  ROLES,
+  isHiddenFromMatrix,
+  type RoleName,
+} from "@/configs/roles";
 import {
   EDITABLE_ENTRIES,
   LOCKED_ROUTES,
@@ -85,8 +92,14 @@ const line = (text = "") => console.log(text);
 line();
 line("Access model  (the permission matrix, in the Global Config)");
 line(`  no stored row   every employee  (${fallbackRolesForRoute(ROUTES.workspace.staff).join(", ")})`);
-line("  never locked out   the Command ranks and CommandPlusTeam");
-line(`  always in the code   ${[...LOCKED_ROUTES].join(", ")} - CommandPlusTeam only, never stored`);
+line(
+  `  never locked out   ${EVERY_PAGE_ROLES.map((alias) => ROLES[alias].name).join(", ")}`,
+);
+line(
+  `  always in the code   ${[...LOCKED_ROUTES].join(", ")} - ${ADMIN_PAGE_ROLES.map(
+    (alias) => ROLES[alias].name,
+  ).join(" and ")}, never stored`,
+);
 line(
   `  pages   ${EDITABLE_ENTRIES.length} editable, ${MANAGED_ENTRIES.length - EDITABLE_ENTRIES.length} locked`,
 );
@@ -189,6 +202,30 @@ expect(
   ),
   true,
 );
+
+// ── The roles the matrix hides hold every page by name ─────────────────────
+// A role the editor neither lists nor offers has to be granted in the code, or
+// it could never be granted at all - so every page it claims is asserted here,
+// the permission editor included, whatever the store says.
+
+const hiddenRoles = (Object.keys(ROLES) as RoleName[]).filter(isHiddenFromMatrix);
+expect("the registry hides at least one role from the editor", hiddenRoles.length > 0, true);
+for (const alias of hiddenRoles) {
+  expect(
+    `${alias} opens every page, the permission editor included`,
+    [...editableRoutes, ...LOCKED_ROUTES].filter(
+      (path) => !userHasAccess(path, member(alias)),
+    ).length,
+    0,
+  );
+  expect(
+    `a row of nobody still leaves ${alias} every page`,
+    editableRoutes.filter(
+      (path) => !userHasAccess(path, member(alias), undefined, everythingStored),
+    ).length,
+    0,
+  );
+}
 
 // ── The permission editor, decided in the code and nowhere else ────────────
 

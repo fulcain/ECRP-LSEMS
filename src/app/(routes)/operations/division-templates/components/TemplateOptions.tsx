@@ -1,5 +1,6 @@
 import { Divisions } from "@/app/constants/divisions";
-import BBCodeEditor from "@/app/(routes)/operations/division-templates/components/BBCodeEditor";
+import { GOV_PM_COMPOSE_URL } from "@/app/helpers/govLinks";
+import { BBCodeEditor } from "@/components/ui/bbcode-editor";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -207,7 +208,7 @@ export default function TemplateOptions({
               </Button>
 
               <Link
-                href="https://gov.eclipse-rp.net/ucp.php?i=pm&mode=compose"
+                href={GOV_PM_COMPOSE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
               >

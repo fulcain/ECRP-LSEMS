@@ -13,6 +13,41 @@ export type ChangeLogEntry = {
 
 export const changeLog: ChangeLogEntry[] = [
   {
+    date: "Sep 29, 2026",
+    changes: [
+      {
+        type: "feature",
+        description:
+          "New User Groups page under Resources, open to everyone: beside a name box it lists the whole forum list - the department, its ranks, commands and directors, and every division's own groups, with a search box to find the right one - and picking a group opens its page on GOV with the member's name already filled in. Press Submit and it is done; without the browser extension the name goes on your clipboard to paste in. An extension older than the one the app ships says so rather than opening a page with the box still empty.",
+      },
+      {
+        type: "feature",
+        description:
+          "A division now offers its own forum groups from its own page - the button beside Quick Links on BLS and RED - and FTO Creation has the same one beside its copy buttons. Both open the User Groups list filtered to that division's groups.",
+      },
+      {
+        type: "change",
+        description:
+          "The two RED feedback requests are sent as private messages to a person rather than posted on a board: the builder asks for a Recipient beside the applicant's name, and Copy & Open opens a new GOV private message with that name in the recipient box and the letter already written in it.",
+      },
+      {
+        type: "change",
+        description:
+          "BLS, RED and FTD paperwork now open on one 'what are you writing?' card: pick the format first and its builder opens underneath, and use Change to pick a different one. The course report tabs and the Live Format Card are gone.",
+      },
+      {
+        type: "change",
+        description:
+          "The BLS upcoming-courses listing is now a single card - choose inside the builder whether you are adding a class, moving one or striking one off.",
+      },
+      {
+        type: "feature",
+        description:
+          "Legal Faction Management now reaches every page in the app.",
+      },
+    ],
+  },
+  {
     date: "Sep 26, 2026",
     changes: [
       {

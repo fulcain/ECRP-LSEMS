@@ -16,6 +16,8 @@
  * answers its own message a failing test rather than a spinning tab.
  */
 import { readFileSync, readdirSync } from "node:fs";
+import { divisions } from "@/app/constants/divisions";
+import { DISCUSSION_BOARDS } from "@/app/constants/divisions/discussion-boards";
 
 const listeners = [];
 const store = {};
@@ -257,6 +259,115 @@ expect(
   /function reportNoEditor\(/.test(fillSource) && /void reportNoEditor\(\)/.test(fillSource),
   true,
 );
+
+/* ---- a user group's page is filled too, and it is not a post ---- */
+// The User Groups tool hands a member's name to a group's own manage page, which
+// is not a posting form at all: the name belongs in the forum's `usernames` box.
+// It goes in through the same path a post does - written, marked as filled, then
+// spent - and the page is compared the same way, so a name prepared for one
+// group can never land in another. One thing it must never do is press Submit:
+// adding the member stays the member's click.
+expect(
+  "the extension knows the user group's member box",
+  /textarea\[name="usernames"\]/.test(fillSource),
+  true,
+);
+expect(
+  "a page with no post editor falls back to it",
+  /function findGroupSurface\(usernames\)/.test(fillSource) &&
+    /return usernames \? findGroupSurface\(usernames\) : null;/.test(fillSource),
+  true,
+);
+expect(
+  "a group's own page is a target in its own right",
+  /if \(group && url\.searchParams\.get\("i"\) === "ucp_groups"\) return "group:" \+ group;/.test(
+    fillSource,
+  ) &&
+    /key\.indexOf\("group:"\) === 0/.test(fillSource),
+  true,
+);
+expect(
+  "so the group it was prepared for is the group it fills",
+  /pageKey: targetKey\(action, location\.href\) \|\| targetKey\(location\.href\) \|\| ""/.test(
+    fillSource,
+  ) && /return wanted === surface\.pageKey;/.test(fillSource),
+  true,
+);
+expect(
+  "the member box is named for what it is",
+  /surface\.kind === "group"/.test(fillSource),
+  true,
+);
+expect(
+  "and nothing presses Submit for the member",
+  /\.click\(\)|\.submit\(\)|requestSubmit/.test(fillSource),
+  false,
+);
+
+const userGroupTool = readFileSync("src/components/user-group-add.tsx", "utf8");
+expect(
+  "the User Groups tool hands the name to the page it opens",
+  /handOffAndOpenForumPost\(/.test(userGroupTool),
+  true,
+);
+expect(
+  "and leaves it on the clipboard for a browser without the extension",
+  /navigator\.clipboard\.writeText\(member\)/.test(userGroupTool),
+  true,
+);
+// An older copy answers the app and fills a post, but knows nothing about a
+// group's member box, which landed in 1.6.0 - so "the extension is installed"
+// is not "it will fill this box". The tool compares the version it reports with
+// the one the app ships and says which, instead of promising a fill that never
+// arrives.
+expect(
+  "the tool asks which extension version is running",
+  /onForumPosterReady\(/.test(userGroupTool),
+  true,
+);
+expect(
+  "and compares it with the one this app ships",
+  /isVersionOlder\(posterVersion, shippedVersion\)/.test(userGroupTool) &&
+    /shippedVersion/.test(
+      readFileSync(
+        "src/app/(routes)/resources/user-groups/page.tsx",
+        "utf8",
+      ),
+    ),
+  true,
+);
+expect(
+  "an older copy is named, and not promised a fill it cannot do",
+  /toast\.warn\(/.test(userGroupTool) &&
+    /older than the v\$\{shippedVersion\}/.test(userGroupTool),
+  true,
+);
+// A division's own groups are offered from the division's own page: the header
+// button carries the set's label (read back from the declaration, so the
+// forum's name for a division is not retyped) and the FTO creation card hands
+// the applicant's name over with it.
+expect(
+  "the tool opens the list on the search a link brought",
+  /USER_GROUP_SEARCH_PARAM/.test(userGroupTool),
+  true,
+);
+expect(
+  "each division page offers its own set",
+  /<DivisionUserGroupsLink group="bls" \/>/.test(
+    readFileSync("src/app/(routes)/divisions/bls/page.tsx", "utf8"),
+  ) &&
+    /<DivisionUserGroupsLink group="red" \/>/.test(
+      readFileSync("src/app/(routes)/divisions/red/page.tsx", "utf8"),
+    ),
+  true,
+);
+expect(
+  "and FTO creation hands the name over with the division's groups",
+  /govGroupSetOf\("ftd"\)/.test(
+    readFileSync("src/components/employee-stats/components/FtoCreationCard.tsx", "utf8"),
+  ),
+  true,
+);
 expect("the auto-fill setting is gone with it", "autoFill" in globalThis.LSEMS.DEFAULT_SETTINGS, false);
 expect("the guard for an unasked paste is gone with it", "looksLikePost" in globalThis.LSEMS, false);
 expect(
@@ -325,6 +436,55 @@ expect(
   "only the opening-handoff helper marks a post for auto-fill",
   autoFillWriters,
   ["src/app/helpers/forumHandoff.ts"],
+);
+
+// An opener must not leave a prepared post behind, and two of them open a page
+// the member has not pasted a link for yet: the RED format page knows the
+// posting page of two of its formats, and the FTI card opens the profile the
+// copy beside it was prepared for. Both have to hand the post over as they open.
+const redFormatsPage = readFileSync(
+  "src/app/(routes)/divisions/red/page.tsx",
+  "utf8",
+);
+expect(
+  "a format that names its own posting page can Copy & Open without a pasted link",
+  /govLink\.trim\(\) \|\| formatPostTarget/.test(
+    redFormatsPage,
+  ),
+  true,
+);
+// The two feedback requests are letters to a person, not posts: they leave as
+// private messages, so Copy & Open is the composer and the name the page asks
+// for is the PM's recipient. A link pasted for some earlier post must not win
+// over that - the member is writing to somebody, not replying on their thread.
+expect(
+  "a feedback request opens the private-message composer",
+  /"feedback-request": GOV_PM_COMPOSE_URL/.test(redFormatsPage) &&
+    /"frd-feedback-request": GOV_PM_COMPOSE_URL/.test(redFormatsPage),
+  true,
+);
+expect(
+  "and the name typed for it travels as the PM's recipient",
+  /recipient: feedbackRecipient \|\| undefined/.test(redFormatsPage),
+  true,
+);
+expect(
+  "so a link pasted for another post cannot redirect it",
+  /const formatUrl = isFeedbackRequest\s*\?\s*GOV_PM_COMPOSE_URL/.test(
+    redFormatsPage,
+  ),
+  true,
+);
+const ftiPage = readFileSync(
+  "src/app/(routes)/divisions/ftd/fti/page.tsx",
+  "utf8",
+);
+expect(
+  "opening the FTO profile pastes the body copied last into it",
+  /if \(last\) handOffAndOpenForumPost\(\{ \.\.\.last\.post, url \}, last\.text\)/.test(
+    ftiPage,
+  ),
+  true,
 );
 
 // A payload with nothing in it must never wipe a good queued post.
@@ -485,6 +645,158 @@ expect(
   "the hand install leaves the listing art out",
   nested.some((name) => name.includes("/store/")),
   false,
+);
+
+/* ---- every discussion board has somewhere for its post to land ---- */
+// A board is only useful if the page it opens is one the extension can fill:
+// a posting form in the section the board names. A typo'd forum id, or a board
+// left pointing at a division that no longer exists, would otherwise only show
+// up as a post that lands in the wrong place - or nowhere.
+for (const [key, board] of Object.entries(DISCUSSION_BOARDS)) {
+  expect(
+    `${key} opens a GOV posting page`,
+    /^https:\/\/gov\.eclipse-rp\.net\/posting\.php\?mode=post&f=\d+$/.test(board.url),
+    true,
+  );
+  expect(
+    `${key} is written in a division that exists`,
+    divisions.some((division) => division.key === board.division),
+    true,
+  );
+}
+
+/* ---- every declared format is offered by its division's picker ---- */
+// The paperwork picker is the only way a member reaches a format now, and its
+// groups name each one by hand. A template no group lists would still build and
+// would simply be unreachable from the page, so it is asserted here - the same
+// way a board with nowhere to post is.
+const PICKER_SOURCES = {
+  BLS: {
+    picker: "src/app/(routes)/divisions/bls/components/paperwork-documents.ts",
+    templates: "src/app/templates/bls-formats",
+  },
+  RED: {
+    picker: "src/app/(routes)/divisions/red/components/paperwork-documents.ts",
+    templates: "src/app/templates/red-formats",
+  },
+};
+for (const [name, { picker: pickerPath, templates }] of Object.entries(
+  PICKER_SOURCES,
+)) {
+  // Read from source rather than importing: the template modules import their
+  // types without `type`, which Node's loader cannot elide.
+  const declared = readdirSync(templates)
+    .filter((file) => file.endsWith(".ts") && file !== "types.ts")
+    .flatMap((file) =>
+      [
+        ...readFileSync(`${templates}/${file}`, "utf8").matchAll(
+          /^\s*value:\s*"([^"]+)",/gm,
+        ),
+      ].map((match) => match[1]),
+    );
+  expect(`${name} declares its formats`, declared.length > 0, true);
+
+  const picker = readFileSync(pickerPath, "utf8");
+  for (const value of declared) {
+    expect(
+      `${name} "${value}" is offered by the paperwork picker`,
+      picker.includes(`"${value}"`),
+      true,
+    );
+  }
+}
+
+/* ---- the upcoming-courses listing is one card whose change is its dropdown ---- */
+// The listing is a single post edited in place, so the picker offers one card
+// and the add/reschedule/cancel choice lives in the builder. Two halves have to
+// agree for that to work: the card has to reach the builder, and the builder
+// has to do something for each declared change - a change nothing generates is
+// as unreachable as a card nothing opens.
+const upcomingProcessor = readFileSync(
+  "src/app/(routes)/divisions/bls/components/UpcomingCourseProcessor.tsx",
+  "utf8",
+);
+const upcomingCourses = [
+  ...(
+    upcomingProcessor.match(/export const UPCOMING_COURSES:[\s\S]*?\n\];/)?.[0] ??
+    ""
+  ).matchAll(/value:\s*"([^"]+)",/g),
+].map((match) => match[1]);
+expect(
+  "the upcoming-courses builder declares its actions",
+  upcomingCourses.length > 0,
+  true,
+);
+for (const value of upcomingCourses) {
+  expect(
+    `BLS upcoming-courses "${value}" is generated by the builder`,
+    upcomingProcessor.includes(`courseType === "${value}"`),
+    true,
+  );
+}
+expect(
+  "the upcoming-courses builder's dropdown offers its declared actions",
+  upcomingProcessor.includes("UPCOMING_COURSES.map("),
+  true,
+);
+const blsPicker = readFileSync(
+  "src/app/(routes)/divisions/bls/components/paperwork-documents.ts",
+  "utf8",
+);
+expect(
+  "the BLS picker offers the upcoming-courses listing as one card",
+  blsPicker.includes("value: BLS_LISTING") &&
+    blsPicker.includes("label: UPCOMING_COURSES_LISTING.label"),
+  true,
+);
+expect(
+  "the BLS picker offers no separate card per listing change",
+  !blsPicker.includes("upcomingCourseDocument("),
+  true,
+);
+const blsPage = readFileSync(
+  "src/app/(routes)/divisions/bls/page.tsx",
+  "utf8",
+);
+expect(
+  "the BLS page opens the listing builder for that one card",
+  blsPage.includes("selectedDocument === BLS_LISTING"),
+  true,
+);
+
+/* ---- the FTD paperwork picker offers every form the tab knows ---- */
+// Same rule one division over: the FTD picker is the only list of forms on the
+// page now, so a form the tab knows and the picker does not is unreachable.
+const ftdSelector = readFileSync(
+  "src/app/(routes)/divisions/ftd/paperwork/components/PaperworkTypeSelector.tsx",
+  "utf8",
+);
+const ftdForms = [
+  ...(
+    readFileSync(
+      "src/app/(routes)/divisions/ftd/paperwork/components/SessionContext.tsx",
+      "utf8",
+    ).match(/export type FormType =([\s\S]*?);/)?.[1] ?? ""
+  ).matchAll(/"([^"]+)"/g),
+].map((match) => match[1]);
+expect("the FTD paperwork tab declares its forms", ftdForms.length > 0, true);
+for (const form of ftdForms) {
+  expect(
+    `FTD "${form}" is offered by the paperwork picker`,
+    ftdSelector.includes(`value: "${form}"`),
+    true,
+  );
+}
+
+/* ---- the instructors' board is offered where its readers work ---- */
+// It is not a form on the paperwork tab - it belongs to the FTI page, where the
+// instructors who post on it already are - so the loop above cannot see it. A
+// board no page offers is the failure this file exists to catch. (`ftiPage` is
+// the source read with the copy assertions above.)
+expect(
+  "the FTI page offers the FTD instructor discussion board",
+  ftiPage.includes('boardKey="ftdInstructorBoard"'),
+  true,
 );
 
 console.log(`\n${checks - failures}/${checks} checks passed`);

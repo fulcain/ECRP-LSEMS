@@ -1,6 +1,6 @@
 import { ROUTES } from "@/configs/routes";
 import type { LucideIcon } from "lucide-react";
-import { Activity, BookOpen, Clock3, FileText, GraduationCap, Link2, Puzzle, Settings2, Shield, ShieldCheck, UsersRound, ClipboardList } from "lucide-react";
+import { Activity, BookOpen, Clock3, FileText, GraduationCap, Link2, Puzzle, Settings2, Shield, ShieldCheck, UserCog, UsersRound, ClipboardList } from "lucide-react";
 
 export type HeaderLink = {
   label: string;
@@ -84,6 +84,14 @@ export const headerLinks: HeaderLink[] = [
     label: "Browser Extension",
     href: ROUTES.resources.browserExtension,
     icon: Puzzle,
+    group: "Resources",
+  },
+  {
+    // Open to every employee (see `DEFAULT_PAGE_ROLES`), so a group change is
+    // never waiting on one rank being online.
+    label: "User Groups",
+    href: ROUTES.resources.userGroups,
+    icon: UserCog,
     group: "Resources",
   },
   {

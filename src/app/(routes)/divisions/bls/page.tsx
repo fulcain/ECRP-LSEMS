@@ -1,20 +1,16 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
 import {
   Check,
   ClipboardCopy,
-  CalendarClock,
-  ClipboardList,
   ExternalLink,
   FileText,
   Plus,
   ShieldCheck,
-  Signature,
-  Tag,
   X,
 } from "lucide-react";
+import { BLS } from "@/app/constants/divisions/bls";
 import { directorTitleForDivisionKey } from "@/app/constants/general/directorRoles";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
 import {
@@ -23,25 +19,39 @@ import {
 } from "@/app/helpers/forumHandoff";
 import { useMedic } from "@/app/context/MedicContext";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
-import { useTabParam } from "@/app/hooks/useTabParam";
 import { blsTemplates } from "@/app/templates/bls-formats";
 import { NowTimeButton } from "@/components/now-time-button";
 import { PageContainer } from "@/components/ui/page-container";
-import { PageHeader } from "@/components/ui/page-header";
+import { DivisionQuickLinksLink } from "@/components/division-quick-links-link";
+import { DivisionHeader } from "@/components/division/division-header";
+import { DivisionUserGroupsLink } from "@/components/division/division-user-groups-link";
+import {
+  BuilderForm,
+  BuilderOutput,
+  BuilderPreview,
+  BuilderSection,
+  BuilderShell,
+  BuilderTitleRow,
+} from "@/components/builder/builder-layout";
+import { DocumentPicker } from "@/components/division/document-picker";
+import { DiscussionBoardComposer } from "@/components/discussion-board-composer";
+import {
+  BLS_LISTING,
+  BLS_PAPERWORK,
+  isBLSBoardKey,
+  isBLSCourseReport,
+  isBLSDocument,
+  isUpcomingCourseType,
+  type BLSWorkItem,
+} from "./components/paperwork-documents";
 import { CourseReportsProcessor } from "./components/CourseReportsProcessor";
-import { UpcomingCourseProcessor } from "./components/UpcomingCourseProcessor";
+import {
+  UpcomingCourseProcessor,
+  type UpcomingCourseType,
+} from "./components/UpcomingCourseProcessor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { TabBar, type Tab } from "@/components/ui/tab-bar";
-import { Textarea } from "@/components/ui/textarea";
 
 const COPIED_FLASH_MS = 1800;
 
@@ -68,103 +78,89 @@ function formatTitleCase(input: string): string {
     .replace(/\s+/g, " ");
 }
 
-/** Maps a format value to a distinct hue for lifecycle styling */
-const formatHue: Record<string, string> = {
-  accepted: "160",
-  denied: "0",
-  expired: "30",
-  "on-hold": "45",
-  "upcoming-class": "210",
-  "quick-guide": "345",
-};
-
-type BLSPageTab = "formats" | "course-reports" | "upcoming-course";
-
-const pageTabs: Tab<BLSPageTab>[] = [
-  {
-    value: "formats",
-    label: "Formats",
-    icon: <FileText className="h-4 w-4" />,
-    accent: "border-emerald-300/40 dark:border-emerald-400/40 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300",
-  },
-  {
-    value: "course-reports",
-    label: "Course Reports",
-    icon: <ClipboardList className="h-4 w-4" />,
-    accent: "border-cyan-300/40 dark:border-cyan-400/40 bg-cyan-100 dark:bg-cyan-500/20 text-cyan-700 dark:text-cyan-300",
-  },
-  {
-    value: "upcoming-course",
-    label: "Upcoming Course",
-    icon: <CalendarClock className="h-4 w-4" />,
-    accent: "border-amber-300/40 dark:border-amber-400/40 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300",
-  },
-];
-
-const tabValues = pageTabs.map((tab) => tab.value);
-const droppedTabParams = ["format", "type"];
+/**
+ * The page is one workspace, so it has no tabs: everything a member can write -
+ * the answer to an application, a course report, a change to the upcoming
+ * courses listing, a board post - is a card in the picker below.
+ */
+const PAGE_TITLE = "Paperwork";
+const PAGE_PURPOSE =
+  "Pick what you are writing, fill it in, then copy it into GOV - the extension pastes it in for you.";
 
 export default function BLSFormatsPage() {
   const { medicCredentials, divisionRanks } = useMedic();
-  const [activeTab, setActiveTab] = useTabParam(
-    "bls-tab",
-    tabValues,
-    "formats",
-    // `?format=` belongs to the Formats tab; switching away must not leave it
-    // behind to be picked up on a later load.
-    droppedTabParams,
+  // Nothing is chosen until the member picks a card, so the page opens on the
+  // picker alone - no builder is filled in for a document nobody asked for.
+  const [selectedDocument, setSelectedDocument] = useState<BLSWorkItem | null>(
+    null,
   );
+  // A retired `?type=new|reschedule|cancelled` link names a change to the
+  // listing, which the builder's dropdown holds now - so it opens the listing
+  // already set to that change instead of dropping it.
+  const [legacyCourseType, setLegacyCourseType] = useState<
+    UpcomingCourseType | undefined
+  >(undefined);
 
-  const [selectedFormat, setSelectedFormat] =
-    useState<(typeof blsTemplates)[number]["value"]>(blsTemplates[0].value);
-
-  // Sync initial format from URL query param
+  // Sync the initial document from the URL. Runs once on mount - the effects
+  // below keep the URL in step afterwards.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const fromUrl = params.get("format") as (typeof blsTemplates)[number]["value"] | null;
-    if (fromUrl && blsTemplates.some((t) => t.value === fromUrl)) {
-      setSelectedFormat(fromUrl);
+    const fromFormat = params.get("format");
+    // `?format=` is any document the picker offers - a board, a course report
+    // and the listing included. Until the listing became one card, each change
+    // to it was a value of its own, so those links open it on that change.
+    if (fromFormat && isBLSDocument(fromFormat)) {
+      setSelectedDocument(fromFormat);
+    } else if (fromFormat && isUpcomingCourseType(fromFormat)) {
+      setLegacyCourseType(fromFormat);
+      setSelectedDocument(BLS_LISTING);
+    }
+
+    // `?type=` came before `?format=`: a course report's type is still a
+    // document the picker offers, while the listing's change moved into its
+    // builder, so that link opens the listing on the change it named.
+    const fromType = params.get("type");
+    if (fromType && isBLSCourseReport(fromType)) {
+      setSelectedDocument(fromType);
+    } else if (fromType && isUpcomingCourseType(fromType)) {
+      setLegacyCourseType(fromType);
+      setSelectedDocument(BLS_LISTING);
+    }
+
+    // `?tab=` is retired with the bar it came from: every value it ever held
+    // named a document, so an old link opens the one it named instead of
+    // dropping the reader on the first card.
+    const legacyTab = params.get("tab");
+    if (legacyTab === "discussion-boards") {
+      setSelectedDocument("blsDiscussionBoard");
+    } else if (legacyTab === "course-reports") {
+      setSelectedDocument(
+        fromType && isBLSCourseReport(fromType) ? fromType : "joint",
+      );
+    } else if (legacyTab === "upcoming-course") {
+      setSelectedDocument(BLS_LISTING);
     }
   }, []);
 
-  // Sync URL when format changes - the format param belongs only to the Formats tab
-  const isFirstRender = useRef(true);
+  // The picker's value is the page's `?format=`, so a link someone shares opens
+  // the document they were looking at - and a page with nothing picked carries
+  // no `?format=` at all. `?tab=`, `?type=` and the older `?report=` are retired
+  // spellings of the same choice, read once on mount and dropped, so a stale
+  // link cannot be shared back.
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    if (activeTab !== "formats") return;
     const params = new URLSearchParams(window.location.search);
+    params.delete("tab");
     params.delete("type");
-    params.set("format", selectedFormat);
+    params.delete("report");
+    if (selectedDocument) params.set("format", selectedDocument);
+    else params.delete("format");
+    const query = params.toString();
     window.history.replaceState(
       null,
       "",
-      `${window.location.pathname}?${params.toString()}`,
+      `${window.location.pathname}${query ? `?${query}` : ""}`,
     );
-  }, [activeTab, selectedFormat]);
-
-  // Keep the URL clean per tab: ?format= only on Formats, ?type= only on
-  // Course Reports / Upcoming Course, and strip the legacy ?report= param.
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const onFormatsTab = params.get("tab") === "formats";
-    if (
-      params.has("report") ||
-      (!onFormatsTab && params.has("format")) ||
-      (onFormatsTab && params.has("type"))
-    ) {
-      if (!onFormatsTab) params.delete("format");
-      if (onFormatsTab) params.delete("type");
-      params.delete("report");
-      window.history.replaceState(
-        null,
-        "",
-        `${window.location.pathname}?${params.toString()}`,
-      );
-    }
-  }, []);
+  }, [selectedDocument]);
   const [applicantName, setApplicantName] = useLocalStorage<string>(
     "bls-format-applicant-name",
     "",
@@ -179,15 +175,15 @@ export default function BLSFormatsPage() {
   const [copiedTitleTag, setCopiedTitleTag] = useState(false);
   const [animKey, setAnimKey] = useState(0);
   const copyTimerRef = useRef<number | undefined>(undefined);
-  const prevFormatRef = useRef(selectedFormat);
+  const prevFormatRef = useRef(selectedDocument);
 
   // Trigger a subtle re-animation when the format changes
   useEffect(() => {
-    if (prevFormatRef.current !== selectedFormat) {
+    if (prevFormatRef.current !== selectedDocument) {
       setAnimKey((k) => k + 1);
-      prevFormatRef.current = selectedFormat;
+      prevFormatRef.current = selectedDocument;
     }
-  }, [selectedFormat]);
+  }, [selectedDocument]);
 
   // Clear any in-flight "Copied!" flash if the component unmounts mid-flash.
   useEffect(() => {
@@ -226,9 +222,19 @@ export default function BLSFormatsPage() {
   const updateReason = (index: number, value: string) =>
     setReasons((prev) => prev.map((r, i) => (i === index ? value : r)));
 
+  // A board, a course report and the upcoming-courses listing are not templates
+  // - each has a builder of its own - and a page with nothing picked has none.
   const activeFormat =
-    blsTemplates.find((format) => format.value === selectedFormat) ??
-    blsTemplates[0];
+    blsTemplates.find((format) => format.value === selectedDocument) ?? null;
+  const boardKey =
+    selectedDocument && isBLSBoardKey(selectedDocument)
+      ? selectedDocument
+      : null;
+  const reportType =
+    selectedDocument && isBLSCourseReport(selectedDocument)
+      ? selectedDocument
+      : null;
+  const courseListing = selectedDocument === BLS_LISTING;
   const blsRank = divisionRanks["Basic Life Support"] ?? "";
 
   // Build the full thread title: "[STATUS] BLS Training - <Applicant Name>".
@@ -236,7 +242,7 @@ export default function BLSFormatsPage() {
   // template; the suffix is the title-cased applicant name. When no name
   // is entered, only the status prefix is shown - so the pill clearly
   // signals that the suffix is still missing.
-  const fullTitle = activeFormat.titleTag
+  const fullTitle = activeFormat?.titleTag
     ? `${activeFormat.titleTag}${
         applicantName.trim()
           ? ` - ${formatTitleCase(applicantName)}`
@@ -244,14 +250,13 @@ export default function BLSFormatsPage() {
       }`
     : null;
 
-  const hue = formatHue[activeFormat.value] ?? "160";
-  const hsl = `${hue} 70% 55%`;
-
-  const supportsReasons = activeFormat.value === "on-hold";
-  const supportsDenialDetails = activeFormat.value === "denied";
-  const supportsCourseDetails = activeFormat.value === "upcoming-class";
+  const supportsReasons = activeFormat?.value === "on-hold";
+  const supportsDenialDetails = activeFormat?.value === "denied";
+  const supportsCourseDetails = activeFormat?.value === "upcoming-class";
 
   const bbcodeOutput = useMemo(() => {
+    // Nothing is being written yet: the picker is on its own.
+    if (!activeFormat) return "";
     const applicant = applicantName.trim() || "Applicant Name";
     // A director covering Basic Life Support signs as the director, not as a
     // BLS rank they don't hold.
@@ -361,96 +366,46 @@ export default function BLSFormatsPage() {
       `}</style>
 
       <PageContainer>
-        <PageHeader
-          title="BLS"
-          subtitle="Build BLS application responses with the applicant's name and saved staff credentials."
+        <DivisionHeader
+          label={BLS.label}
+          emblem={BLS.image}
+          title={PAGE_TITLE}
+          purpose={PAGE_PURPOSE}
+          actions={
+            <>
+              <DivisionUserGroupsLink group="bls" />
+              <DivisionQuickLinksLink division="bls" />
+            </>
+          }
         />
-        {/* Tab Selector */}
-        <TabBar tabs={pageTabs} active={activeTab} onChange={setActiveTab} />
 
-        {activeTab === "course-reports" && <CourseReportsProcessor />}
+        <DocumentPicker
+          groups={BLS_PAPERWORK}
+          value={selectedDocument}
+          onChange={setSelectedDocument}
+          className="mb-6"
+        />
 
-        {activeTab === "upcoming-course" && <UpcomingCourseProcessor />}
+        {reportType && (
+          <CourseReportsProcessor reportType={reportType} />
+        )}
 
-        {activeTab === "formats" && (
-        <div key={animKey} className="panel relative overflow-hidden">
-          {/* The format's lifecycle colour used to repaint the entire panel, so
-              the page changed character with every selection and the content
-              sat on a palette of its own. As one accent line the signal
-              survives without competing with the page around it. */}
-          <div
-            className="absolute inset-x-0 top-0 h-0.5"
-            style={{ background: `hsl(${hue} 70% 50% / 0.7)` }}
-          />
+        {courseListing && (
+          <UpcomingCourseProcessor initialCourseType={legacyCourseType} />
+        )}
 
-          <div className="relative grid gap-6 p-4 sm:p-5 lg:grid-cols-[1.1fr_0.9fr] lg:p-6">
+        {boardKey && <DiscussionBoardComposer boardKey={boardKey} />}
+
+        {activeFormat && !boardKey && !reportType && !courseListing && (
+        <div key={animKey}>
+          <BuilderShell>
             {/* ════ LEFT COLUMN ════ */}
-            <section className="min-w-0 space-y-6">
+            <BuilderForm>
               {/* ── Application Builder ── */}
-              <div className="panel-inner p-5 transition-colors hover:border-primary/30">
-                <div className="mb-4 flex items-center gap-2">
-                  <div
-                    className="flex h-7 w-7 items-center justify-center rounded-lg"
-                    style={{ backgroundColor: `hsl(${hsl} / 0.2)` }}
-                  >
-                    <ShieldCheck
-                      className="h-4 w-4"
-                      style={{ color: `hsl(${hsl})` }}
-                    />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground">
-                      Application Builder
-                    </h3>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  {/* Format Selector */}
-                  <div className="space-y-2">
-                    <Label htmlFor="bls-format">Format</Label>
-                    <Select
-                      value={selectedFormat}
-                      onValueChange={(value) =>
-                        setSelectedFormat(
-                          value as (typeof blsTemplates)[number]["value"],
-                        )
-                      }
-                    >
-                      <SelectTrigger
-                        id="bls-format"
-                        className="w-full border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
-                      >
-                        <SelectValue placeholder="Select a format" />
-                      </SelectTrigger>
-                      <SelectContent className="border-border/80 bg-surface text-foreground">
-                        {blsTemplates.map((option) => {
-                          const optHue = formatHue[option.value] ?? "0";
-                          return (
-                            <SelectItem
-                              key={option.value}
-                              value={option.value}
-                              className="transition-all duration-200 hover:bg-surface-hover/60"
-                            >
-                              <span className="flex min-w-0 items-center gap-2.5">
-                                <span
-                                  className="inline-block h-2.5 w-2.5 shrink-0 rounded-full ring-1 ring-border"
-                                  style={{
-                                    backgroundColor: `hsl(${optHue} 70% 55%)`,
-                                  }}
-                                />
-                                <span className="truncate">{option.label}</span>
-                              </span>
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
+              <BuilderSection icon={ShieldCheck} title="Application Builder">
                   {/* Applicant name - animated wrapper */}
                   <div
-                    key={selectedFormat + "-fields"}
+                    key={selectedDocument + "-fields"}
                     className="animate-fade-up space-y-4"
                   >
                     <div className="space-y-2">
@@ -460,7 +415,7 @@ export default function BLSFormatsPage() {
                         value={applicantName}
                         onChange={(event) => setApplicantName(event.target.value)}
                         placeholder="Enter the applicant's name"
-                        className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
+                        className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
                       />
                     </div>
                   </div>
@@ -474,7 +429,7 @@ export default function BLSFormatsPage() {
                       value={govLink}
                       onChange={(event) => setGovLink(event.target.value)}
                       placeholder="Paste the GOV application post URL"
-                      className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
+                      className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
                     />
                     <p className="text-xs text-muted-foreground">
                       The browser extension opens this post and fills the format
@@ -488,7 +443,7 @@ export default function BLSFormatsPage() {
                       key="denied"
                       className="animate-fade-up space-y-4 rounded-xl border border-border bg-surface-hover/40 p-4"
                     >
-                      <p className="text-xs font-semibold tracking-[0.18em] text-red-700 dark:text-red-300 uppercase">
+                      <p className="eyebrow text-red-700 dark:text-red-300">
                         Denial details
                       </p>
 
@@ -507,7 +462,7 @@ export default function BLSFormatsPage() {
                             )
                           }
                           placeholder="7, 14 or 30"
-                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-400/30 dark:focus-visible:ring-red-500/30"
+                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
                         />
                         <p className="text-xs text-muted-foreground">
                           Number of days the applicant must wait before they
@@ -524,7 +479,7 @@ export default function BLSFormatsPage() {
                             setReapplyDate(event.target.value)
                           }
                           placeholder="e.g. 01 AUG 2026"
-                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-400/30 dark:focus-visible:ring-red-500/30"
+                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
                         />
                         <p className="text-xs text-muted-foreground">
                           The exact date the applicant may reapply.
@@ -539,7 +494,7 @@ export default function BLSFormatsPage() {
                       key="course"
                       className="animate-fade-up space-y-3 rounded-xl border border-border bg-surface-hover/40 p-4"
                     >
-                      <p className="text-xs font-semibold tracking-[0.18em] text-primary uppercase">
+                      <p className="eyebrow text-muted-foreground">
                         Upcoming class details
                       </p>
                       <div className="space-y-2">
@@ -551,7 +506,7 @@ export default function BLSFormatsPage() {
                             setCourseDate(event.target.value)
                           }
                           placeholder="e.g. 01/FEB/2026"
-                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-blue-400/30 dark:focus-visible:ring-blue-500/30"
+                          className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
                         />
                         <p className="text-xs text-muted-foreground">
                           Used both for the header date and the timezone image
@@ -568,7 +523,7 @@ export default function BLSFormatsPage() {
                               setCourseTime(event.target.value)
                             }
                             placeholder="e.g. 12:00"
-                            className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-blue-400/30 dark:focus-visible:ring-blue-500/30"
+                            className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
                           />
                           <NowTimeButton onFill={setCourseTime} />
                         </div>
@@ -586,7 +541,7 @@ export default function BLSFormatsPage() {
                       key="on-hold-reasons"
                       className="animate-fade-up space-y-3 rounded-xl border border-border bg-surface-hover/40 p-4"
                     >
-                      <p className="text-xs font-semibold tracking-[0.18em] text-amber-700 dark:text-amber-300 uppercase">
+                      <p className="eyebrow text-amber-700 dark:text-amber-300">
                         Hold reasons
                       </p>
                       <div className="space-y-2">
@@ -602,7 +557,7 @@ export default function BLSFormatsPage() {
                                 updateReason(index, e.target.value)
                               }
                               placeholder={`Reason ${index + 1}`}
-                              className="flex-1 border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-amber-500/50 focus-visible:ring-2 focus-visible:ring-amber-400/30 dark:focus-visible:ring-amber-500/30"
+                              className="flex-1 border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
                             />
                             {reasons.length > 1 && (
                               <Button
@@ -610,7 +565,7 @@ export default function BLSFormatsPage() {
                                 onClick={() => removeReason(index)}
                                 size="icon"
                                 variant="ghost"
-                                className="h-10 w-10 shrink-0 text-red-600 dark:text-red-400 transition-all duration-200 hover:scale-[1.02] hover:bg-red-50/40 dark:hover:bg-red-950/40 hover:text-red-300"
+                                className="h-10 w-10 shrink-0 text-muted-foreground transition-colors hover:text-red-600 dark:hover:text-red-400"
                               >
                                 <X className="h-4 w-4" />
                               </Button>
@@ -623,211 +578,82 @@ export default function BLSFormatsPage() {
                         onClick={addReason}
                         variant="outline"
                         size="sm"
-                        className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-amber-500/40 hover:bg-amber-50/20 dark:hover:bg-amber-950/20 hover:text-amber-200"
+                        className="border-border text-muted-foreground hover:bg-surface-hover hover:text-foreground"
                       >
                         <Plus className="mr-1.5 h-3.5 w-3.5" />
                         Add reason
                       </Button>
                     </div>
                   )}
-                </div>
-              </div>
-
-              {/* ── Live Format Card ── */}
-              <div>
-                <div
-                  className={`rounded-[1.5rem] border bg-gradient-to-br p-5 transition-colors duration-200 ${activeFormat.border} ${activeFormat.accent} hover:brightness-110`}
-                >
-                  <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                    <h3 className="font-semibold text-foreground">Live Format Card</h3>
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${activeFormat.badge}`}
-                    >
-                      {activeFormat.label}
-                    </span>
-                  </div>
-
-                  <div className="space-y-3 text-sm text-foreground">
-                    {/* Applicant */}
-                    <div className="group min-w-0 rounded-2xl border border-border bg-background/45 p-4 transition-all duration-200 hover:border-border hover:bg-background/60">
-                      <p className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
-                        <span
-                          className="inline-block h-1.5 w-1.5 rounded-full"
-                          style={{ backgroundColor: `hsl(${hsl})` }}
-                        />
-                        Applicant
-                      </p>
-                      <p className="text-xl font-semibold tracking-tight text-foreground [overflow-wrap:anywhere]">
-                        {applicantName.trim() || "Applicant Name"}
-                      </p>
-                    </div>
-
-                    {/* Ranks */}
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      <div className="min-w-0 rounded-2xl border border-border bg-background/45 p-4 transition-all duration-200 hover:border-border hover:bg-background/60">
-                        <p className="mb-1 text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
-                          Saved Rank
-                        </p>
-                        <p className="truncate font-medium text-foreground">
-                          {medicCredentials.rank || (
-                            <span className="text-muted-foreground italic">
-                              Not set
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                      <div className="min-w-0 rounded-2xl border border-border bg-background/45 p-4 transition-all duration-200 hover:border-border hover:bg-background/60">
-                        <p className="mb-1 text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
-                          BLS Rank
-                        </p>
-                        <p className="truncate font-medium text-foreground">
-                          {blsRank || (
-                            <span className="text-muted-foreground italic">
-                              Not set
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Signature */}
-                    <div className="group min-w-0 rounded-2xl border border-border bg-background/45 p-4 transition-all duration-200 hover:border-border hover:bg-background/60">
-                      <div className="mb-2 flex items-center gap-2 text-foreground">
-                        <Signature
-                          className="h-4 w-4"
-                          style={{ color: `hsl(${hsl})` }}
-                        />
-                        <span className="font-semibold">Saved Signature</span>
-                      </div>
-                      {medicCredentials.signature ? (
-                        <Image
-                          src={medicCredentials.signature}
-                          alt="Saved signature"
-                          width={260}
-                          height={70}
-                          className="h-auto max-h-20 max-w-full w-auto rounded-md bg-white/95 p-2 object-contain ring-1 ring-border transition-all duration-200 group-hover:ring-border"
-                        />
-                      ) : (
-                        <p className="text-sm leading-relaxed text-muted-foreground">
-                          Add your signature from the{" "}
-                          <span className="font-medium text-muted-foreground">
-                            Staff Page
-                          </span>{" "}
-                          to have it dropped into each BLS format.
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
+              </BuilderSection>
+            </BuilderForm>
 
             {/* ════ RIGHT COLUMN ════ */}
-            <section className="min-w-0 space-y-6">
-              {/* ── Generated Output ── */}
-              <div className="panel-inner p-5 transition-colors hover:border-primary/30">
-                <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <p className="text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
-                      Generated Output
-                    </p>
-                    <h3 className="mt-0.5 text-xl font-semibold text-foreground">
-                      Ready to paste BBCode
-                    </h3>
-                  </div>
-
-                  <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:w-auto">
-                    {supportsCourseDetails && (
-                      <Button
-                        onClick={() =>
-                          window.open(
-                            "https://www.inyourowntime.zone",
-                            "_blank",
-                          )
-                        }
-                        variant="outline"
-                        size="sm"
-                        className="border-primary/40 text-primary transition-all duration-200 hover:scale-[1.02] hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
-                      >
-                        <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
-                        Timezone Map
-                      </Button>
-                    )}
+            <BuilderPreview
+              icon={FileText}
+              title="Generated Output"
+              badge={activeFormat.label}
+              actions={
+                <>
+                  {supportsCourseDetails && (
                     <Button
-                      onClick={handleCopyAndOpen}
-                      disabled={!govLink.trim()}
+                      onClick={() =>
+                        window.open("https://www.inyourowntime.zone", "_blank")
+                      }
                       variant="outline"
-                      size="sm"
-                      className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
-                      title={
-                        govLink.trim()
-                          ? "Opens the GOV application link with this format filled in"
-                          : "Paste the GOV Application Link above first"
-                      }
+                      size="lg"
+                      className="w-full"
                     >
-                      <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
-                      Copy &amp; Open
+                      <ExternalLink className="h-4 w-4" />
+                      Timezone Map
                     </Button>
-                    {activeFormat.titleTag && (
-                      <>
-                        <span className="min-w-0 flex-1 truncate rounded-md border border-border bg-surface/80 px-2.5 py-1 font-mono text-xs tracking-wide text-muted-foreground shadow-sm">
-                          {fullTitle}
-                        </span>
-                        <Button
-                          onClick={handleCopyTitleTag}
-                          variant="outline"
-                          size="sm"
-                          className={`transition-all duration-200 hover:scale-[1.02] ${
-                            copiedTitleTag
-                              ? "border-emerald-300/60 dark:border-emerald-500/60 bg-emerald-50/30 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300"
-                              : "border-border text-muted-foreground hover:bg-surface-hover hover:text-foreground"
-                          }`}
-                          title={`Copies "${fullTitle}" to your clipboard`}
-                        >
-                          {copiedTitleTag ? (
-                            <Check className="animate-check h-3.5 w-3.5" />
-                          ) : (
-                            <Tag className="h-3.5 w-3.5" />
-                          )}
-                          {copiedTitleTag ? "Copied!" : "Copy tag"}
-                        </Button>
-                      </>
+                  )}
+                  <Button
+                    onClick={handleCopyAndOpen}
+                    disabled={!govLink.trim()}
+                    variant="outline"
+                    size="lg"
+                    className="w-full"
+                    title={
+                      govLink.trim()
+                        ? "Opens the GOV application link with this format filled in"
+                        : "Paste the GOV Application Link above first"
+                    }
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Copy &amp; Open
+                  </Button>
+                  <Button
+                    onClick={handleCopy}
+                    size="lg"
+                    className={
+                      copied
+                        ? "w-full bg-emerald-600 text-white hover:bg-emerald-500"
+                        : "w-full"
+                    }
+                  >
+                    {copied ? (
+                      <Check className="animate-check h-4 w-4" />
+                    ) : (
+                      <ClipboardCopy className="h-4 w-4" />
                     )}
-                    <Button
-                      onClick={handleCopy}
-                      size="default"
-                      className={`transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
-                        copied
-                          ? "bg-emerald-600 text-foreground hover:bg-emerald-500"
-                          : ""
-                      }`}
-                      style={
-                        !copied
-                          ? {
-                              backgroundColor: `hsl(${hsl})`,
-                              color: "white",
-                            }
-                          : {}
-                      }
-                    >
-                      {copied ? (
-                        <Check className="animate-check h-4 w-4" />
-                      ) : (
-                        <ClipboardCopy className="h-4 w-4" />
-                      )}
-                      {copied ? "Copied!" : "Copy BBCode"}
-                    </Button>
-                  </div>
-                </div>
-
-                <Textarea
-                  value={bbcodeOutput}
-                  readOnly
-                  className="min-h-[340px] resize-none border-border/60 bg-background/80 font-mono text-sm leading-relaxed text-foreground transition-all duration-200 focus-visible:ring-2 lg:min-h-[460px]"
+                    {copied ? "Copied!" : "Copy BBCode"}
+                  </Button>
+                </>
+              }
+              note="Copy &amp; Open opens the GOV application link with this format already filled in - the extension pastes it as the page loads."
+            >
+              {activeFormat.titleTag && (
+                <BuilderTitleRow
+                  value={fullTitle ?? ""}
+                  onCopy={handleCopyTitleTag}
+                  copyLabel={copiedTitleTag ? "Copied!" : "Copy title"}
                 />
-              </div>
-            </section>
-          </div>
+              )}
+
+              <BuilderOutput value={bbcodeOutput} />
+            </BuilderPreview>
+          </BuilderShell>
         </div>
         )}
       </PageContainer>

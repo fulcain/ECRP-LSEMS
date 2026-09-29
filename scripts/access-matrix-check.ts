@@ -39,8 +39,10 @@ import {
   ADMIN_PAGE_ROLES,
   COMMAND_ACCESS,
   DEFAULT_PAGE_ROLES,
+  EVERY_PAGE_ROLES,
   ROLES,
   isAdminOnlyPath,
+  isHiddenFromMatrix,
   type RoleName,
 } from "@/configs/roles";
 
@@ -203,11 +205,27 @@ for (const alias of MATRIX_ROLES) {
 
 // The offering has to be complete: a rank the app can name is a rank the matrix
 // can grant, including the ones nothing gates on and the dormant division's.
+// The one exception is a role the registry marks `hiddenFromMatrix` - its access
+// is the code's, so there is no decision to offer. Hiding it without granting it
+// by name would make it unreachable, which is what the loop below pins.
 same(
-  "the editor offers every role in the registry",
+  "the editor offers every role in the registry except the hidden ones",
   MATRIX_ROLES,
-  Object.keys(ROLES),
+  (Object.keys(ROLES) as RoleName[]).filter(
+    (alias) => !isHiddenFromMatrix(alias),
+  ),
 );
+
+const hiddenRoles = (Object.keys(ROLES) as RoleName[]).filter(isHiddenFromMatrix);
+expect("the registry hides at least one role from the editor", hiddenRoles.length > 0, true);
+for (const alias of hiddenRoles) {
+  expect(`${alias} is not offered by the editor`, MATRIX_ROLES.includes(alias), false);
+  expect(
+    `${alias} is granted by name, so hiding it does not lose it its pages`,
+    EVERY_PAGE_ROLES.includes(alias) || ADMIN_PAGE_ROLES.includes(alias),
+    true,
+  );
+}
 
 const tierRoles = MATRIX_ROLE_TIERS.flatMap((tier) => tier.roles);
 expect(
@@ -373,6 +391,22 @@ expect(
   sanitizeMatrix(kept)?.matrix[managed]?.length,
   0,
 );
+
+// A hidden role holds every page by name, so a stored row naming it decides
+// nothing - and the store has to stay a record of decisions only.
+for (const alias of hiddenRoles) {
+  const hiddenStored = sanitizeMatrix({ [managed]: [alias, "Employee"] });
+  same(
+    `a stored row naming ${alias} drops it - that access is not the store's to give`,
+    hiddenStored?.matrix[managed] ?? [],
+    ["Employee"],
+  );
+  expect(
+    `the dropped ${alias} is reported back`,
+    hiddenStored?.dropped.length,
+    1,
+  );
+}
 
 // ── Overrides resolve the way routes do ────────────────────────────────────
 

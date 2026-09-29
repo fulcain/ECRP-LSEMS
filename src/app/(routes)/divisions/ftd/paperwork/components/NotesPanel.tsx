@@ -626,7 +626,10 @@ export function NotesPanel({
   }, [setToldKeys]);
 
   return (
-    <div className="space-y-3">
+    // The gap under the toggle is owned here (the TabBar carries `mb-0`), and
+    // it is wider than the card's inner rhythm so the panel reads as the
+    // toggle's content rather than touching it.
+    <div className="space-y-6">
       <TabBar
         tabs={NOTES_MODES}
         active={mode}

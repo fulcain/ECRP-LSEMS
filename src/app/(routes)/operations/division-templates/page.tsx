@@ -10,8 +10,12 @@ import {
   divisions,
   Divisions,
 } from "@/app/constants/divisions";
+import { GOV_PM_COMPOSE_URL } from "@/app/helpers/govLinks";
 import { generateSignature } from "@/app/templates/general/signature";
-import { generateEmailTemplate } from "@/app/templates/general/division-emails";
+import {
+  applyLiveFields,
+  generateEmailTemplate,
+} from "@/app/templates/general/division-emails";
 import { useMedic } from "@/app/context/MedicContext";
 import DivisionSelector from "@/app/(routes)/operations/division-templates/components/DivisionSelector";
 import TemplateOptions from "@/app/(routes)/operations/division-templates/components/TemplateOptions";
@@ -19,37 +23,6 @@ import { PageContainer } from "@/components/ui/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { useMemo, useEffect, useRef, useCallback } from "react";
 import { Bounce, ToastContainer, toast } from "react-toastify";
-
-// Re-inject the live structured fields (subject/recipient) into a preview
-// body while preserving all other user edits. The greeting is only injected
-// when the body still shows one - a template generated with the recipient
-// section omitted has none, and must not have it resurrected.
-/** GOV private-message composer - where an email template is sent from. */
-const GOV_PM_COMPOSE_URL =
-  "https://gov.eclipse-rp.net/ucp.php?i=pm&mode=compose";
-
-const applyLiveFields = (
-  body: string,
-  subject: string,
-  recipient: string,
-  date: string,
-): string => {
-  let out = body;
-  const titleValue = subject ? `${subject} | ${date}` : date;
-  out = out.replace(/(^|\n)title="[^"]*"/, `$1title="${titleValue}"`);
-  const greeting = recipient ? `[b]Dear ${recipient}[/b],` : "";
-  if (/\[b\]Dear [^\n]*\n/.test(out)) {
-    out = out.replace(/\[b\]Dear [^\n]*\n/, greeting ? `${greeting}\n` : "");
-  } else if (greeting) {
-    // Count the [mdsig] bars: a template built without the recipient section
-    // has none, so leave greeting-less bodies alone.
-    const mdsigCount = (out.match(/\[mdsig\b/g) ?? []).length;
-    if (mdsigCount > 0) {
-      out = out.replace(/(\[divbox4=eeeeee\]\r?\n)/, `$1${greeting}\n`);
-    }
-  }
-  return out;
-};
 
 // The compose session is persisted so an accidental refresh cannot throw away
 // the selected division or the typed preview.

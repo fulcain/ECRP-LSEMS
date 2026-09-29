@@ -1,6 +1,6 @@
 "use client";
 
-import { isHeaderLinkActive, type HeaderLink } from "@/components/layout/header/configs/HeaderLinks";
+import type { HeaderLink } from "@/components/layout/header/configs/HeaderLinks";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet";
 import { Menu, X } from "lucide-react";
@@ -8,14 +8,11 @@ import { DiscordContactIndicator } from "@/components/discord-contact-indicator"
 import { UserMenu } from "@/components/layout/sidebar/user-menu";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { SidebarNav } from "./sidebar-nav";
 
 type SidebarMobileProps = { headerLinks: HeaderLink[] };
 
 export function SidebarMobile({ headerLinks }: SidebarMobileProps) {
-  const pathname = usePathname();
   return (
     <div className="lg:hidden">
       <Sheet>
@@ -33,19 +30,7 @@ export function SidebarMobile({ headerLinks }: SidebarMobileProps) {
             </div>
           </div>
           <div className="my-3 h-px shrink-0 bg-border" />
-          <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-contain pr-1" aria-label="Primary navigation">
-            {headerLinks.map((item, index) => {
-              const Icon = item.icon;
-              const isActive = isHeaderLinkActive(item, pathname);
-              const showGroup = index === 0 || item.group !== headerLinks[index - 1].group;
-              return <div key={item.label} className={showGroup ? "pt-3 first:pt-0" : undefined}>
-                {showGroup && <p className="eyebrow mb-1.5 px-3 text-muted-foreground">{item.group}</p>}
-                <SheetClose asChild><Link href={item.href || "#"} aria-current={isActive ? "page" : undefined} className={cn("flex min-h-11 items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm transition-colors", isActive ? "bg-primary/10 text-primary ring-1 ring-inset ring-primary/20" : "text-muted-foreground hover:bg-surface-hover hover:text-foreground")}>
-                  <Icon className={cn("h-4 w-4 shrink-0", isActive ? "text-primary" : "text-muted-foreground")} />{item.label}
-                </Link></SheetClose>
-              </div>;
-            })}
-          </nav>
+          <SidebarNav links={headerLinks} closeOnNavigate />
           <div className="mt-3 shrink-0 space-y-2.5 border-t border-border pt-3"><UserMenu /><DiscordContactIndicator /></div>
         </SheetContent>
       </Sheet>

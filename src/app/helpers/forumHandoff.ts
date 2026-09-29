@@ -1,7 +1,7 @@
 /**
  * Hands a prepared GOV post to the LSEMS Forum Poster browser extension, which
- * holds it until the member presses Fill on the posting or PM page - or, when the
- * post is marked, pastes it in once as that page opens.
+ * holds it until the member presses Alt+Shift+F on the posting or PM page - or,
+ * when the post is marked, pastes it in once as that page opens.
  *
  * The extension is optional: every helper still copies to the clipboard, so a
  * member without it keeps the old paste-it-yourself flow. The handoff travels as
@@ -178,6 +178,27 @@ export function onForumPosterStatus(
 /** True once the extension has answered this page. */
 export function isForumPosterInstalled(): boolean {
   return installed;
+}
+
+/**
+ * True when one version is older than another, compared a numeric part at a
+ * time: an extension copy in the browser predates the app's by a minor bump
+ * (`1.10.0` against `1.9.0`) as often as by a whole one, and string comparison
+ * puts those the wrong way round. A copy that never announced a version is
+ * treated as `1`, which is older than anything shipped.
+ */
+export function isVersionOlder(candidate: string, baseline: string): boolean {
+  const parts = (version: string) =>
+    version.split(".").map((part) => Number.parseInt(part, 10) || 0);
+  const older = parts(candidate);
+  const newer = parts(baseline);
+  const length = Math.max(older.length, newer.length);
+  for (let index = 0; index < length; index += 1) {
+    const left = older[index] ?? 0;
+    const right = newer[index] ?? 0;
+    if (left !== right) return left < right;
+  }
+  return false;
 }
 
 /**

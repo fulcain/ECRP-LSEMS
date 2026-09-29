@@ -5,7 +5,6 @@ import { NowTimeButton } from "@/components/now-time-button";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
@@ -18,66 +17,97 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  BuilderField,
+  BuilderForm,
+  BuilderOutput,
+  BuilderPreview,
+  BuilderRequirement,
+  BuilderSection,
+  BuilderShell,
+} from "@/components/builder/builder-layout";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, ExternalLink } from "lucide-react";
+import {
+  Calendar as CalendarIcon,
+  CalendarClock,
+  Check,
+  ClipboardCopy,
+  ExternalLink,
+} from "lucide-react";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
 import { pickPostTarget } from "@/app/helpers/forumHandoff";
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { toast, ToastContainer } from "react-toastify";
 
-type UpcomingCourseType = "new" | "reschedule" | "cancelled";
+export type UpcomingCourseType = "new" | "reschedule" | "cancelled";
 
 /** The single post the upcoming-courses listing is edited in. */
 const UPCOMING_COURSES_POST_URL =
   "https://gov.eclipse-rp.net/posting.php?mode=edit&p=55540";
 
-const COURSE_TYPE_OPTIONS: {
+/**
+ * The three things a member can do to the upcoming-courses listing, declared
+ * once: this builder's dropdown is built from it and its badges name the entry
+ * the member picked, so no name is written down a second time.
+ */
+export const UPCOMING_COURSES: {
   value: UpcomingCourseType;
   label: string;
+  /** One plain line saying what the change does, under the dropdown. */
+  hint: string;
 }[] = [
-  { value: "new", label: "New" },
-  { value: "reschedule", label: "Reschedule" },
-  { value: "cancelled", label: "Cancelled" },
+  {
+    value: "new",
+    label: "Add a class",
+    hint: "Puts a new class on the upcoming-courses post.",
+  },
+  {
+    value: "reschedule",
+    label: "Reschedule a class",
+    hint: "Moves a class that is already on the listing.",
+  },
+  {
+    value: "cancelled",
+    label: "Cancel a class",
+    hint: "Strikes a class off the listing.",
+  },
 ];
 
-export function UpcomingCourseProcessor() {
+/**
+ * The listing itself, as the paperwork picker offers it: one card, because the
+ * listing is a single post that gets edited - which of the three changes above
+ * it makes is the builder's own dropdown.
+ */
+export const UPCOMING_COURSES_LISTING = {
+  label: "Edit the listing",
+  hint: "Add a class, move one, or strike one off - you pick which inside.",
+};
+
+export function UpcomingCourseProcessor({
+  initialCourseType = "new",
+}: {
+  /**
+   * Which change to open on, when the page knows. Only a retired `?type=` link
+   * does: the picker offers this builder as one card, so the change itself is
+   * chosen in the dropdown below and remembered for the next visit.
+   */
+  initialCourseType?: UpcomingCourseType;
+}) {
+  const [courseType, setCourseType, courseTypeHydrated] =
+    useLocalStorage<UpcomingCourseType>("uc-courseType", initialCourseType);
+
+  // A retired `?type=` link is the member's latest intent, so it beats the
+  // stored draft - but only once storage has been read, or this write lands in
+  // the same commit as the hydration read and the stored value replaces it.
+  useEffect(() => {
+    if (courseTypeHydrated && initialCourseType) setCourseType(initialCourseType);
+  }, [courseTypeHydrated, initialCourseType, setCourseType]);
   const [isClient, setIsClient] = useState(false);
   useEffect(() => setIsClient(true), []);
 
   const pad = (num: number, size: number = 2) =>
     String(num).padStart(size, "0");
-
-  const [courseType, setCourseType] = useLocalStorage<UpcomingCourseType>(
-    "uc-courseType",
-    "new",
-  );
-
-  // Sync initial course type from URL query param (takes priority over localStorage)
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const fromUrl = params.get("type") as UpcomingCourseType | null;
-    if (fromUrl && COURSE_TYPE_OPTIONS.some((o) => o.value === fromUrl)) {
-      setCourseType(fromUrl);
-    }
-  }, [setCourseType]);
-
-  // Sync URL when course type changes (skip initial mount)
-  const isFirstRender = useRef(true);
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    const params = new URLSearchParams(window.location.search);
-    params.delete("format");
-    params.set("type", courseType);
-    window.history.replaceState(
-      null,
-      "",
-      `${window.location.pathname}?${params.toString()}`,
-    );
-  }, [courseType]);
 
   const [datetime, setDatetime] = useState<string>("");
   const [prevDatetime, setPrevDatetime] = useState<string>("");
@@ -263,238 +293,224 @@ export function UpcomingCourseProcessor() {
     toast.info("Form cleared.");
   };
 
+  // The badge names the change the dropdown is set to, so the block's preview
+  // says which of the three it is without opening the dropdown.
+  const currentAction =
+    UPCOMING_COURSES.find((option) => option.value === courseType) ??
+    UPCOMING_COURSES[0];
+
   if (!isClient) return null;
 
   return (
     <div className="space-y-6">
       <ToastContainer position="top-right" autoClose={2500} />
 
-      <div className="panel relative overflow-hidden">
-        {/* The page's accent as a single line, so it reads as identity rather
-            than as a second background behind the content. */}
-        <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-warning/70 to-transparent" />
-        <div className="relative p-4 sm:p-5 lg:p-6">
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-            <div className="panel-inner p-5 transition-colors hover:border-primary/30">
-              <div className="space-y-5">
-                <div className="flex flex-col gap-1.5">
-                  <Label
-                    htmlFor="courseType"
-                    className="text-sm font-medium text-muted-foreground"
-                  >
-                    Course Type
-                  </Label>
-                  <Select
-                    value={courseType}
-                    onValueChange={(value) =>
-                      setCourseType(value as UpcomingCourseType)
-                    }
-                  >
-                    <SelectTrigger
-                      id="courseType"
-                      className="w-full border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border"
-                    >
-                      <SelectValue placeholder="Select course type" />
-                    </SelectTrigger>
-                    <SelectContent className="border-border bg-surface text-foreground">
-                      {COURSE_TYPE_OPTIONS.map((option) => (
-                        <SelectItem
-                          key={option.value}
-                          value={option.value}
-                          className="transition-all duration-200 hover:bg-surface-hover/60"
-                        >
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+      <BuilderShell>
+        <form onSubmit={handleSubmit}>
+          <BuilderForm>
+            <BuilderSection
+              icon={CalendarClock}
+              title="Class details"
+              hint="The class you are putting on the listing, moving, or calling off."
+            >
+              <BuilderField
+                label="What are you doing?"
+                htmlFor="courseType"
+                hint={currentAction.hint}
+              >
+                <Select
+                  value={courseType}
+                  onValueChange={(value) =>
+                    setCourseType(value as UpcomingCourseType)
+                  }
+                >
+                  <SelectTrigger id="courseType" className="w-full">
+                    <SelectValue placeholder="Pick one" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {UPCOMING_COURSES.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </BuilderField>
 
-                {(courseType === "new" ||
-                  courseType === "cancelled" ||
-                  courseType === "reschedule") && (
-                  <div className="flex flex-col gap-1.5">
-                    <Label
-                      htmlFor="datetime"
-                      className="text-sm font-medium text-muted-foreground"
-                    >
-                      Course Date &amp; Time (UTC)
-                    </Label>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full justify-start text-left font-normal border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border sm:w-[260px]",
-                              !date && !datetime && "text-muted-foreground",
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {date
-                              ? format(date, "PPP")
-                              : datetime
-                                ? format(new Date(datetime + "Z"), "PPP")
-                                : "Pick a date"}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent
-                          className="w-auto border-border bg-surface p-0"
-                          align="start"
+              {(courseType === "new" ||
+                courseType === "cancelled" ||
+                courseType === "reschedule") && (
+                <BuilderField
+                  label="Course date & time (UTC)"
+                  htmlFor="datetime"
+                  hint="Used for the line in the listing and the timezone image."
+                >
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal sm:w-[260px]",
+                            !date && !datetime && "text-muted-foreground",
+                          )}
                         >
-                          <Calendar
-                            mode="single"
-                            selected={date}
-                            onSelect={(d) => setDate(d)}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
+                          <CalendarIcon className="h-4 w-4" />
+                          {date
+                            ? format(date, "PPP")
+                            : datetime
+                              ? format(new Date(datetime + "Z"), "PPP")
+                              : "Pick a date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={date}
+                          onSelect={(d) => setDate(d)}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
 
-                      <Input
-                        type="time"
-                        value={
-                          time ||
-                          (datetime
-                            ? format(new Date(datetime + "Z"), "HH:mm")
-                            : "")
-                        }
-                        onChange={(e) => setTime(e.target.value)}
-                        className="w-[140px] border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
-                      />
-                      <NowTimeButton onFill={setTime} />
-                    </div>
+                    <Input
+                      type="time"
+                      value={
+                        time ||
+                        (datetime
+                          ? format(new Date(datetime + "Z"), "HH:mm")
+                          : "")
+                      }
+                      onChange={(e) => setTime(e.target.value)}
+                      className="w-[140px]"
+                    />
+                    <NowTimeButton onFill={setTime} />
                   </div>
-                )}
+                </BuilderField>
+              )}
 
-                {courseType === "reschedule" && (
-                  <div className="flex flex-col gap-1.5">
-                    <Label
-                      htmlFor="prevDatetime"
-                      className="text-sm font-medium text-muted-foreground"
-                    >
-                      Previous Date &amp; Time (UTC)
-                    </Label>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full justify-start text-left font-normal border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border sm:w-[260px]",
-                              !prevDate && !prevDatetime && "text-muted-foreground",
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {prevDate
-                              ? format(prevDate, "PPP")
-                              : prevDatetime
-                                ? format(new Date(prevDatetime + "Z"), "PPP")
-                                : "Pick a date"}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent
-                          className="w-auto border-border bg-surface p-0"
-                          align="start"
+              {courseType === "reschedule" && (
+                <BuilderField
+                  label="Previous date & time (UTC)"
+                  htmlFor="prevDatetime"
+                  hint="The class's original slot - it is struck through in the block."
+                >
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal sm:w-[260px]",
+                            !prevDate &&
+                              !prevDatetime &&
+                              "text-muted-foreground",
+                          )}
                         >
-                          <Calendar
-                            mode="single"
-                            selected={prevDate}
-                            onSelect={(d) => setPrevDate(d)}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <Input
-                        type="time"
-                        value={
-                          prevTime ||
-                          (prevDatetime
-                            ? format(new Date(prevDatetime + "Z"), "HH:mm")
-                            : "")
-                        }
-                        onChange={(e) => setPrevTime(e.target.value)}
-                        className="w-[140px] border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
-                      />
-                      <NowTimeButton onFill={setPrevTime} />
-                    </div>
-                  </div>
-                )}
+                          <CalendarIcon className="h-4 w-4" />
+                          {prevDate
+                            ? format(prevDate, "PPP")
+                            : prevDatetime
+                              ? format(new Date(prevDatetime + "Z"), "PPP")
+                              : "Pick a date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={prevDate}
+                          onSelect={(d) => setPrevDate(d)}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
 
-                <div className="flex flex-col gap-1.5">
-                  <Label
-                    htmlFor="instructor"
-                    className="text-sm font-medium text-muted-foreground"
-                  >
-                    Instructor Name
-                  </Label>
-                  <Input
-                    id="instructor"
-                    type="text"
-                    value={instructor}
-                    onChange={(e) => setInstructor(e.target.value)}
-                    placeholder="First Last"
-                    required
-                    className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
-                  />
-                </div>
+                    <Input
+                      type="time"
+                      value={
+                        prevTime ||
+                        (prevDatetime
+                          ? format(new Date(prevDatetime + "Z"), "HH:mm")
+                          : "")
+                      }
+                      onChange={(e) => setPrevTime(e.target.value)}
+                      className="w-[140px]"
+                    />
+                    <NowTimeButton onFill={setPrevTime} />
+                  </div>
+                </BuilderField>
+              )}
+
+              <BuilderField label="Instructor name" htmlFor="instructor">
+                <Input
+                  id="instructor"
+                  type="text"
+                  value={instructor}
+                  onChange={(e) => setInstructor(e.target.value)}
+                  placeholder="First Last"
+                  required
+                />
+              </BuilderField>
+
+              <div className="flex flex-wrap gap-3 pt-1">
+                <Button type="submit">Generate</Button>
+                <Button variant="outline" type="button" onClick={handleClear}>
+                  Clear
+                </Button>
               </div>
-            </div>
+            </BuilderSection>
+          </BuilderForm>
+        </form>
 
-            <div className="flex gap-3">
+        {/* The listing is one edited post, so the block is copied into it
+            rather than posted with a title of its own. */}
+        <BuilderPreview
+          icon={CalendarClock}
+          title="Generated block"
+          badge={currentAction.label}
+          actions={
+            <>
               <Button
+                onClick={handleCopyAndOpen}
+                disabled={!output}
                 variant="outline"
-                type="submit"
-                className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-amber-500/40 hover:bg-amber-50/20 dark:hover:bg-amber-950/20 hover:text-amber-200 active:scale-[0.98]"
+                size="lg"
+                className="w-full"
+                title="Opens the Upcoming Courses post with this block already filled in"
               >
-                Generate
+                <ExternalLink className="h-4 w-4" />
+                Copy &amp; Open
               </Button>
               <Button
-                variant="destructive"
-                type="button"
-                onClick={handleClear}
-                className="transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                onClick={handleCopy}
+                disabled={!output}
+                size="lg"
+                className={
+                  copied
+                    ? "w-full bg-emerald-600 text-white hover:bg-emerald-500"
+                    : "w-full"
+                }
               >
-                Clear
+                {copied ? (
+                  <Check className="h-4 w-4" />
+                ) : (
+                  <ClipboardCopy className="h-4 w-4" />
+                )}
+                {copied ? "Copied!" : "Copy BBCode"}
               </Button>
-            </div>
-          </form>
-
-          {output && (
-            <div className="mt-6 space-y-3">
-              <div className="panel-inner p-5 transition-colors hover:border-primary/30">
-                <pre className="overflow-x-auto whitespace-pre-wrap rounded-xl border border-border bg-background/80 p-4 font-mono text-sm leading-relaxed text-foreground">
-                  {output}
-                </pre>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  onClick={handleCopy}
-                  variant="secondary"
-                  className={`transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
-                    copied
-                      ? "bg-emerald-600 text-foreground hover:bg-emerald-500"
-                      : "bg-surface-hover text-foreground hover:bg-surface-hover"
-                  }`}
-                >
-                  {copied ? "Copied!" : "Copy to Clipboard"}
-                </Button>
-                {/* The upcoming-courses listing lives in a single edited post. */}
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleCopyAndOpen}
-                  className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-amber-500/40 hover:bg-amber-50/20 dark:hover:bg-amber-950/20 hover:text-amber-200 active:scale-[0.98]"
-                  title="Copies this block and opens the Upcoming Courses post with it"
-                >
-                  <ExternalLink className="mr-1.5 h-4 w-4" />
-                  Copy &amp; Open Upcoming Courses
-                </Button>
-              </div>
-            </div>
+            </>
+          }
+          note="Copy &amp; Open opens the Upcoming Courses post with this already filled in. The listing keeps its own title."
+        >
+          {output ? (
+            <BuilderOutput label="Block" value={output} />
+          ) : (
+            <BuilderRequirement>
+              Fill in the class details and press Generate to build the block.
+            </BuilderRequirement>
           )}
-        </div>
-      </div>
+        </BuilderPreview>
+      </BuilderShell>
     </div>
   );
 }

@@ -2,47 +2,80 @@
 
 import { Suspense, useEffect } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { FileText, RefreshCcw, UserRound } from "lucide-react";
+import { FileText, MessagesSquare, RefreshCcw, UserRound } from "lucide-react";
 
 import {
   FormType,
   SessionProvider,
   useSession,
 } from "@/app/(routes)/divisions/ftd/paperwork/components/SessionContext";
+import {
+  DocumentPicker,
+  type PickerGroup,
+} from "@/components/division/document-picker";
 import { SessionDetailsCard } from "@/app/(routes)/divisions/ftd/paperwork/components/SessionDetailsCard";
 import PaperworkForm from "@/app/(routes)/divisions/ftd/paperwork/components/PaperworkForm";
 import ReinstatementForm from "@/app/(routes)/divisions/ftd/paperwork/components/ReinstatementForm";
 import CivilianRideAlongForm from "@/app/(routes)/divisions/ftd/paperwork/components/CivilianRideAlongForm";
-import { cn } from "@/lib/utils";
+import { DiscussionBoardComposer } from "@/components/discussion-board-composer";
 
-interface PaperworkTypeOption {
-  value: FormType;
-  label: string;
-  description: string;
-  Icon: React.ComponentType<{ className?: string }>;
-}
-
-const PAPERWORK_TYPES: PaperworkTypeOption[] = [
+/**
+ * Everything the Paperwork tab can write, grouped the way a member decides:
+ * first "am I recording a session or posting on the board?".
+ *
+ * Adding a document is one entry here - `value` is the key the router below
+ * understands, so a new one needs a branch in `PaperworkTypeRouter` and nothing
+ * else on this page changes.
+ */
+const PAPERWORK_GROUPS: readonly PickerGroup<FormType>[] = [
   {
-    value: "normal",
-    label: "Normal FT Paperwork",
-    description: "Field training phases for new EMRs.",
-    Icon: FileText,
+    label: "Write a session",
+    hint: "An EMR you trained or reviewed - the session details are saved under the form.",
+    documents: [
+      {
+        value: "normal",
+        label: "Normal FT Paperwork",
+        hint: "Field training phases for a new EMR.",
+        icon: FileText,
+      },
+      {
+        value: "reinstatement",
+        label: "Reinstatement Paperwork",
+        hint: "Phases for a previous Employee coming back.",
+        icon: RefreshCcw,
+      },
+      {
+        value: "civilianRideAlong",
+        label: "Civilian Ride-Along",
+        hint: "Accept, deny, hold or expire a request - or post the report.",
+        icon: UserRound,
+      },
+    ],
   },
   {
-    value: "reinstatement",
-    label: "Reinstatement Paperwork",
-    description: "Phases for previous Employees of the Department.",
-    Icon: RefreshCcw,
-  },
-  {
-    value: "civilianRideAlong",
-    label: "Civilian Ride-Along",
-    description:
-      "Accept / Deny / Hold / Expire a request, or post a Ride-Along Report.",
-    Icon: UserRound,
+    label: "Post on the board",
+    hint: "No EMR and no session - just a topic written in the FTD house style.",
+    documents: [
+      {
+        value: "ftdDiscussionBoard",
+        label: "Discussion Board",
+        hint: "Open a topic in the FTD discussion board.",
+        icon: MessagesSquare,
+      },
+    ],
   },
 ];
+
+const FORM_TYPES: readonly FormType[] = PAPERWORK_GROUPS.flatMap((group) =>
+  group.documents.map((doc) => doc.value),
+);
+
+/**
+ * The board carries no session: there is no EMR, no date and no phase. (The
+ * instructors' own board is not here at all - it belongs to the FTI page, where
+ * the instructors who post on it already are.)
+ */
+const BOARD_TYPES: readonly FormType[] = ["ftdDiscussionBoard"];
 
 /**
  * Outer shell - only job is to mount `SessionProvider`. The actual
@@ -72,8 +105,11 @@ function PaperworkTypeContent() {
         <PaperworkTypePicker />
         <PaperworkTypeRouter />
         {/* Session Details is irrelevant to the Civilian Ride-Along flow
-            (no EMR, no session row to save), so it's hidden in that mode. */}
-        {formType !== "civilianRideAlong" && <SessionDetailsCard />}
+            (no EMR, no session row to save) and to a discussion board (no
+            session at all), so it's hidden in those modes. */}
+        {formType !== "civilianRideAlong" && !BOARD_TYPES.includes(formType) && (
+          <SessionDetailsCard />
+        )}
       </div>
     </>
   );
@@ -114,8 +150,7 @@ function FormTypeUrlSyncer() {
   // On mount, read ?tab= and sync into context.
   useEffect(() => {
     const tab = searchParams.get("tab") as FormType | null;
-    const validTypes: FormType[] = ["normal", "reinstatement", "civilianRideAlong"];
-    if (tab && validTypes.includes(tab)) {
+    if (tab && FORM_TYPES.includes(tab)) {
       setFormType(tab);
     }
     // Intentionally run only once on mount - the effect below keeps the URL
@@ -137,60 +172,28 @@ function PaperworkTypeTabs() {
   const { formType, setFormType } = useSession();
 
   return (
-    <nav aria-label="Paperwork type" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      {PAPERWORK_TYPES.map(({ value, label, description, Icon }) => {
-        const active = formType === value;
-        return (
-          <button
-            key={value}
-            type="button"
-            aria-current={active ? "true" : undefined}
-            onClick={() => setFormType(value)}
-            className={cn(
-              "cursor-pointer group flex items-start gap-3 rounded-xl border p-4 text-left transition-all",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
-              active
-                ? "border-primary/70 bg-primary/5 shadow-sm"
-                : "border-border hover:border-primary/40 hover:bg-muted/40",
-            )}
-          >
-            <span
-              className={cn(
-                "mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border transition-colors",
-                active
-                  ? "border-primary/40 bg-primary/10 text-primary"
-                  : "border-border bg-background text-muted-foreground group-hover:text-foreground",
-              )}
-            >
-              <Icon className="h-4 w-4" />
-            </span>
-            <span className="flex min-w-0 flex-col gap-0.5">
-              <span
-                className={cn(
-                  "text-sm font-medium",
-                  active ? "text-primary" : "text-foreground",
-                )}
-              >
-                {label}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {description}
-              </span>
-            </span>
-          </button>
-        );
-      })}
-    </nav>
+    <DocumentPicker
+      groups={PAPERWORK_GROUPS}
+      value={formType}
+      // The form the tab opens on is the member's last one, so a cleared
+      // choice (pressing Change) leaves it as it is - the picker has already
+      // unfolded the grid.
+      onChange={(next) => next && setFormType(next)}
+    />
   );
 }
 
 function PaperworkTypeRouter() {
   const { formType } = useSession();
-  return formType === "normal" ? (
-    <PaperworkForm />
-  ) : formType === "reinstatement" ? (
-    <ReinstatementForm />
-  ) : (
-    <CivilianRideAlongForm />
-  );
+  if (formType === "normal") return <PaperworkForm />;
+  if (formType === "reinstatement") return <ReinstatementForm />;
+  if (formType === "civilianRideAlong") return <CivilianRideAlongForm />;
+  // The board and its key are named alike on purpose: the card that chooses the
+  // board is also the board's key, so there is nothing to map. Anything else -
+  // including a form this tab no longer offers, still sitting in a member's
+  // storage - falls back to the first form rather than rendering a builder
+  // nobody asked for.
+  if (formType === "ftdDiscussionBoard")
+    return <DiscussionBoardComposer boardKey={formType} />;
+  return <PaperworkForm />;
 }

@@ -1,34 +1,39 @@
-import { divisions } from "@/app/constants/divisions";
 import { PageContainer } from "@/components/ui/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { QuickLinksBrowser } from "./components/QuickLinksBrowser";
-import { linkId, type QuickLinkDivision } from "./lib/quick-links-search";
+import { divisionFromParam, quickLinksDirectory } from "./lib/quick-links-directory";
+import { QUICK_LINK_DIVISION_PARAM } from "./lib/quick-links-scope";
 
 /**
- * Only what the browser needs crosses into the client component: the division
- * label, its emblem and its links. The rest of a division's declaration (ranks,
- * membership role, images) would be dead weight in the payload.
+ * The directory, or one division's share of it.
+ *
+ * A division's own section links here with `?division=<key>`: the same page
+ * scoped, not a copy of it. Search, pins and recents work in both, the links
+ * still live once in the division that owns them, and there is no second list
+ * that can drift out of step with this one.
  */
-const directory: QuickLinkDivision[] = divisions.map((division) => ({
-  label: division.label,
-  image: division.image,
-  divisionName: division.data.divisionName,
-  links: division.data.quickLinks.map((link) => ({
-    id: linkId(division.label, link.url),
-    name: link.name,
-    url: link.url,
-  })),
-}));
+export default async function QuickLinksPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const params = await searchParams;
+  const raw = params[QUICK_LINK_DIVISION_PARAM];
+  const scope = divisionFromParam(Array.isArray(raw) ? raw[0] : raw);
+  const directory = quickLinksDirectory(scope ? [scope] : undefined);
 
-export default function QuickLinksPage() {
   return (
     <PageContainer>
       <PageHeader
         eyebrow="LSEMS Resources"
-        title="Quick Links"
-        subtitle="Every division's links in one place, with search, pins and recents so the one you need is never more than a keystroke away."
+        title={scope ? `${scope.label} Quick Links` : "Quick Links"}
+        subtitle={
+          scope
+            ? `${scope.data.divisionName} - search it, pin it, or open every division's links instead.`
+            : "Every division's links in one place, with search, pins and recents so the one you need is never more than a keystroke away."
+        }
       />
-      <QuickLinksBrowser divisions={directory} />
+      <QuickLinksBrowser divisions={directory} scoped={scope !== null} />
     </PageContainer>
   );
 }

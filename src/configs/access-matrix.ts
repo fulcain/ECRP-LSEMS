@@ -37,6 +37,7 @@ import {
   EVERY_PAGE_ROLES,
   ROLES,
   isAdminOnlyPath,
+  isHiddenFromMatrix,
   type RoleName,
 } from "@/configs/roles";
 import { LSEMS_RANKS } from "@/app/constants/general/ranks";
@@ -98,6 +99,7 @@ const ROUTE_META: Record<string, { label: string; group: AccessMatrixGroup }> = 
     label: "Browser Extension",
     group: "Resources",
   },
+  [ROUTES.resources.userGroups]: { label: "User Groups", group: "Resources" },
 
   [ROUTES.management.supervisor]: { label: "Supervisor", group: "Management" },
   [ROUTES.management.access]: {
@@ -297,6 +299,11 @@ export type RoleTier = {
  * the roles nothing gates on, the dormant division's ranks, the guild's own
  * labels - so any rank the app can name is a rank the matrix can grant. A
  * `null` id is shown in the editor as "no id", because granting it does nothing.
+ *
+ * A role the registry marks `hiddenFromMatrix` is filtered out of every tier at
+ * the end: its access is granted by name (`EVERY_PAGE_ROLES`), so offering it
+ * would invite a row that could only agree with the code - and the people
+ * holding it are not a rank anybody grants a page to.
  */
 export const MATRIX_ROLE_TIERS: readonly RoleTier[] = (() => {
   const seen = new Set<RoleName>();
@@ -338,7 +345,12 @@ export const MATRIX_ROLE_TIERS: readonly RoleTier[] = (() => {
   // Everything the registry names that no tier above claimed.
   tiers.push(tier("Other guild roles", Object.keys(ROLES) as RoleName[]));
 
-  return tiers.filter((t) => t.roles.length > 0);
+  return tiers
+    .map((tierEntry) => ({
+      ...tierEntry,
+      roles: tierEntry.roles.filter((alias) => !isHiddenFromMatrix(alias)),
+    }))
+    .filter((tierEntry) => tierEntry.roles.length > 0);
 })();
 
 /** Every alias that can be granted a page, in tier order. */
@@ -383,6 +395,12 @@ export function sanitizeMatrix(
     for (const alias of value) {
       if (typeof alias !== "string" || !(alias in ROLES)) {
         dropped.push(`${route}: ${String(alias)} (unknown role)`);
+        continue;
+      }
+      // A hidden role holds every page by name, so a row naming it says nothing
+      // about who gets in - the store stays a record of decisions only.
+      if (isHiddenFromMatrix(alias as RoleName)) {
+        dropped.push(`${route}: ${alias} (granted by the code, not a row)`);
         continue;
       }
       if (!roles.includes(alias as RoleName)) roles.push(alias as RoleName);

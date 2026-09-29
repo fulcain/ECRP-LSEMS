@@ -25,7 +25,7 @@ export function SubTabs({ activeTab, onChange }: SubTabsProps) {
       ariaLabel="Contract workflows"
       size="sm"
       divider={false}
-      className="mb-0"
+      className="mb-6"
     />
   );
 }

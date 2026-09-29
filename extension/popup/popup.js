@@ -27,6 +27,9 @@ function targetLabel(url) {
     const parsed = new URL(url);
     const params = parsed.searchParams;
     if (params.get("mode") === "compose") return "GOV private message";
+    if (params.get("i") === "ucp_groups" && params.get("g")) {
+      return `GOV user group g=${params.get("g")}`;
+    }
     if (params.get("f")) return `GOV section f=${params.get("f")}`;
     if (params.get("t")) return `GOV topic t=${params.get("t")}`;
     return parsed.hostname;

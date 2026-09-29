@@ -70,7 +70,7 @@ async function requireManager(): Promise<Manager> {
       response: NextResponse.json(
         {
           success: false,
-          error: "Forbidden: the permission matrix is CommandPlusTeam only.",
+          error: "Forbidden: your roles do not manage the permission matrix.",
         },
         { status: 403 },
       ),

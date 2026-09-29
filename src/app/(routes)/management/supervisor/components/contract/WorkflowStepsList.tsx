@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useMedic } from "@/app/context/MedicContext";
-import { handleContractAction } from "./actions";
+import { handleContractAction, internalHrefFor } from "./actions";
 import type {
   ContractStep,
   ContractWorkflow,
@@ -180,7 +180,10 @@ function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, empl
                   return (
                     <Link
                       key={idx}
-                      href={action.internal.href}
+                      // A step that leads into one of the app's own tools carries
+                      // the applicant it is working on (`{{applicantName}}`), so
+                      // the next page does not ask for the name again.
+                      href={internalHrefFor(action.internal.href, passedName)}
                       className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
                     >
                       {action.label}

@@ -3,6 +3,7 @@
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { useMedic } from "@/app/context/MedicContext";
 import { DASHBOARD_URL } from "./contract/constants";
+import { govGroupForRank } from "@/app/constants/gov-groups";
 import { copyBBCode } from "@/app/helpers/copyBBCode";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
 import { handOffForumPost, pickPostTarget } from "@/app/helpers/forumHandoff";
@@ -10,6 +11,7 @@ import {
   GOV_PM_COMPOSE_URL,
   GOV_STAFF_ROSTER_EDIT_URL,
 } from "@/app/helpers/govLinks";
+import { userGroupsHref } from "@/lib/user-groups";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -58,7 +60,12 @@ type IcStep = {
   secondaryCopyText?: string;
   secondaryCopyLabel?: string;
   icon: React.ComponentType<{ className?: string }>;
-  action?: { label: string; url: string };
+  action?: {
+    label: string;
+    url: string;
+    /** Built by `userGroupsHref` - a page in this app, so it navigates rather than opening a tab. */
+    internal?: boolean;
+  };
 };
 
 const copyToClipboard = (text: string) => {
@@ -173,6 +180,9 @@ export function PromotionProcessor() {
 
   const icSteps: IcStep[] = useMemo(() => {
     const steps: IcStep[] = [];
+    // The rung being promoted to, when the ladder carries a forum group of its
+    // own - everything above EMT-P has none, and the step still offers the tool.
+    const rankGroup = govGroupForRank(newRank);
     if (emailTemplate) {
       // The email goes out as a private message, titled for the rank the member
       // is being promoted to - the dropdown above is what names it.
@@ -201,6 +211,22 @@ export function PromotionProcessor() {
     steps.push({ id: "employeeAdjustments", label: "Post Employee Adjustment under Employee Adjustments", copyText: rankAdjustmentBBCode, titleText: `Rank Adjustment | ${personnelName}`, icon: ClipboardCheck, action: { label: "Copy & Open Employee Adjustment", url: "https://gov.eclipse-rp.net/posting.php?mode=post&f=573" } });
     // The roster entry is one edited post, so this opens that post's editor.
     steps.push({ id: "rosterUpdate", label: "Adjust their rank on the Staff Roster", copyText: "", icon: Users, action: { label: "Open Staff Roster", url: GOV_STAFF_ROSTER_EDIT_URL } });
+    // The forum's rank group changes with the promotion, and this page already
+    // holds both the name and the rung - so it hands them over rather than
+    // sending the supervisor to find the group page themselves.
+    steps.push({
+      id: "userGroup",
+      label: rankGroup
+        ? `Move them into the ${rankGroup.label} user group on GOV`
+        : "Move them into their new rank's user group on GOV",
+      copyText: "",
+      icon: Users,
+      action: {
+        label: "Open User Groups",
+        url: userGroupsHref({ member: personnelName, group: rankGroup?.key }),
+        internal: true,
+      },
+    });
     steps.push({ id: "dashboardSheets", label: "Use the 'Promote Employee' section on the Dashboard to update the sheets", copyText: "", icon: Globe, action: { label: "Open Dashboard", url: DASHBOARD_URL } });
     steps.push({ id: "meetingAgenda", label: "Mark the promotion task as Done under the Supervisor Meeting Agenda", copyText: "", icon: CheckSquare });
     if (newRank === "master-emt") {
@@ -411,7 +437,16 @@ export function PromotionProcessor() {
                             {step.secondaryCopyLabel || "Copy"}
                           </button>
                         )}
-                        {step.action && (
+                        {step.action?.internal && (
+                          <Link
+                            href={step.action.url}
+                            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
+                          >
+                            <Users className="h-3 w-3" />
+                            {step.action.label}
+                          </Link>
+                        )}
+                        {step.action && !step.action.internal && (
                           <a
                             href={step.action.url}
                             target="_blank"

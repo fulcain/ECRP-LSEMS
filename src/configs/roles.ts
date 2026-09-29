@@ -13,13 +13,17 @@
  *     directors and the staff templates all read their id *and* their display
  *     name from here.
  *
- * An entry is `{ id, name }`, edited by hand - there is no sync script:
+ * An entry is `{ id, name }` and an optional `hiddenFromMatrix`, edited by hand
+ * - there is no sync script:
  *   - `id`   - the Discord role snowflake, or `null` when the guild has no
  *              such role. A `null` id is inert: it can identify nobody, and a
  *              gate whose ids are all blank denies rather than opening.
  *   - `name` - the display name people read in the app. Nothing matches it
  *              against Discord, so it can say `Head of FTD` where the guild
  *              says `Head of Field Training`.
+ *   - `hiddenFromMatrix` - the permission editor never lists or offers this
+ *              role, because its access is granted by name below rather than
+ *              by a stored row. See `EVERY_PAGE_ROLES`.
  *
  * Section order is not significant except for the department ladder, which
  * `app/constants/general/ranks.ts` re-declares in hierarchy order.
@@ -30,6 +34,13 @@ import { ROUTES } from "@/configs/routes";
 export type GuildRoleEntry = {
   id: string | null;
   name: string;
+  /**
+   * Granted by name in this file instead of by a stored row, so the permission
+   * editor leaves it alone: it is not offered, not listed, and a stored entry
+   * naming it is refused. Hiding a role without granting it here would make it
+   * unreachable, which `npm run routes:check` fails on.
+   */
+  hiddenFromMatrix?: boolean;
 };
 
 export const ROLES = {
@@ -50,6 +61,20 @@ export const ROLES = {
   HighCommand: { id: "737481926943834193", name: "High Command" },
   /** LSEMS Supervisor - opens the Supervisor tools, and nothing more. */
   Supervisor: { id: "740782964157448363", name: "Supervisor" },
+  /**
+   * Legal Faction Management - outside the LSEMS ladder, and treated like HQ:
+   * every page, the permission editor included, whatever the matrix says.
+   *
+   * Hidden from the editor on purpose: its access comes from `EVERY_PAGE_ROLES`
+   * and `ADMIN_PAGE_ROLES` below rather than from a row, so there is nothing to
+   * decide about it and nothing to show - the people it applies to never appear
+   * as a rank anyone grants a page to.
+   */
+  LegalFactionManagement: {
+    id: "587679776542556236",
+    name: "Legal Faction Management",
+    hiddenFromMatrix: true,
+  },
 
   // ─── Department ranks ───────────────────────────────────────────────────
   // The LSEMS ladder, highest first. Order here is documentation; the ladder
@@ -635,14 +660,31 @@ export const COMMAND_ACCESS: readonly RoleName[] = [
  * decision time rather than written into each rule, so a row that leaves these
  * roles out changes who *else* gets in and nothing more.
  *
+ * A role the editor hides belongs here by definition (see `hiddenFromMatrix`):
+ * its access is this list, not a row. Legal Faction Management is the one that
+ * is not part of the department - it looks after the faction from outside, so
+ * the app shows it the department the way it shows HQ.
+ *
  * The Access Manager is the deliberate exception - it is `CommandPlusTeam`'s own
  * page and is closed to the Command ranks, the one route this list does not
- * reach.
+ * reach. The roles that do reach it are `ADMIN_PAGE_ROLES` below.
  */
 export const EVERY_PAGE_ROLES: readonly RoleName[] = [
   ...COMMAND_ACCESS,
   "CommandPlusTeam",
+  "LegalFactionManagement",
 ];
+
+/**
+ * Whether the permission editor leaves `alias` out of everything it shows.
+ *
+ * `ROLES` is `as const`, so the flag is readable only through here: indexing it
+ * with an alias gives a union of the entries, and only the entry that carries
+ * the optional field has it.
+ */
+export function isHiddenFromMatrix(alias: RoleName): boolean {
+  return (ROLES[alias] as GuildRoleEntry).hiddenFromMatrix === true;
+}
 
 /**
  * What a page opens to when the store holds no row for it.
@@ -673,8 +715,18 @@ export const DEFAULT_PAGE_ROLES: readonly RoleName[] = ["Employee"];
  */
 export const ADMIN_PAGES: readonly string[] = [ROUTES.management.access];
 
-/** The roles a page in `ADMIN_PAGES` opens to. Never merged into, never stored. */
-export const ADMIN_PAGE_ROLES: readonly RoleName[] = ["CommandPlusTeam"];
+/**
+ * The roles a page in `ADMIN_PAGES` opens to. Never merged into, never stored.
+ *
+ * The permission team, plus the roles that are granted every page by name -
+ * Legal Faction Management among them, which is therefore able to open and edit
+ * the matrix while never appearing in it. `canManageAccess` reads this list the
+ * same way, so the page and the endpoint behind it cannot disagree.
+ */
+export const ADMIN_PAGE_ROLES: readonly RoleName[] = [
+  "CommandPlusTeam",
+  "LegalFactionManagement",
+];
 
 /**
  * Whether `pathname` is one of `ADMIN_PAGES` - the CommandPlusTeam-only tools.
