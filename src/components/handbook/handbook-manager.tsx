@@ -10,8 +10,6 @@ import {
   Clock,
   Copy,
   Download,
-  Eye,
-  EyeOff,
   FileCode2,
   History,
   Loader2,
@@ -27,7 +25,6 @@ import {
   sectionHeading,
   splitHandbookDocument,
 } from "@/app/constants/divisions/ftd/handbook";
-import { BbcodePreview } from "@/components/handbook/bbcode-preview";
 import { Button } from "@/components/ui/button";
 import { BBCodeEditor } from "@/components/ui/bbcode-editor";
 import { cn } from "@/lib/utils";
@@ -70,9 +67,8 @@ function LocalOnlyNote({ writable }: { writable?: boolean }) {
  * write and hands over the file instead.
  *
  * The shape of the page is the shape of the job: the formats and their sections
- * down the left, the one you picked on the right with a preview beside it, and
- * publishing behind a confirmation because it is the one button that changes the
- * repository.
+ * down the left, the one you picked on the right, and publishing behind a
+ * confirmation because it is the one button that changes the repository.
  *
  * The profile itself is usually written somewhere else - a document, the forum's
  * own editor - so a format can also be replaced whole: paste the finished profile
@@ -277,7 +273,6 @@ export function HandbookManager() {
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [notice, setNotice] = useState<Notice | null>(null);
   const [saving, setSaving] = useState(false);
-  const [preview, setPreview] = useState(true);
   const [history, setHistory] = useState<Commit[] | null>(null);
   const [historyBusy, setHistoryBusy] = useState(false);
   const [historyFor, setHistoryFor] = useState<string | null>(null);
@@ -759,18 +754,6 @@ export function HandbookManager() {
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => setPreview((value) => !value)}
-                >
-                  {preview ? (
-                    <EyeOff className="mr-1.5 h-3.5 w-3.5" />
-                  ) : (
-                    <Eye className="mr-1.5 h-3.5 w-3.5" />
-                  )}
-                  {preview ? "Hide preview" : "Show preview"}
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
                   onClick={() => void loadHistory()}
                   disabled={historyBusy}
                 >
@@ -901,19 +884,13 @@ export function HandbookManager() {
               </div>
             )}
 
-            <div
-              className={cn(
-                "grid grid-cols-1 gap-3",
-                preview && "xl:grid-cols-2",
-              )}
-            >
+            <div className="grid grid-cols-1 gap-3">
               <BBCodeEditor
                 value={draft}
                 onChange={setDraft}
                 rows={22}
                 placeholder="The section's BBCode, exactly as the forum takes it."
               />
-              {preview && <BbcodePreview bbcode={draft} />}
             </div>
 
             <p className="text-[11px] text-muted-foreground">
