@@ -1,81 +1,109 @@
 "use client";
 
 import * as React from "react";
+import type { HandbookFormatKey } from "@/app/constants/divisions/ftd/handbook";
+import { handbookSectionText, spokenFromBbcode, handbookSpoiler } from "@/lib/handbook-notes";
 import type { PhaseKey } from "@/app/(routes)/divisions/ftd/paperwork/lib/paperworkConfig";
 import type { ReinstatementPhaseKey } from "@/app/(routes)/divisions/ftd/paperwork/lib/reinstatementConfig";
 
-import { IntroductionNotes } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/normal/introduction";
-import { Phase1Notes } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/normal/phase1";
-import { Phase2Notes } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/normal/phase2";
-import { Phase3Notes } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/normal/phase3";
-import { PreCertNotes } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/normal/preCert";
-import { CertPassedNotes } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/normal/certPassed";
-import { CertFailedNotes } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/normal/certFailed";
-import { RideAlongNotes } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/normal/rideAlong";
-
-import { ReinstatementPhase1Notes } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/reinstatement/reinstatementPhase1";
-import { ReinstatementPhase2Notes } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/reinstatement/reinstatementPhase2";
-import { ReinstatementCertPassedNotes } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/reinstatement/reinstatementCertPassed";
-import { ReinstatementCertFailedNotes } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/reinstatement/reinstatementCertFailed";
-import { ReinstatementRideAlongNotes } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/reinstatement/reinstatementRideAlong";
-
-import { INTRODUCTION_SPOKEN } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/spoken/introduction";
-import { PHASE1_SPOKEN } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/spoken/phase1";
-import { PHASE2_SPOKEN } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/spoken/phase2";
-import { PHASE3_SPOKEN } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/spoken/phase3";
-import { PRECERT_SPOKEN } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/spoken/preCert";
-import { CERT_PASSED_SPOKEN } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/spoken/certPassed";
-import { CERT_FAILED_SPOKEN } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/spoken/certFailed";
-import { RIDE_ALONG_SPOKEN } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/spoken/rideAlong";
-
-import { REINSTATEMENT_PHASE1_SPOKEN } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/spoken/reinstatementPhase1";
-import { REINSTATEMENT_PHASE2_SPOKEN } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/spoken/reinstatementPhase2";
-import { REINSTATEMENT_CERT_PASSED_SPOKEN } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/spoken/reinstatementCertPassed";
-import { REINSTATEMENT_CERT_FAILED_SPOKEN } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/spoken/reinstatementCertFailed";
-import { REINSTATEMENT_RIDE_ALONG_SPOKEN } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/spoken/reinstatementRideAlong";
+import { HandbookGuide } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/handbook-guide";
+import { PHASE_EXTRAS } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/extras";
 
 /**
- * A phase note has two always-available views: `Visual` (the original
- * formatted reference) and `Spoken` (a paste-friendly, first-person script).
+ * A phase note has two always-available views: `Visual` (the handbook section
+ * rendered) and `Spoken` (that same section as paste-friendly lines).
  */
 export interface PhaseNoteEntry {
   Visual: React.ComponentType;
   Spoken: string;
 }
 
-export const NORMAL_NOTES: Record<PhaseKey, PhaseNoteEntry> = {
-  introduction: { Visual: IntroductionNotes, Spoken: INTRODUCTION_SPOKEN },
-  phase1: { Visual: Phase1Notes, Spoken: PHASE1_SPOKEN },
-  phase2: { Visual: Phase2Notes, Spoken: PHASE2_SPOKEN },
-  phase3: { Visual: Phase3Notes, Spoken: PHASE3_SPOKEN },
-  preCert: { Visual: PreCertNotes, Spoken: PRECERT_SPOKEN },
-  certPassed: { Visual: CertPassedNotes, Spoken: CERT_PASSED_SPOKEN },
-  certFailed: { Visual: CertFailedNotes, Spoken: CERT_FAILED_SPOKEN },
-  rideAlong: { Visual: RideAlongNotes, Spoken: RIDE_ALONG_SPOKEN },
+/**
+ * Which handbook section each phase of the paperwork is about.
+ *
+ * This is the whole mapping now. Everything a trainer reads comes from the
+ * section named here, so a phase and the profile can no longer say different
+ * things - and there is no second copy to forget to update.
+ *
+ * Two pairs share a section on purpose: a passed and a failed certification are
+ * the same session with a different outcome, and the profile keeps both sets of
+ * paperwork in the one Certification section.
+ */
+const NORMAL_SECTION: Record<
+  PhaseKey,
+  { format: HandbookFormatKey; section: string; spoiler?: string }
+> = {
+  introduction: { format: "regular", section: "introduction" },
+  phase1: { format: "regular", section: "phase-1" },
+  phase2: { format: "regular", section: "phase-2" },
+  phase3: { format: "regular", section: "phase-3" },
+  preCert: { format: "regular", section: "pre-certification" },
+  certPassed: { format: "regular", section: "certification" },
+  certFailed: { format: "regular", section: "certification" },
+  rideAlong: { format: "regular", section: "ride-along-paperwork" },
 };
 
-export const REINSTATEMENT_NOTES: Record<ReinstatementPhaseKey, PhaseNoteEntry> = {
-  reinstatementPhase1: {
-    Visual: ReinstatementPhase1Notes,
-    Spoken: REINSTATEMENT_PHASE1_SPOKEN,
-  },
-  reinstatementPhase2: {
-    Visual: ReinstatementPhase2Notes,
-    Spoken: REINSTATEMENT_PHASE2_SPOKEN,
-  },
+const REINSTATEMENT_SECTION: Record<
+  ReinstatementPhaseKey,
+  { format: HandbookFormatKey; section: string; spoiler?: string }
+> = {
+  reinstatementPhase1: { format: "reinstatement", section: "reinstatement-phase-i" },
+  reinstatementPhase2: { format: "reinstatement", section: "reinstatement-phase-ii" },
   reinstatementCertPassed: {
-    Visual: ReinstatementCertPassedNotes,
-    Spoken: REINSTATEMENT_CERT_PASSED_SPOKEN,
+    format: "reinstatement",
+    section: "reinstatement-certification",
   },
   reinstatementCertFailed: {
-    Visual: ReinstatementCertFailedNotes,
-    Spoken: REINSTATEMENT_CERT_FAILED_SPOKEN,
+    format: "reinstatement",
+    section: "reinstatement-certification",
   },
+  // The reinstatee ride-along paperwork is a spoiler inside the certification
+  // section, and showing a ride-along trainer the whole certification would be
+  // the wrong page - so this one is read out of it.
   reinstatementRideAlong: {
-    Visual: ReinstatementRideAlongNotes,
-    Spoken: REINSTATEMENT_RIDE_ALONG_SPOKEN,
+    format: "reinstatement",
+    section: "reinstatement-certification",
+    spoiler: "Reinstatee Ride-Along",
   },
 };
+
+function entryFor(
+  key: string,
+  where: { format: HandbookFormatKey; section: string; spoiler?: string },
+): PhaseNoteEntry | undefined {
+  const whole = handbookSectionText(where.format, where.section);
+  if (whole === null) return undefined;
+  const text = where.spoiler ? handbookSpoiler(whole, where.spoiler) : whole;
+  if (text === null) return undefined;
+
+  const extras = (PHASE_EXTRAS as Record<string, React.ReactNode>)[key];
+  const Visual = () => (
+    <HandbookGuide
+      bbcode={text}
+      section={where.spoiler ? `${where.section} › ${where.spoiler}` : where.section}
+      extras={extras}
+    />
+  );
+  Visual.displayName = `${key}Guide`;
+  return { Visual, Spoken: spokenFromBbcode(text) };
+}
+
+/** Every normal phase, built from the handbook as it stands. */
+export const NORMAL_NOTES: Record<PhaseKey, PhaseNoteEntry | undefined> =
+  Object.fromEntries(
+    Object.entries(NORMAL_SECTION).map(([key, where]) => [key, entryFor(key, where)]),
+  ) as Record<PhaseKey, PhaseNoteEntry | undefined>;
+
+/** Every reinstatement phase, built the same way. */
+export const REINSTATEMENT_NOTES: Record<
+  ReinstatementPhaseKey,
+  PhaseNoteEntry | undefined
+> = Object.fromEntries(
+  Object.entries(REINSTATEMENT_SECTION).map(([key, where]) => [
+    key,
+    entryFor(key, where),
+  ]),
+) as Record<ReinstatementPhaseKey, PhaseNoteEntry | undefined>;
 
 export function resolveNormalNotes(
   key: string | null | undefined,
@@ -88,7 +116,5 @@ export function resolveReinstatementNotes(
   key: string | null | undefined,
 ): PhaseNoteEntry | undefined {
   if (!key) return undefined;
-  return (REINSTATEMENT_NOTES as Record<string, PhaseNoteEntry | undefined>)[
-    key
-  ];
+  return (REINSTATEMENT_NOTES as Record<string, PhaseNoteEntry | undefined>)[key];
 }

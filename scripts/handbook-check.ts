@@ -37,6 +37,8 @@ import {
   splitHandbookDocument,
 } from "@/app/constants/divisions/ftd/handbook";
 import { HANDBOOK_DOCUMENTS } from "@/app/constants/divisions/ftd/handbook-content";
+import { paperworkConfig } from "@/app/(routes)/divisions/ftd/paperwork/lib/paperworkConfig";
+import { reinstatementConfig } from "@/app/(routes)/divisions/ftd/paperwork/lib/reinstatementConfig";
 
 let checks = 0;
 let failures = 0;
@@ -230,6 +232,83 @@ for (const [file, key] of CONSUMERS) {
     true,
   );
 }
+
+/* ---- the paperwork Guide and Script are built from the handbook, too ---- */
+// The FTD Paperwork tab used to keep a hand-written copy of the same material - a
+// React component per phase and a spoken script beside it - and it had already
+// drifted from the profile by the time the profile moved into `docs/handbook/**`.
+// Both views are derived from the sections now, and these are the assertions that
+// keep it that way: every phase names a section, every name exists, and no file
+// here carries a section's own text.
+const PHASE_NOTES_DIR =
+  "src/app/(routes)/divisions/ftd/paperwork/lib/phase-notes";
+const REGISTRY = `${PHASE_NOTES_DIR}/registry.tsx`;
+const registry = read(REGISTRY) ?? "";
+const notesFiles: string[] = [];
+(function walk(dir: string) {
+  for (const entry of readdirSync(path.join(ROOT, dir), { withFileTypes: true })) {
+    const next = `${dir}/${entry.name}`;
+    if (entry.isDirectory()) walk(next);
+    else notesFiles.push(next);
+  }
+})(PHASE_NOTES_DIR);
+
+expect(
+  "the paperwork Guide renders the handbook's own section text",
+  /handbookSectionText\(/.test(registry) && /spokenFromBbcode\(/.test(registry),
+  true,
+);
+expect(
+  "and the Script is generated from the same text, not written out",
+  /from "@\/lib\/handbook-notes"/.test(registry),
+  true,
+);
+// A phase whose section name is wrong resolves to nothing, and the panel quietly
+// says there are no notes for it - which is exactly how a wrong name survives.
+const namedSections = [...registry.matchAll(/section: "([^"]+)"/g)].map(
+  (match) => match[1],
+);
+expect(
+  "every section the paperwork page names exists",
+  namedSections.filter(
+    (id) => !HANDBOOK_SECTIONS.some((section) => section.id === id),
+  ),
+  [],
+);
+const mapped = new Set(
+  [...registry.matchAll(/^ {2}(\w+): \{/gm)].map((match) => match[1]),
+);
+const declaredPhases = [
+  ...Object.keys(paperworkConfig),
+  ...Object.keys(reinstatementConfig),
+];
+expect(
+  "every phase of the paperwork is mapped to a section",
+  declaredPhases.filter((key) => !mapped.has(key)),
+  [],
+);
+// A section's longest line is specific enough that finding it in the paperwork
+// sources means someone wrote the handbook out again.
+const handWritten: string[] = [];
+for (const section of HANDBOOK_SECTIONS) {
+  const lines = (read(section.file) ?? "")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 80)
+    .sort((a, b) => b.length - a.length);
+  const fingerprint = lines[0];
+  if (!fingerprint) continue;
+  for (const file of notesFiles) {
+    if ((read(file) ?? "").includes(fingerprint)) {
+      handWritten.push(`${file} carries ${section.id}`);
+    }
+  }
+}
+expect(
+  "and no paperwork file carries a handbook section of its own",
+  handWritten,
+  [],
+);
 
 /* ---- the generated module is generated, and reaches for nothing ---- */
 const contentModule = readFileSync(

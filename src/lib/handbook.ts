@@ -130,21 +130,6 @@ export async function readHandbook(): Promise<HandbookFormatContent[]> {
   );
 }
 
-/**
- * The document a format builds: its sections in order, one newline between
- * them. This is the profile post as it would be pasted into the forum.
- */
-export async function readHandbookDocument(
-  key: HandbookFormat["key"],
-): Promise<string> {
-  const format = HANDBOOK_FORMATS.find((entry) => entry.key === key);
-  if (!format) return "";
-  const parts = await Promise.all(
-    format.sections.map(async (section) => (await readSectionFile(section.file)) ?? ""),
-  );
-  return parts.join("\n");
-}
-
 /** Where the generated module the client reads the profile from lives. */
 export const HANDBOOK_CONTENT_MODULE =
   "src/app/constants/divisions/ftd/handbook-content.ts";
@@ -152,16 +137,25 @@ export const HANDBOOK_CONTENT_MODULE =
 /**
  * The generated module's text for the files as they are on disk right now.
  *
- * The contract workflow is a client module: it cannot read a file, so the
- * profile it copies has to reach it some other way. Rather than keep a second
- * copy beside it - which is what had drifted - the sections are assembled into
- * this module, and `npm run handbook:check` fails the moment the two disagree.
+ * The pages that show or copy the handbook - the contract workflow, the
+ * paperwork Guide and Script - are client modules: they cannot read a file, so
+ * the sections have to reach them some other way. Rather than keep a second copy
+ * beside them - which is what had drifted - each section's own text is written
+ * into this module, and the assembled profile is derived from those by order.
+ * One copy of the text, and `npm run handbook:check` fails the moment it stops
+ * matching the files.
  */
 export async function renderHandbookContentModule(): Promise<string> {
-  const documents = {
-    regular: await readHandbookDocument("regular"),
-    reinstatement: await readHandbookDocument("reinstatement"),
-  };
+  const sections: Record<string, Record<string, string>> = {};
+  const order: Record<string, string[]> = {};
+  for (const format of HANDBOOK_FORMATS) {
+    sections[format.key] = {};
+    order[format.key] = format.sections.map((section) => section.id);
+    for (const section of format.sections) {
+      sections[format.key][section.id] =
+        (await readSectionFile(section.file)) ?? "";
+    }
+  }
   return `/**
  * The handbook's two profiles, assembled - GENERATED FILE, DO NOT EDIT.
  *
@@ -175,12 +169,31 @@ export async function renderHandbookContentModule(): Promise<string> {
 
 import type { HandbookFormatKey } from "./handbook";
 
-/** Each format's own document: its sections in order, one newline between them. */
-export const HANDBOOK_DOCUMENTS: Record<HandbookFormatKey, string> = ${JSON.stringify(
-    documents,
+/**
+ * Every section's own text, by id. This is the one copy the client side has, and
+ * it is what the Guide and the Script in FTD Paperwork are built from.
+ */
+export const HANDBOOK_SECTION_TEXTS: Record<
+  HandbookFormatKey,
+  Record<string, string>
+> = ${JSON.stringify(sections, null, 2)};
+
+/** The order the sections are assembled in, which is the declaration's order. */
+const ORDER: Record<HandbookFormatKey, readonly string[]> = ${JSON.stringify(
+    order,
     null,
     2,
   )};
+
+/** Each format's own document: its sections in order, one newline between them. */
+export const HANDBOOK_DOCUMENTS: Record<HandbookFormatKey, string> = {
+  regular: ORDER.regular
+    .map((id) => HANDBOOK_SECTION_TEXTS.regular[id] ?? "")
+    .join("\\n"),
+  reinstatement: ORDER.reinstatement
+    .map((id) => HANDBOOK_SECTION_TEXTS.reinstatement[id] ?? "")
+    .join("\\n"),
+};
 `;
 }
 

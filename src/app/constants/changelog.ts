@@ -18,6 +18,16 @@ export const changeLog: ChangeLogEntry[] = [
       {
         type: "feature",
         description:
+          "Updating a training profile is one paste: FTD Command's Handbook tab leads with a button for the Regular profile and one for the Reinstatement profile, and pasting the finished profile in shows, section by section, what it would change before anything is written. The paste is the new truth, but only the sections that actually differ are rewritten, so an update that touched one phase leaves one file changed instead of the whole format.",
+      },
+      {
+        type: "feature",
+        description:
+          "The Guide and Script views in FTD Paperwork are built from the profile itself rather than kept beside it, so pasting an updated profile updates the trainer's guide, the paste-ready script, the profile an FTO copies, and every tool that reads the handbook in the same breath. They used to be a hand-written copy of the same material, and had already drifted from the profile.",
+      },
+      {
+        type: "feature",
+        description:
           "FTD Command has a Handbook tab. The EMR profile's own sections - the regular one and the reinstatement one - are edited there: pick a section, write it, see it rendered as the forum will show it, and publish behind a confirmation. The profile an FTO copies when they open a training profile is built from those sections rather than kept beside them, so a published section reaches it; publishing writes the section's file in the repository, so it goes out with your next push, and earlier versions can be opened and put back from your own checkout.",
       },
       {
