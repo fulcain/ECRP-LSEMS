@@ -332,10 +332,27 @@ export type HandbookWriteResult =
 export type HandbookSectionsWrite = {
   files: string[];
   bytes: number;
+  /** The sections whose file actually changed, and the ones that did not. */
+  changed: string[];
+  unchanged: string[];
 };
 
 /**
+ * Whether two section texts are the same content, whatever line endings they
+ * were read or pasted with - the repository normalises them, so a paste that
+ * only differs in `\r` is not a change worth a commit.
+ */
+function sameText(a: string, b: string): boolean {
+  return a.replace(/\r\n/g, "\n") === b.replace(/\r\n/g, "\n");
+}
+
+/**
  * Writes several sections, then assembles the module once.
+ *
+ * Only the sections that actually differ are written. A whole-profile update is
+ * the common case - the profile is rewritten elsewhere and pasted back in - and
+ * touching all nine files when the change was one line makes the commit that
+ * follows unreadable. The unchanged files keep their own history.
  *
  * A whole profile has to move as one unit: regenerating the module per file would
  * leave the assembled profile disagreeing with the sections it is built from on
@@ -348,21 +365,32 @@ export async function writeHandbookSections(
   if (!canWriteHandbook() || entries.length === 0) return null;
 
   const files: string[] = [];
+  const changed: string[] = [];
+  const unchanged: string[] = [];
   let bytes = 0;
   for (const entry of entries) {
     const section = handbookSection(entry.id);
     if (!section) return null;
+    const current = await readSectionFile(section.file);
+    if (current !== null && sameText(current, entry.content)) {
+      unchanged.push(entry.id);
+      continue;
+    }
     await writeFile(absolute(section.file), entry.content, "utf8");
     files.push(section.file);
+    changed.push(entry.id);
     bytes += Buffer.byteLength(entry.content, "utf8");
   }
+
+  // Nothing moved, so the assembled module cannot have moved either.
+  if (changed.length === 0) return { files, bytes, changed, unchanged };
 
   await writeFile(
     absolute(HANDBOOK_CONTENT_MODULE),
     await renderHandbookContentModule(),
     "utf8",
   );
-  return { files, bytes };
+  return { files, bytes, changed, unchanged };
 }
 
 /**
@@ -391,6 +419,16 @@ export async function writeHandbookSection(
   // The assembled module moves with it, or a published section would leave the
   // profile the contract workflow hands out stale until a rebuild.
   const written = await writeHandbookSections([{ id, content }]);
+  // A publish of identical text is not a write, and the caller has to say so
+  // rather than report a save that never happened.
+  if (written && written.changed.length === 0) {
+    return {
+      ok: true,
+      written: true,
+      file: section.file,
+      bytes: 0,
+    };
+  }
   if (!written) return null;
   return {
     ok: true,

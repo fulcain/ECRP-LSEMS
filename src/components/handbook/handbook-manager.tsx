@@ -138,6 +138,15 @@ async function fetchHandbook(): Promise<HandbookRead> {
  * typed and names the heading it could not find, because a profile that has lost
  * a heading would otherwise land in the wrong files.
  */
+/**
+ * Whether a pasted section says anything different from the file it would
+ * replace. Line endings are the repository's business, not a change: a paste
+ * that only differs in `\r` should not be reported as an update.
+ */
+function sameSectionText(current: string, pasted: string): boolean {
+  return current.replace(/\r\n/g, "\n") === pasted.replace(/\r\n/g, "\n");
+}
+
 function PasteProfilePanel({
   format,
   writable,
@@ -171,6 +180,20 @@ function PasteProfilePanel({
             .map((token) => `${section.title}: ${token}`);
         })
       : [];
+  // The paste is compared against the files as they stand, so the member can see
+  // what an update actually touches before it touches it - and so an update that
+  // changed one phase leaves one file changed rather than nine.
+  const diffs =
+    split?.ok === true
+      ? format.sections.map((section) => {
+          const pasted = split.sections.find((entry) => entry.id === section.id);
+          return {
+            section,
+            changed: !sameSectionText(section.content, pasted?.content ?? ""),
+          };
+        })
+      : [];
+  const changedCount = diffs.filter((entry) => entry.changed).length;
   const ready = writable && lost.length === 0 && split?.ok === true;
 
   const status = !writable
@@ -241,7 +264,11 @@ function PasteProfilePanel({
           ) : (
             <ClipboardPaste className="mr-1.5 h-3.5 w-3.5" />
           )}
-          Replace all {format.sections.length} sections
+          {changedCount === 0
+            ? "Nothing to update"
+            : `Update ${changedCount} changed section${
+                changedCount === 1 ? "" : "s"
+              }`}
         </Button>
       </div>
 
@@ -251,6 +278,47 @@ function PasteProfilePanel({
             <li key={entry}>{entry}</li>
           ))}
         </ul>
+      )}
+
+      {diffs.length > 0 && (
+        <div className="mt-3 rounded-lg border border-border p-3">
+          <p className="text-xs font-medium text-foreground">
+            What this paste changes
+          </p>
+          <ul className="mt-2 space-y-1 text-[11px]">
+            {diffs.map(({ section, changed }) => (
+              <li key={section.id} className="flex items-center gap-2">
+                <span
+                  className={cn(
+                    "w-16 shrink-0 rounded border px-1.5 py-0.5 text-center",
+                    changed
+                      ? "border-amber-300/50 text-amber-700 dark:text-amber-300"
+                      : "border-border text-muted-foreground",
+                  )}
+                >
+                  {changed ? "changed" : "same"}
+                </span>
+                <span
+                  className={
+                    changed ? "text-foreground" : "text-muted-foreground"
+                  }
+                >
+                  {section.title}
+                </span>
+                <code className="truncate font-mono text-muted-foreground">
+                  {section.file}
+                </code>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 text-[11px] text-muted-foreground">
+            {changedCount === 0
+              ? "Nothing here differs from the files - updating would write nothing."
+              : `Only those ${changedCount} file${
+                  changedCount === 1 ? "" : "s"
+                } will be written; the rest are left exactly as they are.`}
+          </p>
+        </div>
       )}
     </div>
   );
@@ -406,6 +474,8 @@ export function HandbookManager() {
         error?: string;
         problems?: string[];
         reason?: string;
+        changed?: string[];
+        unchanged?: string[];
       };
 
       if (response.ok && payload.written) {
@@ -429,12 +499,27 @@ export function HandbookManager() {
         }
         setPasting(null);
         setPasted("");
+        const changed = payload.changed ?? [];
+        const titles = changed.map(
+          (id) => format.sections.find((section) => section.id === id)?.title ?? id,
+        );
         setNotice({
           kind: "ok",
-          text: `All ${format.sections.length} sections of ${format.label} were rewritten. Commit them like any other change.`,
+          text:
+            changed.length === 0
+              ? `Nothing differed - ${format.label} already matches what you pasted, so no file was written.`
+              : `Updated ${changed.length} of ${format.sections.length} ${format.label} sections (${titles.join(
+                  ", ",
+                )}). The rest were already identical and were left alone. Commit the change like any other.`,
           warnings: payload.warnings,
         });
-        toast.success(`${format.label} profile replaced`);
+        toast.success(
+          changed.length === 0
+            ? `${format.label} was already up to date`
+            : `${format.label} updated - ${changed.length} section${
+                changed.length === 1 ? "" : "s"
+              } changed`,
+        );
       } else {
         // A read-only deployment refuses a whole-profile replace outright, which
         // is worth saying plainly rather than as a failure.
@@ -490,6 +575,43 @@ export function HandbookManager() {
       <ToastContainer position="top-right" autoClose={2500} hideProgressBar />
 
       <LocalOnlyNote writable={data.writable} />
+
+      {/*
+       * The job that brings a member here: the profile is rewritten somewhere
+       * else and pasted in whole. One button per format because the two profiles
+       * are updated by different people at different times.
+       */}
+      <div className="grid gap-3 sm:grid-cols-2">
+        {data.formats.map((format) => (
+          <button
+            key={format.key}
+            type="button"
+            onClick={() => {
+              setPasting(format.key);
+              setPasted("");
+              setNotice(null);
+            }}
+            className={cn(
+              "flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 text-left transition-colors",
+              pasting === format.key
+                ? "border-primary/50 bg-primary/10"
+                : "border-border bg-surface/60 hover:bg-surface-hover",
+            )}
+          >
+            <ClipboardPaste className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+            <span className="min-w-0">
+              <span className="block text-sm font-medium text-foreground">
+                Update {format.label}
+              </span>
+              <span className="mt-0.5 block text-[11px] text-muted-foreground">
+                Paste the whole updated profile - only the sections that differ
+                are written, and the Guide, the scripts and everything else that
+                reads the handbook follow from them.
+              </span>
+            </span>
+          </button>
+        ))}
+      </div>
 
       <div className="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-border bg-surface/60 p-4">
         <div className="min-w-0">
@@ -589,10 +711,9 @@ export function HandbookManager() {
             setPasted("");
           }}
           onReplace={() => {
-            const count = pastingFormat.sections.length;
             if (
               !window.confirm(
-                `Replace all ${count} sections of ${pastingFormat.label}? This writes ${count} files in the repository, so it goes out with your next push.`,
+                `Update ${pastingFormat.label} from this paste? Only the sections that differ are written - each one is a file in the repository, so it goes out with your next push.`,
               )
             ) {
               return;
@@ -649,19 +770,6 @@ export function HandbookManager() {
                   );
                 })}
               </ul>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="w-full justify-start text-[11px] text-muted-foreground"
-                onClick={() => {
-                  setPasting(format.key);
-                  setPasted("");
-                  setNotice(null);
-                }}
-              >
-                <ClipboardPaste className="mr-1.5 h-3 w-3" />
-                Paste a new {format.label} profile
-              </Button>
             </section>
           ))}
         </nav>

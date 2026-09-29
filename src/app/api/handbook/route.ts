@@ -118,8 +118,10 @@ export async function GET(request: Request) {
 /**
  * Replace a whole profile from a pasted document.
  *
- * Every one of the format's section files is rewritten and the assembled module
- * is rebuilt once, so the pasted profile and the sections it is cut into can never
+ * The paste is compared against the files as they stand and only the sections
+ * that differ are written, so an update that touched one phase leaves one file
+ * changed rather than the whole format. The assembled module is rebuilt once if
+ * anything moved, so the pasted profile and the sections it is cut into can never
  * be seen apart. The split is refused rather than guessed at: a missing heading
  * names the section it could not find, and a section that would lose a placeholder
  * it must keep is refused per section, exactly like a single-section publish.
@@ -178,6 +180,11 @@ async function replaceFormat(key: string, content: string) {
     written: true,
     files: result.files,
     bytes: result.bytes,
+    // The paste is the new truth, but only the sections that actually differ
+    // were written - the rest keep their own history, and saying which is which
+    // is what makes the commit that follows reviewable.
+    changed: result.changed,
+    unchanged: result.unchanged,
     warnings,
   });
 }

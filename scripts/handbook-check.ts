@@ -303,11 +303,21 @@ expect(
       formatPublish.indexOf("writeHandbookSections("),
   true,
 );
+// The update path is one button per declared format, and it only offers what
+// actually differs: a paste that says nothing new must be told so rather than
+// rewriting the whole format.
+const managerSource = readFileSync(path.join(ROOT, SOURCES[2]), "utf8");
 expect(
-  "the Handbook tab offers a paste for every format",
-  /Paste a new \{format\.label\} profile/.test(
-    readFileSync(path.join(ROOT, SOURCES[2]), "utf8"),
-  ),
+  "the Handbook tab offers an update for every format",
+  /data\.formats\.map/.test(managerSource) &&
+    /Update \{format\.label\}/.test(managerSource),
+  true,
+);
+expect(
+  "and it only writes the sections a paste actually changes",
+  /sameSectionText/.test(managerSource) &&
+    /changedCount/.test(managerSource) &&
+    /changed\.length === 0/.test(managerSource),
   true,
 );
 
