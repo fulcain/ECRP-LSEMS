@@ -99,6 +99,8 @@ export const PHASE3_SPOKEN = [
 
   "|| Overwhelmed? Let them focus on their driving for the rest of the session. ||",
 
+  "Ask them if they have any concerns, then question them about radio calls and treatment.",
+
   "|| Assign mandatories if they're having a rough time, and remind them optional ride-alongs are always an option. And encourage roaming during downtime in their upcoming ride-alongs. ||",
 
   "|| Report honestly - if they performed poorly, say so. This is their last chance before Pre-Certification, and generic praise only hurts them. ||",

@@ -158,8 +158,8 @@ export function ReinstatementCertPassedNotes() {
             </BbLink>
           </Item>
           <Item>
-            <BbLink href="https://gov.eclipse-rp.net/viewtopic.php?t=216104#PROMOTIONS">
-              Promotion Checklist
+            <BbLink href="https://gov.eclipse-rp.net/viewtopic.php?t=74487">
+              Promotion Checklist (Supervisor Handbook Section 5)
             </BbLink>
           </Item>
         </BulletList>

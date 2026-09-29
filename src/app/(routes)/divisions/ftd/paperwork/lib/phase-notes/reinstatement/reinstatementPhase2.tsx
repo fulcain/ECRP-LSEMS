@@ -115,7 +115,8 @@ export function ReinstatementPhase2Notes() {
         </Item>
       </BulletList>
 
-      <Category title="Breathalyser" ordered>
+      {/* Not in the handbook's Phase II, kept as a refresher from Phase I. */}
+      <Category title="Breathalyser (refresher from Phase I)" ordered>
         <Item>
           Inform the EMR that before conducting a breathalyzer, they must
           have the consent of the patient. Explain that if consent is not

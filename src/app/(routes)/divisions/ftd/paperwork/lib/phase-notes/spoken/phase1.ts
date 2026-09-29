@@ -84,9 +84,7 @@ export const PHASE1_SPOKEN = [
 
   "If you ask for backup, stay put - backups are tied to your cruiser.",
 
-  "Your panic button is tied to your radio's location, and you can't add a reason when you create one. `CTRL + E`.",
-
-  "Our panics and backups show up in PD/SD dispatch now. If you make one that doesn't need them, use the department radio to tell those departments to disregard it. `/dep`",
+  "Heads up - panic button calls unfortunately do NOT show in PD/SD dispatch. If you make one that doesn't need them, use the department radio to tell those departments to disregard it. `/dep`",
 
   "If you DO need PD or SD, use the department radio and give them the backup/panic call number.",
 

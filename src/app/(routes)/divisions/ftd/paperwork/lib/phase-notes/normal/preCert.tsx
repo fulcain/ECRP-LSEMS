@@ -127,7 +127,11 @@ export function PreCertNotes() {
         </Item>
         <Item>
           Complete the paperwork and make sure to edit the top post with
-          &ldquo;[Pending Certification] Fname Lname&rdquo;.
+          &ldquo;[Pending Certification]{' '}
+          <code className="rounded border border-border px-1 font-mono text-xs">
+            {'{{applicantName}}'}
+          </code>
+          &rdquo;.
         </Item>
       </Category>
 

@@ -132,7 +132,11 @@ export function CertPassedNotes() {
             </Item>
             <Item>
               <Aside>
-                (( F4 rank adjustment, Discord ))
+                (( F4 rank adjustment, Discord - reference{" "}
+                <BbLink href="https://gov.eclipse-rp.net/viewtopic.php?t=74487">
+                  Section 5 of the Supervisor Handbook
+                </BbLink>{" "}
+                for detailed guidance while the person is offline. ))
               </Aside>
             </Item>
             <Item>
@@ -193,6 +197,12 @@ export function CertPassedNotes() {
                 here
               </BbLink>{" "}
               is the location to post it.
+              <p className="mt-1">
+                <Em>
+                  Make sure to fill out the format properly - the title should
+                  read <code className="rounded border border-border px-1 font-mono text-xs">Rank Adjustment | {'{{applicantName}}'}</code>.
+                </Em>
+              </p>
             </Item>
             <Item>
               <OOC>Request an acp rank change in discord</OOC>
