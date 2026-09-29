@@ -1,0 +1,186 @@
+[spoiler=REINSTATEMENT - Phase I]
+[divbox=white]
+[lsemssubtitle]Reinstatement Phase I - Requirement: EMT-I+, 1:30h minimum / 3h maximum [/lsemssubtitle]
+[center][b]**THE REINSTATEE SHOULD DO TREATMENT & HANDLE UNIT/CALL MANAGEMENT TOWARDS THE END OF THE PHASE**[/b][/center]
+[color=transparent].[/color]
+[color=transparent].[/color]
+[list=1]
+[*][color=#800000][b]Hospitals[/b][/color]
+[list][*]Explain to the reinstatee the hospitals we've opened. (Make sure to let them know that we no longer have Zonah, Central and Sandy dropoffs, but have garages at Sandy, Zonah and Fire Station 7; reference the general handbook Section 1)
+[*]Review where we can drop of patients at Paleto and Pillbox. 
+[*]Review the location of the garage in every hospital, as well as the 3 garage-only locations. 
+[/list]
+
+[*][color=#800000][b]Call list[/b][/color]
+[list][*]Go over the dispatch system with the reinstatee' [ooc]/calls[/ooc], explaining that we see calls oldest to newest, description, location and which unit is currently responding to it.
+[*]Go over how to respond to calls, how to close them, and how to check the location. [ooc]/resp, /closecall & /setcall[/ooc]
+[*]Explain call priority
+[list=1][*]Injured medics on duty
+[*]PD and SD
+[*]DOC and GOV
+[*]Civilians calls from oldest to the newest [/list]
+[/list]
+
+[*][color=#800000][b]Radio Codes[/b][/color]
+[list][*]Review the radio codes with the reinstatee and quiz them on radio codes.
+[*]Ask the reinstatee what would you respond with if someone asks for a 10-3, 10-21, and 10-37.
+[*]Ask the reinstatee the difference between code 2 & code 3.
+[*]Ask the reinstatee what they would radio in when approaching a scene.
+[*]Make up a call number, location, patient count, injury, and quiz them if it's a code 2 or code 3 and which hospital. (Time management is important for location)
+[*]Ask the reinstatee what they'd say once they've delivered the patient to the hospital?
+[/list]
+
+[*][color=#800000][b]Backup/Panic Alarms[/b][/color]
+[list][*]Explain to the reinstatee the difference between a panic alarm and a backup call. 
+[*]Inform the reinstatee that if they require a backup alarm they'll need to provide a brief description as to the situation. [ooc]/backup [text][/ooc]
+[*]Inform them that our backups/panics now go to all other departments.
+[*]Ask the reinstatee if they would do a backup or panic based on the following scenarios:
+
+[list]
+[*] They flip their ambulance.
+[*] Armed assailants are standing over their patient and screaming threats.
+[*] They are involved in an accident and break a few ribs.
+[*] They run out of fuel in their ambulance.
+[/list]
+[/list]
+
+[*][color=#800000][b]Treatment[/b][/color]
+[list][*]Ask the reinstatee how they'd treat the following injuries:
+[list]
+[*] Broken arm or leg
+[*] 1st and 3rd-degree burns 
+[*] Stomach gunshot wound
+[*] Arm/leg gunshot wound
+[/list]
+[/list]
+
+[*][color=#800000][b]Fire Calls[/b][/color][list]
+[*]Show the EMR where to retrieve a fire extinguisher. 
+[ooc]RP first, then [c]/fl[/c] Tell them to press TAB in order to see the hotkey for the extinguisher.[/ooc]
+[*]Then explain the process of extinguishing a fire to the EMR. 
+[ooc][c]E[/c] on the floating UI, and [c]/extinguish[/c][/ooc]
+[*]Inform the EMR that there can be lingering flames, and that it's best to check the surroundings thoroughly.
+[ooc]Additionally, explain that some fires are glitched and are only visible in the UI when physically close to the fire.[/ooc]
+[/list]
+[*][color=#800000][b]Methadone[/b][/color][list]
+[*]Explain to the EMR the proper procedure of distribution of methadone and give them an example of when you can supply it to a patient. [b]Make sure they understand [color=#800000]WELL[/color].[/b]
+[*][b]Make sure to teach them how to properly do the entire procedure, especially the importance of utilizing the Prescription Section to note a prescription down. This is of extreme importance, as improperly prescribing Methadone can and will lead to disciplinary action if done incorrectly.[/b]
+[*]Inform the EMR that before selling methadone they [b]HAVE[/b] to conduct a drug test.
+[*]Inform the EMR that anyone requesting methadone can only pay for it in cash, at the price of $500.
+[*][ooc]Inform the EMR roleplay must be completed before using the command, without any roleplay, you'll be breaking powergaming by forcing roleplay without allowing the other player a chance and abusing faction commands.[/ooc]
+[/list]
+
+[*][color=#800000][b]Breathalyser[/b][/color][list]
+[*]Explain to the EMR the process of conducting a breathalyzer on a patient and give them an example of how to do it. [ooc]/breathanalyse[/ooc]
+[*]Inform the EMR that before conducting a breathalyzer they must have the consent of the patient. Explain that if consent is not given, and this is linked to a potential criminal charge, they are required to notify the patient that separate charges can be levied for 'Failure to Comply' or potentially 'Tampering with Evidence'.
+[*]Inform the EMR that if a patient's blood alcohol percentage is 0.08% and above, they are legally considered intoxicated as per the San Andreas Penal Code. 
+[*]Remind the EMR that we can offer intoxicated patients water, food, and/or a safe ride home by requesting a taxi or calling a friend depending on the situation. If they witness an intoxicated patient attempting to operate a vehicle following a breathalyzer test, that PD/SD should be contacted via department radio as it poses a risk to their safety and the safety of others.
+[*][ooc]Inform the EMR roleplay must be completed before using the command, without any roleplay, you'll be breaking powergaming by forcing roleplay without allowing the other player a chance and abusing faction commands.[/ooc]
+[/list]
+
+[*][color=#800000][b]Scene Management[/b][/color]
+[list][*]Inform the reinstatee what blockades we have [ooc] [c]barrier[/c], [c]barrier2[/c], [c]cone[/c] and [c]arrow[/c][/ooc].
+[*][ooc] Additionally inform them of the three extra "blockades" they can use for improving their RP - [c]bls[/c], [c]stretcher[/c] and [c]backboard[/c]. [/ooc]
+[*]Explain to the reinstatee the value of blockades and show them that they do save lives.
+[*]Explain to them that we can also build a tent with supplies found in our vehicles, but that it should only be used for Code 1 situations or when otherwise specified. (( /blockade tent ))
+[*]Show the reinstatee how to block incoming traffic using the ambulance.
+[*]Remind the reinstatee that they should never park the ambulance on train tracks.
+[*]Remind the reinstatee that medics and patients should wear seatbelts in the ambulance whenever possible. Make sure patients are properly secured before transport. If they are on a stretcher, use the stretcher straps.
+[*][ooc]Remind them to RP securing the patient and have the other player press [c]B[/c].[/ooc]
+[*]Take the reinstatee on a public road, park the ambulance, and have them practice doing scene management.
+[/list]
+
+[*][color=#800000][b]Department Radio[/b][/color]
+[list]
+[*]Go over the department radio and who uses it. (MD, PD, SD, DOC & GOV) [ooc]/dep[/ooc]
+[*]Question the reinstatee about call priority.
+[*]Make sure the reinstatee knows that department radio has to be answered even if we are 10-9.
+[*]Tell the reinstatee to always say MD before calling over department radio.
+[*]Explain the difference between [i]Urgent[/i] (skipping "how copy") and [i]Non Urgent[/i] (using "how copy" then waiting for response)
+[*]Inform the reinstatee that once they are certified, the highest ranking unit on shift would usually respond to departmental radio, unless a shift lead is appointed or a training unit has prio (teach them to ask if they are unsure if anyone does have prio)
+[/list]
+
+[*][color=#800000][b]PD/SD Calls[/b][/color]
+[list]
+[*]Explain to the reinstatee how to communicate with PD/SD over department radio.
+[*]Inform the reinstatee that they need to report when they are en-route over our normal radio and department radio.
+[*]Tell the reinstatee that the first thing to do as they approach the scene is to ask who is injured and who is 10-15/10-16 and if any treatment has been given to the patients before our arrival (Most of PD and SD employees have BLS training).
+[list]
+[*]If there are no 10-15s, we behave as if it was a normal call.
+[*]If there is an injured 10-15, we treat the patient and then we ask PD/SD if we can take the patient to the ambulance.
+[/list]
+[*]Explain why:
+[list]
+[*]Never take 10-15 to an ambulance without PD/SD permission.
+[*]Never leave a scene without PD/SD permission.
+[*]Always ask which hospital PD/SD wishes to go to.
+[*]Never drop the patient without asking PD/SD for permission.
+[/list]
+[*]Make sure the reinstatee knows that it's better to ask twice than get IA reported for stealing a 10-15.[/list]
+[*][color=#800000][b]Jointed Tac[/b][/color]
+[list]
+[*]Explain to the reinstatee what Jointed Tac (JTAC) is.
+[*]Inform the reinstatee on how it's used.
+[ooc]Make sure you explain and they understand JTAC is IC and they have to use IC VOIP as well when talking on it.[/ooc]
+[*]Make sure they understand respect and professionalism is [b]utterly[/b] important here.
+[*]Tell the reinstatee that the JTAC frequencies are [b]910.1[/b] to [b]910.5[/b], giving a total of 5 JTAC channels.[/list]
+[*][color=#800000][b]On-Call Pager Program[/b][/color]
+[list]
+[*]Hand them an On-Call Program Pager (stored in the locker room) & explain the program. The EMR is not obliged to join, so do inform them of this as well. (( [b]Make sure you give them the discord role![/b] ))
+[/list]
+
+[*][color=#800000][b]Re-Introduction Email[/b][/color]
+[list]
+[*]Last but not least, send [url=https://pastebin.com/raw/Dq7vYC7s]this email[/url] to the Reinstatee! It contains useful things they may or may not need during the reinstatement training and/or employment.
+[/list]
+[/list]
+[spoiler=Paperwork]
+[code]
+[img]https://i.ibb.co/JwWCQ0wm/9gkzvd5.png[/img]
+[lsemssubtitle]SESSION DETAILS:[/lsemssubtitle]
+[divbox=white]
+[b]Time Started:[/b] 
+
+[b]Time Ended:[/b] 
+
+[b]Were there any department calls?[/b] YES/NO
+
+[b]Did the reinstatee transport a 10-15?[/b] YES/NO
+[i]If Yes, rate their performance (1-5). Explain any issues if performance was poor[/i][list=none]
+INPUT FEEDBACK HERE
+[/list]
+[b][ooc] How did they do Roleplay-wise? Note anything negative and positive:[/ooc][/b][list=none]
+[ooc]INPUT FEEDBACK HERE[/ooc]
+
+[/list]
+[b]Reinstatement Phase I Notes (25 Word Minimum):[/b][list=none]
+INPUT FEEDBACK HERE
+
+[/list]
+[/divbox]
+[lsemssubtitle]CONCLUDING NOTES:[/lsemssubtitle]
+[divbox=white]
+[b]Mandatory Ride-Alongs given:[/b] X
+
+[b]Any subjects that require additional attention in their next session:[/b][list=none]
+INPUT FEEDBACK HERE
+
+[b]Was the Reinstatee sent the Re-Introduction Email?[/b]
+YES/NO
+
+[/list]
+[b]Did the Reinstatee pass Phase I:[/b] YES/NO
+[/divbox]
+[lsemssubtitle]Field Training Session Report[/lsemssubtitle]
+[divbox=white]
+[b]Click [url=https://forms.gle/BJ6iLg5Fkf9Ug6fE6]here[/url] to submit your Field Training Session Report.[/b] [c] [ ] tick with an X if complete.[/c]
+[/divbox]
+[lsemssubtitle]SIGNATURE[/lsemssubtitle]
+[divbox=white]
+SIGNATURE
+RANK
+[/divbox]
+[img]https://i.ibb.co/d0W3RK4j/r-LIJt-NZ.png[/img]
+[/code][/spoiler]
+
+[/spoiler]

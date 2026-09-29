@@ -1,0 +1,9 @@
+[img]https://i.ibb.co/6cq7Dhpd/Do3CJ9e.png[/img]
+[lsemssubtitle]REINSTATEE INFORMATION[/lsemssubtitle]
+[divbox=white]
+[b]Reinstatee Name:[/b] {{applicantName}}
+[b]Reinstated by:[/b] {{supervisorName}}
+[b]Date reinstated:[/b] DD/MMM/YYYY
+[b]Rank to be reinstated to:[/b] Rank
+[/divbox]
+[lsemssubtitle]REINSTATEMENT SESSION DETAILS[/lsemssubtitle]

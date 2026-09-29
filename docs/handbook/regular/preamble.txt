@@ -1,0 +1,18 @@
+[img]https://i.ibb.co/0R8458jJ/f-SVDi7f.png[/img]
+[lsemssubtitle]STUDENT INFORMATION[/lsemssubtitle]
+[divbox=white]
+[b]Student Name:[/b] {{applicantName}}
+[b]Date Hired:[/b] {{dateHired}}
+[b]Mark the corresponding checkbox with a 'cbc' upon completion of each Phase or Mandatory item.[/b]
+- [b]If an additional Mandatory is required,[/b] please list it [i]below the current Phase being conducted[/i].
+[cb]Introduction
+[cb]Phase 1
+[cb]Phase 2
+[cb]Phase 2 Mandatory
+[cb]Phase 3
+[cb]Phase 3 Mandatory
+[cb]Pre-Certification
+[cb]Certification
+[/divbox]
+
+[lsemssubtitle]SESSION INFORMATION AND GUIDES[/lsemssubtitle]

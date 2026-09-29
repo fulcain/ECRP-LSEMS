@@ -1,0 +1,112 @@
+[spoiler=Pre-Certification]
+[divbox=white]
+[lsemssubtitle]PRE-CERTIFICATION - EMT-A+, 1 Hour 30 Min Minimum/3 Hour Maximum[/lsemssubtitle]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[list=1][*][color=#800000][b]Beginning[/b][/color][list]
+[*]Make sure the EMR has handled and transported a 10-15 during their training, and did it correctly. If this is not the case,[b] the EMR cannot pass the Pre-Cert until they treat, handle and transport a 10-15.[/b]
+[*]Ask if the EMR has any questions about any of the previous parts of training.
+[*]Inform the EMR that during this session, they are on their own unless a crisis occurs or they make a major mistake.
+[*]Make sure the EMR creates its own unit and properly does the entire starting shift process without error.
+[*]Let the EMR drive an ambulance out of the garage, and inform them that they may station wherever, as well as roam around.[/list]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[*][color=#800000][b]During the Pre-Cert[/b][/color][list]
+[*][b]Request Call and Department Priority over radio. Either you, or the EMR may do this request.[/b]
+[*]Observe the EMR, but do not cause total silence, you can and should communicate with them to relax them.
+[*]Write feedback on how what the EMR did incorrectly if anything does go wrong.
+[*]If the EMR is still having some troubles, make some notes and give them feedback at the end.
+[*]Ensure we watch the driving closely and fail if they are a danger when driving the ambulance. If you see them not following proper emergency vehicle protocol while driving, make note of this.
+[/list]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[*][color=#800000][b]Ending[/b][/color][list]
+[*][b][color=#BF0000]If the EMR has made a mistake large enough, this is a direct Fail, and they are to do mandatory ride-alongs equal to whatever you decide before re-attempting the pre-certification.[/color][/b]
+[*]Inform the EMR that they are now able to clock on as EMR-1, EMR-2, and so forth as long as an EMT+I is on duty. If the last EMT+I gets off duty, tell them they should head off as well until someone else clocks on.
+[*]Encourage the EMR to do their Certification as soon as possible (within or at around 24 hours after passing Pre-Cert, not required!) while they're able to retain their confidence.
+[*]Inform the EMR that they can also be on shift while they are paired up with an EMT-B, under a Zulu callsign.
+[*]Hand them an On-Call Program Pager & explain the program. The EMR is not obliged to join, so do inform them of this as well.
+[*]Encourage the EMR to reach out to a Jr. Paramedic+ to schedule their Certification.
+[*]Complete the paperwork and make sure to edit the top post with "[Pending Certification] {{applicantName}}"
+[*][i][b][u]If the EMR performed poorly, be honest and genuine on your report[/u][/b][/i] - not stating they didn't do well is only harming the EMR.
+[/list]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[*][color=#800000][b]Helpful Questions[/b][/color]
+[spoiler=Helpful Questions]
+[list]Did the EMR create a unit? 
+Did the EMR start service correctly?
+Did the EMR park their ambulance correctly in the ambulance bay? 
+Did the EMR check if there are any calls to take from the call list? 
+Did the EMR respond to calls without you asking to do it?
+Did the EMR follow call priority? 
+Did the EMR manage to use radio calls properly? 
+Did the EMR respond to department radio if there were any department calls? 
+Did the EMR handle department radio properly and timely?
+Did the EMR handle PD/SD calls properly?
+Did the EMR use our MD frequency to radio that they responding to PD/SD calls?
+Did the EMR ask if the patient is a 10-15 or 10-16? 
+Did the EMR ask if any treatment has been done before? 
+Did the EMR ask if they clear to load the patient to an ambulance if the patient was 10-15? 
+Did the EMR ask PD/SD where they want to go? 
+Did the EMR properly radio transporting a 10-15
+Did the EMR ask PD/SD if they clear to drop patients at MD?
+Did the EMR keep their ambulance locked at all times?
+Did the EMR properly utilize code 2, 3 and 4?
+Did the EMR drive properly?
+Did the EMR know how to utilize all necessary radio calls and codes throughout?
+Did the EMR treat properly and timely?
+Did the EMR roam properly and safely?
+[/spoiler][/list][/list]
+[b]Note:[/b] The EMR should [u]only[/u] be [url=https://pastebin.com/raw/wCL1v4K7]sent[/url] the quiz if they [b][color=red]fail[/color][/b] their Pre-Certification.
+
+[spoiler=Paperwork]
+[code]
+[img]https://i.ibb.co/nswT0LJv/p33kyzm.png[/img]
+[lsemssubtitle]SESSION DETAILS:[/lsemssubtitle]
+[divbox=white]
+
+[b]Time Started:[/b] 
+
+[b]Time Ended:[/b] 
+
+[b]Did the EMR participate in a 10-15 call?[/b] YES/NO
+[i]If Yes, rate their performance (1-5). Explain any issues if performance was poor:[/i][list=none]
+INPUT RATING AND FEEDBACK HERE
+
+[/list]
+[color=transparent]spacer[/color]
+[b]Detailed Notes About Time Spent (Optional but strongly encouraged):[/b][list=none]
+INPUT FEEDBACK HERE
+
+[/list]
+[/divbox]
+[lsemssubtitle]NOTES FOR CERTIFICATION[/lsemssubtitle]
+[divbox=white]
+[color=transparent]spacer[/color]
+[b]What should be observed during next session:[/b][list=none]
+INPUT FEEDBACK HERE
+
+[/list]
+[b]Has the EMR passed the Pre-Certification and is the EMR ready to work alone?[/b][list=none]
+YES/NO
+
+[b]If the EMR failed the Pre-Certification, was the EMR sent the quiz?[/b] (Ignore if not relevant)
+YES/NO
+[/list]
+[/divbox]
+[lsemssubtitle]Field Training Session Report[/lsemssubtitle]
+[divbox=white]
+[b]Click [url=https://forms.gle/BJ6iLg5Fkf9Ug6fE6]here[/url] to submit your Field Training Session Report.[/b] [cb] [i](Please add a 'cbc' in the box if completed.)[/i]
+[/divbox]
+[lsemssubtitle]SIGNATURE[/lsemssubtitle]
+[divbox=white]
+[img]SIGNATURE[/img]
+[i]Medic Name[/i]
+Rank
+[b]Los Santos Emergency Medical Services[/b]
+[/divbox]
+[lsemsfooter][/lsemsfooter]
+[/code]
+[/spoiler]
+[/spoiler]

@@ -152,6 +152,23 @@ export function userHasAccess(
 }
 
 /**
+ * Whether `discordId` is one of the developers named in `DISCORD_ADMIN_IDS`.
+ *
+ * This list is the app's one identity that cannot be granted from inside it: it
+ * is an environment variable (`.env` on a machine, the project's own variables in
+ * a deployment), so no stored row, no Discord role and no page in this app can
+ * hand it out. That is what makes it the right gate for a tool that *writes the
+ * repository* rather than reads the store - the one kind of access that must not
+ * be obtainable by editing the app.
+ *
+ * Being on the list also passes every rule in `userHasAccess`, so this reads the
+ * same list forwards rather than naming a second one.
+ */
+export function isDiscordAdmin(discordId?: string | null): boolean {
+  return Boolean(discordId && ADMIN_USER_IDS.has(discordId));
+}
+
+/**
  * Whether the member may edit the permission matrix: the roles
  * `ADMIN_PAGE_ROLES` names, or a developer id in `DISCORD_ADMIN_IDS`.
  *
