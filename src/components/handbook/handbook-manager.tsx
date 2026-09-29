@@ -82,6 +82,8 @@ type SectionContent = {
   formatLabel: string;
   file: string;
   mustKeep: readonly string[];
+  /** An update may not rewrite it - the profile's own header. */
+  protectedFromPaste: boolean;
   content: string;
   available: boolean;
 };
@@ -189,11 +191,19 @@ function PasteProfilePanel({
           const pasted = split.sections.find((entry) => entry.id === section.id);
           return {
             section,
-            changed: !sameSectionText(section.content, pasted?.content ?? ""),
+            // A protected section is never written by an update, so whether the
+            // paste agrees with it is not the member's problem - it is reported
+            // as kept rather than as a change they cannot act on.
+            changed:
+              !section.protectedFromPaste &&
+              !sameSectionText(section.content, pasted?.content ?? ""),
           };
         })
       : [];
   const changedCount = diffs.filter((entry) => entry.changed).length;
+  const keptCount = format.sections.filter(
+    (section) => section.protectedFromPaste,
+  ).length;
   const ready = writable && lost.length === 0 && split?.ok === true;
 
   const status = !writable
@@ -291,12 +301,18 @@ function PasteProfilePanel({
                 <span
                   className={cn(
                     "w-16 shrink-0 rounded border px-1.5 py-0.5 text-center",
-                    changed
-                      ? "border-amber-300/50 text-amber-700 dark:text-amber-300"
-                      : "border-border text-muted-foreground",
+                    section.protectedFromPaste
+                      ? "border-sky-300/50 text-sky-700 dark:text-sky-300"
+                      : changed
+                        ? "border-amber-300/50 text-amber-700 dark:text-amber-300"
+                        : "border-border text-muted-foreground",
                   )}
                 >
-                  {changed ? "changed" : "same"}
+                  {section.protectedFromPaste
+                    ? "kept"
+                    : changed
+                      ? "changed"
+                      : "same"}
                 </span>
                 <span
                   className={
@@ -316,7 +332,12 @@ function PasteProfilePanel({
               ? "Nothing here differs from the files - updating would write nothing."
               : `Only those ${changedCount} file${
                   changedCount === 1 ? "" : "s"
-                } will be written; the rest are left exactly as they are.`}
+                } will be written; the rest are left exactly as they are.`}{" "}
+            {keptCount > 0
+              ? `The ${keptCount === 1 ? "" : `${keptCount} `}header section${
+                  keptCount === 1 ? " is" : "s are"
+                } never touched by an update - edit it in the left-hand list if it really has to change.`
+              : ""}
           </p>
         </div>
       )}
@@ -476,6 +497,7 @@ export function HandbookManager() {
         reason?: string;
         changed?: string[];
         unchanged?: string[];
+        kept?: string[];
       };
 
       if (response.ok && payload.written) {
@@ -500,6 +522,7 @@ export function HandbookManager() {
         setPasting(null);
         setPasted("");
         const changed = payload.changed ?? [];
+        const kept = payload.kept ?? [];
         const titles = changed.map(
           (id) => format.sections.find((section) => section.id === id)?.title ?? id,
         );
@@ -510,7 +533,11 @@ export function HandbookManager() {
               ? `Nothing differed - ${format.label} already matches what you pasted, so no file was written.`
               : `Updated ${changed.length} of ${format.sections.length} ${format.label} sections (${titles.join(
                   ", ",
-                )}). The rest were already identical and were left alone. Commit the change like any other.`,
+                )}). The rest were already identical and were left alone.${
+                  kept.length > 0
+                    ? " The profile's header was kept as it is - an update never rewrites it."
+                    : ""
+                } Commit the change like any other.`,
           warnings: payload.warnings,
         });
         toast.success(

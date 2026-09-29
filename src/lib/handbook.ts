@@ -44,6 +44,8 @@ export type HandbookSectionContent = {
   formatLabel: string;
   file: string;
   mustKeep: readonly string[];
+  /** A pasted profile may not rewrite this section - see the declaration. */
+  protectedFromPaste: boolean;
   content: string;
   /** False when the file could not be read - a deployed build that lost its folder. */
   available: boolean;
@@ -121,6 +123,7 @@ export async function readHandbook(): Promise<HandbookFormatContent[]> {
             formatLabel: format.label,
             file: section.file,
             mustKeep: section.mustKeep ?? [],
+            protectedFromPaste: section.protectedFromPaste === true,
             content: content ?? "",
             available: content !== null,
           };
@@ -348,6 +351,17 @@ export type HandbookSectionsWrite = {
   /** The sections whose file actually changed, and the ones that did not. */
   changed: string[];
   unchanged: string[];
+  /** Sections a whole-profile update is not allowed to write, left untouched. */
+  kept: string[];
+};
+
+export type HandbookWriteOptions = {
+  /**
+   * A whole pasted profile skips the sections it may not rewrite - the profile's
+   * own header, which is the same on every profile and not what an update is
+   * about. An edit made in the editor passes no options and writes normally.
+   */
+  keepProtected?: boolean;
 };
 
 /**
@@ -374,16 +388,22 @@ function sameText(a: string, b: string): boolean {
  */
 export async function writeHandbookSections(
   entries: readonly { id: string; content: string }[],
+  options: HandbookWriteOptions = {},
 ): Promise<HandbookSectionsWrite | null> {
   if (!canWriteHandbook() || entries.length === 0) return null;
 
   const files: string[] = [];
   const changed: string[] = [];
   const unchanged: string[] = [];
+  const kept: string[] = [];
   let bytes = 0;
   for (const entry of entries) {
     const section = handbookSection(entry.id);
     if (!section) return null;
+    if (options.keepProtected && section.protectedFromPaste) {
+      kept.push(entry.id);
+      continue;
+    }
     const current = await readSectionFile(section.file);
     if (current !== null && sameText(current, entry.content)) {
       unchanged.push(entry.id);
@@ -396,14 +416,14 @@ export async function writeHandbookSections(
   }
 
   // Nothing moved, so the assembled module cannot have moved either.
-  if (changed.length === 0) return { files, bytes, changed, unchanged };
+  if (changed.length === 0) return { files, bytes, changed, unchanged, kept };
 
   await writeFile(
     absolute(HANDBOOK_CONTENT_MODULE),
     await renderHandbookContentModule(),
     "utf8",
   );
-  return { files, bytes, changed, unchanged };
+  return { files, bytes, changed, unchanged, kept };
 }
 
 /**

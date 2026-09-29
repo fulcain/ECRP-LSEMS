@@ -386,6 +386,8 @@ expect(
 // actually differs: a paste that says nothing new must be told so rather than
 // rewriting the whole format.
 const managerSource = readFileSync(path.join(ROOT, SOURCES[2]), "utf8");
+const routeSource = readFileSync(path.join(ROOT, SOURCES[0]), "utf8");
+const librarySource = readFileSync(path.join(ROOT, SOURCES[1]), "utf8");
 expect(
   "the Handbook tab offers an update for every format",
   /data\.formats\.map/.test(managerSource) &&
@@ -397,6 +399,38 @@ expect(
   /sameSectionText/.test(managerSource) &&
     /changedCount/.test(managerSource) &&
     /changed\.length === 0/.test(managerSource),
+  true,
+);
+
+// An update is about the phases. The profile's own header is not the member's to
+// change through a paste, so the section is declared and the update path skips it
+// - a paste carrying a blank header would otherwise replace it silently.
+const headerSections = HANDBOOK_SECTIONS.filter((section) =>
+  section.id.endsWith("header"),
+);
+expect(
+  "the profile headers are declared out of reach of an update",
+  headerSections.filter((section) => section.protectedFromPaste !== true).map(
+    (section) => section.id,
+  ),
+  [],
+);
+expect(
+  "and the update path skips what it may not rewrite",
+  /keepProtected: true/.test(routeSource) &&
+    /kept: result\.kept/.test(routeSource) &&
+    /protectedFromPaste/.test(routeSource),
+  true,
+);
+expect(
+  "while an edit made in the editor still writes that section",
+  /writeHandbookSections\(\[\{ id, content \}\]\)/.test(librarySource),
+  true,
+);
+expect(
+  "and the tab says a protected section was kept",
+  /section\.protectedFromPaste/.test(managerSource) &&
+    /kept/.test(managerSource),
   true,
 );
 

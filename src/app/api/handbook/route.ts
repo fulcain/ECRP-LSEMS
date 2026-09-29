@@ -118,6 +118,12 @@ export async function GET(request: Request) {
 /**
  * Replace a whole profile from a pasted document.
  *
+ * What an update is about is the phases. The profile's own header (who the
+ * trainee is, when they were hired, the checklist) is the same on every profile,
+ * so a section declared `protectedFromPaste` is skipped rather than written -
+ * a paste carrying a blank or differently-shaped header would otherwise replace
+ * it silently. Editing that section by hand still publishes it.
+ *
  * The paste is compared against the files as they stand and only the sections
  * that differ are written, so an update that touched one phase leaves one file
  * changed rather than the whole format. The assembled module is rebuilt once if
@@ -154,6 +160,16 @@ async function replaceFormat(key: string, content: string) {
   for (const entry of split.sections) {
     const section = handbookSection(entry.id);
     if (!section) continue;
+    // A section this update may not write is not validated either: its own file
+    // is what stands, so a placeholder missing from the paste is nothing to do
+    // with it - and refusing the whole update over a header nobody changed would
+    // make the guard worse than the problem.
+    if (section.protectedFromPaste) {
+      warnings.push(
+        `${section.title} was left as it is - an update does not rewrite the profile's header.`,
+      );
+      continue;
+    }
     const validation = validateSection(section, entry.content);
     problems.push(
       ...validation.problems.map((problem) => `${section.title}: ${problem}`),
@@ -169,7 +185,9 @@ async function replaceFormat(key: string, content: string) {
     );
   }
 
-  const result = await writeHandbookSections(split.sections);
+  const result = await writeHandbookSections(split.sections, {
+    keepProtected: true,
+  });
   if (!result) {
     return NextResponse.json(
       { error: "The sections could not be written." },
@@ -182,9 +200,11 @@ async function replaceFormat(key: string, content: string) {
     bytes: result.bytes,
     // The paste is the new truth, but only the sections that actually differ
     // were written - the rest keep their own history, and saying which is which
-    // is what makes the commit that follows reviewable.
+    // is what makes the commit that follows reviewable. `kept` is the header,
+    // which a paste is not allowed to rewrite at all.
     changed: result.changed,
     unchanged: result.unchanged,
+    kept: result.kept,
     warnings,
   });
 }

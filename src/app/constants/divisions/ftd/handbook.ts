@@ -36,6 +36,18 @@ export type HandbookSection = {
   file: string;
   /** Placeholders that must survive an edit, checked before publishing. */
   mustKeep?: readonly string[];
+  /**
+   * A section a pasted profile may not rewrite.
+   *
+   * An update is a profile written somewhere else and pasted back in, and what
+   * the members actually update is the training phases - the profile's own header
+   * (who the trainee is, when they were hired, which phases are ticked) is the
+   * same on every profile and is not theirs to change. Left unguarded, a paste
+   * carrying a blank or differently-shaped header would quietly replace it, so
+   * the update path skips the section entirely. Editing it by hand in the editor
+   * still publishes it: that is someone looking straight at it and saying so.
+   */
+  protectedFromPaste?: boolean;
 };
 
 export type HandbookFormat = {
@@ -150,6 +162,7 @@ export const HANDBOOK_FORMATS: readonly HandbookFormat[] = [
         title: "Student Information",
         hint: "The top of the profile: who the trainee is, when they were hired, and the phase checklist.",
         file: "docs/handbook/regular/preamble.txt",
+        protectedFromPaste: true,
         mustKeep: [
           "{{applicantName}}",
           "{{dateHired}}",
@@ -225,6 +238,7 @@ export const HANDBOOK_FORMATS: readonly HandbookFormat[] = [
         title: "Reinstatee Information",
         hint: "The top of the profile: who is coming back, who is running it, and to which rank.",
         file: "docs/handbook/reinstatement/preamble.txt",
+        protectedFromPaste: true,
         mustKeep: [
           "Reinstatee Name:",
           "Reinstated by:",
