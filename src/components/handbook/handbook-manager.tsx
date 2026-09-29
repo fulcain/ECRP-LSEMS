@@ -7,11 +7,9 @@ import {
   BookOpen,
   Check,
   ClipboardPaste,
-  Clock,
   Copy,
   Download,
   FileCode2,
-  History,
   Loader2,
   RotateCcw,
   Save,
@@ -98,13 +96,6 @@ type FormatContent = {
 type HandbookPayload = {
   writable: boolean;
   formats: FormatContent[];
-};
-
-type Commit = {
-  revision: string;
-  date: string;
-  author: string;
-  subject: string;
 };
 
 type Notice = {
@@ -271,11 +262,8 @@ export function HandbookManager() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
-  const [notice, setNotice] = useState<Notice | null>(null);
   const [saving, setSaving] = useState(false);
-  const [history, setHistory] = useState<Commit[] | null>(null);
-  const [historyBusy, setHistoryBusy] = useState(false);
-  const [historyFor, setHistoryFor] = useState<string | null>(null);
+  const [notice, setNotice] = useState<Notice | null>(null);
   // The whole-profile paste: which format is being replaced, and its text.
   const [pasting, setPasting] = useState<string | null>(null);
   const [pasted, setPasted] = useState("");
@@ -364,7 +352,6 @@ export function HandbookManager() {
           warnings: payload.warnings,
         });
         toast.success("Section saved to the repository");
-        setHistory(null);
       } else if (response.status === 409 && payload.content) {
         // A deployment that cannot write: the change is real, the file is not
         // saved, and the honest answer is the file itself.
@@ -389,54 +376,6 @@ export function HandbookManager() {
       setNotice({ kind: "error", text: "The publish request failed." });
     } finally {
       setSaving(false);
-    }
-  };
-
-  const loadHistory = async () => {
-    if (!active) return;
-    if (historyFor === active.id && history) {
-      setHistory(null);
-      setHistoryFor(null);
-      return;
-    }
-    setHistoryBusy(true);
-    try {
-      const response = await fetch(`/api/handbook?id=${active.id}`, {
-        cache: "no-store",
-      });
-      const payload = (await response.json()) as { history?: Commit[] };
-      setHistory(payload.history ?? []);
-      setHistoryFor(active.id);
-    } catch {
-      setHistory([]);
-      setHistoryFor(active.id);
-    } finally {
-      setHistoryBusy(false);
-    }
-  };
-
-  const viewVersion = async (revision: string) => {
-    if (!active) return;
-    try {
-      const response = await fetch(
-        `/api/handbook?id=${active.id}&at=${revision}`,
-        { cache: "no-store" },
-      );
-      const payload = (await response.json()) as { content?: string; error?: string };
-      if (!response.ok || typeof payload.content !== "string") {
-        setNotice({
-          kind: "error",
-          text: payload.error ?? "That version could not be read.",
-        });
-        return;
-      }
-      setDraft(payload.content);
-      setNotice({
-        kind: "warn",
-        text: `Showing the version from ${revision}. Publish it to put that version back.`,
-      });
-    } catch {
-      setNotice({ kind: "error", text: "That version could not be read." });
     }
   };
 
@@ -684,8 +623,6 @@ export function HandbookManager() {
                         type="button"
                         onClick={() => {
                           setActiveId(section.id);
-                          setHistory(null);
-                          setHistoryFor(null);
                           setNotice(null);
                         }}
                         className={cn(
@@ -751,23 +688,6 @@ export function HandbookManager() {
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => void loadHistory()}
-                  disabled={historyBusy}
-                >
-                  <History className="mr-1.5 h-3.5 w-3.5" />
-                  {historyFor === active.id && history ? "Hide versions" : "Versions"}
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => download(active.file, draft)}
-                >
-                  <Download className="mr-1.5 h-3.5 w-3.5" />
-                  Download
-                </Button>
                 <Button
                   size="sm"
                   variant="outline"
@@ -842,47 +762,6 @@ export function HandbookManager() {
                 </button>
               ))}
             </div>
-
-            {historyFor === active.id && history && (
-              <div className="rounded-xl border border-border p-3">
-                <p className="text-xs font-medium text-foreground">
-                  Earlier versions
-                </p>
-                {history.length === 0 ? (
-                  <p className="mt-1 text-[11px] text-muted-foreground">
-                    No history here - a deployed build has no checkout to read it
-                    from. On your own machine this lists the commits that touched
-                    this file.
-                  </p>
-                ) : (
-                  <ul className="mt-2 space-y-1">
-                    {history.map((commit) => (
-                      <li
-                        key={commit.revision}
-                        className="flex flex-wrap items-center gap-2 text-[11px]"
-                      >
-                        <Clock className="h-3 w-3 text-muted-foreground" />
-                        <code className="font-mono text-muted-foreground">
-                          {commit.revision}
-                        </code>
-                        <span className="text-muted-foreground">{commit.date}</span>
-                        <span className="min-w-0 flex-1 truncate text-foreground">
-                          {commit.subject}
-                        </span>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-6 px-2 text-[11px]"
-                          onClick={() => void viewVersion(commit.revision)}
-                        >
-                          Open
-                        </Button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
 
             <div className="grid grid-cols-1 gap-3">
               <BBCodeEditor
