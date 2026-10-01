@@ -1217,8 +1217,20 @@ expect(
 expect(
   "the version history is the repository's, not a second record",
   /get\("history"\) === "all"/.test(routeSource) &&
-    /commitHistory\(files\)/.test(routeSource) &&
-    /readFtpHistoryAll\(files\)/.test(routeSource),
+    /commitHistory\(files, 100\)/.test(routeSource) &&
+    /readFtpHistoryAll\(files, 100\)/.test(routeSource),
+  true,
+);
+// The `ftp:` prefix on an update's or a restore's subject is the convention
+// the panel filters on - without it, the history is every commit that happened
+// to touch a section file, which is not a version of the FTP.
+expect(
+  "the history is filtered to ftp: commits only",
+  /startsWith\("ftp:"\)/.test(routeSource) &&
+    /ftp: update/.test(
+      readFileSync(path.join(ROOT, "src/lib/ftp-import.ts"), "utf8"),
+    ) &&
+    /ftp: restore/.test(routeSource),
   true,
 );
 // A commit is the record of a change, so an update that moves nothing - the

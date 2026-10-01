@@ -455,9 +455,12 @@ async function stagedUpdate(
       const label = changedTitles(staged.changed);
       const commit = await commitFtpFiles({
         files,
+        // The `ftp:` prefix is the convention the version panel filters on:
+        // every FTP update and restore carries it, so the history is the FTP's
+        // own rather than every commit that touched a file.
         message:
           commitSubject ??
-          `ftp: update ${format.label} from a pasted profile${label ? ` - ${label}` : ""}`,
+          `ftp: update ${format.label}${label ? ` - ${label}` : " - no section changed, Guides rebuilt"}`,
         authorName: author?.name || "LSEMS FTP",
         authorEmail: author?.email || "FTP@lsems.app",
       });

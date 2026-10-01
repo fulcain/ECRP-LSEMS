@@ -194,12 +194,14 @@ function VersionHistoryPanel({
         <div className="min-w-0">
           <p className="flex items-center gap-2 text-sm font-medium text-foreground">
             <History className="h-4 w-4 text-muted-foreground" />
-            Version history
+            FTP change history
           </p>
           <p className="mt-1 max-w-3xl text-xs text-muted-foreground">
-            Every update is a commit, so going back is picking one. Restoring
-            puts the sections that differ back the way they read at that
-            version - as one more commit, so nothing is ever lost by going back.
+            Every update and restore is one commit whose message starts with{" "}
+            <code className="font-mono">ftp:</code>, so this list is the FTP&apos;s
+            own history and nothing else. Restoring puts the sections that
+            differ back the way they read at that version - as one more commit,
+            so nothing is ever lost by going back.
           </p>
         </div>
       </div>
@@ -213,8 +215,9 @@ function VersionHistoryPanel({
         </p>
       ) : entries.length === 0 ? (
         <p className="mt-3 text-xs text-muted-foreground">
-          No FTP commits here yet. They appear once an update is accepted -
-          on this deployment, or on the one that commits.
+          No <code className="font-mono">ftp:</code> commits here yet. They
+          appear once an update is accepted - on this deployment, or on the one
+          that commits.
         </p>
       ) : (
         <ul className="mt-3 divide-y divide-border">

@@ -239,7 +239,7 @@ export async function readFtpVersion(
 export type FtpCommit = {
   revision: string;
   date: string;
-  subject: string;
+  message: string;
   author: string;
 };
 
@@ -265,8 +265,8 @@ export async function readFtpHistory(
       .split("\n")
       .filter(Boolean)
       .map((line) => {
-        const [revision, date, author, subject] = line.split("\u001f");
-        return { revision, date, author, subject };
+        const [revision, date, author, message] = line.split("\u001f");
+        return { revision, date, author, message };
       });
   } catch {
     // No checkout here: a deployed build has no `.git`, and that is not an error.
@@ -281,7 +281,7 @@ export async function readFtpHistory(
  */
 export async function readFtpHistoryAll(
   files: readonly string[],
-  limit = 30,
+  limit = 100,
 ): Promise<FtpCommit[]> {
   if (files.length === 0) return [];
   try {
@@ -301,8 +301,8 @@ export async function readFtpHistoryAll(
       .split("\n")
       .filter(Boolean)
       .map((line) => {
-        const [revision, date, author, subject] = line.split("\u001f");
-        return { revision, date, author, subject };
+        const [revision, date, author, message] = line.split("\u001f");
+        return { revision, date, author, message };
       });
   } catch {
     return [];

@@ -116,15 +116,19 @@ export async function GET(request: Request) {
     return NextResponse.json({ id, history });
   }
 
-  // The whole FTP's history, for the version panel: every commit that
-  // touched any section file, newest first. GitHub answers on a deployment
-  // that commits; a checkout reads its own git.
+  // The whole FTP's history, for the version panel: every FTP commit, newest
+  // first. The `ftp:` prefix on an update's or a restore's subject is the
+  // convention the panel filters on, so a rename or an unrelated edit that
+  // happened to touch a section file is not offered as a version to go back
+  // to. GitHub answers on a deployment that commits; a checkout reads its own
+  // git. The limit is wider than the panel shows because the filter shrinks
+  // what comes back.
   if (url.searchParams.get("history") === "all") {
     const files = FTP_SECTIONS.map((section) => section.file);
-    const history = isGitHubCommitConfigured()
-      ? await commitHistory(files)
-      : await readFtpHistoryAll(files);
-    return NextResponse.json({ history });
+    const all = isGitHubCommitConfigured()
+      ? await commitHistory(files, 100)
+      : await readFtpHistoryAll(files, 100);
+    return NextResponse.json({ history: all.filter((entry) => entry.message.startsWith("ftp:")) });
   }
 
   return NextResponse.json({
