@@ -897,17 +897,29 @@ function emitBlock(block: NoteBlock, emit: Emit, indent: string): string[] {
     case "spoiler": {
       const body: string[] = [];
       // The Hippocratic Oath is handed over line by line: each line copies on
-      // its own so the trainer can read it out one sentence at a time.
+      // its own so the trainer can read it out one sentence at a time. The
+      // reinstatement profile nests the oath's sentences inside a second
+      // spoiler, so the split descends into it rather than reading one block.
       const isOath = block.title?.toLowerCase().includes("hippocratic") ?? false;
-      for (const inner of block.blocks) {
-        if (isOath && (inner.kind === "paragraph" || inner.kind === "center")) {
+      const oathLines = (blocks: typeof block.blocks): void => {
+        for (const inner of blocks) {
+          if (inner.kind === "spoiler") {
+            oathLines(inner.blocks);
+            continue;
+          }
+          if (inner.kind !== "paragraph" && inner.kind !== "center") continue;
           emit.used.add("OathLine");
           for (const line of splitOathLines(runsToText(inner.runs))) {
             body.push(`${indent}  <OathLine>${jsxText(line)}</OathLine>`);
           }
-          continue;
         }
-        body.push(...emitBlock(inner, emit, `${indent}  `));
+      };
+      if (isOath) {
+        oathLines(block.blocks);
+      } else {
+        for (const inner of block.blocks) {
+          body.push(...emitBlock(inner, emit, `${indent}  `));
+        }
       }
       // A collapse with nothing in it is not a collapse a trainer can use.
       if (body.length === 0) return [];
