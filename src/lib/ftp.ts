@@ -19,7 +19,7 @@
  */
 
 import { execFile } from "node:child_process";
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -488,6 +488,9 @@ export async function writeFtpSections(
   // Nothing moved, so the assembled module cannot have moved either.
   if (changed.length === 0) return { files, bytes, changed, unchanged, kept };
 
+  // A caller may run this write with its root elsewhere - the staged update
+  // runs it one cwd over - so the module's own folder is made, not assumed.
+  await mkdir(path.dirname(absolute(FTP_CONTENT_MODULE)), { recursive: true });
   await writeFile(
     absolute(FTP_CONTENT_MODULE),
     await renderFtpContentModule(),
