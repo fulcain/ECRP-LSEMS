@@ -32,6 +32,7 @@ export function IntroductionNotes() {
       <Divider />
       <Category title="Uniform and On Duty" ordered>
         <Item>Let the EMR know that they <Bold>cannot</Bold> be on duty without a trainer. Make sure they understand this. If they cannot find a trainer by using the radio then direct them to the Student area.</Item>
+        <Item><OOC>Link the EMR to the <Bold><BbLink href="https://gov.eclipse-rp.net/viewtopic.php?t=233319">radio guide</BbLink></Bold> and have them set it up later during the session.</OOC></Item>
         <Item><OOC>Inform them that they must first reach out in /r for an FTO and if they have no luck then they can also reach out on the MD discord in the #fto-availability channel using the copy paste provided.</OOC></Item>
         <Item>Bring the EMR into our locker room and show them where their locker is and provide them with their uniform, bodycam and ALS bag.</Item>
         <Item><OOC>Explain how to use the /FL command, and the surrounding RP. Make sure they know they must RP pulling out equipment as well as putting it back.</OOC></Item>

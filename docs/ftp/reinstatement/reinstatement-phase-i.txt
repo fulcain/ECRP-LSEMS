@@ -28,6 +28,7 @@
 [*]Ask the reinstatee what they would radio in when approaching a scene.
 [*]Make up a call number, location, patient count, injury, and quiz them if it's a code 2 or code 3 and which hospital. (Time management is important for location)
 [*]Ask the reinstatee what they'd say once they've delivered the patient to the hospital?
+[*][ooc]Link the EMR to the [b][url=https://gov.eclipse-rp.net/viewtopic.php?t=233319]radio guide[/url][/b] and have them set it up later during the session.[/ooc]
 [/list]
 
 [*][color=#800000][b]Backup/Panic Alarms[/b][/color]

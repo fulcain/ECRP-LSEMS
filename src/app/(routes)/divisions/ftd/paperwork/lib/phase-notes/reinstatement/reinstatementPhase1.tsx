@@ -59,6 +59,7 @@ export function ReinstatementPhase1Notes() {
         <Item>Ask the reinstatee what they would radio in when approaching a scene.</Item>
         <Item>Make up a call number, location, patient count, injury, and quiz them if it&apos;s a code 2 or code 3 and which hospital. (Time management is important for location)</Item>
         <Item>Ask the reinstatee what they&apos;d say once they&apos;ve delivered the patient to the hospital?</Item>
+        <Item><OOC>Link the EMR to the <Bold><BbLink href="https://gov.eclipse-rp.net/viewtopic.php?t=233319">radio guide</BbLink></Bold> and have them set it up later during the session.</OOC></Item>
       </Category>
       <Category title="Backup/Panic Alarms" ordered>
         <Item>Explain to the reinstatee the difference between a panic alarm and a backup call.</Item>

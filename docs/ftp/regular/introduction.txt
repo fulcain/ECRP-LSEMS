@@ -6,6 +6,7 @@
 [list=1]
 [*][color=#800000][b]Uniform and On Duty[/b][/color]
 [list][*]Let the EMR know that they [b]cannot[/b] be on duty without a trainer. Make sure they understand this. If they cannot find a trainer by using the radio then direct them to the Student area.
+[*][ooc]Link the EMR to the [b][url=https://gov.eclipse-rp.net/viewtopic.php?t=233319]radio guide[/url][/b] and have them set it up later during the session.[/ooc]
 [*][ooc]Inform them that they must first reach out in /r for an FTO and if they have no luck then they can also reach out on the MD discord in the #fto-availability channel using the copy paste provided.[/ooc]
 [*]Bring the EMR into our locker room and show them where their locker is and provide them with their uniform, bodycam and ALS bag.
 [*][ooc]Explain how to use the /FL command, and the surrounding RP. Make sure they know they must RP pulling out equipment as well as putting it back.[/ooc]
@@ -140,5 +141,4 @@ Rank
 [lsemsfooter][/lsemsfooter]
 [/code]
 [/spoiler]
-[/divbox]
-[/spoiler]
+[/divbox][/spoiler]
