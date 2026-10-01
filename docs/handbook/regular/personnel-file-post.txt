@@ -1,0 +1,13 @@
+[spoiler=Personnel File Post][code][center][img]https://i.ibb.co/Ng5bZKm3/GRe-HLv-T.png[/img][/center]
+[divbox=white]
+[color=transparent]spacer[/color]
+[center][img]https://i.ibb.co/N6WZpcJY/Gkqft-MR.png[/img][/center]
+
+[color=transparent]spacer[/color]
+[center][b][size=150]{{applicantName}} has been promoted to EMT-Basic![/size][/b][/center]
+[color=transparent]spacer[/color]
+[center][b][u][size=110]DD/MMM/2023[/size][/u][/b][/center]
+[center][b][size=110]Promoted by: Fullrank {{supervisorName}}[/size][/b][/center]
+[color=transparent]spacer[/color]
+[/divbox]
+[center][img]https://i.imgur.com/7aQSsNs.png[/img][/center][/code][/spoiler]

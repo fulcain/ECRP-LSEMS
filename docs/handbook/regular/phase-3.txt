@@ -1,0 +1,187 @@
+[spoiler=Phase 3]
+[divbox=white]
+[lsemssubtitle]PHASE 3 - EMT-I+, 1 Hour Minimum/2 Hour Maximum[/lsemssubtitle]
+[center][b]**THE EMR SHOULD DRIVE, PROVIDE TREATMENT, AND HANDLE UNIT/CALL MANAGEMENT AT THE END OF THE PHASE**[/b][/center]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[list=1][*][color=#800000][b]Garage and Ambulance[/b][/color][list]
+[*]Show the EMR again how we get a vehicle from Betsy (( Via the vehicle menu, point them to Handbook Section 10.1 ))
+[*]There are 25 ambulances for EMRs to use in total. 10 EMT/orange ambulances, 5 Blue ambulances, and 10 large ambulances.
+[*]Inform the EMR that all vehicles are fleet vehicles and we must take care of them for those who use it after you. Before you park, repair and refuel the vehicle. Maintenance of vehicles come from LSEMS treasury.
+[*]Inform the EMR to always keep their ambulance locked. Double-checking is better than not checking.
+[*]Inform the EMR that both medics and patients should have their seatbelts fastened while inside the ambulance whenever possible. [ooc][c]B[/c][/ooc] The medic should make sure the patient is properly secured before beginning transport. If the patient is on a stretcher, make sure they are secured to the stretcher using the appropriate straps. [ooc]Tell them they must RP securing the patient and ask the other player to press [c]B[/c] on their keyboard.[/ooc]
+[*]Remind the EMR that they must not park the ambulance on train tracks.
+[*]Explain to the EMR what the difference between Code 2 and Code 3 is and how to use the lights and sirens.
+[ooc][c]E[/c] = lights & [c]Q[/c] = sirens[/ooc]
+[*][ooc]Explain to EMRs that only under direct permission from a Command+ member are they allowed to change the colour of their vehicles. If found to have changed the colour of their vehicle without permission this will result in IC reprecussions.[/ooc]
+[*]Explain to the EMR what Code 4 means in the context of driving (lights and sirens off, driving normally).
+[*]Explain to the EMR that they can get a quick blip to [i][b]Lower Pillbox[/b][/i] from their GPS (( /hospital )).
+[*]Explain that the GPS system, while functional, may not give the best routing to calls.
+[list=none]
+[i]Example - Call from Burgershot while stationed at the ambulance bay:[/i]
+[spoil][img]https://i.ibb.co/Fkw0kJwt/i5et-N3F.png[/img]
+[/spoil]
+The GPS routing provided, while functional, is inefficient. Going straight to Legion Square and turning from there instead, is going to be more efficient.
+[/list][/list]
+[list]
+[*]Explain to the EMR how roaming works
+[*]If you will be 10-8 during your ride-along, take the EMR on a short roam and ask the EMR to do the radio. 
+[*]Explain to the EMR that as they roam they should be in motion, and as they roam they have to be 10-8 and take calls.
+[/list]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[*][color=#800000][b]Driving Capabilities[/b][/color][list]
+Explain to the EMR that this section will consist of 2 different driving tests. 
+[list=none]
+[b]Course 1[/b]: [b]dirt[/b] trail;
+[b]Course 2[/b]: combination of [b]dirt[/b] and [b]asphalt[/b];
+[/list]
+[*]Instruct the EMR to drive to Senora Road, specifically get the EMR to use [c]2 Senora Rd[/c] on their GPS. [ooc][c]/setgps 2 senora rd[/c][/ooc]
+[spoiler=Course 1 - Redwood Tracks]
+[img]https://i.ibb.co/DDdzBxkP/dirt-phase-3.png[/img]
+[/spoiler]
+[*]Take over, then start driving around the Redwood Tracks area. It doesn't have to be a perfect route, but try to cover as much of the area as possible.
+[*]Have the EMR practice in that area as much as they want, allowing them to go as fast as they feel comfortable with.
+[spoiler=Course 2 - Senora Road][img]https://i.ibb.co/7tV3WjRD/phase-3.png[/img][/spoiler]
+[*]Take over and explain the next course by showing them the route above. It will be a mix of dirt and asphalt trails with a good amount of turns, which can be a bit challenging but will definitely be helpful for them. Once you have shown them the route and explained what to expect, have them complete the course themselves.
+[list=none]First reverse lap [b]Code 4[/b]
+Second reverse lap [b]Code 3[/b]
+[/list]
+[*]Finally, have the EMR drive to the Sandy Firestation ([c]27 Panorama Dr[/c]), [b]Code 3[/b].
+[spoiler=Map Location of Sandy Firestation][img]https://i.ibb.co/dwjHb5D8/Rm51q-YX.png[/img][/spoiler]
+[*]If they need more practice, have them redo any of the courses at the end of the session.
+[/list]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[*][color=#800000][b]Hospitals and Fire Stations of Los Santos[/b][/color]
+[list]
+[*]Inform them that they are now at Sandy Fire station and that they can ask Betsy for vehicles here and then direct them to Fire Station 7 and show them where to ask Betsy for vehicles here as well.
+[spoiler=Sandy Fire Station Pictures]
+[img]https://i.ibb.co/VcLs5V44/sadny-fire-station-blip.png[/img]
+[hr]
+[img]https://i.ibb.co/CFDZ7hx/sandy-fire-station-location.jpg[/img]
+[/spoiler]
+
+[spoiler=Fire Station 7 Pictures]
+[img]https://i.ibb.co/9mttfq65/fire-station-7-blip.png[/img]
+[hr]
+[img]https://i.ibb.co/yFbgv9QX/fire-station-7-location.jpg[/img]
+[/spoiler]
+[*]Take them to Central, Mount Zonah and and then finally to Boat Dock and show them how to call Betsy so she can retrieve a vehicle for them.
+[spoiler=Central MD Pictures]
+[img]https://i.ibb.co/yKN5KFQ/cenrtal-md-blip.png[/img]
+[hr]
+[img]https://i.ibb.co/KccPs9hD/cenrtal-md-location.jpg[/img]
+[/spoiler]
+[spoiler=Mount Zonah Pictures]
+[img]https://i.ibb.co/fGGBgBcH/mount-zonah-blip.png[/img]
+[hr]
+[img]https://i.ibb.co/gLr1DDGB/mount-zonah-location.jpg[/img]
+[/spoiler]
+[spoiler=Boat Dock Pictures]
+[img]https://i.ibb.co/3ySMgpC4/boat-doc-blip.png[/img]
+[hr]
+[img]https://i.ibb.co/SX5z3YnX/boat-doc-location.jpg[/img]
+[/spoiler]
+[/list]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[*][b][color=#800000]Scene Management[/color][/b][list]
+[*]Instruct the EMR to head to a secluded area. You should use one of the three locations listed below.
+[list=1]
+[*]Abandoned Cul-de-sac in Mirror Park, opposite house at [c]7 East Mirror Dr[/c] ((/setgps))
+[*]Terminal/Harbor ((Credit Store))
+[*]Dead-end road close to Clothing Store 4/17
+[spoiler=Location of road close to Clothing Store 4/17]
+[img]https://i.ibb.co/9HNv0Ncx/UBq8b-RR.png[/img]
+[/list][/spoiler]
+[*]Inform the EMR of the blockades we have and make sure to explain the correct use for each. 
+[ooc][c]arrow, barrier, barrier2, cone, stretcher, backboard, tent, bls[/c][/ooc]
+[*]Explain to the EMR that your ambulance is one of your biggest blockades and how to block incoming traffic using it.
+[*]Show them how to do some basic scene management and then take it down.
+[*]Explain to the EMR the steps of arriving on scene.
+[i][b]Steps to follow:[/b][/i]
+[list=1][*]Siren OFF [ooc][c]Q[/c][/ooc]
+[*]Engine OFF
+[*]Emergency Lights ON [ooc][c]E[/c][/ooc]
+[*]Step out of ambulance, then [b]ALWAYS[/b] double check if ambulance is locked.
+[*]In the case that the patient is in the middle of the road, move the patient onto the sidewalk immediately when possible while making sure you are NOT causing the patient any harm.
+[*]The ambulance should be parked safely out of the way so it does not block the street, cause any unnecessary obstruction, or create a traffic jam.
+[/list]
+[*]Show the EMR how to position the ambulance when arriving on scene, then allow them to attempt it.
+[*]Have the EMR show you how they should arrive on scene and perform scene management all at once.
+[i]It is not expected for the EMR to get it perfect, however they should at least know how to do it.[/i]
+[/list]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[*][color=#800000][b]JTAC[/b][/color][list]
+[*]Explain to the EMR what Jointed Tac (JTAC) is.
+[*]Inform the EMR on how it's used.
+[*]Explain that the highest rank on shift would be the unit to join JTAC if asked.
+[*]Make sure they understand respect and professionalism is [b]utterly[/b] important here.
+[*]Tell the EMR that the JTAC frequencies are [b]910.1[/b] to [b]910.5[/b], giving a total of 5 JTAC channels.
+[*][ooc]If the EMR does not use VOIP or do not wish to use VOIP, they [b]are not expected to[/b]; however having someone who can use VOIP who is on duty join JTAC with them would be ideal. 
+Non-VOIP individuals may use "/dep MD to JTAC-1 [msg]" or "/dep MD to SD/PD [unit]" to communicate with JTAC.[/ooc]
+[/list]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[*][color=#800000][b]Ending the Phase - Ride-Along[/b][/color][list]
+[*][b]Request Call Priority over radio. Either you, or the EMR may do this request.[/b]
+[*]Make sure the EMR can do everything alone, let the EMR take over treatment, radio calls, and driving.
+[*]If the EMR seems overwhelmed, allow them to focus on their driving for rest of the session.
+[*]Ask the EMR if they have any concerns.
+[*]Question the EMR about radio calls and treatment.
+[*]Assign them mandatories if they seem like they're having a rough time and remind them that they have the option to do optional ride-alongs.
+[*][i][b][u]If the EMR performed poorly, be honest and genuine on your report[/u][/b][/i] - not stating they didn't do well is only harming the EMR as this is their last chance before their Pre-Certitification.
+[*]Finally, encourage the EMR to roam during down time in their upcoming ride-alongs.
+[/list]
+[/list]
+[spoiler=Paperwork]
+[code]
+[img]https://i.ibb.co/S7MnGrqs/Jj-D9Y74.png[/img]
+[lsemssubtitle]SESSION DETAILS:[/lsemssubtitle]
+[divbox=white]
+
+[b]Time Started:[/b] 
+
+[b]Time Ended:[/b] 
+
+[b]Did the EMR participate in a 10-15 call?[/b] YES/NO
+[i]If Yes, rate their performance (1-5). Explain any issues if performance was poor:[/i][list=none]
+INPUT RATING AND FEEDBACK HERE
+
+[/list]
+[color=transparent]spacer[/color]
+[b]Detailed Notes About Time Spent (Optional but strongly encouraged):[/b][list=none]
+INPUT FEEDBACK HERE
+
+[/list]
+[/divbox]
+[lsemssubtitle]NOTES FOR NEXT TRAINING SESSION[/lsemssubtitle]
+[divbox=white]
+[b]Additional Mandatories given:[/b]
+[color=transparent]spacer[/color]
+[b]Subjects to focus on during next training session: [/b][list=none]
+INPUT FEEDBACK HERE
+
+[/list]
+[/divbox]
+[lsemssubtitle]Field Training Session Report[/lsemssubtitle]
+[divbox=white]
+[b]Click [url=https://forms.gle/BJ6iLg5Fkf9Ug6fE6]here[/url] to submit your Field Training Session Report.[/b] [cb] [i](Please add a 'cbc' in the box if completed.)[/i]
+[/divbox]
+[lsemssubtitle]SIGNATURE[/lsemssubtitle]
+[divbox=white]
+[img]SIGNATURE[/img]
+[i]Medic Name[/i]
+Rank
+[b]Los Santos Emergency Medical Services[/b]
+[/divbox]
+[lsemsfooter][/lsemsfooter]
+[/code]
+[/spoiler]
+[/divbox]
+[/spoiler]
+

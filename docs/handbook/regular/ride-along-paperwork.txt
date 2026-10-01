@@ -1,0 +1,41 @@
+[spoiler=Ride Along Paperwork]
+[code]
+[img]https://i.ibb.co/11jQxhn/f-V26BWG.png[/img]
+[lsemssubtitle]SESSION DETAILS:[/lsemssubtitle]
+[divbox=white]
+
+[b]Ride-along Type:[/b] MANDATORY / OPTIONAL
+
+[b]Time Started:[/b] 
+
+[b]Time Ended:[/b] 
+
+[b]Were there any department calls?[/b] YES/NO
+
+[b]Did the EMR transport or participate in a call with a 10-15?[/b] YES/NO
+[i]If Yes, rate their performance (1-5). Explain any issues if performance was poor[/i][list=none]
+INPUT RATING AND FEEDBACK HERE
+
+[/list]
+[b]Ride-along Notes (as detailed as possible):[/b][list=none]
+INPUT HERE
+[/list]
+
+[b]Additional Mandatories assigned (if any): [/b]
+[color=transparent]spacer[/color]
+[/divbox]
+[lsemssubtitle]Field Training Session Report[/lsemssubtitle]
+[divbox=white]
+[b]Click [url=https://forms.gle/BJ6iLg5Fkf9Ug6fE6]here[/url] to submit your Field Training Session Report.[/b] [cb] [i](Please add a 'cbc' in the box if completed.)[/i]
+[/divbox]
+[lsemssubtitle]SIGNATURE[/lsemssubtitle]
+[divbox=white]
+[img]SIGNATURE[/img]
+[i]Medic Name[/i]
+Rank
+[b]Los Santos Emergency Medical Services[/b]
+[/divbox]
+[lsemsfooter][/lsemsfooter][/code]
+[/spoiler]
+
+[lsemsfooter][/lsemsfooter]

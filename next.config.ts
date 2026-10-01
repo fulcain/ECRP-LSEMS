@@ -52,12 +52,15 @@ const nextConfig: NextConfig = {
     ];
   },
   images: { domains: ["i.imgur.com", "i.vgy.me", "i.ibb.co"] },
-  // The download route and the installer page read `extension/` off disk, so the
-  // folder has to travel with the build - without this they work in dev and find
-  // nothing once deployed.
+  // Folders the app reads off disk have to travel with the build - without this
+  // they work in dev and find nothing once deployed.
   outputFileTracingIncludes: {
     "/api/extension": ["./extension/**/*"],
     "/resources/browser-extension": ["./extension/**/*"],
+    // The FTD handbook's sections (`docs/handbook/**`), which the Handbook tab
+    // reads and publishes through this route.
+    "/api/handbook": ["./docs/handbook/**/*"],
+    "/divisions/ftd/fd-command": ["./docs/handbook/**/*"],
   },
 };
 

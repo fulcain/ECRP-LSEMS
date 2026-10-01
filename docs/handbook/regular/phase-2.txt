@@ -1,0 +1,141 @@
+[spoiler=Phase 2]
+[divbox=white]
+[lsemssubtitle]PHASE 2 - EMT-I+, 1 Hour 15 Min Minimum/2 Hour 30 Min Maximum[/lsemssubtitle]
+[b][center]**THE EMR SHOULD BEGIN TREATMENT OF PATIENTS NEAR THE END OF PHASE 2 AND MANAGING THEIR UNIT**[/b][/center]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[list=1][*][color=#800000][b]Volatile Patient List[/b][/color]
+[list]
+[*]Inform the EMR of the [url=https://gov.eclipse-rp.net/viewtopic.php?p=769876]Volatile Patient List[/url]
+[*]Let them know that they should check this list OFTEN as it can be updated frequently.
+[*]Emphasize that PD/SD response, OR a 10-70 from MD, is REQUIRED.
+[*][u]Emphasize that individuals on this list are to be handled with extreme caution.[/u]
+[*]Tell the EMR that they can reach out to anyone from the leadership team if they believe a name should be added.
+[*]Elaborate on the previous point, explicitly stating that the list is reserved for those who may pose a direct threat to LSEMS as a whole.
+[/list]
+[*][color=#800000][b]Hostile Situations[/b][/color][list]
+[*]Inform the EMR that our safety comes first on every scene.
+[*]If a situation is clearly unfavorable (such as being outnumbered by clearly hostile individuals), avoid calling for law enforcement in front of them. This will give them a reason to attack us, which we would want to avoid at all costs.
+[*]Let the EMR know that they need to remember that sometimes patients get upset and they need to be mindful of what they say for their own and all other medics safety.
+[*]If possible, return to your vehicle and move about a block away (or 50m+) from the hostile situation.
+[*]Once you are a safe distance from the hostile scene, this is when it would be ideal to request for law enforcement over department radio. 
+[*](( Also mention using [c]/deplow[/c] instead of [c]/dep[/c] ))
+[/list]
+[*][color=#800000][b]GSB[/b][/color]
+[list]
+[*]Let the EMR know that sometimes GSB will reach out and ask if we require any assistance. Let them know that usually whoever is shift lead will decide whether they're needed or not. If that is them, then they have the option to tell them they're unneeded at the moment.
+[*]Let them know that GSB is here for our protection and they are NOT to interfere with any patients unless they're a direct threat to the medic's life. Even then PD/SD is to be called immediately.
+[/list]
+[*][color=#800000][b]Treatment[/b][/color]
+[i]Optional: You may use the BLS Classroom for this, provided there is no active BLS Class.[/i]
+[list]Ask the EMR how they'd treat the following injuries:
+[list]Closed fracture on a patient's leg.
+[*]Gunshot wound located on the patient's chest.
+[*]1st, 2nd, or 3rd-degree burns.
+[*]Stab wounds
+[*]Concussion[/list]
+[*][b][color=blue](([/b][/color] Explain the process of how to use the stabilize command and explain it is considered powergaming if you stabilize before doing your roleplay to find the injuries on the patient. 
+[b]Example[/b]
+[c]/stabilize[/c]
+[list]
+[*]Ongoing /me's and /do's - inspecting and discovering wounds via RP'd response 
+[*]Followed by /stabilize - upon knowing what treatment you are going to do or provide
+[/list]
+[c]/heal[/c]
+[list]
+[*]Not allowed to use the command without prior RP.
+[*]Ongoing /me's and /do's - inspecting and discovering wounds via RP'd response
+[*]We use /heal as a reward for good RP. Do not use it if people are asking for a "bandaid" or "icepack" without them actually wanting to do proper RP.
+[/list]
+[c]/CPR[/c]
+[list]
+[*]Provided after completing a BLS class or passing their certification
+[*]Used off duty or by on-duty SD/PD, as well as other people who have a license.
+[*](Ongoing /me's and /do's - inspecting and discovering wounds via RP'd response
+[*]Misuse of this command will result in the removal of the medical license[b][color=blue]))[/color][/b]
+[/list][/list]
+[color=#800000][b]Methadone[/b][/color][list]
+[*]Instruct the EMR to open the following section in the Department Manual: [url=https://gov.eclipse-rp.net/viewtopic.php?t=106075#9]7.9 - Methadone[/url]
+[*]Make sure to teach them how to properly do the [b]entire procedure[/b], especially the importance of utilizing the Prescription Section to note a prescription down. 
+[*]While looking through the Prescription Section, make sure to remind them that if a someone has been prescribed Methadone in the last 7 days then you cannot prescribe them any, and if they've been prescribed 3 times in a single month than you have to be an EMT-I+ to prescribe any further.
+[b]This is of extreme importance, as improperly prescribing Methadone can and will lead to disciplinary action if done incorrectly.[/b]
+[*]Inform the EMR that before selling methadone they [b]HAVE[/b] to conduct a drug test.
+[*]Inform the EMR that anyone requesting methadone can only pay for it in cash, at the price of $500.
+[*]Emphasize the importance of educating the patient about the dangers of an overdose of methadone and inform them that AMU or otherwise are there for further assistance if they seem to be abusing methadone.
+[*]Make sure they remember that if they're unsure on anything that they can contact a Supervisor, Command+ or other personnel.
+[*]Go over the Denied Prescription Format with them in detail.
+[*][ooc]Inform the EMR roleplay must be completed before using the command, without any roleplay, you'll be breaking powergaming by forcing roleplay without allowing the other player a chance and abusing faction commands.[/ooc]
+[/list]
+[*][color=#800000][b]Breathalyser[/b][/color][list]
+[*]Explain to the EMR the process of conducting a breathalyzer on a patient and give them an example of how to do it. [ooc]/breathanalyse[/ooc]
+[*]Inform the EMR that before conducting a breathalyzer they must have the consent of the patient.
+[*][ooc]Inform the EMR roleplay must be completed before using the command, without any roleplay, you'll be breaking powergaming by forcing roleplay without allowing the other player a chance and abusing faction commands.[/ooc]
+[/list]
+[*][color=#800000][b]Time Management[/b][/color][list]
+Explain time management to the EMR which means choosing the closest hospital, treating non-critically injured people, and driving Code 3 even when not required if one or more calls are open with nobody to take them.
+[list][ooc]Explain to the EMR when you go more in-depth on treatment in the field.[/ooc]
+[*][ooc]Few units, many calls; quick treatment.[/ooc]
+[*][ooc]Many units, few calls; slow and in-depth treatment.[/ooc]
+[/list]
+[*]Explain to the EMR that if we are code 3 to call and we approach injured people on the sidewalk, we have to stop.
+[*]Inform the EMR that we must drop response to our previous call [ooc]/setcall -1[/ooc], radio call that we are dropping response from our current call, and ask another unit to take the call.
+[/list]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[*][color=#800000][b]Ending the Phase - Ride-Along[/b][/color][list]
+[*][b]Request Call Priority over radio. Either you, or the EMR may do this request.[/b]
+[*]If the EMR can do radio calls, unit management, and treatment by themselves, then don't give them any extra additional mandatory ridealongs.
+[*]If you will be 10-8 during your ride-along, take the EMR on a short roam and ask the EMR to do the radio and treatment. 
+[*]If the EMR doesn't wish to take any feedback regarding their performance or is struggling on the ridealong, you may assign three to four mandatory ridealongs.
+[*]Assign them 1x mandatory ride along, alongside additional mandatories if they require it.
+[*][i][b][u]If the EMR performed poorly, be honest and genuine on your report[/u][/b][/i] - not stating they didn't do well is only harming the EMR.
+[/list]
+[/list]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[spoiler=Paperwork]
+[code]
+[img]https://i.ibb.co/qMNGR7x5/WNwx-LGs.png[/img]
+[lsemssubtitle]SESSION DETAILS:[/lsemssubtitle]
+[divbox=white]
+
+[b]Time Started:[/b] 
+
+[b]Time Ended:[/b] 
+
+[b]Did the EMR participate in a 10-15 call?[/b] YES/NO
+[i]If Yes, rate their performance (1-5). Explain any issues if performance was poor:[/i][list=none]
+INPUT RATING AND FEEDBACK HERE
+
+[/list]
+[color=transparent]spacer[/color]
+[b]Detailed Notes About Time Spent (Optional but strongly encouraged):[/b][list=none]
+INPUT FEEDBACK HERE
+
+[/list]
+[/divbox]
+[lsemssubtitle]NOTES FOR NEXT TRAINING SESSION[/lsemssubtitle]
+[divbox=white]
+[b]Additional Mandatories given:[/b]
+[color=transparent]spacer[/color]
+[b]Subjects to focus on during next training session: [/b][list=none]
+INPUT FEEDBACK HERE
+
+[/list]
+[/divbox]
+[lsemssubtitle]Field Training Session Report[/lsemssubtitle]
+[divbox=white]
+[b]Click [url=https://forms.gle/BJ6iLg5Fkf9Ug6fE6]here[/url] to submit your Field Training Session Report.[/b] [cb] [i](Please add a 'cbc' in the box if completed.)[/i]
+[/divbox]
+[lsemssubtitle]SIGNATURE[/lsemssubtitle]
+[divbox=white]
+[img]SIGNATURE[/img]
+[i]Medic Name[/i]
+Rank
+[b]Los Santos Emergency Medical Services[/b]
+[/divbox]
+[lsemsfooter][/lsemsfooter]
+[/code]
+[/spoiler]
+[/spoiler]
+

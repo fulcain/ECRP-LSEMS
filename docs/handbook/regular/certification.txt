@@ -1,0 +1,195 @@
+[spoiler=Certification]
+[divbox=white]
+[lsemssubtitle]CERTIFICATION - Junior Paramedic+, 1 Hour 30 Min Minimum/3 Hour Maximum[/lsemssubtitle]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[list=1][*][color=#800000][b]Beginning[/b][/color][list]
+[*][b]Read their student profile. Ensure that you are eligible to do a Certification for the EMR if they failed one before.[/b]
+[*][b]Ensure that they did all of the assigned mandatory ride-alongs (a minimum of 2 + however many assigned) if they failed their previous certification attempt.[/b]
+[*][b]Ensure they've passed their Pre-Certification.[/b]
+[*]Ask if the EMR has any questions before starting.
+[*]Inform the EMR that during this phase they are on their own unless a crisis occurs or they make a major error.
+[*]Make sure the EMR creates its own unit and follows all shift-starting protocols.
+[*]Proceed to observe the EMR [/list]
+[*][b]Request Call Priority over radio. Either you, or the EMR may do this request.[/b]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[*][color=#800000][b]During the Certification[/b][/color][list]
+[*]Observe the EMR.
+[*]Pay attention to their treatments, scene management, communication, and radio calls.
+[*]If there are no PD calls, question the EMR about PD/SD calls and set up a small scenario. Make sure EMR understands them, especially if they did not have too much experience throughout the training.
+[/list]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[*][color=#800000][b]Ending the Certification[/b][/color][list]
+[*]Give the EMR the certification result and feedback on their work.
+[*]Bofore handing the EMR their new badge, have them swear the [b]Hippocratic Oath[/b] (found below)
+[*]Begin going down the following checklist:
+[list=1][*]Let the EMR, now EMT-B, pick their callsign. Tell them they can check which one is available on the [url=https://gov.eclipse-rp.net/viewtopic.php?p=126127#p126127]LSEMS Staff Roster[/url]. [i][color=red]Reminder that callsigns go from ECHO-11 to ECHO-99, and that ECHO-69 may not be assigned.[/color][/i]
+[*]Give them their medical license. (( /givemedical ))
+[*]Tell the EMR about Duty Reports, and mention that they are not mandatory but are encouraged to be filled out at least once a pay period.
+[*]Inform the EMR that the leadership team may take them aside for an [b]informal[/b] 1 on 1 session around every 3 months. These are just a casual conversation to allow them the opportunity to communicate with the Leadership Team.
+[*]Inform the EMR that since they are now an EMT-B they can join divisions.
+[*]Ask them if they have a pager. If not, ask them if they want one. Explain what a pager is and make sure they know how to properly use it! (( Make sure they understand they have to RP pressing it with a simple /me, and check the discord if they have the 'On Call Program' role either way. ))
+[*] (( F4 rank adjustment, Discord - reference [url=https://gov.eclipse-rp.net/viewtopic.php?t=74487]Section 5 of the Supervisor Handbook[/url] for detailed guidance while the person is offline. ))
+[*]Post the certification paperwork in the EMR Student Profile, and fill it out.
+[*]Archive the EMR Student Profile.
+[*] Update the [url=https://gov.eclipse-rp.net/viewtopic.php?t=9497]Staff Roster[/url] - You only need to adjust the Staff Roster (second post), copy the EMR entry into the appropriate numerical slot in the EMT section, edit the rank from "EMR" to "EMT-B"
+[*]Post the EMT-B promotion format into their personnel file - Post format can be [url=https://gov.eclipse-rp.net/viewtopic.php?t=216104#PROMOTIONS]found here.[/url] (Section 9.14)
+[*]Edit the personnel file top post - Title, rank, callsign, and edit the Promotions section, linking to the promotion post.
+[*]Move the personnel file to EMT Personnel Files
+[*]Create the EMR a divisional file
+[*]Update the Dashboard, ensuring the EMR is promoted to EMT-B
+[*]Send them the Promotion Email for EMT-B found ( [url=https://gov.eclipse-rp.net/viewtopic.php?t=216104#PROMOTIONS]here [/url]) ((copy the appropriate link to your address bar and you’ll get the proper email format to send from there))
+[*]Remove them from the EMR usergroup, and add them to the EMT usergroup, making it their primary group (unless they are employed elsewhere and prefer that one)
+[*]Employee Adjustment post - [url=https://gov.eclipse-rp.net/viewtopic.php?p=445130#RANK-ADJUSTMENT]Format here[/url] (Section 9.12), and [url=https://gov.eclipse-rp.net/viewforum.php?f=573]here[/url] is the location to post it.
+Make sure to fill out the format properly;
+The title should read  ->  Rank Adjustment | {{applicantName}}
+[*] (( Request an acp rank change in discord ))[/list]
+[/list]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[*][color=#800000][b]Processing a Passed Certification[/b][/color][list]
+[*][b][u]Follow the certification checklist[/u], found in [url=https://gov.eclipse-rp.net/viewtopic.php?t=74485]Supervisor Handbook Section 4[/url].[/b] 
+
+[*]Send the EMT-B email ([url=https://pastebin.com/raw/prBNU1wB][b]found here[/b][/url]) to the fresh EMT-B. 
+[*]Edit the top post with the certification date.
+[*]Post the 'passed' format (found below).
+[*]Archive the student profile.
+[*]Post your FT Session Report.
+[/list]
+
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[*][color=#800000][b]Processing a Failed Certification[/b][/color][list]
+[*]Minimum of [b]2 Mandatory Ride-alongs[/b] must be assigned, in addition to:[list]
+[*]Additional ride-alongs if you deemed necessary 
+[/list]
+[*]Update the EMR Profile title with the assigned ride-alongs
+[*]Post your FT Session Report
+[*]Reach out to the Head of Field Training about the failed certification, email preferably.
+[ooc]Tagging [i]@Head of Field Training[/i] in [b]discord #notifications[/b], linking to the paperwork (once completed), is also acceptable! [/ooc]
+[/list]
+
+[/list]
+[color=transparent]spacer[/color]
+
+[hr][/hr]
+
+[color=transparent]spacer[/color]
+[spoiler=Hippocratic Oath][center][img]https://i.ibb.co/Ng5bZKm3/GRe-HLv-T.png[/img]
+[i][b][size=115]I, {{applicantName}}, swear to fulfill, to the best of my ability and judgment, this covenant:[/size][/b][/center]
+
+[size=105]
+I will respect the hard-won scientific gains of those who walked the steps I walk now, and gladly share such knowledge as is mine with those who are to follow.
+
+I will apply, for the benefit of the sick, all measures which are required to better their condition.
+
+I will remember that there is an art to medicine as well as science, and that warmth, sympathy, and understanding may outweigh the surgeon's knife or the chemist's drug.
+
+I will never be ashamed to say "I know not," nor will I fail to call in my colleagues when the skills of another are needed for a patient's recovery.
+
+I will respect the privacy of my patients, for their problems are not disclosed to me that the world may know.
+
+I will remember that I do not treat a chart or simulation, but a sick or injured human being, whose illness may affect the person's family and economic stability. 
+
+I will prevent disease whenever I can, for prevention is preferable to cure.
+
+I will remember that I remain a member of society, with special obligations to all my fellow human beings, those sound of mind and body as well as the infirm.
+
+If I do not violate this oath, may I enjoy life, respected while I live and remembered with affection thereafter.
+
+If I do not violate this oath, may I long experience the joy of healing those who seek my help.[/size][/i]
+
+[center][img]https://i.imgur.com/7aQSsNs.png[/img][/center]
+[/spoiler]
+
+[spoiler=Certification Passed Paperwork]
+[code]
+[img]https://i.ibb.co/Sw3DtzQS/hu-DCb-JP.png[/img]
+[lsemssubtitle]SESSION DETAILS:[/lsemssubtitle]
+[divbox=white]
+
+[b]Time Started:[/b] 
+
+[b]Time Ended:[/b] 
+
+[b]Did the EMR participate in a 10-15 call?[/b] YES/NO
+[i]If Yes, rate their performance (1-5). Explain any issues if performance was poor:[/i][list=none]
+INPUT RATING AND FEEDBACK HERE
+
+[/list]
+[b]Certification Notes:[/b][list=none]
+INPUT FEEDBACK HERE
+
+[/list]
+[/divbox]
+[b][lsemssubtitle]PASSED CERTIFICATION NOTES:[/lsemssubtitle][/b]
+[divbox=white]
+[b] Call sign given: [/b] ECHO-X
+
+[b] Medical license given? [/b] YES/NO
+
+[/divbox]
+[lsemssubtitle]Field Training Session Report[/lsemssubtitle]
+[divbox=white]
+[b]Click [url=https://forms.gle/BJ6iLg5Fkf9Ug6fE6]here[/url] to submit your Field Training Session Report.[/b] [cb] [i](Please add a 'cbc' in the box if completed.)[/i]
+[/divbox]
+[lsemssubtitle]SIGNATURE[/lsemssubtitle]
+[divbox=white]
+[img]SIGNATURE[/img]
+[i]Medic Name[/i]
+Rank
+[b]Los Santos Emergency Medical Services[/b]
+[/divbox]
+[lsemsfooter][/lsemsfooter]
+[/code]
+[/spoiler]
+
+[spoiler=Certification Failed Paperwork]
+[code]
+[lsemssubtitle]SESSION DETAILS:[/lsemssubtitle]
+[divbox=white]
+
+[b]Time Started:[/b] 
+
+[b]Time Ended:[/b] 
+
+[b]Did the EMR participate in a 10-15 call?[/b] YES/NO
+[i]If Yes, rate their performance (1-5). Explain any issues if performance was poor:[/i][list=none]
+INPUT RATING AND FEEDBACK HERE
+
+[/list]
+[b]Certification Notes:[/b][list=none]
+INPUT FEEDBACK HERE
+
+[/list]
+[/divbox]
+
+[b][lsemssubtitle]CERTIFICATION FAILED NOTES:[/lsemssubtitle][/b]
+[divbox=white]
+[b]Reason for failure:[/b][list=none]
+INPUT DETAILED FEEDBACK HERE
+
+[/list]
+[b]Mandatory Ride-Alongs Assigned (DEFAULT 2 + FREE TO ADD MORE): [/b] 
+
+[b]Subjects to focus on during next training session: [/b][list=none]
+INPUT FEEDBACK HERE
+
+[/list]
+[/divbox]
+[lsemssubtitle]Field Training Session Report[/lsemssubtitle]
+[divbox=white]
+[b]Click [url=https://forms.gle/BJ6iLg5Fkf9Ug6fE6]here[/url] to submit your Field Training Session Report.[/b] [cb] [i](Please add a 'cbc' in the box if completed.)[/i]
+[/divbox]
+[lsemssubtitle]SIGNATURE[/lsemssubtitle]
+[divbox=white]
+[img]SIGNATURE[/img]
+[i]Medic Name[/i]
+Rank
+[b]Los Santos Emergency Medical Services[/b]
+[/divbox]
+[lsemsfooter][/lsemsfooter]
+[/code][/spoiler]
+[/spoiler]

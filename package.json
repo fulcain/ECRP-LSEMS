@@ -10,6 +10,8 @@
     "routes:report": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file-if-exists=.env --import ./scripts/lib/ts-config-loader.mjs scripts/routes-report.ts",
     "routes:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/access-check.ts",
     "matrix:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/access-matrix-check.ts",
+    "handbook:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/handbook-check.ts",
+    "handbook:sync": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/handbook-sync.ts",
     "extension:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/extension-check.mjs",
     "extension:zip": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/extension-zip.ts",
     "extension:assets": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/extension-assets.mjs"

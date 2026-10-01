@@ -1,0 +1,143 @@
+[spoiler=Introduction]
+[divbox=white]
+[lsemssubtitle]INTRODUCTION - EMT-I+[/lsemssubtitle]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[list=1]
+[*][color=#800000][b]Uniform and On Duty[/b][/color]
+[list][*]Let the EMR know that they [b]cannot[/b] be on duty without a trainer. Make sure they understand this. If they cannot find a trainer by using the radio then direct them to the Student area.
+[*][ooc]Inform them that they must first reach out in /r for an FTO and if they have no luck then they can also reach out on the MD discord in the #fto-availability channel using the copy paste provided.[/ooc]
+[*]Bring the EMR into our locker room and show them where their locker is and provide them with their uniform, bodycam and ALS bag.
+[*][ooc]Explain how to use the /FL command, and the surrounding RP. Make sure they know they must RP pulling out equipment as well as putting it back.[/ooc]
+[*]We are required to wear body cams on duty, and they are provided by LSEMS. Make sure the EMR is aware that they must have a bodycam running when on shift, at all times and demonstrate how to do so correctly.
+[ooc]Educate them on Bodycam RP rules, and explain that you will need to RP putting one on but you are not required to use recording software. If you can record, it is recommended but not required.[/ooc]
+[*][ooc]Let them know that they do NOT have access to everything they see in the uniform menu. They can only wear uniforms that they ICly have access to. [/ooc]
+[*]Let them know that if they change their name at all for any reason then they MUST notify Command and High Command
+[*][b]Inform the EMR, if they are detained and arrested, they must notify Command and High Command immediately with what they were charged with.[/b] Please have the EMR repeat this back to you.
+[*]Let them know that if they are IA'ed for any reason, they cannot talk to [b]anyone[/b] about it. They can only speak to those handling the IA report when asked directly about the report.
+[*][ooc]IA reports cannot be talked about OOC as well, about an IC IA report nor an OOC IA report.[/ooc]
+[*]Inform the EMR of the social media policy: no livestreaming and/or donating to livestreams on duty and if you are distracted by your phone, do not use it on duty.
+[/list]
+[*][color=#800000][b]Unit Management[/b][/color]
+[list]
+Explain the following to the EMR:
+[list]
+[*]How to create a unit (( /createunit [name] ))
+[*]Renaming the unit (( /renameunit [name] ))
+[*]Disbanding the unit (( /disbandunit ))
+[*]Joining a unit (( /joinunit [name] ))
+[*]Leaving a unit (( /leaveunit ))
+[/list]
+[*]Have the EMR create the unit, but make sure they ran through all four of the above at least once. And let them know that they will be creating the unit from here on out.
+[*]Inform the EMR that there can be a maximum of 2 medics per unit, FTP callsigns and high command are exempt from this rule.
+[/list]
+[*][color=#800000][b]Callsigns[/b][/color]
+[list]
+[*]Shortly explain to the EMR how our rank system works.
+[*]Inform the EMR about the existence of Zulu (Z), Echo (E), Delta (D), Oscar (O), Charlie (C), Bravo (B), and Alpha (A).
+[list]
+[*][b]Zulu [/b]- Training Units Z-11, D-1Z, O-1Z, C-1Z, B-1Z, A-1Z
+[*][b]Echo [/b]- EMTs (EMT-B/I/A/P)
+[*][b]Delta [/b]- Master EMT
+[*][b]Oscar [/b]- Supervisors-in-training (Junior Paramedic)
+[*][b]Charlie [/b]- Supervisors (Paramedic/Senior Paramedic/Lead Paramedic)
+[*][b]Bravo [/b]- Command (Lieutenant/Captain/Commander)
+[*][b]Alpha [/b]- High Command (Deputy Chief, Assistant Chief, Chief of EMS)
+[/list]
+[*]Explain to the EMR that the highest-ranked medic on a scene is the scene leader.
+[*]Explain that callsigns range from Echo-11 to Echo-99, whilst Delta and Charlie callsigns range from 1-10 or as necessary.
+[*]Remind the EMR that they cannot leave a scene without first acquiring permission from whoever is scene leader.
+
+[*]Inform the EMR about the existence of divisional callsigns[list]
+[*][b]AMU [/b]- Advanced Medical Unit
+[*][b]BLS [/b]- Basic Life Support 
+[*][b]PR [/b]- Public Relations
+[*][b]RED [/b]- Recruitment and Employment
+[*][b]ENG [/b]- Fire Engine
+[*][b]FIRE[/b] - Fire unit
+[*][b]EVAC [/b]- Air unit
+[*][b]RSC [/b]- Kamacho unit
+[*][b]LFG [/b]- Lifeguard
+[*][b]FOR [/b]- Forensics
+[/list][/list]
+[*][color=#800000][b]Radio[/b][/color]
+[list]
+[*]Explain to the EMR that they always have to be on MD frequency while on duty.
+[*]Inform them that we respect each other on the radio and if someone is speaking we don't [b]interrupt![/b] Teach them how to react when they hear someone speaking at the same time.
+[/list]
+[*][color=#800000][b]On Duty Equipment[/b][/color][list]
+[*]Inform the EMR that they are given service equipment and that it is not to be used inappropriately. 
+[*]Inform the EMR that any form of abuse of service equipment is punishable and could lead to dismissal from the department if serious enough.
+[*]Inform the EMR that any personal weapon or tool is to be left at home or personal vehicle. 
+[*]Inform the EMR that Kevlar is available after their Certification, and that they will have one available in their vehicles at all times. It is only to be worn in (potential) hostile or life-threatening situations, and can be requested by the most senior on shift.
+[/list]
+[*][color=#800000][b]Pillbox Hospital Tour[/b][/color]
+[list]
+[*][b]Vending machines(Ward D)[/b]: Take the EMR into Ward D and show them where to find the vending machine (first door on the right). 
+Inform the EMR that anything acquired from this vending machine is for [b]LSEMS Staff[/b] only.
+[*][b]Morgue[/b]: Inform the EMR that the Morgue is to remain [b]LOCKED[/b] at all times.
+[*][b]Employee Parking[/b]:
+[list][*]Show the EMR how to lock/unlock the gates. Explain that this is for on duty staff only. Off duty employee's with a vehicle here will be towed and secure impounded if the leadership team deems it necessary. 
+[*]Explain to the EMR that the employee parking only keeps the vehicle safe. No valuables should be kept in the vehicle as the location is susceptible to lock pickers.
+[i]If a vehicle has valuables stored, parking at Legion Parking would be recommended instead.[/i][/list][list]
+[/list]
+[*]Inform the EMR that all doors that are accessible by the public are to be kept [b]locked[/b] at all times.
+[/list]
+[*][color=#800000][b]Hospitals[/b][/color]
+[list]
+[*]Show the EMR where to drop off at Upper Pillbox, then Lower Pillbox
+[*]Roam to Paleto MD, and explain how to perform a drop off at Paleto MD (through the right side where the entrance of the building is, driving around to the exit on the left)
+[*]Take the EMR inside Paleto MD, showing them where they could clock on, as well as where the plastic surgeon is located.
+[*]Inform the EMR that if they wish to clock on at Paleto MD, they should park their vehicle at Paleto Parking, as it is unsafe to park at Paleto MD.
+[/list]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[*][color=#800000][b][ooc]OOC Corruption + Faction Commands[/ooc][/b][/color][list]
+[*][ooc]Explain the OOC corruption ruling that LSEMS has in place to the EMR. Inform them we don't require IC evidence to terminate due to any illegal activities.[/ooc]
+[*][ooc]Explain that faction-related commands are a privilege and not given out to mess around with. Explain that they cannot use the commands without first doing the applicable roleplay before using the command. If found to have done so it can lead to Faction repercussions and/or server punishments.[/ooc]
+[*][ooc]Explain that much like faction commands, faction equipment and vehicles also follow the same consequences as commands.[/ooc]
+[*][ooc]Explain that if they receive an admin punishment that they MUST tell High Command within 48 hours. Let them know that they need to send the link to the report and to inform High Command when it is concluded along with the result.[/ooc]
+[*][ooc]Let them know that in the event that they cannot post an LOA for OOC reasons then they should reach out to someone from Command or High Command to let them know.[/ooc][/list]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[*][color=#800000][b]Ending Introduction[/b][/color][list]
+[*]Tell the EMR they can use the radio to attempt to reach a certified Field Training Officer for training and teach them how to do it.
+[*]Example: "EMR Smith to dispatch, are there any available FTOs?" [ooc][b]**NO VOIP RADIO**[/b][/ooc]
+[*]Inform them that they have a mandatory [b]30[/b] minute break between the introduction and phase I. [b]Explain to them they should go over their introduction email once more to fully grasp all the information they've been given.[/b]
+[*]Encourage the EMR to fill out a duty report once a week. Although not required, it does help supervisors see your work.
+[*]If you want you can take the EMR on a ride-along or ask someone else if they can take them if they want to see how it works.
+[*][b]Before proceeding to do your paperwork, check if the EMR has received the Introduction email. If not, send the EMR the Introduction email:[/b]
+[url=https://pastebin.com/raw/gq687baN]Introduction E-mail[/url]
+[/list]
+[/list]
+[color=transparent]spacer[/color]
+[color=transparent]spacer[/color]
+[spoiler=Paperwork]
+[code]
+[img]https://i.ibb.co/0y2snnsR/9fb-JGt0.png[/img]
+[lsemssubtitle]SESSION DETAILS:[/lsemssubtitle]
+[divbox=white]
+[list]
+
+[*][b]Time Started:[/b] 
+
+[*][b]Time Ended:[/b] 
+
+[*][b]If there were any issues, describe them below: [/b]
+X
+
+[*][b]Click [url=https://forms.gle/BJ6iLg5Fkf9Ug6fE6]here[/url] to submit your Field Training Session Report.[/b] [cb] [i](Please add a 'cbc' in the box if completed.)[/i]
+[*][b]Checked if the EMR was sent the Introduction Email?  [cb][/b] [i](Please add a 'cbc' in the box if completed.)[/i]
+[/list]
+[/divbox]
+[lsemssubtitle]SIGNATURE[/lsemssubtitle]
+[divbox=white]
+[img]SIGNATURE[/img]
+[i]Medic Name[/i]
+Rank
+[b]Los Santos Emergency Medical Services[/b]
+[/divbox]
+[lsemsfooter][/lsemsfooter]
+[/code]
+[/spoiler]
+[/spoiler]

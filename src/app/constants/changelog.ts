@@ -18,6 +18,36 @@ export const changeLog: ChangeLogEntry[] = [
       {
         type: "feature",
         description:
+          "Updating a training profile is one paste: FTD Command's Handbook tab leads with a button for the Regular profile and one for the Reinstatement profile, and pasting the finished profile in shows, section by section, what it would change before anything is written. The paste is the new truth, but only the sections that actually differ are rewritten, so an update that touched one phase leaves one file changed instead of the whole format.",
+      },
+      {
+        type: "feature",
+        description:
+          "The Guide and Script views in FTD Paperwork are built from the profile itself rather than kept beside it, so pasting an updated profile updates the trainer's guide, the paste-ready script, the profile an FTO copies, and every tool that reads the handbook in the same breath. They used to be a hand-written copy of the same material, and had already drifted from the profile.",
+      },
+      {
+        type: "feature",
+        description:
+          "FTD Command has a Handbook tab. The EMR profile's own sections - the regular one and the reinstatement one - are edited there: pick a section, write it, see it rendered as the forum will show it, and publish behind a confirmation. The profile an FTO copies when they open a training profile is built from those sections rather than kept beside them, so a published section reaches it; publishing writes the section's file in the repository, so it goes out with your next push, and earlier versions can be opened and put back from your own checkout.",
+      },
+      {
+        type: "change",
+        description:
+          "Two things in the training profiles were put right on the way into the handbook: the reinstatement profile carried a stray closing spoiler before the reinstatee ride-along, and the regular profile's Personnel File Post template sat inside the Certification spoiler rather than beside it.",
+      },
+      {
+        type: "feature",
+        description:
+          "The Handbook tab takes a whole profile at once: paste the finished Regular or Reinstatement profile - the same text Copy & Open hands an FTO - and it is cut back into its sections, rewriting every one of their files, so a profile you keep somewhere else can be brought in without touching it section by section. Publishing it is confirmed first, and a paste that has lost a section's heading or one of its placeholders is refused and says which.",
+      },
+      {
+        type: "change",
+        description:
+          "The Handbook tab is a developer tool rather than an FTD one: it is offered only to the team on the app's Discord admin list, and it says at the top that it only works on a local development server, since a deployed build cannot write the files the handbook lives in.",
+      },
+      {
+        type: "feature",
+        description:
           "New User Groups page under Resources, open to everyone: beside a name box it lists the whole forum list - the department, its ranks, commands and directors, and every division's own groups, with a search box to find the right one - and picking a group opens its page on GOV with the member's name already filled in. Press Submit and it is done; without the browser extension the name goes on your clipboard to paste in. An extension older than the one the app ships says so rather than opening a page with the box still empty.",
       },
       {
