@@ -182,26 +182,36 @@ export async function commitHistory(
   limit = 30,
 ): Promise<GitHubHistoryEntry[]> {
   if (!isGitHubCommitConfigured() || paths.length === 0) return [];
-  const query = new URLSearchParams({
-    path: paths[0],
-    per_page: String(limit),
-  });
-  for (const extra of paths.slice(1)) query.append("path", extra);
-  const result = await gh<
-    {
-      sha: string;
-      html_url: string;
-      commit: { message: string; author: { name: string; date: string } };
-    }[]
-  >(`/repos/${repo().owner}/${repo().repo}/commits?${query.toString()}`);
-  if (!result.ok) return [];
-  return result.data.map((entry) => ({
-    sha: entry.sha,
-    date: entry.commit.author.date,
-    author: entry.commit.author.name,
-    message: entry.commit.message.split("\n")[0],
-    url: entry.html_url,
-  }));
+  // The commits API takes one `path` per call - repeats are ignored, not
+  // ORed - so the FTP's history is one answer per section file, merged here.
+  const answers = await Promise.all(
+    paths.map(async (path) => {
+      const query = new URLSearchParams({ path, per_page: String(limit) });
+      const result = await gh<
+        {
+          sha: string;
+          html_url: string;
+          commit: { message: string; author: { name: string; date: string } };
+        }[]
+      >(`/repos/${repo().owner}/${repo().repo}/commits?${query.toString()}`);
+      return result.ok ? result.data : [];
+    }),
+  );
+  const bySha = new Map<string, GitHubHistoryEntry>();
+  for (const entry of answers.flat()) {
+    if (!bySha.has(entry.sha)) {
+      bySha.set(entry.sha, {
+        sha: entry.sha,
+        date: entry.commit.author.date,
+        author: entry.commit.author.name,
+        message: entry.commit.message.split("\n")[0],
+        url: entry.html_url,
+      });
+    }
+  }
+  return [...bySha.values()]
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, limit);
 }
 
 /** One file's content as of one commit - what "look at this version" shows. */
