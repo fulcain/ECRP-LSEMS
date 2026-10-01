@@ -81,6 +81,7 @@ const ROUTE_META: Record<string, { label: string; group: AccessMatrixGroup }> = 
   [ROUTES.workspace.staff]: { label: "Staff Page", group: "Workspace" },
 
   [ROUTES.divisions.red]: { label: "RED", group: "Divisions" },
+  [ROUTES.divisions.ar]: { label: "A&R", group: "Divisions" },
   [ROUTES.divisions.bls]: { label: "BLS", group: "Divisions" },
 
   [ROUTES.operations.divisionTemplates]: {

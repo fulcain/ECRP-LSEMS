@@ -679,6 +679,10 @@ const PICKER_SOURCES = {
     picker: "src/app/(routes)/divisions/red/components/paperwork-documents.ts",
     templates: "src/app/templates/red-formats",
   },
+  "A&R": {
+    picker: "src/app/(routes)/divisions/ar/components/paperwork-documents.ts",
+    templates: "src/app/templates/ar-formats",
+  },
 };
 for (const [name, { picker: pickerPath, templates }] of Object.entries(
   PICKER_SOURCES,

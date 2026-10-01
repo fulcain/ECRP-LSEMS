@@ -1,6 +1,6 @@
 import { ROUTES } from "@/configs/routes";
 import type { LucideIcon } from "lucide-react";
-import { Activity, BookOpen, Clock3, FileText, GraduationCap, Link2, Puzzle, Settings2, Shield, ShieldCheck, UserCog, UsersRound, ClipboardList } from "lucide-react";
+import { Activity, BookOpen, Clock3, FileText, GraduationCap, Link2, Plane, Puzzle, Settings2, Shield, ShieldCheck, UserCog, UsersRound, ClipboardList } from "lucide-react";
 
 export type HeaderLink = {
   label: string;
@@ -47,6 +47,12 @@ export const headerLinks: HeaderLink[] = [
     group: "Workspace",
   },
   { label: "RED", href: ROUTES.divisions.red, icon: Shield, group: "Divisions" },
+  {
+    label: "A&R",
+    href: ROUTES.divisions.ar,
+    icon: Plane,
+    group: "Divisions",
+  },
   { label: "BLS", href: ROUTES.divisions.bls, icon: Activity, group: "Divisions" },
   {
     label: "FTD",

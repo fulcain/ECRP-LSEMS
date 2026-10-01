@@ -414,6 +414,33 @@ export const DIVISIONS = {
     // Being in Field Training opens the whole workspace, every tab of it.
     directors: ["DirectorOfOperations"],
   },
+  ar: {
+    label: "A&R",
+    route: ROUTES.divisions.ar,
+    membership: "ARDivision",
+    // Air & Rescue is one division in the app: its leadership is shared
+    // between the Pilot and Mountain Rescue branches (see `pilot` and
+    // `mountainRescue` below), so both branches' ranks are listed here and the
+    // membership role covers everyone without a rank. Command+ and Legal
+    // Faction Management reach the page through `EVERY_PAGE_ROLES`, not
+    // through this list.
+    ranks: [
+      "HeadOfAR",
+      "InterimHeadOfAR",
+      "AssistantHeadOfAR",
+      "InterimAssistantHeadOfAR",
+      "SeniorFlightInstructor",
+      "FlightInstructor",
+      "SeniorPilot",
+      "Pilot",
+      "StudentPilot",
+      "SeniorMountainRescueInstructor",
+      "MountainRescueInstructor",
+      "MountainAndRescueOperator",
+      "MountainRescueStudent",
+    ],
+    directors: ["DirectorOfOperations"],
+  },
   red: {
     label: "RED",
     route: ROUTES.divisions.red,

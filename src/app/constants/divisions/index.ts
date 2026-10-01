@@ -5,6 +5,7 @@ import {
   type RoleRef,
 } from "@/configs/roles";
 import { AMU } from "./amu";
+import { AR } from "./ar";
 import { BLS } from "./bls";
 import { CRU } from "./cru";
 import { FR } from "./f-r";
@@ -77,6 +78,7 @@ export type QuickLink = {
  */
 const DIVISION_PAGES: Record<DivisionKey, DivisionPage> = {
   general: General,
+  ar: AR,
   bls: BLS,
   amu: AMU,
   ftd: FT,

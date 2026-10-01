@@ -22,6 +22,7 @@ export const ROUTES = {
   divisions: {
     red: "/divisions/red",
     bls: "/divisions/bls",
+    ar: "/divisions/ar",
     ftd: {
       /** The section root - redirects to Sessions. */
       base: "/divisions/ftd",

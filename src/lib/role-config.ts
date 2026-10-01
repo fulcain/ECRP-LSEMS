@@ -201,6 +201,7 @@ export function canManageAccess(
 const LANDING_ORDER: readonly string[] = [
   ROUTES.divisions.ftd.sessions,
   ROUTES.divisions.red,
+  ROUTES.divisions.ar,
   ROUTES.divisions.bls,
   ROUTES.workspace.staff,
   ROUTES.management.supervisor,
