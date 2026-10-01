@@ -37,7 +37,7 @@ import {
   writeFtpSections,
   ftpAbsolute,
 } from "@/lib/ftp";
-import { copyFile, mkdir, mkdtemp, rm } from "node:fs/promises";
+import { copyFile, mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { tmpdir } from "node:os";
@@ -330,10 +330,11 @@ export async function importFtpDocument(input: {
         : section.content,
   }));
 
-  // On a deployment that commits, the update is staged into a scratch root and
-  // handed to the GitHub backend as one commit; on a checkout it writes in
-  // place and the member commits by hand, exactly as before. Both paths run the
-  // same generators, so the committed files and the local ones cannot differ.
+  // Wherever committing is configured - a deployment or a dev server with the
+  // token - the update is staged and handed to the GitHub backend as one commit;
+  // nowhere else it writes in place and the member commits by hand. Both paths
+  // run the same generators, so the committed files and the local ones cannot
+  // differ.
   if (commitsThroughGitHub()) {
     return stagedUpdate(
       format,
@@ -465,6 +466,16 @@ async function stagedUpdate(
         authorEmail: author?.email || "FTP@lsems.app",
       });
       if (!commit.ok) return refuse(502, commit.reason, [], warnings);
+
+      // A dev server has the checkout the deployment has not, so the update
+      // lands in it too: the local files agree with what was pushed, and the
+      // next paste compares against what GitHub now holds.
+      if (!process.env.VERCEL) {
+        for (const file of files) {
+          await mkdir(path.join(previous, path.dirname(file.path)), { recursive: true });
+          await writeFile(path.join(previous, file.path), file.content, "utf8");
+        }
+      }
 
       return {
         ok: true,

@@ -34,12 +34,13 @@ export function isGitHubCommitConfigured(): boolean {
 }
 
 /**
- * Whether an update should take the commit path. Only a deployment takes it -
- * a development checkout writes its own files and the member commits by hand,
- * which keeps the local flow (and `npm run ftp:import`) exactly as it was.
+ * Whether an update should take the commit path: wherever the token and the
+ * repository are configured - a deployment or a development server alike - an
+ * accepted update is a commit on the repository, pushed as it is made. Without
+ * them a checkout writes its own files and the member commits by hand.
  */
 export function commitsThroughGitHub(): boolean {
-  return Boolean(process.env.VERCEL) && isGitHubCommitConfigured();
+  return isGitHubCommitConfigured();
 }
 
 function repo(): { owner: string; repo: string } {
