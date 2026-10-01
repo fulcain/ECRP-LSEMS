@@ -1,7 +1,7 @@
 [spoiler=Phase 2]
 [divbox=white]
 [lsemssubtitle]PHASE 2 - EMT-I+, 1 Hour 15 Min Minimum/2 Hour 30 Min Maximum[/lsemssubtitle]
-[b][center]**THE EMR SHOULD BEGIN TREATMENT OF PATIENTS NEAR THE END OF PHASE 2 AND MANAGING THEIR UNIT**[/b][/center]
+[b][center]**THE EMR SHOULD BEGIN TREATMENT OF PATIENTS NEAR THE END OF PHASE 2 AND MANAGING THEIR UNIT**[/center][/b]
 [color=transparent]spacer[/color]
 [color=transparent]spacer[/color]
 [list=1][*][color=#800000][b]Volatile Patient List[/b][/color]
@@ -34,7 +34,7 @@
 [*]1st, 2nd, or 3rd-degree burns.
 [*]Stab wounds
 [*]Concussion[/list]
-[*][b][color=blue](([/b][/color] Explain the process of how to use the stabilize command and explain it is considered powergaming if you stabilize before doing your roleplay to find the injuries on the patient. 
+[*][b][color=blue](([/color][/b] Explain the process of how to use the stabilize command and explain it is considered powergaming if you stabilize before doing your roleplay to find the injuries on the patient. 
 [b]Example[/b]
 [c]/stabilize[/c]
 [list]
@@ -68,7 +68,9 @@
 [/list]
 [*][color=#800000][b]Breathalyser[/b][/color][list]
 [*]Explain to the EMR the process of conducting a breathalyzer on a patient and give them an example of how to do it. [ooc]/breathanalyse[/ooc]
-[*]Inform the EMR that before conducting a breathalyzer they must have the consent of the patient.
+[*]Inform the EMR that before conducting a breathalyzer they must have the consent of the patient. Explain that if consent is not given, and this is linked to a potential criminal charge, they are required to notify the patient that separate charges can be levied for 'Failure to Comply' or potentially 'Tampering with Evidence'.
+[*]Inform the EMR that if a patient's blood alcohol percentage is 0.08% and above, they are legally considered intoxicated as per the San Andreas Penal Code. 
+[*]Remind the EMR that we can offer intoxicated patients water, food, and/or a safe ride home by requesting a taxi or calling a friend depending on the situation. If they witness an intoxicated patient attempting to operate a vehicle following a breathalyzer test, that PD/SD should be contacted via department radio as it poses a risk to their safety and the safety of others.
 [*][ooc]Inform the EMR roleplay must be completed before using the command, without any roleplay, you'll be breaking powergaming by forcing roleplay without allowing the other player a chance and abusing faction commands.[/ooc]
 [/list]
 [*][color=#800000][b]Time Management[/b][/color][list]
@@ -95,7 +97,7 @@ Explain time management to the EMR which means choosing the closest hospital, tr
 [color=transparent]spacer[/color]
 [spoiler=Paperwork]
 [code]
-[img]https://i.ibb.co/qMNGR7x5/WNwx-LGs.png[/img]
+[img]https://i.ibb.co/Hpg9p6b4/WNwx-LGs.png[/img]
 [lsemssubtitle]SESSION DETAILS:[/lsemssubtitle]
 [divbox=white]
 
@@ -130,12 +132,13 @@ INPUT FEEDBACK HERE
 [lsemssubtitle]SIGNATURE[/lsemssubtitle]
 [divbox=white]
 [img]SIGNATURE[/img]
-[i]Medic Name[/i]
+[i]Fname Lname[/i]
 Rank
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox]
 [lsemsfooter][/lsemsfooter]
 [/code]
 [/spoiler]
+[/divbox]
 [/spoiler]
 

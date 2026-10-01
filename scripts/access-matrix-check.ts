@@ -119,12 +119,25 @@ for (const href of tabLabels.keys()) {
     true,
   );
 }
+// ...and every editable row is a page the nav actually links to, so the editor
+// never offers a decision nothing can reach. This used to compare counts, which
+// let one orphan row cancel out one locked nav page and still pass.
+const navAndTabRoutes = new Set([...navLabels.keys(), ...tabLabels.keys()]);
+for (const entry of EDITABLE_ENTRIES) {
+  expect(
+    `${entry.label} (${entry.route}) is linked from the sidebar or the tab bar`,
+    navAndTabRoutes.has(entry.route),
+    true,
+  );
+}
+
+// The FTD section root is answered by a permanent redirect in `next.config.ts`,
+// and config redirects run before the middleware - so a row there could never
+// decide anything. The editor must not offer it.
 expect(
-  "the sidebar and the tab bar between them are every editable row",
-  [...navLabels.keys(), ...tabLabels.keys()].filter(
-    (href, index, all) => all.indexOf(href) === index,
-  ).length,
-  EDITABLE_ENTRIES.length,
+  "the FTD section root is not a row the editor offers",
+  MANAGED_ENTRIES.some((entry) => entry.route === ROUTES.divisions.ftd.base),
+  false,
 );
 
 for (const entry of MANAGED_ENTRIES) {
@@ -138,8 +151,7 @@ for (const entry of MANAGED_ENTRIES) {
 
   // A route can appear in both places and under two labels - the sidebar's FTD
   // entry is "FTD" and points at "Sessions" - so a row only has to agree with a
-  // label a member actually reads somewhere. A section root has none of its own:
-  // the nav points at its first tab, which is why the row is labelled freely.
+  // label a member actually reads somewhere.
   const known = [navLabels.get(entry.route), tabLabels.get(entry.route)].filter(
     (label): label is string => label !== undefined,
   );

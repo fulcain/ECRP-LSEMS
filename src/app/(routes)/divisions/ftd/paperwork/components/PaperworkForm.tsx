@@ -190,6 +190,9 @@ export default function PaperworkForm() {
       ...form,
       additionalMandatories,
       signature: details.signature,
+      // The name printed under the signature is the trainer's own, saved on the
+      // Staff Page and seeded into the session - it is not retyped per post.
+      ftoName: details.ftoName,
       timeStarted: formatTime24h(details.timeStart),
       timeEnded: formatTime24h(details.timeFinish),
       emrName: resolvedEMR,

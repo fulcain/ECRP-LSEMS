@@ -73,7 +73,6 @@ export type ManagedEntry = {
  * or the tab bar.
  */
 const ROUTE_META: Record<string, { label: string; group: AccessMatrixGroup }> = {
-  [ROUTES.divisions.ftd.base]: { label: "FTD section", group: "FTD" },
   [ROUTES.divisions.ftd.sessions]: { label: "Sessions", group: "FTD" },
   [ROUTES.divisions.ftd.paperwork]: { label: "Paperwork", group: "FTD" },
   [ROUTES.divisions.ftd.command]: { label: "Command", group: "FTD" },
@@ -116,9 +115,12 @@ const ROUTE_META: Record<string, { label: string; group: AccessMatrixGroup }> = 
  * Being named in `ROUTE_META` is what makes a route managed, so a page with no
  * entry has no row and no gate beyond the fallback. `npm run matrix:check` is
  * what keeps the list complete - it fails when a page in the sidebar or the FTD
- * tab bar is missing here - and each FTD tab has a row of its own even though it
- * would inherit one: an entry on the **section** covers every FTD page that has
- * no row, and an entry on a **tab** narrows just that tab.
+ * tab bar is missing here - and each FTD tab has a row of its own.
+ *
+ * A section root is deliberately **not** a row: `/divisions/ftd` is answered by
+ * a permanent redirect in `next.config.ts`, and config redirects run before the
+ * middleware, so the route the middleware gates is always the tab the redirect
+ * lands on. A row for the root would be a decision nothing could reach.
  */
 const MANAGED_ROUTES: readonly string[] = Object.keys(ROUTE_META);
 

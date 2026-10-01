@@ -13,6 +13,21 @@ export type ChangeLogEntry = {
 
 export const changeLog: ChangeLogEntry[] = [
   {
+    date: "Sep 30, 2026",
+    changes: [
+      {
+        type: "feature",
+        description:
+          "A feature for local development: the whole FTP training profile - Regular and Reinstatement - can be pasted in on the FTD Command Handbook tab, and every section of it is updated from the pasted handbook data."
+      },
+      {
+        type: "feature",
+        description:
+          "New Firearm Discharge Notice template on the Templates page, beside the LOA one: the employee name, rank and signature come off the Staff Page, the time has a Now button (UTC), and the footage and proof-of-RP links go in as clickable links."
+      },
+    ],
+  },
+  {
     date: "Sep 29, 2026",
     changes: [
       {
@@ -23,7 +38,22 @@ export const changeLog: ChangeLogEntry[] = [
       {
         type: "feature",
         description:
-          "The Guide and Script views in FTD Paperwork are built from the profile itself rather than kept beside it, so pasting an updated profile updates the trainer's guide, the paste-ready script, the profile an FTO copies, and every tool that reads the handbook in the same breath. They used to be a hand-written copy of the same material, and had already drifted from the profile.",
+          "The Guide and Script views in FTD Paperwork are the trainers' own writing again. They were briefly rendered from the profile sections, which handed a trainer the profile itself - its forms, its placeholders and its paperwork - where a guide belongs; the reading material is written for the tab once more, in its full formatting, and the profile an FTO copies is still built from the handbook sections, so a published section still reaches every copy of the profile.",
+      },
+      {
+        type: "change",
+        description:
+          "The app's section renderer only knew part of the forum's tagging, so a section shown in the app lost its out-of-character asides, its commands in backticks and its collapsed reference lists to raw `[ooc] … [/ooc]` text, and a blank written like a tag - `[Callsign]`, `[Lastname]` - was read as markup and buried everything after it. Blanks are shown as the blanks they are, nothing is read as a tag unless it is one, and a section that nests a list inside a spoiler no longer loses the list at its close.",
+      },
+      {
+        type: "feature",
+        description:
+          "The signature block in the paperwork signs itself. Every training post ends with the trainer's signature, printed name and rank, filled from what the member has already saved on their Staff Page - the name and signature they train under, and the rank the app resolves - so it is never retyped, and the profile an FTO copies signs the same way because both read the one block.",
+      },
+      {
+        type: "change",
+        description:
+          "An updated profile is judged by what it says, not by the app's spelling of it. A real profile carries the trainer's own name under each signature where the app's copy has a sample one, and spells the member's name the way the forum always has - both are now read as the same line and filled the same way, rather than counted as lost placeholders that refused the update. A paste that keeps one section inside another, as the live profile does with its Personnel File Post template inside Certification, is rebalanced into the section files the same way the files already are instead of being turned away.",
       },
       {
         type: "feature",

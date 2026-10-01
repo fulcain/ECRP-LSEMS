@@ -44,8 +44,8 @@ export type HandbookSection = {
    * (who the trainee is, when they were hired, which phases are ticked) is the
    * same on every profile and is not theirs to change. Left unguarded, a paste
    * carrying a blank or differently-shaped header would quietly replace it, so
-   * the update path skips the section entirely. Editing it by hand in the editor
-   * still publishes it: that is someone looking straight at it and saying so.
+   * the update path ignores the section entirely - and nothing else writes one
+   * either, because a profile moves as a whole rather than section by section.
    */
   protectedFromPaste?: boolean;
 };
@@ -118,19 +118,19 @@ export const HANDBOOK_VARIABLES: readonly {
   },
   {
     token: "[img]SIGNATURE[/img]",
-    hint: "Where the trainer's signature image goes. The trainer replaces it in the forum editor.",
+    hint: "Where the trainer's signature image goes - filled in from the member's own Staff Page, so it is never retyped.",
   },
   {
     token: "[i]Medic Name[/i]",
-    hint: "The trainer's printed name, under their signature, in a regular profile.",
+    hint: "The trainer's printed name, under their signature, in a regular profile - filled in from the member's Staff Page.",
   },
   {
     token: "SIGNATURE",
-    hint: "The reinstatement profile's signature placeholder - a line the trainer replaces.",
+    hint: "The reinstatement profile's signature line, filled in from the member's Staff Page.",
   },
   {
     token: "RANK",
-    hint: "The rank line under a reinstatement signature.",
+    hint: "The rank line under a reinstatement signature, filled in from the member's own rank.",
   },
   {
     token: "[cb]",
@@ -142,8 +142,14 @@ export const HANDBOOK_VARIABLES: readonly {
   },
 ];
 
-/** The sections of a regular profile that end in a trainer's signature block. */
-const SIGNED: readonly string[] = ["[img]SIGNATURE[/img]", "[i]Medic Name[/i]"];
+/**
+ * The sections of a regular profile that end in a trainer's signature block.
+ *
+ * The signature image and nothing else: the name printed under it is the
+ * trainer's own to write, and a real profile says `Fname Lname` there, so
+ * demanding the file's sample line would refuse the paste an update exists for.
+ */
+const SIGNED: readonly string[] = ["[img]SIGNATURE[/img]"];
 
 /**
  * The reinstatement sections sign with a bare placeholder line and a rank under
@@ -311,8 +317,11 @@ export function sectionHeading(content: string): string | null {
  * so the app has to find the sections again rather than ask anyone to retype them
  * one at a time. Each section's own heading is where the next one begins, and the
  * text before the first heading is the header - so the pieces joined back with a
- * newline are the pasted document exactly, which `npm run handbook:check`
- * asserts by round-tripping this function against the files.
+ * newline are the pasted document, which `npm run handbook:check` asserts by
+ * round-tripping this function against the files.
+ *
+ * The one thing it does not reproduce exactly is nesting: see
+ * `handBackNestedCloses`.
  */
 export function splitHandbookDocument(
   sections: readonly HandbookSplitSection[],
@@ -344,16 +353,67 @@ export function splitHandbookDocument(
   }
   return {
     ok: true,
-    sections: bounds.map((start, index) => ({
-      id: sections[index].id,
-      // The newline before a heading is the separator the assembler puts back,
-      // so it belongs to neither section.
-      content: document.slice(
-        start,
-        index + 1 < bounds.length ? bounds[index + 1] - 1 : document.length,
-      ),
-    })),
+    sections: handBackNestedCloses(
+      bounds.map((start, index) => ({
+        id: sections[index].id,
+        // The newline before a heading is the separator the assembler puts back,
+        // so it belongs to neither section.
+        content: document.slice(
+          start,
+          index + 1 < bounds.length ? bounds[index + 1] - 1 : document.length,
+        ),
+      })),
+    ),
   };
+}
+
+const SPOILER_OPEN = /\[spoiler=[^\]]*\]/g;
+const SPOILER_CLOSE = "[/spoiler]";
+
+function countOpens(content: string): number {
+  return (content.match(SPOILER_OPEN) ?? []).length;
+}
+
+function countCloses(content: string): number {
+  return content.split(SPOILER_CLOSE).length - 1;
+}
+
+/**
+ * A section that closes a spoiler an earlier section opened hands it back.
+ *
+ * A profile nests one section inside another - the regular one keeps its
+ * Personnel File Post template inside Certification - so cutting at every heading
+ * leaves Certification opening a spoiler it never closes and Personnel File Post
+ * closing one it never opened. A section file has to stand on its own, which is
+ * what `npm run handbook:check` fails on, so the enclosing section's closing tag
+ * moves up to it: the same tags, one boundary higher, which is also how the
+ * profile's own files are laid out.
+ *
+ * Only a closing tag at the very end of a section moves, and only to a section
+ * that is short of one. Anything else is left alone for `validateSection` to
+ * refuse with a reason, rather than guessed at.
+ */
+function handBackNestedCloses(
+  pieces: readonly { id: string; content: string }[],
+): { id: string; content: string }[] {
+  const out = pieces.map((piece) => ({ ...piece }));
+  for (let index = out.length - 1; index > 0; index -= 1) {
+    while (countCloses(out[index].content) > countOpens(out[index].content)) {
+      const at = out[index].content.lastIndexOf(SPOILER_CLOSE);
+      // A close with anything after it is not one this cut pushed down here.
+      if (out[index].content.slice(at + SPOILER_CLOSE.length).trim() !== "") {
+        break;
+      }
+      const above = out.findIndex(
+        (piece, position) =>
+          position < index && countOpens(piece.content) > countCloses(piece.content),
+      );
+      if (above === -1) break;
+      out[index].content = out[index].content.slice(0, at).trimEnd();
+      out[above].content = `${out[above].content}\n${SPOILER_CLOSE}`;
+    }
+  }
+  return out;
 }
 
 /** A section by id, or undefined - a stale link matches nothing. */

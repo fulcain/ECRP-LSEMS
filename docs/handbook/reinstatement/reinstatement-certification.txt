@@ -29,6 +29,7 @@
 [*][url=https://gov.eclipse-rp.net/viewforum.php?f=605]Personnel Files[/url]
 [*][url=https://gov.eclipse-rp.net/viewtopic.php?t=74487]Promotion Checklist (Supervisor Handbook Section 5[/url]
 [/list]
+[/list]
 [spoiler=Paperwork Passed]
 [code]
 [img]https://i.ibb.co/v0YqW3f/36xcqas.png[/img]
@@ -75,8 +76,8 @@ RANK
 [/code][/spoiler]
 [spoiler=Hippocratic Oath]
 Before handing the EMR their EMT badge, have them swear the Hippocratic Oath found below.
-[spoiler][center][img]https://i.ibb.co/21ZM4LYs/GRe-HLv-T.png[/img]
-[i][b][size=115]I, FName LName, swear to fulfill, to the best of my ability and judgment, this covenant:[/size][/b][/center]
+[spoiler][i][center][img]https://i.ibb.co/21ZM4LYs/GRe-HLv-T.png[/img]
+[b][size=115]I, FName LName, swear to fulfill, to the best of my ability and judgment, this covenant:[/size][/b][/center]
 
 [size=105]
 I will respect the hard-won scientific gains of those who walked the steps I walk now, and gladly share such knowledge as is mine with those who are to follow.
@@ -197,5 +198,7 @@ RANK
 [/divbox]
 [lsemsfooter][/lsemsfooter]
 [/code]
+[/spoiler]
+[/divbox]
 [/spoiler]
 [lsemsfooter][/lsemsfooter]

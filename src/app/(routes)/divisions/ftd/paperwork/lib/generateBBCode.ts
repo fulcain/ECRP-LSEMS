@@ -1,3 +1,5 @@
+import { signatureBlock } from "@/lib/handbook-notes";
+
 /** Pure BBCode assembler for normal field-training paperwork. */
 export function generateBBCode(
   values: Record<string, any>,
@@ -102,11 +104,14 @@ ${values.notesNextTraining}
 [/divbox]`
     : "";
 
-  const signatureSection = `[lsemssubtitle]SIGNATURE[/lsemssubtitle]
-[divbox=white]
-[img]${values.signature || ""}[/img]
-${values.rank || ""}
-[/divbox]`;
+  // The profile's own signature block, signed with this member's details: the
+  // block is declared once (lib/handbook-notes) so the post, the Guide beside it
+  // and the profile an FTO copies can never sign differently.
+  const signatureSection = signatureBlock({
+    signature: values.signature || "",
+    name: values.ftoName || "",
+    rank: values.rank || "",
+  });
 
   if (phase === "introduction") {
     return `[img]https://i.ibb.co/BHKjgFH0/9fb-JGt0.png[/img]

@@ -1,3 +1,5 @@
+import { signatureBlock } from "@/lib/handbook-notes";
+
 /** Pure BBCode assembler for reinstatement paperwork (returning EMT). */
 export function generateReinstatementBBCode(
   values: Record<string, any>,
@@ -107,11 +109,12 @@ ${values.notesNextTraining}
 [/divbox]`
     : "";
 
-  const signatureSection = `[lsemssubtitle]SIGNATURE[/lsemssubtitle]
-[divbox=white]
-[img]${values.signature || ""}[/img]
-${values.rank || ""}
-[/divbox]`;
+  // The same block the profile ends with, signed with this member's details.
+  const signatureSection = signatureBlock({
+    signature: values.signature || "",
+    name: values.ftoName || "",
+    rank: values.rank || "",
+  });
 
 
   // filter(Boolean) keeps skipped sections from leaving double blank lines.

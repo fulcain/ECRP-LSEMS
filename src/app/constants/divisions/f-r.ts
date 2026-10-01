@@ -15,7 +15,7 @@ export const FR = {
         url: "https://gov.eclipse-rp.net/viewforum.php?f=925",
       },
       {
-        name: "Handbook",
+        name: "F&R Handbook",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=1727",
       },
       {

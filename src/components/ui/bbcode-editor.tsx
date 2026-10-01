@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
@@ -193,6 +194,15 @@ export interface BBCodeEditorProps {
   onChange: (value: string) => void;
   placeholder?: string;
   rows?: number;
+  /**
+   * How tall the box may grow before it scrolls inside itself.
+   *
+   * The textarea is `field-sizing-content`, so it takes its height from its
+   * content: without a ceiling a pasted profile makes a box hundreds of lines
+   * tall and the button underneath it unreachable. This is the one thing a
+   * caller with a known-large document has to say.
+   */
+  maxHeightClass?: string;
 }
 
 export function BBCodeEditor({
@@ -200,6 +210,7 @@ export function BBCodeEditor({
   onChange,
   placeholder,
   rows = 12,
+  maxHeightClass = "max-h-[70vh]",
 }: BBCodeEditorProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -413,7 +424,10 @@ export function BBCodeEditor({
         onKeyDown={handleKeyDown}
         rows={rows}
         placeholder={placeholder}
-        className="w-full resize-y rounded-t-none border-t-0 border-border bg-surface-hover font-mono text-xs text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
+        className={cn(
+          "w-full resize-y overflow-y-auto rounded-t-none border-t-0 border-border bg-surface-hover font-mono text-xs text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-border focus-visible:ring-2",
+          maxHeightClass,
+        )}
       />
     </div>
   );

@@ -182,6 +182,9 @@ export default function ReinstatementForm() {
       // additionalMandatories lives in shared SessionContext, not on the form.
       additionalMandatories,
       signature: details.signature,
+      // The name under the signature is the trainer's own, saved once on the
+      // Staff Page and seeded into the session.
+      ftoName: details.ftoName,
       timeStarted: formatTime24h(details.timeStart),
       timeEnded: formatTime24h(details.timeFinish),
       emrName: resolvedEMR,

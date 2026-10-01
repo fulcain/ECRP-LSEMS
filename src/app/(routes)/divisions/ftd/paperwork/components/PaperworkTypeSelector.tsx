@@ -53,8 +53,7 @@ const PAPERWORK_GROUPS: readonly PickerGroup<FormType>[] = [
     ],
   },
   {
-    label: "Post on the board",
-    hint: "No EMR and no session - just a topic written in the FTD house style.",
+    label: "Post on the board",        hint: "FTD discussion topic - open a thread on the FTD board.",
     documents: [
       {
         value: "ftdDiscussionBoard",
@@ -103,12 +102,18 @@ function PaperworkTypeContent() {
       </Suspense>
       <div className="space-y-6">
         <PaperworkTypePicker />
-        <PaperworkTypeRouter />
-        {/* Session Details is irrelevant to the Civilian Ride-Along flow
-            (no EMR, no session row to save) and to a discussion board (no
-            session at all), so it's hidden in those modes. */}
-        {formType !== "civilianRideAlong" && !BOARD_TYPES.includes(formType) && (
-          <SessionDetailsCard />
+        {/* Nothing is picked for the member: the page opens on the cards and
+            the builder appears only once one is chosen - the same flow BLS
+            and RED run. */}
+        {formType && (
+          <>
+            <PaperworkTypeRouter />
+            {/* Session Details is irrelevant to the Civilian Ride-Along flow
+                (no EMR, no session row to save) and to a discussion board (no
+                session at all), so it's hidden in those modes. */}
+            {formType !== "civilianRideAlong" &&
+              !BOARD_TYPES.includes(formType) && <SessionDetailsCard />}
+          </>
         )}
       </div>
     </>
@@ -158,10 +163,13 @@ function FormTypeUrlSyncer() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Whenever formType changes, update ?tab= in the URL.
+  // Whenever formType changes, update ?tab= in the URL - and drop the
+  // parameter when the choice is cleared (Change), so a shared link never
+  // opens a builder nobody asked for.
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("tab", formType);
+    if (formType) params.set("tab", formType);
+    else params.delete("tab");
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }, [formType, pathname, router, searchParams]);
 
@@ -175,10 +183,9 @@ function PaperworkTypeTabs() {
     <DocumentPicker
       groups={PAPERWORK_GROUPS}
       value={formType}
-      // The form the tab opens on is the member's last one, so a cleared
-      // choice (pressing Change) leaves it as it is - the picker has already
-      // unfolded the grid.
-      onChange={(next) => next && setFormType(next)}
+      // Change clears the choice: the grid unfolds and the builder - which
+      // belongs to the document it was written for - comes down with it.
+      onChange={setFormType}
     />
   );
 }
@@ -189,11 +196,10 @@ function PaperworkTypeRouter() {
   if (formType === "reinstatement") return <ReinstatementForm />;
   if (formType === "civilianRideAlong") return <CivilianRideAlongForm />;
   // The board and its key are named alike on purpose: the card that chooses the
-  // board is also the board's key, so there is nothing to map. Anything else -
-  // including a form this tab no longer offers, still sitting in a member's
-  // storage - falls back to the first form rather than rendering a builder
-  // nobody asked for.
+  // board is also the board's key, so there is nothing to map. A form this tab
+  // no longer offers, still sitting in an old link's ?tab=, renders nothing -
+  // the picker above is the only way in.
   if (formType === "ftdDiscussionBoard")
     return <DiscussionBoardComposer boardKey={formType} />;
-  return <PaperworkForm />;
+  return null;
 }

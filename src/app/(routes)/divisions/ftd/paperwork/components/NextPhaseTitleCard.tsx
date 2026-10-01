@@ -112,7 +112,8 @@ export function NextPhaseTitleCard() {
   const [phaseCopied, setPhaseCopied] = useState(false);
   const [emrSearch, setEmrSearch] = useState("");
 
-  const config = getNextPhaseConfig(formType);
+  // The card only mounts under a picked form, so null never reaches here.
+  const config = getNextPhaseConfig(formType ?? "normal");
 
   const [nextPhaseDropdown, setNextPhaseDropdown] = useLocalStorage<string>(
     config.dropdownKey,

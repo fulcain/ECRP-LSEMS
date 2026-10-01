@@ -84,7 +84,7 @@
 [*]Explain to the reinstatee the value of blockades and show them that they do save lives.
 [*]Explain to them that we can also build a tent with supplies found in our vehicles, but that it should only be used for Code 1 situations or when otherwise specified. (( /blockade tent ))
 [*]Show the reinstatee how to block incoming traffic using the ambulance.
-[*]Remind the reinstatee that they should never park the ambulance on train tracks.
+[*] Remind the reinstatee that they should never park the ambulance on train tracks.
 [*]Remind the reinstatee that medics and patients should wear seatbelts in the ambulance whenever possible. Make sure patients are properly secured before transport. If they are on a stretcher, use the stretcher straps.
 [*][ooc]Remind them to RP securing the patient and have the other player press [c]B[/c].[/ooc]
 [*]Take the reinstatee on a public road, park the ambulance, and have them practice doing scene management.
@@ -121,9 +121,8 @@
 [list]
 [*]Explain to the reinstatee what Jointed Tac (JTAC) is.
 [*]Inform the reinstatee on how it's used.
-[ooc]Make sure you explain and they understand JTAC is IC and they have to use IC VOIP as well when talking on it.[/ooc]
-[*]Make sure they understand respect and professionalism is [b]utterly[/b] important here.
-[*]Tell the reinstatee that the JTAC frequencies are [b]910.1[/b] to [b]910.5[/b], giving a total of 5 JTAC channels.[/list]
+[*]Inform the reinstatee that our JTAC frequencies are from [b]910.1[/b] through [b]910.5[/b]
+[*]Make sure they understand respect and professionalism is [b]utterly[/b] important here.[/list]
 [*][color=#800000][b]On-Call Pager Program[/b][/color]
 [list]
 [*]Hand them an On-Call Program Pager (stored in the locker room) & explain the program. The EMR is not obliged to join, so do inform them of this as well. (( [b]Make sure you give them the discord role![/b] ))
@@ -183,4 +182,4 @@ RANK
 [img]https://i.ibb.co/d0W3RK4j/r-LIJt-NZ.png[/img]
 [/code][/spoiler]
 
-[/spoiler]
+[/divbox][/spoiler]

@@ -1,6 +1,6 @@
 [spoiler=Ride Along Paperwork]
 [code]
-[img]https://i.ibb.co/11jQxhn/f-V26BWG.png[/img]
+[img]https://i.ibb.co/6cn4xtM9/f-V26BWG.png[/img]
 [lsemssubtitle]SESSION DETAILS:[/lsemssubtitle]
 [divbox=white]
 
@@ -31,7 +31,7 @@ INPUT HERE
 [lsemssubtitle]SIGNATURE[/lsemssubtitle]
 [divbox=white]
 [img]SIGNATURE[/img]
-[i]Medic Name[/i]
+[i]Fname Lname[/i]
 Rank
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox]

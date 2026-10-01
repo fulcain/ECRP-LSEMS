@@ -16,7 +16,7 @@ export const CRU = {
         url: "https://gov.eclipse-rp.net/viewforum.php?f=914",
       },
       {
-        name: "Handbook",
+        name: "CRU Handbook",
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=178089",
       },
       {

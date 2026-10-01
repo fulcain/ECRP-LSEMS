@@ -1,7 +1,7 @@
 [spoiler=Phase 1]
 [divbox=white]
 [lsemssubtitle]PHASE 1 - EMT-I+, 1 Hour Minimum/2 Hour Maximum[/lsemssubtitle]
-[b][center]**THE EMR IS NOT TO DRIVE OR PROVIDE TREATMENT DURING PHASE I. BUT IS REQUIRED TO MANAGE THEIR UNIT**[/b][/center]
+[b][center]**THE EMR IS NOT TO DRIVE OR PROVIDE TREATMENT DURING PHASE I. BUT IS REQUIRED TO MANAGE THEIR UNIT**[/center][/b]
 [color=transparent]spacer[/color]
 [color=transparent]spacer[/color]
 [list=1]
@@ -90,10 +90,11 @@
 [/list]
 [*][color=#800000][b]Panic Button and Backup Calls[/b][/color][list]
 [*]Explain to the EMR the difference between the panic button and a backup call.
-[*]Inform the EMR that if they want to do a backup call, they have to provide a brief summary of the situation. [ooc]/backup [text][/ooc]
+[*]Inform the EMR that if they want to do a backup call, they have to provide a brief summary of the situation. Explain they should also specify if the backup is MD only. [ooc]/backup [text][/ooc]
 [*]Tell the EMR that if they ask for backup they must stay put at the location as these are associated with their cruiser.
-[*]Let the EMR know that unfortunately, panic button calls will not show in PD / SD dispatch [ooc]/calls[/ooc].
-[*]Tell the EMR that if they need help from PD or SD, they should use the department radio and provide them with the backup/panic call number. [ooc][c]/dep[/c][/ooc].
+[*]Explain that an EMR's panic button is connected to the location of their radio. Let them know that panics cannot have reasonings specified when creating them [ooc]CTRL + E[/ooc]
+[*]Let the EMR know that our panics/backups appear in now appear PD / SD dispatch, and if they create a panic/backup for a situation that doesn't require PD/SD support, they should use the department radio to inform those departments to disregard it. [ooc]/calls[/ooc].
+[*]Tell the EMR that if they need help from PD or SD, they should use the department radio and provide them with the backup/panic call number to provide more information. [ooc][c]/dep[/c][/ooc].
 [*]Ask the EMR if they would do a backup call or panic based on the following scenarios:
 [list]
 [*]They flip their ambulance
@@ -145,6 +146,7 @@
 [*] Make sure you are aware of your surroundings as you attempt to climb up or down to the patient.
 [*] Treat them, then carefully get them over to your ambulance.
 [/list]
+[/list]
 [*][color=#800000][b]Fire Calls[/b][/color][list]
 [*]Show the EMR where to retrieve a fire extinguisher. 
 [ooc]RP first, then [c]/fl[/c] Tell them to press TAB in order to see the hotkey for the extinguisher.[/ooc]
@@ -173,7 +175,7 @@
 [color=transparent]spacer[/color]
 [spoiler=Paperwork]
 [code]
-[img]https://i.ibb.co/bRbp2f8y/15q-Kt-Ob.png[/img]
+[img]https://i.ibb.co/fYFMTY4d/15q-Kt-Ob.png[/img]
 [lsemssubtitle]SESSION DETAILS:[/lsemssubtitle]
 [divbox=white]
 
@@ -208,11 +210,12 @@ INPUT FEEDBACK HERE
 [lsemssubtitle]SIGNATURE[/lsemssubtitle]
 [divbox=white]
 [img]SIGNATURE[/img]
-[i]Medic Name[/i]
+[i]Fname Lname[/i]
 Rank
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox]
 [lsemsfooter][/lsemsfooter]
 [/code]
 [/spoiler]
+[/divbox]
 [/spoiler]

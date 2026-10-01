@@ -21,7 +21,7 @@
 [*]Explain that the GPS system, while functional, may not give the best routing to calls.
 [list=none]
 [i]Example - Call from Burgershot while stationed at the ambulance bay:[/i]
-[spoil][img]https://i.ibb.co/Fkw0kJwt/i5et-N3F.png[/img]
+[spoil][img]https://i.ibb.co/6cNmtwBf/i5et-N3F.png[/img]
 [/spoil]
 The GPS routing provided, while functional, is inefficient. Going straight to Legion Square and turning from there instead, is going to be more efficient.
 [/list][/list]
@@ -95,8 +95,8 @@ Second reverse lap [b]Code 3[/b]
 [*]Terminal/Harbor ((Credit Store))
 [*]Dead-end road close to Clothing Store 4/17
 [spoiler=Location of road close to Clothing Store 4/17]
-[img]https://i.ibb.co/9HNv0Ncx/UBq8b-RR.png[/img]
-[/list][/spoiler]
+[img]https://i.ibb.co/VYqQyKHs/UBq8b-RR.png[/img]
+[/spoiler][/list]
 [*]Inform the EMR of the blockades we have and make sure to explain the correct use for each. 
 [ooc][c]arrow, barrier, barrier2, cone, stretcher, backboard, tent, bls[/c][/ooc]
 [*]Explain to the EMR that your ambulance is one of your biggest blockades and how to block incoming traffic using it.
@@ -121,9 +121,7 @@ Second reverse lap [b]Code 3[/b]
 [*]Inform the EMR on how it's used.
 [*]Explain that the highest rank on shift would be the unit to join JTAC if asked.
 [*]Make sure they understand respect and professionalism is [b]utterly[/b] important here.
-[*]Tell the EMR that the JTAC frequencies are [b]910.1[/b] to [b]910.5[/b], giving a total of 5 JTAC channels.
-[*][ooc]If the EMR does not use VOIP or do not wish to use VOIP, they [b]are not expected to[/b]; however having someone who can use VOIP who is on duty join JTAC with them would be ideal. 
-Non-VOIP individuals may use "/dep MD to JTAC-1 [msg]" or "/dep MD to SD/PD [unit]" to communicate with JTAC.[/ooc]
+[*]Tell the EMR that the JTAC frequencies are [b]910.1[/b] to [b]910.5[/b], giving us a total of 5 JTAC channels.
 [/list]
 [color=transparent]spacer[/color]
 [color=transparent]spacer[/color]
@@ -140,7 +138,7 @@ Non-VOIP individuals may use "/dep MD to JTAC-1 [msg]" or "/dep MD to SD/PD [uni
 [/list]
 [spoiler=Paperwork]
 [code]
-[img]https://i.ibb.co/S7MnGrqs/Jj-D9Y74.png[/img]
+[img]https://i.ibb.co/dJP8MQ0L/Jj-D9Y74.png[/img]
 [lsemssubtitle]SESSION DETAILS:[/lsemssubtitle]
 [divbox=white]
 
@@ -175,7 +173,7 @@ INPUT FEEDBACK HERE
 [lsemssubtitle]SIGNATURE[/lsemssubtitle]
 [divbox=white]
 [img]SIGNATURE[/img]
-[i]Medic Name[/i]
+[i]Fname Lname[/i]
 Rank
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox]

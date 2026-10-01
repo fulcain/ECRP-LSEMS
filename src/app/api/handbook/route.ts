@@ -3,20 +3,17 @@ import { NextResponse } from "next/server";
 import { AUTH_COOKIE_NAME } from "@/lib/cookies";
 import { verifySessionToken } from "@/lib/jwt";
 import { isDiscordAdmin } from "@/lib/role-config";
-import {
-  HANDBOOK_FORMATS,
-  handbookSection,
-  splitHandbookDocument,
-} from "@/app/constants/divisions/ftd/handbook";
+import { handbookSection } from "@/app/constants/divisions/ftd/handbook";
 import {
   canWriteHandbook,
+  foreignSectionHeadings,
   readHandbook,
   readHandbookHistory,
   readHandbookVersion,
   validateSection,
   writeHandbookSection,
-  writeHandbookSections,
 } from "@/lib/handbook";
+import { importHandbookDocument } from "@/lib/handbook-import";
 
 /**
  * GET  /api/handbook          - every section, its text, and whether this
@@ -26,8 +23,9 @@ import {
  * POST /api/handbook          - publish one section. Body: `{ id, content }`.
  * POST /api/handbook          - or replace a whole profile at once, which is how
  *                               a member who writes it elsewhere gets it in:
- *                               body `{ format, content }`, split back into the
- *                               format's sections at their own headings.
+ *                               body `{ format, content }`, converted from
+ *                               whatever the paste was written in and split back
+ *                               into the format's sections at their headings.
  *
  * The handbook is a set of files in the repository (`docs/handbook/**`), so this
  * route reads and writes files and nothing else. There is deliberately no
@@ -118,94 +116,61 @@ export async function GET(request: Request) {
 /**
  * Replace a whole profile from a pasted document.
  *
+ * The conversion, the split, the placeholder check and the write are one
+ * function - `importHandbookDocument` - shared with `npm run handbook:import`
+ * and with the tab's own preview, so the three cannot disagree about what a
+ * paste does. This route's whole job is to answer for it: who may ask, and
+ * which status a refusal is.
+ *
  * What an update is about is the phases. The profile's own header (who the
  * trainee is, when they were hired, the checklist) is the same on every profile,
  * so a section declared `protectedFromPaste` is skipped rather than written -
  * a paste carrying a blank or differently-shaped header would otherwise replace
- * it silently. Editing that section by hand still publishes it.
+ * it silently.
  *
- * The paste is compared against the files as they stand and only the sections
- * that differ are written, so an update that touched one phase leaves one file
- * changed rather than the whole format. The assembled module is rebuilt once if
- * anything moved, so the pasted profile and the sections it is cut into can never
- * be seen apart. The split is refused rather than guessed at: a missing heading
- * names the section it could not find, and a section that would lose a placeholder
- * it must keep is refused per section, exactly like a single-section publish.
+ * An accepted update takes the paperwork page's Guides and Scripts with it, for
+ * every phase of the profile the paste was read as: those are read by the trainers
+ * who run the phase, and one that still describes last month's profile is the
+ * drift this all exists to end. A phase whose notes come out identical is left
+ * where it is, so the rebuild is visible in the result but not in the diff.
  */
 async function replaceFormat(key: string, content: string) {
-  const format = HANDBOOK_FORMATS.find((entry) => entry.key === key);
-  if (!format) {
-    return NextResponse.json({ error: "No such format." }, { status: 404 });
-  }
-  if (!canWriteHandbook()) {
-    // Handing nine files over to apply by hand is not a workflow, so this one
-    // says where it has to happen instead of pretending otherwise.
-    return NextResponse.json(
-      {
-        reason:
-          "Replacing a whole profile rewrites every section file at once, so it has to be done on a local development server.",
-      },
-      { status: 409 },
-    );
-  }
-
-  const stored = (await readHandbook()).find((entry) => entry.key === format.key);
-  const split = splitHandbookDocument(stored?.sections ?? [], content);
-  if (!split.ok) {
-    return NextResponse.json({ error: split.reason }, { status: 422 });
-  }
-
-  const problems: string[] = [];
-  const warnings: string[] = [];
-  for (const entry of split.sections) {
-    const section = handbookSection(entry.id);
-    if (!section) continue;
-    // A section this update may not write is not validated either: its own file
-    // is what stands, so a placeholder missing from the paste is nothing to do
-    // with it - and refusing the whole update over a header nobody changed would
-    // make the guard worse than the problem.
-    if (section.protectedFromPaste) {
-      warnings.push(
-        `${section.title} was left as it is - an update does not rewrite the profile's header.`,
+  const report = await importHandbookDocument({ content, format: key, write: true });
+  if (!report.ok) {
+    // A deployment that cannot write is a refusal, not a failure: the member is
+    // told where the update has to happen rather than shown an error.
+    if (report.status === 409) {
+      return NextResponse.json(
+        { reason: report.error, problems: report.problems },
+        { status: 409 },
       );
-      continue;
     }
-    const validation = validateSection(section, entry.content);
-    problems.push(
-      ...validation.problems.map((problem) => `${section.title}: ${problem}`),
-    );
-    warnings.push(
-      ...validation.warnings.map((warning) => `${section.title}: ${warning}`),
-    );
-  }
-  if (problems.length > 0) {
     return NextResponse.json(
-      { error: problems[0], problems },
-      { status: 422 },
-    );
-  }
-
-  const result = await writeHandbookSections(split.sections, {
-    keepProtected: true,
-  });
-  if (!result) {
-    return NextResponse.json(
-      { error: "The sections could not be written." },
-      { status: 500 },
+      { error: report.error, problems: report.problems, warnings: report.warnings },
+      { status: report.status },
     );
   }
   return NextResponse.json({
     written: true,
-    files: result.files,
-    bytes: result.bytes,
+    format: report.format,
+    files: report.files,
+    bytes: report.bytes,
     // The paste is the new truth, but only the sections that actually differ
     // were written - the rest keep their own history, and saying which is which
     // is what makes the commit that follows reviewable. `kept` is the header,
-    // which a paste is not allowed to rewrite at all.
-    changed: result.changed,
-    unchanged: result.unchanged,
-    kept: result.kept,
-    warnings,
+    // which a paste is not allowed to rewrite at all, and `conversions` is what
+    // the paste had to be converted for on the way in.
+    changed: report.changed,
+    unchanged: report.unchanged,
+    kept: report.kept,
+    conversions: report.conversions,
+    // The phase Guides and Scripts read from those sections were rewritten with
+    // them, and the ones left alone say why - a trainer's guide is the first
+    // place a stale profile shows, so it is not left to a second command.
+    notes: report.notes,
+    notesPhases: report.notesPhases,
+    notesSkipped: report.notesSkipped,
+    warnings: report.warnings,
   });
 }
 
@@ -235,7 +200,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No such section." }, { status: 404 });
   }
 
-  const validation = validateSection(section, content);
+  // The profile's own header is not an update's to rewrite, whichever way the
+  // request came in: an update skips it, and this refuses it outright, so no
+  // route can put a different header in place than the one the file holds.
+  if (section.protectedFromPaste) {
+    return NextResponse.json(
+      { error: `${section.title} is not an update's to rewrite.` },
+      { status: 403 },
+    );
+  }
+
+  // A section holds its own text and no other section's, and the only way to
+  // know which headings those are is to read the files - a whole profile pasted
+  // in here would otherwise be published as one section.
+  const validation = validateSection(
+    section,
+    content,
+    foreignSectionHeadings(await readHandbook(), id),
+  );
   if (validation.problems.length > 0) {
     return NextResponse.json(
       { error: validation.problems[0], problems: validation.problems },

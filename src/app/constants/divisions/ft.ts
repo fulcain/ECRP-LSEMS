@@ -16,7 +16,7 @@ export const FT = {
         url: "https://gov.eclipse-rp.net/viewforum.php?f=599",
       },
       {
-        name: "Handbook",
+        name: "FTD Handbook",
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=87381",
       },
       {

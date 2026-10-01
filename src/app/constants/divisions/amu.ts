@@ -19,7 +19,7 @@ export const AMU = {
         url: "https://gov.eclipse-rp.net/viewforum.php?f=1135",
       },
       {
-        name: "Handbook",
+        name: "AMU Handbook",
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=178535",
 	  },
 	  {

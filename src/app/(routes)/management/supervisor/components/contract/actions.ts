@@ -1,3 +1,4 @@
+import { NAME_SPELLINGS } from "@/app/constants/profile-placeholders";
 import { copyBBCode } from "@/app/helpers/copyBBCode";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
 import { isTitleOnlyText, pickPostTarget } from "@/app/helpers/forumHandoff";
@@ -22,28 +23,6 @@ export function internalHrefFor(
     .split("{{applicantName}}")
     .join(name ? encodeURIComponent(name) : "");
 }
-
-/**
- * Applicant-name placeholder tokens. The primary, canonical one is
- * `{{applicantName}}` - write it in any template and it will be replaced
- * with the name typed into the Applicant Info card at copy time.
- *
- * The older implicit tokens (`FName LName` / `Fname Lname` / `First Last`)
- * are still recognised as defensive fallbacks so anything that hasn't
- * been migrated yet still works. They are intentionally listed AFTER the
- * canonical token.
- *
- * `Lastname` alone is intentionally excluded - that token appears inside
- * radio-call teaching examples ("EMR Lastname is requesting...") that
- * describe a universal radio format rather than a specific individual.
- */
-const NAME_PLACEHOLDERS = [
-  "{{applicantName}}",
-  "FName LName",
-  "Fname Lname",
-  "Fname lname",
-  "First Last",
-] as const;
 
 /** Extra placeholder tokens that carry applicant metadata. */
 const METADATA_PLACEHOLDERS = [
@@ -105,7 +84,7 @@ function interpolatePlaceholders(
 ): string {
   let out = text;
   if (personnelName) {
-    for (const placeholder of NAME_PLACEHOLDERS) {
+    for (const placeholder of NAME_SPELLINGS) {
       out = out.split(placeholder).join(personnelName);
     }
   }

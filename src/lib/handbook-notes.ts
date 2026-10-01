@@ -1,156 +1,112 @@
 /**
- * The paperwork page's Guide and Script, built from the handbook itself.
+ * The trainer's own details, and the placeholders the app fills them into.
  *
- * The FTD Paperwork tab used to keep its own hand-written copy of the training
- * material - a React component per phase and a spoken transcript beside it - and
- * by the time the EMR profile moved into `docs/handbook/**` that copy had already
- * drifted from it (it still told trainers panic calls showed in PD/SD dispatch
- * after the handbook stopped saying so). Keeping the same material twice is the
- * failure this replaced, so both views are derived here instead:
+ * A signed section of the EMR profile ends with the trainer's signature and the
+ * file says so in placeholders - `[img]SIGNATURE[/img]`, `[i]Medic Name[/i]`, a
+ * line that is just `Rank` (the reinstatement profile's is `SIGNATURE` and
+ * `RANK`) - because one file is handed to every trainer. This is the one
+ * declaration of how that block is filled, read by the generated post and by the
+ * profile an FTO copies, rather than a spelling of it beside each of them.
  *
- *   - the **Guide** is the handbook section rendered through the app's own BBCode
- *     renderer, so what a trainer reads is what the profile says;
- *   - the **Script** is that same section turned into paste-friendly lines, which
- *     is a plain text transform and needs no other copy either.
+ * Everything here is pure: no file reads, no database, no network.
  *
- * Everything here is pure: no file reads, no database, no network. The sections
- * come from the generated `handbook-content.ts` module, which is what a publish
- * rewrites - so updating a profile updates both views, every page that shows
- * them, and the profile the contract workflow hands an FTO, from one paste.
+ * This module also derived the paperwork page's Guide and Script from the
+ * handbook for a while, through the generated `handbook-content.ts` module. It
+ * does not any more: those views are written by hand per phase again
+ * (`paperwork/lib/phase-notes/`), and what stays derived from the handbook is
+ * the profile an FTO is handed - the copy that must never drift.
  */
-
-import type { HandbookFormatKey } from "@/app/constants/divisions/ftd/handbook";
-import { HANDBOOK_SECTION_TEXTS } from "@/app/constants/divisions/ftd/handbook-content";
-
-/** One section's own text, or null when this build has no such section. */
-export function handbookSectionText(
-  format: HandbookFormatKey,
-  sectionId: string,
-): string | null {
-  return HANDBOOK_SECTION_TEXTS[format]?.[sectionId] ?? null;
-}
 
 /**
- * The text of one `[spoiler=…]` inside a section, when a page is about that part
- * of it rather than the whole thing - the reinstatement ride-along paperwork
- * lives inside the certification section, and showing a ride-along trainer the
- * whole certification would be the wrong page.
+ * The trainer's own details, as a signature block is signed with them.
  *
- * Spoilers nest, so this counts rather than matching to the first close.
+ * They come from the member - the name and signature the Staff Page holds, the
+ * rank the app resolves - and are never asked for twice. The handbook cannot
+ * carry them: it is the same file for every trainer.
  */
-export function handbookSpoiler(text: string, title: string): string | null {
-  const open = `[spoiler=${title}]`;
-  const start = text.indexOf(open);
-  if (start === -1) return null;
-  let depth = 1;
-  const pattern = /\[spoiler=[^\]]*\]|\[\/spoiler\]/g;
-  pattern.lastIndex = start + open.length;
-  for (let match = pattern.exec(text); match; match = pattern.exec(text)) {
-    if (match[0] === "[/spoiler]") {
-      depth -= 1;
-      if (depth === 0) return text.slice(start, match.index + match[0].length);
-    } else {
-      depth += 1;
-    }
-  }
-  return text.slice(start);
-}
-
-/** A `[spoiler=…]` heading's own title, for rendering the piece under it. */
-export function spoilerTitle(block: string): string | null {
-  const match = block.match(/^\[spoiler=([^\]]*)\]/);
-  return match ? match[1] : null;
-}
+export type MedicSignature = {
+  /** The saved signature image's URL. */
+  signature: string;
+  /** The name printed under the signature. */
+  name: string;
+  /** The rank under that. */
+  rank: string;
+};
 
 /**
- * The section as paste-friendly spoken lines, in the format the Script view
- * already understands: a `## ` line is a heading, `|| … ||` is something for the
- * trainer to read rather than say, `(( … ))` is OOC, and a backticked span is a
- * command the reader can copy on its own.
+ * The profile's signature block, and where each line of it comes from.
  *
- * A spoken script cannot be invented from BBCode - the handbook is written as
- * instructions, not as a monologue - so this reads it out faithfully rather than
- * pretending to be prose, and the paperwork templates (which nobody reads aloud)
- * become a line pointing at the Guide.
+ * A detail the member has not saved is left as the placeholder instead of being
+ * blanked, so an empty Staff Page is visible rather than printing nothing.
+ *
+ * The bare spellings are whole-line on purpose: `Rank` is also a word in the
+ * sentences about rank adjustments, and filling that would rewrite the steps.
  */
-export function spokenFromBbcode(source: string): string {
-  let text = source.replace(/\r\n/g, "\n");
+const SIGNATURE_FILLS: readonly {
+  /** The exact text the profile writes. */
+  find: string;
+  /** True when only a line that is exactly this counts. */
+  wholeLine?: boolean;
+  from: keyof MedicSignature;
+  /** What that line becomes once there is a value for it. */
+  write: (value: string) => string;
+}[] = [
+  {
+    find: "[img]SIGNATURE[/img]",
+    from: "signature",
+    write: (value) => `[img]${value}[/img]`,
+  },
+  {
+    find: "[i]Medic Name[/i]",
+    from: "name",
+    write: (value) => `[i]${value}[/i]`,
+  },
+  // What the live profile post has always said under a signature, and what a
+  // pasted update puts into the file - the same line, spelled the way a trainer
+  // writing their own profile would.
+  {
+    find: "[i]Fname Lname[/i]",
+    from: "name",
+    write: (value) => `[i]${value}[/i]`,
+  },
+  { find: "SIGNATURE", wholeLine: true, from: "signature", write: (value) => value },
+  { find: "Rank", wholeLine: true, from: "rank", write: (value) => value },
+  { find: "RANK", wholeLine: true, from: "rank", write: (value) => value },
+];
 
-  // The session-details forms: a trainer reading these aloud helps nobody, and
-  // they are the bulk of a section's length.
-  text = text.replace(
-    /\[code\][\s\S]*?\[\/code\]/g,
-    "\n@@@Paperwork template\n|| The session form for this phase is in the Guide view - copy it from there. ||\n",
-  );
-
-  // Structural markers first, while the tags are still there to recognise.
-  text = text
-    .replace(/\[spoiler=([^\]]*)\]/g, "\n@@@$1\n")
-    .replace(/\[spoil\]/g, "\n")
-    .replace(/\[\/spoiler\]/g, "\n")
-    // The phase's own title line, and the bold verdict under it.
-    .replace(/\[lsemssubtitle\]([\s\S]*?)\[\/lsemssubtitle\]/g, "\n@@@$1\n")
-    .replace(/\[center\]\[b\]([\s\S]*?)\[\/b\]\[\/center\]/g, "\n@@@$1\n")
-    // A list item becomes its own line first, and only then is a heading looked
-    // for on it: the formats write a category as the first thing in an item, and
-    // the colour-and-bold pair is anchored to a line because the same pair also
-    // tints `10-8` mid-sentence in a radio call - which is not a heading.
-    .replace(/\[\*\]/g, "\n")
-    .replace(/\[list[^\]]*\]|\[\/list\]/g, "\n")
-    .replace(
-      /^[ \t]*\[color=#[0-9A-Fa-f]{6}\]\[b\]([^\n]*?)\[\/b\]\[\/color\][ \t]*$/gm,
-      "\n@@@$1\n",
-    )
-    .replace(
-      /^[ \t]*\[b\]\[color=#[0-9A-Fa-f]{6}\]([^\n]*?)\[\/color\]\[\/b\][ \t]*$/gm,
-      "\n@@@$1\n",
-    );
-
-  const out: string[] = [];
-  for (const raw of text.split("\n")) {
-    const line = raw.trim();
-    if (!line) continue;
-    const heading = line.match(/^@@@(.*)$/);
-    if (heading) {
-      const title = inline(heading[1]).replace(/\*+/g, "").trim();
-      if (title) out.push(`## ${title}`);
-      continue;
-    }
-    const spoken = inline(line);
-    if (spoken) out.push(spoken);
+/** Fill the member's own details into a piece of handbook text. */
+export function fillMedicSignature(
+  text: string,
+  medic: MedicSignature,
+): string {
+  let out = text;
+  for (const fill of SIGNATURE_FILLS) {
+    const value = medic[fill.from].trim();
+    if (!value) continue;
+    const replacement = fill.write(value);
+    out = fill.wholeLine
+      ? out
+          .split("\n")
+          .map((line) => (line.trim() === fill.find ? replacement : line))
+          .join("\n")
+      : out.split(fill.find).join(replacement);
   }
-  return out.join("\n\n");
+  return out;
 }
 
-/** One line's text with the forum markup taken off it. */
-function inline(text: string): string {
-  const cleaned = text
-    // Spacer lines carry nothing anyone can read.
-    .replace(/\[color=transparent\][\s\S]*?\[\/color\]/g, " ")
-    .replace(/\[img\][\s\S]*?\[\/img\]/g, " ")
-    .replace(/\[url=([^\]]*)\]([\s\S]*?)\[\/url\]/g, "$2")
-    .replace(/\[c\]([\s\S]*?)\[\/c\]/gi, "`$1`")
-    .replace(/\[ooc\]([\s\S]*?)\[\/ooc\]/gi, "(( $1 ))")
-    // Italics in these formats are the optional-or-worth-noting lines, which is
-    // exactly what the Script view renders a `||` note for.
-    .replace(/\[i\]([\s\S]*?)\[\/i\]/gi, "|| $1 ||")
-    .replace(/\[(?:cb|cbc|hr|lsemsfooter)\]/gi, " ")
-    .replace(/\[\/?[a-zA-Z][^\]]*\]/g, "")
-    // The formats write emphasis as `**…**`, which the forum does not render -
-    // reading it aloud is not a reason to keep the asterisks.
-    .replace(/\*\*([^*]*)\*\*/g, "$1")
-    .replace(/\s+/g, " ")
-    .trim();
-  return cleaned
-    .replace(/\(\s+/g, "((")
-    .replace(/\s+\)\)/g, "))")
-    .replace(/\|\|\s+/g, "|| ")
-    .replace(/\s+\|\|/g, " ||")
-    .replace(/\s+([.,;:!?])/g, "$1")
-    .trim();
-}
+/** The block as the profile's own sections write it, before anything is filled. */
+const SIGNATURE_BLOCK = `[lsemssubtitle]SIGNATURE[/lsemssubtitle]
+[divbox=white]
+[img]SIGNATURE[/img]
+[i]Medic Name[/i]
+Rank
+[b]Los Santos Emergency Medical Services[/b]
+[/divbox]`;
 
-/** Every section id this build knows, for the checks and the mapping. */
-export function handbookSectionIds(format: HandbookFormatKey): string[] {
-  return Object.keys(HANDBOOK_SECTION_TEXTS[format] ?? {});
+/**
+ * The signature block a generated post ends with: the profile's own block, with
+ * the member's details in it, rather than a second spelling of the same thing.
+ */
+export function signatureBlock(medic: MedicSignature): string {
+  return fillMedicSignature(SIGNATURE_BLOCK, medic).trim();
 }

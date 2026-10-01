@@ -24,10 +24,19 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 import {
+  carriesPlaceholder,
+} from "@/app/constants/profile-placeholders";
+import {
+  HANDBOOK_TAGS,
+  HANDBOOK_VOID_TAGS,
+  sameHandbookText,
+} from "@/lib/handbook-markup";
+import {
   HANDBOOK_FORMATS,
   HANDBOOK_SECTIONS,
   handbookFormatOf,
   handbookSection,
+  sectionHeading,
   type HandbookFormat,
   type HandbookSection,
 } from "@/app/constants/divisions/ftd/handbook";
@@ -64,29 +73,6 @@ export type HandbookValidation = {
   /** Published anyway, but worth saying out loud. */
   warnings: string[];
 };
-
-const TAGS = [
-  "b",
-  "i",
-  "u",
-  "s",
-  "list",
-  "divbox",
-  "center",
-  "code",
-  "spoiler",
-  "url",
-  "img",
-  "quote",
-  "color",
-  "size",
-  "font",
-  "highlight",
-  "shadow",
-  "aligntable",
-  "lsemssubtitle",
-];
-const VOID_TAGS = new Set(["hr", "cb", "cbc", "*", "lsemsfooter"]);
 
 function absolute(file: string): string {
   return path.join(ROOT, file);
@@ -131,6 +117,27 @@ export async function readHandbook(): Promise<HandbookFormatContent[]> {
       ),
     })),
   );
+}
+
+/**
+ * Every other section's own heading, read from the files - what a section's text
+ * may not carry.
+ *
+ * The heading has to come from the file rather than the declaration: a section is
+ * called `Ride-Along Paperwork` on the page and opened `[spoiler=Ride Along
+ * Paperwork]` in the text, and the reinstatement ones differ in case too. A
+ * heading the declaration guessed would be one the split matches and this check
+ * does not.
+ */
+export function foreignSectionHeadings(
+  formats: readonly HandbookFormatContent[],
+  id: string,
+): string[] {
+  return formats
+    .flatMap((format) => format.sections)
+    .filter((section) => section.id !== id)
+    .map((section) => sectionHeading(section.content))
+    .filter((heading): heading is string => heading !== null);
 }
 
 /** Where the generated module the client reads the profile from lives. */
@@ -271,11 +278,16 @@ export function canWriteHandbook(): boolean {
  *
  * The `mustKeep` check is the important one: a section replaced wholesale is
  * exactly how a signature image or the trainee's name line disappears, and the
- * member cannot see that from the editor.
+ * member cannot see that from the editor. The `foreignHeadings` one is its
+ * sibling: a whole profile pasted into the editor for one section puts every
+ * phase's text in that section's file, which says the profile twice and leaves
+ * the split unable to tell where a section begins.
  */
 export function validateSection(
   section: HandbookSection,
   content: string,
+  /** Other sections' own headings, from `foreignSectionHeadings`. */
+  foreignHeadings: readonly string[] = [],
 ): HandbookValidation {
   const problems: string[] = [];
   const warnings: string[] = [];
@@ -286,11 +298,32 @@ export function validateSection(
     return { problems, warnings };
   }
   for (const token of section.mustKeep ?? []) {
-    if (!content.includes(token)) {
+    // Any spelling of it counts: the file may say `Fname Lname` where the
+    // declaration says `{{applicantName}}`, and the app fills both.
+    if (!carriesPlaceholder(content, token)) {
       problems.push(
         `The placeholder ${token} is missing. Re-add it before publishing.`,
       );
     }
+  }
+
+  // A section owns its own text and no other section's. The accident this
+  // catches is a whole profile pasted into the editor for one section - the
+  // header ends up carrying every phase, the joined document says them twice,
+  // and the split can no longer find where the next section begins, which is
+  // the state `npm run handbook:check` fails on and nobody meant to create.
+  const carried = foreignHeadings.filter((heading) => content.includes(heading));
+  if (carried.length > 0) {
+    const label = handbookFormatOf(section)?.label;
+    problems.push(
+      `The text carries ${
+        carried.length === 1
+          ? carried[0]
+          : `${carried.length} other sections' headings, starting with ${carried[0]}`
+      } - a section holds its own text and no other section's.${
+        label ? ` Paste a whole profile with "Update ${label}" instead.` : ""
+      }`,
+    );
   }
 
   // A section owns its spoilers: one left open would swallow the next section's
@@ -298,7 +331,10 @@ export function validateSection(
   // Personnel File Post template ended up buried in Certification. This is a
   // refusal rather than a warning because `npm run handbook:check` fails on it,
   // and a publish must not be able to create the state the check rejects.
-  const opens = (content.match(/\[spoiler=[^\]]*\]/g) ?? []).length;
+  // An untitled `[spoiler]` opens one too, so both spellings count - counting
+  // only the titled ones let a section pass the check while it left a spoiler
+  // open, which is the exact state this refuses.
+  const opens = (content.match(/\[spoiler(?:\s*=[^\]]*)?\]/g) ?? []).length;
   const closes = (content.match(/\[\/spoiler\]/g) ?? []).length;
   if (opens !== closes) {
     problems.push(
@@ -313,7 +349,7 @@ export function validateSection(
   for (let match = pattern.exec(content); match; match = pattern.exec(content)) {
     const [, closing, rawName] = match;
     const name = rawName.toLowerCase();
-    if (!TAGS.includes(name) || VOID_TAGS.has(name)) continue;
+    if (!HANDBOOK_TAGS.includes(name) || HANDBOOK_VOID_TAGS.has(name)) continue;
     if (closing) {
       const open = stack.pop();
       if (open !== name) {
@@ -365,15 +401,6 @@ export type HandbookWriteOptions = {
 };
 
 /**
- * Whether two section texts are the same content, whatever line endings they
- * were read or pasted with - the repository normalises them, so a paste that
- * only differs in `\r` is not a change worth a commit.
- */
-function sameText(a: string, b: string): boolean {
-  return a.replace(/\r\n/g, "\n") === b.replace(/\r\n/g, "\n");
-}
-
-/**
  * Writes several sections, then assembles the module once.
  *
  * Only the sections that actually differ are written. A whole-profile update is
@@ -405,7 +432,7 @@ export async function writeHandbookSections(
       continue;
     }
     const current = await readSectionFile(section.file);
-    if (current !== null && sameText(current, entry.content)) {
+    if (current !== null && sameHandbookText(current, entry.content)) {
       unchanged.push(entry.id);
       continue;
     }

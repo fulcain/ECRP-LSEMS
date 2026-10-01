@@ -13,13 +13,12 @@ import {
   PhaseKey,
 } from "@/app/(routes)/divisions/ftd/paperwork/lib/paperworkConfig";
 import { resolveNormalNotes } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/registry";
-import { NotesPanel } from "@/app/(routes)/divisions/ftd/paperwork/components/NotesPanel";
 
 function isPaperworkPhaseKey(value: unknown): value is PhaseKey {
   return typeof value === "string" && value in paperworkConfig;
 }
 
-/** Reference panel for the active normal-form phase, with Guide/Script views. */
+/** Reference panel for the active normal-form phase. */
 export function PhaseNotesCard() {
   const { currentPhase } = useSession();
 
@@ -38,9 +37,9 @@ export function PhaseNotesCard() {
       </CardHeader>
       <CardContent className="pt-0">
         {entry ? (
-          <NotesPanel spoken={entry.Spoken} storageKey={phase}>
+          <div className="max-h-[600px] overflow-y-auto rounded-md border border-border/40 bg-muted/30 px-4 py-4 transition-colors">
             <entry.Visual />
-          </NotesPanel>
+          </div>
         ) : (
           <p className="text-xs text-muted-foreground italic">
             No reference notes available for this phase.

@@ -7,31 +7,32 @@ import {
   BookOpen,
   Check,
   ClipboardPaste,
-  Copy,
-  Download,
-  FileCode2,
+  GitCommitHorizontal,
   Loader2,
-  RotateCcw,
-  Save,
   Terminal,
-  Variable,
-  X,
 } from "lucide-react";
 
+import { sectionHeading } from "@/app/constants/divisions/ftd/handbook";
+import { carriesPlaceholder } from "@/app/constants/profile-placeholders";
 import {
-  HANDBOOK_VARIABLES,
-  sectionHeading,
-  splitHandbookDocument,
-} from "@/app/constants/divisions/ftd/handbook";
+  convertHandbookBbcode,
+  describeConversions,
+} from "@/lib/handbook-bbcode";
+import {
+  compareHandbookSection,
+  describeTagRepair,
+  readPastedSections,
+} from "@/lib/handbook-markup";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BBCodeEditor } from "@/components/ui/bbcode-editor";
-import { cn } from "@/lib/utils";
 
 /**
  * The one thing to know before touching this page: it writes files in the
  * checkout the app is running from, so it only does anything on a local
- * development server. A deployed build says so in `writable` rather than leaving
- * the member to discover it when Publish hands them a section to apply by hand.
+ * development server. A deployed build says so in `writable` rather than letting
+ * a member paste a whole profile and be told afterwards that nothing was saved.
  */
 function LocalOnlyNote({ writable }: { writable?: boolean }) {
   return (
@@ -44,8 +45,8 @@ function LocalOnlyNote({ writable }: { writable?: boolean }) {
         {writable !== undefined && (
           <p className="mt-1 text-xs text-amber-800/80 dark:text-amber-200/80">
             {writable
-              ? "Publishing writes the section's file under docs/handbook/, so the change is a commit you push like any other."
-              : "This deployment cannot write its own files, so publishing hands you the section to apply under docs/handbook/ and commit yourself."}
+              ? "Updating a profile writes the section files under docs/handbook/, so the change is a commit you push like any other."
+              : "This deployment cannot write its own files, so an update has to be made on a local development server."}
           </p>
         )}
       </div>
@@ -54,24 +55,22 @@ function LocalOnlyNote({ writable }: { writable?: boolean }) {
 }
 
 /**
- * FTD's handbook, edited where the members who maintain it already are.
+ * FTD's handbook, updated where the members who maintain it already are.
  *
  * The handbook is a set of files in the repository - `docs/handbook/**`, one
- * file per section, declared in `app/constants/divisions/ftd/handbook.ts` - so
- * this page is a file editor, not a content database: it reads a section with
- * `GET /api/handbook`, writes one back with `POST /api/handbook`, and a published
- * change becomes a git diff the member commits like any other. Nothing is stored
- * anywhere else, which is why the page says plainly when a deployment cannot
- * write and hands over the file instead.
+ * file per section, declared in `app/constants/divisions/ftd/handbook.ts` - and
+ * the profile itself is written somewhere else: a document, the forum's own
+ * editor. So this page does one thing per format: paste the finished profile and
+ * let it be cut back into its sections at their own headings.
  *
- * The shape of the page is the shape of the job: the formats and their sections
- * down the left, the one you picked on the right, and publishing behind a
- * confirmation because it is the one button that changes the repository.
+ * There is deliberately no way to edit a section on its own. A profile is one
+ * document that moves as a unit, and a section edited by itself is a section
+ * that no longer agrees with the rest of the profile it belongs to - which is
+ * the drift the paste exists to end.
  *
- * The profile itself is usually written somewhere else - a document, the forum's
- * own editor - so a format can also be replaced whole: paste the finished profile
- * and it is cut back into its sections at their own headings, which is the one
- * edit nobody reads line by line before pressing the button.
+ * `POST /api/handbook` does the conversion, the split and the write, and this
+ * page shows what it would do before it does it. Nothing is stored anywhere
+ * else, which is why the page says plainly when a deployment cannot write.
  */
 
 type SectionContent = {
@@ -102,9 +101,23 @@ type HandbookPayload = {
 
 type Notice = {
   kind: "ok" | "warn" | "error";
-  text: string;
-  /** The file to apply by hand when a publish could not be written. */
-  export?: { file: string; content: string } | null;
+  /** One line saying what happened, in the member's words rather than the code's. */
+  title: string;
+  detail: string;
+  /** The sections an update wrote, by the name the tab gives them. */
+  written?: string[];
+  /** How many files were left alone, and how many were skipped as the header. */
+  unchanged?: number;
+  kept?: number;
+  /**
+   * How many phases had their Guide or Script rewritten, and what that added up
+   * to on disk - an update that moved nothing writes nothing, which is worth
+   * telling apart from an update that had no notes to write.
+   */
+  notes?: number;
+  noteFiles?: number;
+  /** What the paste had to be converted for, when it needed anything. */
+  converted?: string;
   warnings?: string[];
 };
 
@@ -136,26 +149,22 @@ async function fetchHandbook(): Promise<HandbookRead> {
  *
  * The member writes the profile somewhere else - a document, the forum's own
  * editor - and brings the finished thing here, so this is the one control that
- * takes a whole document rather than a section. It splits the paste as it is
- * typed and names the heading it could not find, because a profile that has lost
- * a heading would otherwise land in the wrong files.
+ * takes a whole document rather than a section. It converts the paste as it is
+ * typed, splits it, and names the heading it could not find, because a profile
+ * that has lost a heading would otherwise land in the wrong files.
+ *
+ * The conversion is the member's problem solved rather than passed along: what
+ * arrives is phpBB's own flavour - its tag ids, `[/*]`, a quoted heading, HTML
+ * from a copy off the rendered page - and what the files hold is not. The route
+ * converts the same paste again on the way in, which changes nothing, so what
+ * this panel shows is what will be written.
  */
-/**
- * Whether a pasted section says anything different from the file it would
- * replace. Line endings are the repository's business, not a change: a paste
- * that only differs in `\r` should not be reported as an update.
- */
-function sameSectionText(current: string, pasted: string): boolean {
-  return current.replace(/\r\n/g, "\n") === pasted.replace(/\r\n/g, "\n");
-}
-
 function PasteProfilePanel({
   format,
   writable,
   value,
   busy,
   onChange,
-  onCancel,
   onReplace,
 }: {
   format: FormatContent;
@@ -163,24 +172,55 @@ function PasteProfilePanel({
   value: string;
   busy: boolean;
   onChange: (value: string) => void;
-  onCancel: () => void;
   onReplace: () => void;
 }) {
-  const split = useMemo(
-    () => (value.trim() ? splitHandbookDocument(format.sections, value) : null),
-    [format, value],
+  // Pressing the button is not the update: it opens the last look at what would
+  // be written. A paste is the one edit nobody reads line by line, so the step
+  // before it is a named list of the files, not a browser dialog nobody styles.
+  const [confirming, setConfirming] = useState(false);
+  const converted = useMemo(() => convertHandbookBbcode(value), [value]);
+  const text = converted.text;
+  // Cutting the paste up also puts each section's own tags right, and that is
+  // reported beside the conversion: a profile off the forum arrives with the tags
+  // where phpBB left them, and without this the member is shown six sections
+  // "changed" that say nothing different at all.
+  const pastedSections = useMemo(
+    () => (text.trim() ? readPastedSections(format.sections, text) : null),
+    [format, text],
+  );
+  const split = pastedSections?.split ?? null;
+  const conversions = useMemo(
+    () =>
+      pastedSections && pastedSections.repaired > 0
+        ? [
+            ...converted.conversions,
+            {
+              kind: "tag-order" as const,
+              count: pastedSections.repaired,
+              note: describeTagRepair(pastedSections.repaired),
+            },
+          ]
+        : converted.conversions,
+    [converted.conversions, pastedSections],
   );
   const headings = format.sections
     .map((section) => sectionHeading(section.content))
     .filter((heading): heading is string => heading !== null);
+  // A protected section is never written, so a placeholder missing from its
+  // paste is nothing to do with this update - refusing the whole thing over a
+  // header nobody changed would be worse than the problem.
   const lost =
     split?.ok === true
-      ? format.sections.flatMap((section) => {
-          const pasted = split.sections.find((entry) => entry.id === section.id);
-          return (section.mustKeep ?? [])
-            .filter((token) => !(pasted?.content ?? "").includes(token))
-            .map((token) => `${section.title}: ${token}`);
-        })
+      ? format.sections
+          .filter((section) => !section.protectedFromPaste)
+          .flatMap((section) => {
+            const pasted = split.sections.find(
+              (entry) => entry.id === section.id,
+            );
+            return (section.mustKeep ?? [])
+              .filter((token) => !carriesPlaceholder(pasted?.content ?? "", token))
+              .map((token) => `${section.title}: ${token}`);
+          })
       : [];
   // The paste is compared against the files as they stand, so the member can see
   // what an update actually touches before it touches it - and so an update that
@@ -189,22 +229,41 @@ function PasteProfilePanel({
     split?.ok === true
       ? format.sections.map((section) => {
           const pasted = split.sections.find((entry) => entry.id === section.id);
+          // A protected section is never written by an update, so whether the
+          // paste agrees with it is not the member's problem - it is reported as
+          // kept rather than as a change they cannot act on.
+          if (section.protectedFromPaste) {
+            return {
+              section,
+              changed: false,
+              compared: false,
+              reason: "An update never rewrites the profile's header.",
+            };
+          }
+          const match = compareHandbookSection(
+            section.content,
+            pasted?.content ?? "",
+          );
           return {
             section,
-            // A protected section is never written by an update, so whether the
-            // paste agrees with it is not the member's problem - it is reported
-            // as kept rather than as a change they cannot act on.
-            changed:
-              !section.protectedFromPaste &&
-              !sameSectionText(section.content, pasted?.content ?? ""),
+            changed: !match.same,
+            // "Identical" is the one answer not worth a line of its own.
+            compared: match.kind !== "identical",
+            reason: match.reason,
           };
         })
       : [];
-  const changedCount = diffs.filter((entry) => entry.changed).length;
+  const changed = diffs.filter((entry) => entry.changed);
+  const changedCount = changed.length;
+  const changedTitles = changed.map((entry) => entry.section.title);
+  const unchangedCount = diffs.filter(
+    (entry) => !entry.changed && !entry.section.protectedFromPaste,
+  ).length;
   const keptCount = format.sections.filter(
     (section) => section.protectedFromPaste,
   ).length;
   const ready = writable && lost.length === 0 && split?.ok === true;
+  const files = `file${changedCount === 1 ? "" : "s"}`;
 
   const status = !writable
     ? "Replacing a whole profile rewrites every section file, so it only works on a local development server."
@@ -228,12 +287,14 @@ function PasteProfilePanel({
             Paste the finished profile - the same text Copy & Open hands an FTO.
             It is cut back into these {format.sections.length} sections at their
             own headings, and every one of their files is rewritten at once.
+            Whatever the paste was written in is converted first: the tags phpBB
+            adds of its own, `[/*]`, a quoted heading and HTML off a rendered
+            page all come in as they are.
           </p>
         </div>
-        <Button size="sm" variant="outline" onClick={onCancel}>
-          <X className="mr-1.5 h-3.5 w-3.5" />
-          Cancel
-        </Button>
+        <p className="shrink-0 text-[11px] text-muted-foreground">
+          Press Update {format.label} again to put this away.
+        </p>
       </div>
 
       <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
@@ -248,14 +309,37 @@ function PasteProfilePanel({
         ))}
       </div>
 
+      {/* A whole profile is hundreds of lines. The box is a window onto it
+          rather than as tall as it is, so the diff list and the button stay on
+          screen while the member reads the paste back. */}
       <div className="mt-3">
         <BBCodeEditor
           value={value}
-          onChange={onChange}
+          onChange={(next) => {
+            setConfirming(false);
+            onChange(next);
+          }}
           rows={16}
+          maxHeightClass="max-h-[45vh]"
           placeholder="Paste the whole profile here, exactly as it goes on the forum."
         />
       </div>
+
+      {conversions.length > 0 && (
+        <div className="mt-2 rounded-lg border border-sky-300/40 bg-sky-50/60 px-3 py-2 text-[11px] text-sky-800 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-200">
+          <p className="font-medium">
+            Converted on the way in - {describeConversions(conversions)}.
+          </p>
+          <details className="mt-1">
+            <summary className="cursor-pointer text-sky-800/80 dark:text-sky-200/80">
+              See the markup that will be written
+            </summary>
+            <pre className="mt-1 max-h-40 overflow-auto rounded border border-sky-300/30 bg-background/70 p-2 font-mono text-[10px] whitespace-pre-wrap">
+              {text}
+            </pre>
+          </details>
+        </div>
+      )}
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
         <p
@@ -268,19 +352,72 @@ function PasteProfilePanel({
         >
           {status}
         </p>
-        <Button size="sm" disabled={!ready || busy} onClick={onReplace}>
-          {busy ? (
-            <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-          ) : (
+        {!confirming && (
+          <Button size="sm" disabled={!ready || busy} onClick={() => setConfirming(true)}>
             <ClipboardPaste className="mr-1.5 h-3.5 w-3.5" />
-          )}
-          {changedCount === 0
-            ? "Nothing to update"
-            : `Update ${changedCount} changed section${
-                changedCount === 1 ? "" : "s"
-              }`}
-        </Button>
+            {/* An update that writes no section file is not an update that does
+                nothing: the Guide and Script of every phase of this profile are
+                rebuilt from the sections, which is what the button says when
+                there is nothing else to say. */}
+            {changedCount === 0
+              ? `Rebuild the Guides and Scripts for ${format.label}`
+              : `Update ${changedCount} changed section${
+                  changedCount === 1 ? "" : "s"
+                }`}
+          </Button>
+        )}
       </div>
+
+      {confirming && ready && (
+        <div className="mt-3 rounded-lg border border-primary/30 bg-primary/5 p-3.5">
+          <p className="flex items-center gap-2 text-sm font-medium text-foreground">
+            <GitCommitHorizontal className="h-4 w-4 text-primary" />
+            {changedCount === 0
+              ? `Rebuild the Guides and Scripts for ${format.label}?`
+              : `Write ${changedCount} ${files} into ${format.label}?`}
+          </p>
+          <div className="mt-2 flex flex-wrap items-center gap-1.5">
+            {changedTitles.map((title) => (
+              <Badge key={title} variant="warning">
+                {title}
+              </Badge>
+            ))}
+            {unchangedCount > 0 && (
+              <Badge variant="muted">
+                {unchangedCount} already identical
+              </Badge>
+            )}
+            {keptCount > 0 && <Badge variant="muted">header kept</Badge>}
+          </div>
+          <p className="mt-2 text-[11px] text-muted-foreground">
+            {changedCount === 0 ? (
+              "No section file differs, so none is written. "
+            ) : (
+              <>
+                Each one is a file under{" "}
+                <code className="font-mono">docs/handbook/</code>, so the change
+                is a commit you push like any other.{" "}
+              </>
+            )}
+            The Guide and the Script of every phase this profile is read by are
+            rebuilt from these sections, and only the ones that actually move are
+            written. Nothing has been written yet.
+          </p>
+          <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
+            <Button size="sm" variant="ghost" onClick={() => setConfirming(false)}>
+              Look again
+            </Button>
+            <Button size="sm" disabled={busy} onClick={onReplace}>
+              {busy ? (
+                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Check className="mr-1.5 h-3.5 w-3.5" />
+              )}
+              Write {changedCount} {files}
+            </Button>
+          </div>
+        </div>
+      )}
 
       {lost.length > 0 && (
         <ul className="mt-2 list-disc space-y-0.5 pl-6 text-[11px] text-amber-700 dark:text-amber-300">
@@ -296,47 +433,57 @@ function PasteProfilePanel({
             What this paste changes
           </p>
           <ul className="mt-2 space-y-1 text-[11px]">
-            {diffs.map(({ section, changed }) => (
-              <li key={section.id} className="flex items-center gap-2">
-                <span
-                  className={cn(
-                    "w-16 shrink-0 rounded border px-1.5 py-0.5 text-center",
-                    section.protectedFromPaste
-                      ? "border-sky-300/50 text-sky-700 dark:text-sky-300"
+            {diffs.map(({ section, changed, compared, reason }) => (
+              <li key={section.id}>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={cn(
+                      "w-16 shrink-0 rounded border px-1.5 py-0.5 text-center",
+                      section.protectedFromPaste
+                        ? "border-sky-300/50 text-sky-700 dark:text-sky-300"
+                        : changed
+                          ? "border-amber-300/50 text-amber-700 dark:text-amber-300"
+                          : "border-border text-muted-foreground",
+                    )}
+                  >
+                    {section.protectedFromPaste
+                      ? "kept"
                       : changed
-                        ? "border-amber-300/50 text-amber-700 dark:text-amber-300"
-                        : "border-border text-muted-foreground",
-                  )}
-                >
-                  {section.protectedFromPaste
-                    ? "kept"
-                    : changed
-                      ? "changed"
-                      : "same"}
-                </span>
-                <span
-                  className={
-                    changed ? "text-foreground" : "text-muted-foreground"
-                  }
-                >
-                  {section.title}
-                </span>
-                <code className="truncate font-mono text-muted-foreground">
-                  {section.file}
-                </code>
+                        ? "changed"
+                        : "same"}
+                  </span>
+                  <span
+                    className={
+                      changed ? "text-foreground" : "text-muted-foreground"
+                    }
+                  >
+                    {section.title}
+                  </span>
+                  <code className="truncate font-mono text-muted-foreground">
+                    {section.file}
+                  </code>
+                </div>
+                {/* Why, not just whether: a profile is long lines, and the one
+                    word that differs sits at the far end of two that look the
+                    same. */}
+                {compared && (
+                  <p className="mt-0.5 ml-18 text-[10px] text-muted-foreground">
+                    {reason}
+                  </p>
+                )}
               </li>
             ))}
           </ul>
           <p className="mt-2 text-[11px] text-muted-foreground">
             {changedCount === 0
-              ? "Nothing here differs from the files - updating would write nothing."
+              ? "No section file differs - but the Guides and Scripts a trainer reads are drawn from these sections, and accepting is what rebuilds them."
               : `Only those ${changedCount} file${
                   changedCount === 1 ? "" : "s"
                 } will be written; the rest are left exactly as they are.`}{" "}
             {keptCount > 0
               ? `The ${keptCount === 1 ? "" : `${keptCount} `}header section${
                   keptCount === 1 ? " is" : "s are"
-                } never touched by an update - edit it in the left-hand list if it really has to change.`
+                } ignored: a paste never rewrites the profile's own header.`
               : ""}
           </p>
         </div>
@@ -345,13 +492,137 @@ function PasteProfilePanel({
   );
 }
 
+/**
+ * What an update did, said the way a member reads it: which sections were
+ * written, under the names the tab gives them, and what to do with them next.
+ *
+ * A paste can write nine files at once and a toast is gone in two seconds, so
+ * the result stays on the page until the next update - and an update that changed
+ * nothing says so plainly rather than looking like one that did.
+ */
+function NoticeCard({ notice }: { notice: Notice }) {
+  const Icon = notice.kind === "ok" ? Check : AlertTriangle;
+  const tone =
+    notice.kind === "ok"
+      ? {
+          card: "border-emerald-300/40 bg-emerald-50 dark:border-emerald-500/30 dark:bg-emerald-500/10",
+          chip: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+          title: "text-emerald-900 dark:text-emerald-100",
+          detail: "text-emerald-800/85 dark:text-emerald-200/85",
+        }
+      : notice.kind === "warn"
+        ? {
+            card: "border-amber-300/40 bg-amber-50 dark:border-amber-500/30 dark:bg-amber-500/10",
+            chip: "bg-amber-500/15 text-amber-700 dark:text-amber-300",
+            title: "text-amber-900 dark:text-amber-100",
+            detail: "text-amber-800/85 dark:text-amber-200/85",
+          }
+        : {
+            card: "border-red-300/40 bg-red-50 dark:border-red-500/30 dark:bg-red-500/10",
+            chip: "bg-red-500/15 text-red-700 dark:text-red-300",
+            title: "text-red-900 dark:text-red-100",
+            detail: "text-red-800/85 dark:text-red-200/85",
+          };
+  const written = notice.written ?? [];
+
+  return (
+    <div className={cn("rounded-xl border px-4 py-3.5", tone.card)}>
+      <div className="flex items-start gap-3">
+        <span
+          className={cn(
+            "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full",
+            tone.chip,
+          )}
+        >
+          <Icon className="h-4 w-4" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className={cn("text-sm font-semibold", tone.title)}>
+            {notice.title}
+          </p>
+          <p className={cn("mt-0.5 text-xs leading-relaxed", tone.detail)}>
+            {notice.detail}
+          </p>
+
+          {(written.length > 0 || notice.unchanged || notice.kept) && (
+            <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+              {written.map((title) => (
+                <Badge key={title} variant="success">
+                  {title}
+                </Badge>
+              ))}
+              {notice.unchanged ? (
+                <Badge variant="muted">
+                  {notice.unchanged} already identical
+                </Badge>
+              ) : null}
+              {notice.kept ? (
+                <Badge variant="muted">header left as it is</Badge>
+              ) : null}
+            </div>
+          )}
+
+          {notice.notes ? (
+            <p
+              className={cn(
+                "mt-2 flex items-center gap-1.5 text-[11px]",
+                tone.detail,
+              )}
+            >
+              <BookOpen className="h-3.5 w-3.5" />
+              {notice.notes} phase guide{notice.notes === 1 ? "" : "s"} and
+              script{notice.notes === 1 ? "" : "s"} written from the handbook
+              {notice.noteFiles
+                ? ` (${notice.noteFiles} file${notice.noteFiles === 1 ? "" : "s"})`
+                : ""}
+            </p>
+          ) : written.length > 0 ? (
+            <p
+              className={cn(
+                "mt-2 flex items-center gap-1.5 text-[11px]",
+                tone.detail,
+              )}
+            >
+              <BookOpen className="h-3.5 w-3.5" />
+              The phase notes already said this, so none was rewritten
+            </p>
+          ) : null}
+
+          {notice.converted ? (
+            <p className={cn("mt-2 text-[11px]", tone.detail)}>
+              {notice.converted}
+            </p>
+          ) : null}
+
+          {written.length > 0 && notice.kind === "ok" ? (
+            <p
+              className={cn(
+                "mt-2.5 flex items-center gap-1.5 font-mono text-[11px]",
+                tone.detail,
+              )}
+            >
+              <GitCommitHorizontal className="h-3.5 w-3.5" />
+              docs/handbook/ - commit it like any other change
+            </p>
+          ) : null}
+
+          {notice.warnings && notice.warnings.length > 0 ? (
+            <ul className={cn("mt-2 list-disc space-y-0.5 pl-5 text-xs", tone.detail)}>
+              {notice.warnings.map((warning) => (
+                <li key={warning}>{warning}</li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function HandbookManager() {
   const [data, setData] = useState<HandbookPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [drafts, setDrafts] = useState<Record<string, string>>({});
-  const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState<Notice | null>(null);
   // The whole-profile paste: which format is being replaced, and its text.
   const [pasting, setPasting] = useState<string | null>(null);
@@ -365,7 +636,6 @@ export function HandbookManager() {
       if (!live) return;
       if (read.ok) {
         setData(read.payload);
-        setActiveId(read.payload.formats[0]?.sections[0]?.id ?? null);
       } else {
         setLoadError(read.error);
       }
@@ -376,107 +646,8 @@ export function HandbookManager() {
     };
   }, []);
 
-  const sections = useMemo(
-    () => data?.formats.flatMap((format) => format.sections) ?? [],
-    [data],
-  );
-  const active = sections.find((section) => section.id === activeId) ?? null;
   const pastingFormat =
     data?.formats.find((format) => format.key === pasting) ?? null;
-  const draft = active ? (drafts[active.id] ?? active.content) : "";
-  const dirty = Boolean(active && draft !== active.content);
-  const dirtyIds = sections
-    .filter((section) => (drafts[section.id] ?? section.content) !== section.content)
-    .map((section) => section.id);
-
-  const setDraft = (value: string) => {
-    if (!active) return;
-    setDrafts((current) => ({ ...current, [active.id]: value }));
-  };
-
-  const publish = async () => {
-    if (!active) return;
-    setSaving(true);
-    setNotice(null);
-    try {
-      const response = await fetch("/api/handbook", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: active.id, content: draft }),
-      });
-      const payload = (await response.json()) as {
-        written?: boolean;
-        file?: string;
-        reason?: string;
-        content?: string;
-        warnings?: string[];
-        error?: string;
-        problems?: string[];
-      };
-
-      if (response.ok && payload.written) {
-        setData((current) =>
-          current
-            ? {
-                ...current,
-                formats: current.formats.map((format) => ({
-                  ...format,
-                  sections: format.sections.map((section) =>
-                    section.id === active.id
-                      ? { ...section, content: draft, available: true }
-                      : section,
-                  ),
-                })),
-              }
-            : current,
-        );
-        setDrafts((current) => {
-          const next = { ...current };
-          delete next[active.id];
-          return next;
-        });
-        setNotice({
-          kind: "ok",
-          text: `${active.title} was written to ${payload.file}. Commit it like any other change.`,
-          warnings: payload.warnings,
-        });
-        toast.success("Section saved to the repository");
-      } else if (response.status === 409 && payload.content) {
-        // A deployment that cannot write: the change is real, the file is not
-        // saved, and the honest answer is the file itself.
-        setNotice({
-          kind: "warn",
-          text: `${
-            payload.reason ??
-            "This deployment cannot write to its own files, so the change was not saved."
-          } Apply the text to that file, run \`npm run handbook:sync\`, and commit both - the profile the contract workflow hands out is built from this section.`,
-          export: { file: payload.file ?? active.file, content: payload.content },
-          warnings: payload.warnings,
-        });
-      } else {
-        setNotice({
-          kind: "error",
-          text: payload.error ?? "The section was not published.",
-          warnings: payload.problems,
-        });
-        toast.error(payload.error ?? "The section was not published");
-      }
-    } catch {
-      setNotice({ kind: "error", text: "The publish request failed." });
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const download = (file: string, content: string) => {
-    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = file.split("/").pop() ?? "section.txt";
-    anchor.click();
-    URL.revokeObjectURL(url);
-  };
 
   const replaceFormat = async () => {
     if (!pastingFormat) return;
@@ -498,69 +669,103 @@ export function HandbookManager() {
         changed?: string[];
         unchanged?: string[];
         kept?: string[];
+        notes?: string[];
+        notesPhases?: string[];
+        notesSkipped?: { component: string; reason: string }[];
+        conversions?: { kind: string; count: number; note: string }[];
       };
 
       if (response.ok && payload.written) {
         // The files are the source of truth now, so read them back rather than
-        // patching several sections of local state by hand.
+        // patching local state by hand.
         const read = await fetchHandbook();
-        setDrafts((current) => {
-          const next = { ...current };
-          for (const section of format.sections) delete next[section.id];
-          return next;
-        });
-        if (read.ok) {
-          setData(read.payload);
-          setActiveId((current) =>
-            read.payload.formats.some((entry) =>
-              entry.sections.some((section) => section.id === current),
-            )
-              ? current
-              : read.payload.formats[0]?.sections[0]?.id ?? null,
-          );
-        }
+        if (read.ok) setData(read.payload);
         setPasting(null);
         setPasted("");
         const changed = payload.changed ?? [];
-        const kept = payload.kept ?? [];
         const titles = changed.map(
           (id) => format.sections.find((section) => section.id === id)?.title ?? id,
         );
+        // The paperwork is the other half of an update, and an accepted paste
+        // that wrote no section file at all can still have rebuilt every Guide
+        // and Script - saying "already up to date" there is what made a member
+        // think the update had not run.
+        const phases = (payload.notesPhases ?? []).length;
+        const rebuilt = `${phases} phase Guide${phases === 1 ? "" : "s"} and Script${phases === 1 ? "" : "s"} rebuilt`;
+        const outcome =
+          changed.length > 0
+            ? {
+                title: `Updated ${changed.length} of ${format.sections.length} ${format.label} sections`,
+                detail:
+                  "The rest of the profile was already identical and was left exactly as it was.",
+                toast: `${format.label} updated - ${changed.length} section${
+                  changed.length === 1 ? "" : "s"
+                } changed`,
+              }
+            : phases > 0
+              ? {
+                  title: `No profile file changed - ${rebuilt}`,
+                  detail:
+                    "Nothing you pasted differs from the section files. What moved is the paperwork drawn from them, which is the point of accepting it.",
+                  toast: `${format.label} - ${rebuilt}`,
+                }
+              : {
+                  title: `${format.label} was already up to date`,
+                  detail:
+                    "Nothing you pasted differs from the files, and the Guides and Scripts already say what these sections say.",
+                  toast: `${format.label} was already up to date`,
+                };
+        // The paste was converted on the way in, and what it had to be
+        // converted for is worth saying: it is the difference between the text
+        // the member pasted and the text the section files now hold.
+        const converted =
+          payload.conversions && payload.conversions.length > 0
+            ? `Converted on the way in: ${payload.conversions
+                .map((conversion) => conversion.note)
+                .join("; ")}.`
+            : undefined;
         setNotice({
           kind: "ok",
-          text:
-            changed.length === 0
-              ? `Nothing differed - ${format.label} already matches what you pasted, so no file was written.`
-              : `Updated ${changed.length} of ${format.sections.length} ${format.label} sections (${titles.join(
-                  ", ",
-                )}). The rest were already identical and were left alone.${
-                  kept.length > 0
-                    ? " The profile's header was kept as it is - an update never rewrites it."
-                    : ""
-                } Commit the change like any other.`,
-          warnings: payload.warnings,
+          title: outcome.title,
+          detail: outcome.detail,
+          written: titles,
+          unchanged: payload.unchanged?.length ?? 0,
+          kept: payload.kept?.length ?? 0,
+          notes: (payload.notesPhases ?? []).length,
+          noteFiles: payload.notes?.length ?? 0,
+          converted,
+          // A phase that could not be rebuilt says so here rather than in a
+          // console nobody reads: it is the one thing about an update that the
+          // member can still fix.
+          warnings: [
+            ...(payload.warnings ?? []),
+            ...(payload.notesSkipped ?? []).map(
+              (skipped) => `${skipped.component}: ${skipped.reason}`,
+            ),
+          ],
         });
-        toast.success(
-          changed.length === 0
-            ? `${format.label} was already up to date`
-            : `${format.label} updated - ${changed.length} section${
-                changed.length === 1 ? "" : "s"
-              } changed`,
-        );
+        toast.success(outcome.toast);
       } else {
         // A read-only deployment refuses a whole-profile replace outright, which
         // is worth saying plainly rather than as a failure.
         const refused = response.status === 409 && !payload.error;
         setNotice({
           kind: refused ? "warn" : "error",
-          text:
+          title: refused
+            ? "An update has to happen on a local development server"
+            : `${format.label} was not replaced`,
+          detail:
             payload.error ?? payload.reason ?? "The profile was not replaced.",
           warnings: payload.problems,
         });
         toast.error(payload.error ?? "The profile was not replaced");
       }
     } catch {
-      setNotice({ kind: "error", text: "The replace request failed." });
+      setNotice({
+        kind: "error",
+        title: "The update could not be sent",
+        detail: "The request failed before the handbook was touched.",
+      });
     } finally {
       setReplacing(false);
     }
@@ -604,9 +809,10 @@ export function HandbookManager() {
       <LocalOnlyNote writable={data.writable} />
 
       {/*
-       * The job that brings a member here: the profile is rewritten somewhere
-       * else and pasted in whole. One button per format because the two profiles
-       * are updated by different people at different times.
+       * The job that brings a member here, and the only way it is done: the
+       * profile is rewritten somewhere else and pasted in whole. One button per
+       * format because the two profiles are updated by different people at
+       * different times.
        */}
       <div className="grid gap-3 sm:grid-cols-2">
         {data.formats.map((format) => (
@@ -614,7 +820,7 @@ export function HandbookManager() {
             key={format.key}
             type="button"
             onClick={() => {
-              setPasting(format.key);
+              setPasting(pasting === format.key ? null : format.key);
               setPasted("");
               setNotice(null);
             }}
@@ -632,13 +838,15 @@ export function HandbookManager() {
               </span>
               <span className="mt-0.5 block text-[11px] text-muted-foreground">
                 Paste the whole updated profile - only the sections that differ
-                are written, and the Guide, the scripts and everything else that
-                reads the handbook follow from them.
+                are written, and the profile header is left alone. Press it again
+                to close the box.
               </span>
             </span>
           </button>
         ))}
       </div>
+
+      {notice && <NoticeCard notice={notice} />}
 
       <div className="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-border bg-surface/60 p-4">
         <div className="min-w-0">
@@ -647,10 +855,10 @@ export function HandbookManager() {
             The handbook is the repository
           </p>
           <p className="mt-1 max-w-3xl text-xs text-muted-foreground">
-            Every section below is one file under{" "}
-            <code className="font-mono">docs/handbook/</code>. Publishing writes
-            that file, so the change is a commit you push like any other - there is
-            no second copy in a database to drift out of step.
+            Each section is one file under{" "}
+            <code className="font-mono">docs/handbook/</code>, and an update
+            writes them, so the change is a commit you push like any other -
+            there is no second copy in a database to drift out of step.
           </p>
         </div>
         <span
@@ -663,68 +871,9 @@ export function HandbookManager() {
         >
           {data.writable
             ? "This deployment writes the source files"
-            : "Read-only deployment - publish hands you the file"}
+            : "Read-only deployment - an update has to happen locally"}
         </span>
       </div>
-
-      {notice && (
-        <div
-          className={cn(
-            "rounded-xl border px-4 py-3 text-sm",
-            notice.kind === "ok" &&
-              "border-emerald-300/40 bg-emerald-50 text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200",
-            notice.kind === "warn" &&
-              "border-amber-300/40 bg-amber-50 text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200",
-            notice.kind === "error" &&
-              "border-red-300/40 bg-red-50 text-red-800 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200",
-          )}
-        >
-          <p className="flex items-start gap-2 font-medium">
-            {notice.kind === "ok" ? (
-              <Check className="mt-0.5 h-4 w-4 shrink-0" />
-            ) : (
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-            )}
-            <span>{notice.text}</span>
-          </p>
-          {notice.warnings && notice.warnings.length > 0 && (
-            <ul className="mt-1.5 list-disc space-y-0.5 pl-6 text-xs">
-              {notice.warnings.map((warning) => (
-                <li key={warning}>{warning}</li>
-              ))}
-            </ul>
-          )}
-          {notice.export && (
-            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
-              <code className="rounded border border-border px-1.5 py-0.5 font-mono">
-                {notice.export.file}
-              </code>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() =>
-                  notice.export &&
-                  download(notice.export.file, notice.export.content)
-                }
-              >
-                <Download className="mr-1.5 h-3.5 w-3.5" />
-                Download the file
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  void navigator.clipboard.writeText(notice.export?.content ?? "");
-                  toast.success("Section copied - paste it over the file");
-                }}
-              >
-                <Copy className="mr-1.5 h-3.5 w-3.5" />
-                Copy the file
-              </Button>
-            </div>
-          )}
-        </div>
-      )}
 
       {pastingFormat && (
         <PasteProfilePanel
@@ -733,194 +882,9 @@ export function HandbookManager() {
           value={pasted}
           busy={replacing}
           onChange={setPasted}
-          onCancel={() => {
-            setPasting(null);
-            setPasted("");
-          }}
-          onReplace={() => {
-            if (
-              !window.confirm(
-                `Update ${pastingFormat.label} from this paste? Only the sections that differ are written - each one is a file in the repository, so it goes out with your next push.`,
-              )
-            ) {
-              return;
-            }
-            void replaceFormat();
-          }}
+          onReplace={() => void replaceFormat()}
         />
       )}
-
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[280px_1fr]">
-        {/* ── The formats, then their sections ── */}
-        <nav className="space-y-4">
-          {data.formats.map((format) => (
-            <section key={format.key} className="space-y-1.5">
-              <h3 className="text-xs font-semibold tracking-wide text-foreground uppercase">
-                {format.label}
-              </h3>
-              <p className="text-[11px] leading-snug text-muted-foreground">
-                {format.hint}
-              </p>
-              <ul className="space-y-1 pt-1">
-                {format.sections.map((section) => {
-                  const isActive = section.id === active?.id;
-                  const isDirty = dirtyIds.includes(section.id);
-                  return (
-                    <li key={section.id}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setActiveId(section.id);
-                          setNotice(null);
-                        }}
-                        className={cn(
-                          "flex w-full cursor-pointer items-center gap-2 rounded-lg border px-2.5 py-1.5 text-left text-xs transition-colors",
-                          isActive
-                            ? "border-primary/50 bg-primary/10 text-foreground"
-                            : "border-border text-muted-foreground hover:bg-surface-hover hover:text-foreground",
-                        )}
-                      >
-                        <span className="min-w-0 flex-1 truncate">
-                          {section.title}
-                        </span>
-                        {!section.available && (
-                          <AlertTriangle className="h-3 w-3 shrink-0 text-amber-500" />
-                        )}
-                        {isDirty && (
-                          <span
-                            className="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500"
-                            title="Edited, not published"
-                          />
-                        )}
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-          ))}
-        </nav>
-
-        {/* ── The section you picked ── */}
-        {active ? (
-          <div className="min-w-0 space-y-3">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="min-w-0">
-                <h2 className="text-lg font-semibold text-foreground">
-                  {active.title}
-                  {dirty && (
-                    <span className="ml-2 align-middle text-[11px] font-normal text-amber-600 dark:text-amber-400">
-                      unsaved changes
-                    </span>
-                  )}
-                </h2>
-                <p className="mt-0.5 max-w-2xl text-xs text-muted-foreground">
-                  {active.hint}
-                </p>
-                <p className="mt-1 flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
-                  <FileCode2 className="h-3 w-3" />
-                  {active.file}
-                </p>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  disabled={!dirty}
-                  onClick={() => {
-                    setDrafts((current) => {
-                      const next = { ...current };
-                      delete next[active.id];
-                      return next;
-                    });
-                    setNotice(null);
-                  }}
-                >
-                  <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
-                  Discard
-                </Button>
-                <Button
-                  size="sm"
-                  disabled={!dirty || saving}
-                  onClick={() => {
-                    if (
-                      !window.confirm(
-                        `Publish ${active.title}? This writes ${active.file} in the repository, so it goes out with your next push.`,
-                      )
-                    ) {
-                      return;
-                    }
-                    void publish();
-                  }}
-                >
-                  {saving ? (
-                    <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    <Save className="mr-1.5 h-3.5 w-3.5" />
-                  )}
-                  Publish
-                </Button>
-              </div>
-            </div>
-
-            {active.mustKeep.length > 0 && (
-              <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
-                <span className="flex items-center gap-1">
-                  <Variable className="h-3 w-3" />
-                  Must stay in this section:
-                </span>
-                {active.mustKeep.map((token) => (
-                  <code
-                    key={token}
-                    className="rounded border border-border px-1.5 py-0.5 font-mono"
-                  >
-                    {token}
-                  </code>
-                ))}
-              </div>
-            )}
-
-            <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
-              <span>Insert a placeholder:</span>
-              {HANDBOOK_VARIABLES.map((variable) => (
-                <button
-                  key={variable.token}
-                  type="button"
-                  title={variable.hint}
-                  onClick={() => {
-                    void navigator.clipboard.writeText(variable.token);
-                    toast.success(`${variable.token} copied - paste it where it goes`);
-                  }}
-                  className="cursor-pointer rounded border border-border px-1.5 py-0.5 font-mono transition-colors hover:bg-surface-hover"
-                >
-                  {variable.token}
-                </button>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-1 gap-3">
-              <BBCodeEditor
-                value={draft}
-                onChange={setDraft}
-                rows={22}
-                placeholder="The section's BBCode, exactly as the forum takes it."
-              />
-            </div>
-
-            <p className="text-[11px] text-muted-foreground">
-              Placeholders like{" "}
-              <code className="font-mono">{"{{"}</code>{"applicantName"}
-              <code className="font-mono">{"}}"}</code> are filled in when the post is
-              used - leave them as they are, and publishing is refused if one goes
-              missing.
-            </p>
-          </div>
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            Pick a section on the left.
-          </p>
-        )}
-      </div>
     </div>
   );
 }

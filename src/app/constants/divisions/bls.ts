@@ -16,7 +16,7 @@ export const BLS = {
         url: "https://gov.eclipse-rp.net/viewforum.php?f=867",
       },
       {
-        name: "Handbook",
+        name: "BLS Handbook",
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=214677",
       },
       {

@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import { isFillInMarker } from "@/app/constants/profile-placeholders";
 import { cn } from "@/lib/utils";
 
 /**
@@ -11,17 +12,79 @@ import { cn } from "@/lib/utils";
  * use (headings, spoilers, boxes, lists, checkboxes, images, links, colour and
  * size) and shows any tag it does not know as the text it is, so nothing is
  * silently swallowed.
+ *
+ * Two properties matter more than the tag list, because the formats are written
+ * by hand and are not always nested tidily - both used to leave a phase looking
+ * like raw markup rather than a guide:
+ *
+ *   - only a tag this file draws is tracked as an opening tag. The formats are
+ *     full of blanks written like tags (`[Callsign]`, `[Lastname]`, `[text]`),
+ *     and tracking one of those made it swallow every line after it;
+ *   - a close is applied to the nearest open of its own name, closing whatever
+ *     it wraps on the way, and a close with nothing to close is dropped. The
+ *     profile writes `[spoiler=…][list]…[/spoiler][/list]`, and demanding the
+ *     close match the top of the stack threw the list's whole body away.
  */
 
 type Node = string | { tag: string; arg: string; children: Node[] };
 
-/** Tags that stand alone: they never wrap anything. */
-const VOID_TAGS = new Set(["hr", "cb", "cbc", "*", "lsemsfooter"]);
+/**
+ * Tags that stand alone: they never wrap anything.
+ *
+ * One per line on purpose - `npm run handbook:check` reads them back out of this
+ * file and holds them against every tag the handbook uses, so a format that
+ * starts using a new one fails the check until it is drawn here.
+ */
+const VOID_TAGS = new Set([
+  "*",
+  "cb",
+  "cbc",
+  "hr",
+  "lsemsfooter",
+]);
+
+/**
+ * Tags that wrap something. Only these are tracked while parsing, which is what
+ * keeps a blank like `[Callsign]` from swallowing the rest of a section.
+ */
+const WRAPPING_TAGS = new Set([
+  "aligntable",
+  "b",
+  "c",
+  "center",
+  "code",
+  "color",
+  "divbox",
+  "font",
+  "highlight",
+  "i",
+  "img",
+  "li",
+  "list",
+  "lsemssubtitle",
+  "ooc",
+  "quote",
+  "s",
+  "shadow",
+  "size",
+  "spoil",
+  "spoiler",
+  "u",
+  "url",
+]);
+
+/** The nearest open of this name, or -1 when the section never opened one. */
+function openFor(stack: { tag: string }[], tag: string): number {
+  for (let at = stack.length - 1; at >= 0; at -= 1) {
+    if (stack[at].tag === tag) return at;
+  }
+  return -1;
+}
 
 function parse(source: string): Node[] {
   const root: Node[] = [];
   const stack: { tag: string; arg: string; children: Node[] }[] = [];
-  const pattern = /\[(\/?)([a-zA-Z*]+)(?:=([^\]]*))?\]/g;
+  const pattern = /\[(\/?)([a-zA-Z*][a-zA-Z0-9]*)(?:=([^\]]*))?\]/g;
   let cursor = 0;
   let match = pattern.exec(source);
 
@@ -39,12 +102,23 @@ function parse(source: string): Node[] {
 
     if (VOID_TAGS.has(tag)) {
       push({ tag, arg: arg ?? "", children: [] });
-    } else if (closing) {
-      const open = stack.pop();
-      if (open && open.tag === tag) push(open);
-      else push(match[0]);
-    } else {
+    } else if (!WRAPPING_TAGS.has(tag)) {
+      // A blank written like a tag, or something this preview has never seen.
+      // Shown as written either way - the blanks as the blank they are, an
+      // unknown tag as itself so it is not silently swallowed.
+      push(
+        isFillInMarker(tag)
+          ? { tag: "marker", arg: match[0], children: [] }
+          : match[0],
+      );
+    } else if (!closing) {
       stack.push({ tag, arg: arg ?? "", children: [] });
+    } else {
+      const at = openFor(stack, tag);
+      if (at > -1) {
+        while (stack.length - 1 > at) push(stack.pop()!);
+        push(stack.pop()!);
+      }
     }
     match = pattern.exec(source);
   }
@@ -140,8 +214,12 @@ function render(nodes: Node[]): React.ReactNode {
             {inner}
           </a>
         );
-      case "img":
-        return arg === "SIGNATURE" ? (
+      case "img": {
+        // The signature line is written `[img]SIGNATURE[/img]` in the formats
+        // and `[img=SIGNATURE]` in the app's own variables; both are the image
+        // the app has not got, not a URL to try to load.
+        const src = arg || textOf(children);
+        return src.trim() === "SIGNATURE" ? (
           <span
             key={k}
             className="inline-block rounded border border-dashed border-border px-2 py-1 text-[11px] text-muted-foreground"
@@ -153,11 +231,12 @@ function render(nodes: Node[]): React.ReactNode {
           // eslint-disable-next-line @next/next/no-img-element
           <img
             key={k}
-            src={arg || textOf(children)}
+            src={src}
             alt=""
             className="my-2 max-w-full rounded-md border border-border"
           />
         );
+      }
       case "list": {
         const none = arg.toLowerCase() === "none";
         const ordered = arg === "1";
@@ -182,6 +261,7 @@ function render(nodes: Node[]): React.ReactNode {
       case "*":
         return <li key={k}>{inner}</li>;
       case "spoiler":
+      case "spoil":
         return (
           <details
             key={k}
@@ -210,6 +290,32 @@ function render(nodes: Node[]): React.ReactNode {
           >
             {inner}
           </pre>
+        );
+      case "ooc":
+        // Out-of-character asides are the half of a section nobody should read
+        // as an instruction, so they are set apart rather than run in.
+        return (
+          <span key={k} className="text-muted-foreground italic">
+            {inner}
+          </span>
+        );
+      case "c":
+        return (
+          <code
+            key={k}
+            className="rounded bg-muted px-1 py-0.5 font-mono text-[0.85em]"
+          >
+            {inner}
+          </code>
+        );
+      case "marker":
+        return (
+          <span
+            key={k}
+            className="rounded border border-dashed border-border px-1 font-mono text-[0.85em] text-muted-foreground"
+          >
+            {arg}
+          </span>
         );
       case "quote":
         return (

@@ -11,7 +11,10 @@
     "routes:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/access-check.ts",
     "matrix:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/access-matrix-check.ts",
     "handbook:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/handbook-check.ts",
+    "handbook:import": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/handbook-import.ts",
     "handbook:sync": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/handbook-sync.ts",
+    "notes:build": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/notes-build.ts",
+    "notes:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/notes-build.ts --check",
     "extension:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/extension-check.mjs",
     "extension:zip": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/extension-zip.ts",
     "extension:assets": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/extension-assets.mjs"

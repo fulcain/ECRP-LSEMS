@@ -15,7 +15,7 @@ export const FOR = {
         url: "https://gov.eclipse-rp.net/viewforum.php?f=2568",
       },
       {
-        name: "Handbook",
+        name: "Forensics Handbook",
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=164012",
       },
       {

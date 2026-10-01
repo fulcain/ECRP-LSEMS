@@ -116,9 +116,11 @@ interface SessionContextValue {
   /** Derive the profile-link for the currently-selected EMR. */
   selectedEMRProfileLink: string | undefined;
 
-  /** Which paperwork form is currently rendered. */
-  formType: FormType;
-  setFormType: (type: FormType) => void;
+  /** Which paperwork form is currently rendered, or `null` while the member
+   *  has not picked one - the page opens on the cards, never on a form
+   *  pre-picked for them. */
+  formType: FormType | null;
+  setFormType: (type: FormType | null) => void;
 
   /** Current phase within the active form (e.g. "phase1", "reinstatementPhase2"). */
   currentPhase: string | null;
@@ -237,11 +239,9 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     fetchEMRProfileLinks().then(setEmrList);
   }, []);
 
-  const [formType, setFormTypeRaw] = useLocalStorage<FormType>(
-    "ftd-form-type",
-    "normal",
-  );
-  const setFormType = (type: FormType) => setFormTypeRaw(type);
+  // Not persisted on purpose: the page opens on the picker, the way BLS and
+  // RED do, and a deep link carries its choice in ?tab=.
+  const [formType, setFormType] = useState<FormType | null>(null);
 
   const [currentPhase, setCurrentPhase] = useState<string | null>(null);
 
@@ -257,9 +257,10 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     );
 
   const additionalMandatories =
-    additionalMandatoriesByType[formType] ?? "";
+    (formType ? additionalMandatoriesByType[formType] : "") ?? "";
 
   const setAdditionalMandatories = (value: string) => {
+    if (!formType) return;
     setAdditionalMandatoriesByType((prev) => ({ ...prev, [formType]: value }));
   };
 

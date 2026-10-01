@@ -31,7 +31,7 @@
 [*]Inform the EMR that the leadership team may take them aside for an [b]informal[/b] 1 on 1 session around every 3 months. These are just a casual conversation to allow them the opportunity to communicate with the Leadership Team.
 [*]Inform the EMR that since they are now an EMT-B they can join divisions.
 [*]Ask them if they have a pager. If not, ask them if they want one. Explain what a pager is and make sure they know how to properly use it! (( Make sure they understand they have to RP pressing it with a simple /me, and check the discord if they have the 'On Call Program' role either way. ))
-[*] (( F4 rank adjustment, Discord - reference [url=https://gov.eclipse-rp.net/viewtopic.php?t=74487]Section 5 of the Supervisor Handbook[/url] for detailed guidance while the person is offline. ))
+[*] (( F4 rank adjustment, Discord ))
 [*]Post the certification paperwork in the EMR Student Profile, and fill it out.
 [*]Archive the EMR Student Profile.
 [*] Update the [url=https://gov.eclipse-rp.net/viewtopic.php?t=9497]Staff Roster[/url] - You only need to adjust the Staff Roster (second post), copy the EMR entry into the appropriate numerical slot in the EMT section, edit the rank from "EMR" to "EMT-B"
@@ -44,7 +44,7 @@
 [*]Remove them from the EMR usergroup, and add them to the EMT usergroup, making it their primary group (unless they are employed elsewhere and prefer that one)
 [*]Employee Adjustment post - [url=https://gov.eclipse-rp.net/viewtopic.php?p=445130#RANK-ADJUSTMENT]Format here[/url] (Section 9.12), and [url=https://gov.eclipse-rp.net/viewforum.php?f=573]here[/url] is the location to post it.
 Make sure to fill out the format properly;
-The title should read  ->  Rank Adjustment | {{applicantName}}
+The title should read  ->  Rank Adjustment | Fname Lname
 [*] (( Request an acp rank change in discord ))[/list]
 [/list]
 [color=transparent]spacer[/color]
@@ -77,8 +77,8 @@ The title should read  ->  Rank Adjustment | {{applicantName}}
 [hr][/hr]
 
 [color=transparent]spacer[/color]
-[spoiler=Hippocratic Oath][center][img]https://i.ibb.co/Ng5bZKm3/GRe-HLv-T.png[/img]
-[i][b][size=115]I, {{applicantName}}, swear to fulfill, to the best of my ability and judgment, this covenant:[/size][/b][/center]
+[spoiler=Hippocratic Oath][i][center][img]https://i.ibb.co/21ZM4LYs/GRe-HLv-T.png[/img]
+[b][size=115]I, FName LName, swear to fulfill, to the best of my ability and judgment, this covenant:[/size][/b][/center]
 
 [size=105]
 I will respect the hard-won scientific gains of those who walked the steps I walk now, and gladly share such knowledge as is mine with those who are to follow.
@@ -101,12 +101,12 @@ If I do not violate this oath, may I enjoy life, respected while I live and reme
 
 If I do not violate this oath, may I long experience the joy of healing those who seek my help.[/size][/i]
 
-[center][img]https://i.imgur.com/7aQSsNs.png[/img][/center]
+[center][img]https://i.ibb.co/QjDCvmBp/7a-QSs-Ns.png[/img][/center]
 [/spoiler]
 
 [spoiler=Certification Passed Paperwork]
 [code]
-[img]https://i.ibb.co/Sw3DtzQS/hu-DCb-JP.png[/img]
+[img]https://i.ibb.co/qYTPzxTr/hu-DCb-JP.png[/img]
 [lsemssubtitle]SESSION DETAILS:[/lsemssubtitle]
 [divbox=white]
 
@@ -138,7 +138,7 @@ INPUT FEEDBACK HERE
 [lsemssubtitle]SIGNATURE[/lsemssubtitle]
 [divbox=white]
 [img]SIGNATURE[/img]
-[i]Medic Name[/i]
+[i]Fname Lname[/i]
 Rank
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox]
@@ -186,10 +186,12 @@ INPUT FEEDBACK HERE
 [lsemssubtitle]SIGNATURE[/lsemssubtitle]
 [divbox=white]
 [img]SIGNATURE[/img]
-[i]Medic Name[/i]
+[i]Fname Lname[/i]
 Rank
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox]
 [lsemsfooter][/lsemsfooter]
 [/code][/spoiler]
+[/divbox]
+
 [/spoiler]

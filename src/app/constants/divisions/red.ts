@@ -16,7 +16,7 @@ export const RED = {
         url: "https://gov.eclipse-rp.net/viewforum.php?f=869",
       },
       {
-        name: "Handbook",
+        name: "RED Handbook",
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=106951",
       },
       {

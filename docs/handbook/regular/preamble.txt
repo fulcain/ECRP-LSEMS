@@ -1,4 +1,4 @@
-[img]https://i.ibb.co/0R8458jJ/f-SVDi7f.png[/img]
+[img]https://i.ibb.co/qF4LnqJV/f-SVDi7f.png[/img]
 [lsemssubtitle]STUDENT INFORMATION[/lsemssubtitle]
 [divbox=white]
 [b]Student Name:[/b] {{applicantName}}

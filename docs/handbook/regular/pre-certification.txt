@@ -27,7 +27,7 @@
 [*]Inform the EMR that they can also be on shift while they are paired up with an EMT-B, under a Zulu callsign.
 [*]Hand them an On-Call Program Pager & explain the program. The EMR is not obliged to join, so do inform them of this as well.
 [*]Encourage the EMR to reach out to a Jr. Paramedic+ to schedule their Certification.
-[*]Complete the paperwork and make sure to edit the top post with "[Pending Certification] {{applicantName}}"
+[*]Complete the paperwork and make sure to edit the top post with "[Pending Certification] Fname Lname"
 [*][i][b][u]If the EMR performed poorly, be honest and genuine on your report[/u][/b][/i] - not stating they didn't do well is only harming the EMR.
 [/list]
 [color=transparent]spacer[/color]
@@ -57,12 +57,12 @@ Did the EMR drive properly?
 Did the EMR know how to utilize all necessary radio calls and codes throughout?
 Did the EMR treat properly and timely?
 Did the EMR roam properly and safely?
-[/spoiler][/list][/list]
+[/list][/spoiler][/list]
 [b]Note:[/b] The EMR should [u]only[/u] be [url=https://pastebin.com/raw/wCL1v4K7]sent[/url] the quiz if they [b][color=red]fail[/color][/b] their Pre-Certification.
 
 [spoiler=Paperwork]
 [code]
-[img]https://i.ibb.co/nswT0LJv/p33kyzm.png[/img]
+[img]https://i.ibb.co/8gDdmSD4/p33kyzm.png[/img]
 [lsemssubtitle]SESSION DETAILS:[/lsemssubtitle]
 [divbox=white]
 
@@ -102,11 +102,12 @@ YES/NO
 [lsemssubtitle]SIGNATURE[/lsemssubtitle]
 [divbox=white]
 [img]SIGNATURE[/img]
-[i]Medic Name[/i]
+[i]Fname Lname[/i]
 Rank
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox]
 [lsemsfooter][/lsemsfooter]
 [/code]
 [/spoiler]
+[/divbox]
 [/spoiler]

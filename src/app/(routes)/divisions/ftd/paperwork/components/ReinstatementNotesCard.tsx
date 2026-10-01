@@ -13,7 +13,6 @@ import {
   ReinstatementPhaseKey,
 } from "@/app/(routes)/divisions/ftd/paperwork/lib/reinstatementConfig";
 import { resolveReinstatementNotes } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/registry";
-import { NotesPanel } from "@/app/(routes)/divisions/ftd/paperwork/components/NotesPanel";
 
 function isReinstatementPhaseKey(
   value: unknown,
@@ -21,7 +20,7 @@ function isReinstatementPhaseKey(
   return typeof value === "string" && value in reinstatementConfig;
 }
 
-/** Reference panel for the active reinstatement-form phase, with Guide/Script views. */
+/** Reference panel for the active reinstatement-form phase. */
 export function ReinstatementNotesCard() {
   const { currentPhase } = useSession();
 
@@ -40,9 +39,9 @@ export function ReinstatementNotesCard() {
       </CardHeader>
       <CardContent className="pt-0">
         {entry ? (
-          <NotesPanel spoken={entry.Spoken} storageKey={phase}>
+          <div className="max-h-[600px] overflow-y-auto rounded-md border border-border/40 bg-muted/30 px-4 py-4 transition-colors">
             <entry.Visual />
-          </NotesPanel>
+          </div>
         ) : (
           <p className="text-xs text-muted-foreground italic">
             No reference notes available for this reinstatement phase.
