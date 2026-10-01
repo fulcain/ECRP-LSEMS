@@ -146,7 +146,6 @@
 [*] Make sure you are aware of your surroundings as you attempt to climb up or down to the patient.
 [*] Treat them, then carefully get them over to your ambulance.
 [/list]
-[/list]
 [*][color=#800000][b]Fire Calls[/b][/color][list]
 [*]Show the EMR where to retrieve a fire extinguisher. 
 [ooc]RP first, then [c]/fl[/c] Tell them to press TAB in order to see the hotkey for the extinguisher.[/ooc]
@@ -217,5 +216,4 @@ Rank
 [lsemsfooter][/lsemsfooter]
 [/code]
 [/spoiler]
-[/divbox]
-[/spoiler]
+[/list][/divbox][/spoiler]
