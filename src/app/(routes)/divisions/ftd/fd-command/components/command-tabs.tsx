@@ -2,10 +2,12 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { BookOpen, Mail, UserPlus, Users } from "lucide-react";
+import { BookOpen, Mail, RefreshCw, UserPlus, Users } from "lucide-react";
 
 import { DiscussionBoardComposer } from "@/components/discussion-board-composer";
 import { FtpManager } from "@/components/ftp/ftp-manager";
+
+import { UpdateProfiles } from "./update-profiles";
 
 import { TabBar, type Tab } from "@/components/ui/tab-bar";
 
@@ -15,7 +17,7 @@ import { FtiPromotionCard } from "@/components/employee-stats/components/FtiProm
 import { EmrTrainingTimeCard } from "@/components/employee-stats/components/EmrTrainingTimeCard";
 import { EmrDischargeCard } from "@/components/employee-stats/components/EmrDischargeCard";
 
-type CommandTab = "emrs" | "ftos" | "emails" | "ftp";
+type CommandTab = "emrs" | "ftos" | "emails" | "ftp" | "profiles";
 
 const ALL_TABS: Tab<CommandTab>[] = [
   {
@@ -43,6 +45,12 @@ const ALL_TABS: Tab<CommandTab>[] = [
     label: "FTP",
     icon: BookOpen,
     accent: "border-emerald-300/40 dark:border-emerald-400/40 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300",
+  },
+  {
+    value: "profiles",
+    label: "Update Profiles",
+    icon: RefreshCw,
+    accent: "border-rose-300/40 dark:border-rose-400/40 bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300",
   },
 ];
 
@@ -112,6 +120,9 @@ function CommandPageContent({ canEditFtp }: { canEditFtp: boolean }) {
       {tab === "emrs" && <CurrentEMRsTable />}
       {tab === "ftos" && <FtoManagementCard />}
       {tab === "ftp" && canEditFtp && <FtpManager />}
+      {/* The updater rewrites nothing - the FTP or the store - so it is open to
+          everyone this page already opens to. */}
+      {tab === "profiles" && <UpdateProfiles />}
       {tab === "emails" && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

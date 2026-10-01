@@ -18,6 +18,16 @@ export const changeLog: ChangeLogEntry[] = [
       {
         type: "feature",
         description:
+          "The FTD Command page has an Update Profiles tab: paste a member's current profile in and it comes back in the FTP's own wording - the student information, each session's signature and its earned ticks are kept, the rest is the FTP's text - ready to copy back into GOV, with the format's profiles board one click away."
+      },
+      {
+        type: "feature",
+        description:
+          "A&R has its own page under Divisions: a Medevac Pilot certification builder (theory, airfield practice, agility course and time trial) and the certificate for the member's divisional profile, both with Copy & Open so the extension pastes them into GOV. The page opens to the whole A&R division, with Command+ and LFM as everywhere."
+      },
+      {
+        type: "feature",
+        description:
           "The FTP tab now works on a deployment: an accepted update commits straight to the repository, is shown to FTD Head, Assistant Head of FTD and Command+ (Discord admins always in), and a version history lists every FTP commit with a one-click way back to an earlier one."
       },
       {

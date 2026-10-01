@@ -55,6 +55,11 @@ export type FtpFormat = {
   label: string;
   hint: string;
   sections: readonly FtpSection[];
+  /**
+   * Where this profile's posts live on GOV, for a tool that opens them.
+   * Declared here so a tool never retypes the forum's URL for a format.
+   */
+  board?: { url: string; label: string };
 };
 
 /**
@@ -162,6 +167,10 @@ export const FTP_FORMATS: readonly FtpFormat[] = [
     key: "regular",
     label: "Regular FTP",
     hint: "The profile a new hire's training is recorded on, from Introduction to Certification.",
+    board: {
+      url: "https://gov.eclipse-rp.net/viewforum.php?f=617",
+      label: "Regular profiles",
+    },
     sections: [
       {
         id: "profile-header",
@@ -238,6 +247,10 @@ export const FTP_FORMATS: readonly FtpFormat[] = [
     key: "reinstatement",
     label: "Reinstatement FTP",
     hint: "The profile a returning member's training is recorded on. Separate from the regular one on purpose.",
+    board: {
+      url: "https://gov.eclipse-rp.net/viewforum.php?f=601",
+      label: "Reinstatement profiles",
+    },
     sections: [
       {
         id: "reinstatement-header",
