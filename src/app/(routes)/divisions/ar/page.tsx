@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { AR } from "@/app/constants/divisions/ar";
+import { General } from "@/app/constants/divisions/general";
 import { directorTitleForDivisionKey } from "@/app/constants/general/directorRoles";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
 import { getCurrentDateShort } from "@/app/helpers/getCurrentDateFormatted";
@@ -291,7 +292,7 @@ export default function ARFormatsPage() {
   // it belongs in is one link away - read from the division's own quick links
   // rather than a URL typed here, so the two cannot drift apart.
   const divisionalProfilesUrl =
-    AR.data.quickLinks.find((link) => link.name.startsWith("Pilot Student Profiles"))
+    General.data.quickLinks.find((link) => link.name.startsWith("Divisional Personnel Files"))
       ?.url ?? null;
 
   // Same post as Copy BBCode, but the pasted link is opened with it: the
@@ -466,7 +467,7 @@ export default function ARFormatsPage() {
                 <>
                   {isCertificate && divisionalProfilesUrl && (
                     <Button
-                      onClick={() => window.open(divisionalProfilesUrl, "_blank")}
+                      onClick={() => window.open('https://gov.eclipse-rp.net/viewforum.php?f=4155', "_blank")}
                       variant="outline"
                       size="lg"
                       className="w-full"
