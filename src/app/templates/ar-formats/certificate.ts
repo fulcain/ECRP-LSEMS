@@ -13,7 +13,7 @@ export const arCertificateTemplate = {
     studentName,
     completionDate,
     certifiedBy,
-  }: ARCertificateContext): string => `[lsemsfooter][center][img]https://i.imgur.com/eCAmFX9.png[/img]
+  }: ARCertificateContext): string => `[lsemsfooter][center][img]https://i.ibb.co/1Jj3zt2q/eCAmFX9.png[/img]
 
 [size=125]${studentName} has been certified as a Medevac Pilot![/size]
 

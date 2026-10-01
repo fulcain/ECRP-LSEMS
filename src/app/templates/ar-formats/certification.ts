@@ -22,7 +22,7 @@ export const arCertificationTemplate = {
     const nameLine = instructorName || "[i]FNAME LNAME[/i]";
     const rankLine = instructorRank || "FULL RANK";
 
-    return `[img]https://i.imgur.com/ij789oI.png[/img]
+    return `[img]https://i.ibb.co/7d6CHcYG/ij789o-I.png[/img]
 ${SPACER}
 [lsemssubtitle][b][size=120]Section 1: Theory Portion[/size][/b][/lsemssubtitle][divbox=white]
 [b]Were all of the radio calls covered?[/b]
@@ -94,7 +94,6 @@ ${answers.finalThoughts}
 
 [b]Status:[/b] ${answers.status}
 
-[i]INSTRUCTOR SIGNATURE[/i]
 ${signatureImg}
 ${nameLine}
 ${rankLine}

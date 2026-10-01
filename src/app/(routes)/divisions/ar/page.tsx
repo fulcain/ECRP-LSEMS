@@ -13,6 +13,7 @@ import {
 import { AR } from "@/app/constants/divisions/ar";
 import { directorTitleForDivisionKey } from "@/app/constants/general/directorRoles";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
+import { getCurrentDateShort } from "@/app/helpers/getCurrentDateFormatted";
 import {
   handOffForumPost,
   pickPostTarget,
@@ -42,6 +43,13 @@ import {
 import { DocumentPicker } from "@/components/division/document-picker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 
 import { AR_PAPERWORK, isARDocument, type ARDocument } from "./components/paperwork-documents";
@@ -81,15 +89,20 @@ const CERTIFICATION_FIELDS: readonly {
   { key: "trialTime", label: "Time Trial time", hint: "MM:SS" },
   { key: "trialComments", label: "Time Trial comments (optional)" },
   { key: "finalThoughts", label: "Final thoughts" },
-  { key: "status", label: "Status", hint: "PASS/FAIL" },
+  { key: "status", label: "Status" },
 ];
 
 const FIELD_STORAGE_KEY = "ar-certification-answers-v1";
 type StoredAnswers = Record<string, string>;
 
-const EMPTY_ANSWERS: StoredAnswers = Object.fromEntries(
-  CERTIFICATION_FIELDS.map((field) => [field.key as string, ""]),
-);
+const EMPTY_ANSWERS: StoredAnswers = {
+  ...Object.fromEntries(
+    CERTIFICATION_FIELDS.map((field) => [field.key as string, ""]),
+  ),
+  // A certification is passed unless it is failed, so that is where the
+  // dropdown starts.
+  status: "PASS",
+};
 
 export default function ARFormatsPage() {
   const { medicCredentials, divisionRanks } = useMedic();
@@ -170,6 +183,12 @@ export default function ARFormatsPage() {
   const arRank = divisionRanks["Air & Rescue"] ?? "";
   const isCertificate = selectedDocument === "certificate";
 
+  // The status is a PASS/FAIL dropdown, but an answer saved before it was one
+  // may still carry the old free-text placeholder - normalise, PASS by default.
+  const statusAnswer = ["PASS", "FAIL"].includes(answers.status ?? "")
+    ? (answers.status as string)
+    : "PASS";
+
   const titleCase = (value: string) =>
     value
       .toLowerCase()
@@ -216,14 +235,14 @@ export default function ARFormatsPage() {
         trialTime: answers.trialTime ?? "MM:SS",
         trialComments: answers.trialComments ?? "ANSWER",
         finalThoughts: answers.finalThoughts ?? "",
-        status: (answers.status ?? "PASS/FAIL").toUpperCase() || "PASS/FAIL",
+        status: statusAnswer,
       },
       instructorName: medicCredentials.name || undefined,
       instructorRank,
       instructorSignature: medicCredentials.signature || undefined,
     };
     return arCertificationTemplate.renderBody(context);
-  }, [selectedDocument, student, answers, medicCredentials.name, medicCredentials.signature, instructorRank]);
+  }, [selectedDocument, student, answers, statusAnswer, medicCredentials.name, medicCredentials.signature, instructorRank]);
 
   const certificateBBCode = useMemo(() => {
     if (selectedDocument !== "certificate") return "";
@@ -356,13 +375,24 @@ export default function ARFormatsPage() {
                 {isCertificate ? (
                   <div className="space-y-2">
                     <Label htmlFor="completion-date">Date</Label>
-                    <Input
-                      id="completion-date"
-                      value={completionDate}
-                      onChange={(event) => setCompletionDate(event.target.value)}
-                      placeholder="e.g. 01/OCT/2026"
-                      className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
-                    />
+                    <div className="flex items-center gap-2">
+                      <Input
+                        id="completion-date"
+                        value={completionDate}
+                        onChange={(event) => setCompletionDate(event.target.value)}
+                        placeholder="e.g. 01/OCT/2026"
+                        className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setCompletionDate(getCurrentDateShort())}
+                        className="shrink-0"
+                      >
+                        Today
+                      </Button>
+                    </div>
                     <p className="text-xs text-muted-foreground">
                       The date on the certificate. Format:{" "}
                       <span className="font-mono">DD/MMM/YYYY</span>. Certified
@@ -381,7 +411,25 @@ export default function ARFormatsPage() {
                             </span>
                           ) : null}
                         </Label>
-                        {field.key === "finalThoughts" ||
+                        {field.key === "status" ? (
+                          <Select
+                            value={statusAnswer}
+                            onValueChange={(value) =>
+                              updateAnswer(field.key as string, value)
+                            }
+                          >
+                            <SelectTrigger
+                              id={`answer-${field.key}`}
+                              className="w-full border-border bg-surface-hover text-foreground"
+                            >
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="PASS">PASS</SelectItem>
+                              <SelectItem value="FAIL">FAIL</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        ) : field.key === "finalThoughts" ||
                         field.key === "strengthsWeaknesses" ? (
                           <textarea
                             id={`answer-${field.key}`}

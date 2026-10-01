@@ -27,3 +27,28 @@ export const getCurrentDateFormatted = (): string => {
 
   return `${month} ${day}${suffix}, ${year}`;
 };
+
+const SHORT_MONTHS = [
+  "JAN",
+  "FEB",
+  "MAR",
+  "APR",
+  "MAY",
+  "JUN",
+  "JUL",
+  "AUG",
+  "SEP",
+  "OCT",
+  "NOV",
+  "DEC",
+];
+
+/**
+ * Today as the forum's short date - `01/OCT/2026`, the DD/MMM/YYYY a
+ * completion or hire line carries. Padded to two digits, like the format asks.
+ */
+export const getCurrentDateShort = (): string => {
+  const now = new Date();
+  const day = now.getUTCDate().toString().padStart(2, "0");
+  return `${day}/${SHORT_MONTHS[now.getUTCMonth()]}/${now.getUTCFullYear()}`;
+};
