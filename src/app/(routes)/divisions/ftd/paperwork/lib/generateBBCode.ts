@@ -1,4 +1,4 @@
-import { signatureBlock } from "@/lib/handbook-notes";
+import { signatureBlock } from "@/lib/ftp-notes";
 
 /** Pure BBCode assembler for normal field-training paperwork. */
 export function generateBBCode(
@@ -105,7 +105,7 @@ ${values.notesNextTraining}
     : "";
 
   // The profile's own signature block, signed with this member's details: the
-  // block is declared once (lib/handbook-notes) so the post, the Guide beside it
+  // block is declared once (lib/ftp-notes) so the post, the Guide beside it
   // and the profile an FTO copies can never sign differently.
   const signatureSection = signatureBlock({
     signature: values.signature || "",

@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * Puts a pasted profile in place everywhere the handbook is kept.
+ * Puts a pasted profile in place everywhere the FTP is kept.
  *
  * The flow this exists for is one paste: the profile is written somewhere else -
  * the forum's own editor, a document, the live post copied off the page - and the
  * finished document is handed over as it is. What comes back is not always
- * written the way `docs/handbook/**` is: phpBB appends its own id to every tag
+ * written the way `docs/ftp/**` is: phpBB appends its own id to every tag
  * (`[b:1a2b3c4d]`), closes a list item with `[/*]`, quotes a spoiler's title, and
  * a copy off the rendered page arrives as HTML with the newlines of another
  * operating system. All of that is converted, the paste is worked out to be the
@@ -21,14 +21,14 @@
  * alone, or one there is nothing to build for, is named rather than passed over
  * silently.
  *
- * It is the same `importHandbookDocument` the Handbook tab and `POST
- * /api/handbook` run, so a paste cannot behave one way in the terminal and
+ * It is the same `importFtpDocument` the FTP tab and `POST
+ * /api/ftp` run, so a paste cannot behave one way in the terminal and
  * another in the app.
  *
- *   npm run handbook:import -- profile.txt
- *   npm run handbook:import -- < profile.txt
- *   npm run handbook:import -- --format=reinstatement profile.txt
- *   npm run handbook:import -- --dry profile.txt
+ *   npm run ftp:import -- profile.txt
+ *   npm run ftp:import -- < profile.txt
+ *   npm run ftp:import -- --format=reinstatement profile.txt
+ *   npm run ftp:import -- --dry profile.txt
  *
  * `--dry` is the same run without the write. It is what to reach for first when
  * the paste is a new one: it says which profile it was read as, what it changed,
@@ -40,10 +40,10 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 
 import { phaseNotePlacementsForFormat } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/sections";
-import { importHandbookDocument } from "@/lib/handbook-import";
+import { importFtpDocument } from "@/lib/ftp-import";
 import { planPhaseNotes } from "@/lib/phase-notes-write";
 
-const USAGE = `Usage: npm run handbook:import -- [--format=<regular|reinstatement>] [--dry] [file]
+const USAGE = `Usage: npm run ftp:import -- [--format=<regular|reinstatement>] [--dry] [file]
 
   file            the pasted profile, or nothing to read it from stdin
   --format=<key>  which profile it is, when it should not be worked out from the paste
@@ -76,7 +76,7 @@ try {
   process.exit(1);
 }
 
-const report = await importHandbookDocument({ content, format, write: !dry });
+const report = await importFtpDocument({ content, format, write: !dry });
 
 if (!report.ok) {
   console.error(`\n  ${report.error}\n`);
@@ -91,7 +91,7 @@ if (report.conversions.length > 0) {
     console.log(`    - ${conversion.note}`);
   }
 } else {
-  console.log(`\n  Nothing to convert - the paste is written the way the handbook is.`);
+  console.log(`\n  Nothing to convert - the paste is written the way the FTP is.`);
 }
 console.log(
   `\n  Read as the ${report.formatLabel} profile${

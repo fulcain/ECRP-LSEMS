@@ -13,6 +13,21 @@ export type ChangeLogEntry = {
 
 export const changeLog: ChangeLogEntry[] = [
   {
+    date: "Oct 1, 2026",
+    changes: [
+      {
+        type: "feature",
+        description:
+          "The FTP tab now works on a deployment: an accepted update commits straight to the repository, is shown to FTD Head, Assistant Head of FTD and Command+ (Discord admins always in), and a version history lists every FTP commit with a one-click way back to an earlier one."
+      },
+      {
+        type: "change",
+        description:
+          "The FTP is called the FTP everywhere - the tab, the buttons, the files, the docs/ftp folder and the /api/ftp route - no longer the handbook."
+      },
+    ],
+  },
+  {
     date: "Sep 30, 2026",
     changes: [
       {

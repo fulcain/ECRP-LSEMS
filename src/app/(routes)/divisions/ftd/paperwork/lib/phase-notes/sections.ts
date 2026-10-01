@@ -1,9 +1,9 @@
-import type { HandbookFormatKey } from "@/app/constants/divisions/ftd/handbook";
+import type { FtpFormatKey } from "@/app/constants/divisions/ftd/ftp";
 import type { PhaseKey } from "@/app/(routes)/divisions/ftd/paperwork/lib/paperworkConfig";
 import type { ReinstatementPhaseKey } from "@/app/(routes)/divisions/ftd/paperwork/lib/reinstatementConfig";
 
 /**
- * Which handbook section each phase's notes are built from, and where they go.
+ * Which FTP section each phase's notes are built from, and where they go.
  *
  * Declared once because three things read it and they have to agree: the build
  * script that writes a guide from its section, the check that fails when a guide
@@ -11,7 +11,7 @@ import type { ReinstatementPhaseKey } from "@/app/(routes)/divisions/ftd/paperwo
  * comes from. A phase with no section here is a phase nobody can keep in step.
  */
 export type PhaseNotePlacement = {
-  /** The `id` of the `HANDBOOK_SECTIONS` entry the notes are read from. */
+  /** The `id` of the `FTP_SECTIONS` entry the notes are read from. */
   section: string;
   /** The Guide component's file, from the repository root. */
   guide: string;
@@ -106,7 +106,7 @@ export function allPhaseNotePlacements(): PhaseNotePlacement[] {
 
 /** The placements of one profile's own phases. */
 export function phaseNotePlacementsForFormat(
-  format: HandbookFormatKey,
+  format: FtpFormatKey,
 ): PhaseNotePlacement[] {
   return Object.values(
     format === "reinstatement"

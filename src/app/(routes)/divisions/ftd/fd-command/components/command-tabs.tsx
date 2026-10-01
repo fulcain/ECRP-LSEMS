@@ -5,7 +5,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { BookOpen, Mail, UserPlus, Users } from "lucide-react";
 
 import { DiscussionBoardComposer } from "@/components/discussion-board-composer";
-import { HandbookManager } from "@/components/handbook/handbook-manager";
+import { FtpManager } from "@/components/ftp/ftp-manager";
 
 import { TabBar, type Tab } from "@/components/ui/tab-bar";
 
@@ -15,7 +15,7 @@ import { FtiPromotionCard } from "@/components/employee-stats/components/FtiProm
 import { EmrTrainingTimeCard } from "@/components/employee-stats/components/EmrTrainingTimeCard";
 import { EmrDischargeCard } from "@/components/employee-stats/components/EmrDischargeCard";
 
-type CommandTab = "emrs" | "ftos" | "emails" | "handbook";
+type CommandTab = "emrs" | "ftos" | "emails" | "ftp";
 
 const ALL_TABS: Tab<CommandTab>[] = [
   {
@@ -39,8 +39,8 @@ const ALL_TABS: Tab<CommandTab>[] = [
     accent: "border-amber-300/40 dark:border-amber-400/40 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300",
   },
   {
-    value: "handbook",
-    label: "Handbook",
+    value: "ftp",
+    label: "FTP",
     icon: BookOpen,
     accent: "border-emerald-300/40 dark:border-emerald-400/40 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300",
   },
@@ -49,13 +49,13 @@ const ALL_TABS: Tab<CommandTab>[] = [
 const COMMAND_TAB_LS_KEY = "ftd-command-tab";
 
 /**
- * The tabs this member may actually open. The Handbook is the one that edits the
+ * The tabs this member may actually open. The FTP is the one that edits the
  * repository, so it is offered only to a Discord admin - and whether this member
  * is one is decided on the server, because the gate is an environment variable
  * the browser has no copy of.
  */
-function tabsFor(canEditHandbook: boolean): Tab<CommandTab>[] {
-  return ALL_TABS.filter((tab) => tab.value !== "handbook" || canEditHandbook);
+function tabsFor(canEditFtp: boolean): Tab<CommandTab>[] {
+  return ALL_TABS.filter((tab) => tab.value !== "ftp" || canEditFtp);
 }
 
 function readSavedTab(allowed: readonly CommandTab[]): CommandTab {
@@ -67,22 +67,22 @@ function readSavedTab(allowed: readonly CommandTab[]): CommandTab {
   }
 }
 
-export function CommandTabs({ canEditHandbook }: { canEditHandbook: boolean }) {
+export function CommandTabs({ canEditFtp }: { canEditFtp: boolean }) {
   return (
     <Suspense fallback={null}>
-      <CommandPageContent canEditHandbook={canEditHandbook} />
+      <CommandPageContent canEditFtp={canEditFtp} />
     </Suspense>
   );
 }
 
-function CommandPageContent({ canEditHandbook }: { canEditHandbook: boolean }) {
+function CommandPageContent({ canEditFtp }: { canEditFtp: boolean }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
-  const tabs = useMemo(() => tabsFor(canEditHandbook), [canEditHandbook]);
+  const tabs = useMemo(() => tabsFor(canEditFtp), [canEditFtp]);
 
-  // Priority: URL param > localStorage > default "emrs". A `?tab=handbook` link
+  // Priority: URL param > localStorage > default "emrs". A `?tab=ftp` link
   // is not a way in: it matches nothing for a member the tab was withheld from,
   // so the page opens on EMRs instead.
   const initialTab = (() => {
@@ -111,7 +111,7 @@ function CommandPageContent({ canEditHandbook }: { canEditHandbook: boolean }) {
 
       {tab === "emrs" && <CurrentEMRsTable />}
       {tab === "ftos" && <FtoManagementCard />}
-      {tab === "handbook" && canEditHandbook && <HandbookManager />}
+      {tab === "ftp" && canEditFtp && <FtpManager />}
       {tab === "emails" && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

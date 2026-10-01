@@ -6,7 +6,7 @@ import {
   GOV_STAFF_ROSTER_EDIT_URL,
 } from "@/app/helpers/govLinks";
 import { userGroupsHref } from "@/lib/user-groups";
-import { HANDBOOK_DOCUMENTS } from "@/app/constants/divisions/ftd/handbook-content";
+import { FTP_DOCUMENTS } from "@/app/constants/divisions/ftd/ftp-content";
 
 
 export const reinstatementWorkflow: ContractWorkflow = {
@@ -243,7 +243,7 @@ If you would like to resign from LSEMS, as sad as it'll be to see you go, please
           requiresName: true,
           url: "https://gov.eclipse-rp.net/posting.php?mode=post&f=601",
           postTitle: "Reinstatee Profile | {{applicantName}}",
-          copyText: HANDBOOK_DOCUMENTS.reinstatement,
+          copyText: FTP_DOCUMENTS.reinstatement,
         },
         {
           label: "Copy Profile Title",

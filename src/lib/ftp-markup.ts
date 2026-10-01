@@ -6,7 +6,7 @@
  * tag and the one it matches, so `[b][center]…[/b][/center]` and
  * `[b][center]…[/center][/b]` are the same post to every reader of the forum.
  * The profile published on the forum is therefore often *not* written the way
- * `docs/handbook/**` is, and a paste of it that reached the importer as it stands
+ * `docs/ftp/**` is, and a paste of it that reached the importer as it stands
  * would come back as a section changed - which is a person sent hunting for an
  * edit nobody made, when all that differs is where phpBB put the brackets.
  *
@@ -14,32 +14,32 @@
  * not match the tag before it closes the ones opened inside it first, a close
  * with nothing to close is dropped, and a tag left open is closed where the
  * thing it was opened in closes. That is exactly what phpBB renders, which is
- * what makes it a spelling and not a change - and `npm run handbook:check`
- * holds both halves of that claim: every file in `docs/handbook/**` already is
+ * what makes it a spelling and not a change - and `npm run ftp:check`
+ * holds both halves of that claim: every file in `docs/ftp/**` already is
  * this text, and a paste that differs from a file only by this is the same
  * section, not an edit.
  *
- * It is pure and browser-safe, because the Handbook tab decides what a paste
+ * It is pure and browser-safe, because the FTP tab decides what a paste
  * would change as the member types and the route decides it again on the way in.
  * Two answers to one question is how a panel promises an update the write then
  * refuses.
  */
 
 import {
-  splitHandbookDocument,
-  type HandbookSplitResult,
-  type HandbookSplitSection,
-} from "@/app/constants/divisions/ftd/handbook";
+  splitFtpDocument,
+  type FtpSplitResult,
+  type FtpSplitSection,
+} from "@/app/constants/divisions/ftd/ftp";
 
 /**
  * The tags that wrap something, which is every tag a section's balance is about.
  *
  * A tag outside this list is not markup to the app: a blank written like one
  * (`[Callsign]`, `[Lastname]`) is shown as written, and an unknown token is a
- * tag the renderer has not learned - `npm run handbook:check` fails on that
+ * tag the renderer has not learned - `npm run ftp:check` fails on that
  * rather than a paste in flight guessing at it.
  */
-export const HANDBOOK_TAGS: readonly string[] = [
+export const FTP_TAGS: readonly string[] = [
   "b",
   "i",
   "u",
@@ -69,7 +69,7 @@ export const HANDBOOK_TAGS: readonly string[] = [
  * pair (`[lsemsfooter][/lsemsfooter]`) and a repair has no business moving
  * either half of it.
  */
-export const HANDBOOK_VOID_TAGS: ReadonlySet<string> = new Set([
+export const FTP_VOID_TAGS: ReadonlySet<string> = new Set([
   "hr",
   "cb",
   "cbc",
@@ -78,7 +78,7 @@ export const HANDBOOK_VOID_TAGS: ReadonlySet<string> = new Set([
 ]);
 
 /** One bracket token a section carries, and whether it opens or closes. */
-export type HandbookTagToken = {
+export type FtpTagToken = {
   raw: string;
   name: string;
   closing: boolean;
@@ -88,7 +88,7 @@ const TAG_TOKEN = /\[(\/?)([a-zA-Z*]+)(?:=[^\]]*)?\]/g;
 
 /** Whether a tag is one this app tracks - the only ones a repair may move. */
 function tracked(name: string): boolean {
-  return HANDBOOK_TAGS.includes(name) && !HANDBOOK_VOID_TAGS.has(name);
+  return FTP_TAGS.includes(name) && !FTP_VOID_TAGS.has(name);
 }
 
 /**
@@ -98,15 +98,15 @@ function tracked(name: string): boolean {
  * `[Pending Certification] Fname Lname` of teaching text is neither, so neither
  * is reported as a tag.
  */
-export function handbookTagTokens(text: string): HandbookTagToken[] {
+export function ftpTagTokens(text: string): FtpTagToken[] {
   return placedTags(text).map(({ raw, name, closing }) => ({ raw, name, closing }));
 }
 
 /** The same tokens, with where each one sits - a repair moves them about. */
 function placedTags(
   text: string,
-): (HandbookTagToken & { index: number })[] {
-  const tokens: (HandbookTagToken & { index: number })[] = [];
+): (FtpTagToken & { index: number })[] {
+  const tokens: (FtpTagToken & { index: number })[] = [];
   TAG_TOKEN.lastIndex = 0;
   for (let match = TAG_TOKEN.exec(text); match; match = TAG_TOKEN.exec(text)) {
     const name = match[2].toLowerCase();
@@ -121,7 +121,7 @@ function placedTags(
   return tokens;
 }
 
-export type HandbookTagRepair = {
+export type FtpTagRepair = {
   text: string;
   /** How many closes were moved, added or dropped. Zero means it was already right. */
   repaired: number;
@@ -137,9 +137,9 @@ export function describeTagRepair(count: number): string {
  *
  * Nothing outside a bracket moves, so the writing - spacing, blank lines,
  * spelling - is left exactly as it was: this is the same document, spelled the
- * way the handbook spells it.
+ * way the FTP spells it.
  */
-export function canonicalHandbookTags(text: string): HandbookTagRepair {
+export function canonicalFtpTags(text: string): FtpTagRepair {
   const tokens = placedTags(text);
   const stack: string[] = [];
   const pieces: string[] = [];
@@ -227,14 +227,14 @@ export function canonicalHandbookTags(text: string): HandbookTagRepair {
  * heading.
  */
 export function readPastedSections(
-  sections: readonly HandbookSplitSection[],
+  sections: readonly FtpSplitSection[],
   document: string,
-): { split: HandbookSplitResult; repaired: number } {
-  const split = splitHandbookDocument(sections, document);
+): { split: FtpSplitResult; repaired: number } {
+  const split = splitFtpDocument(sections, document);
   if (!split.ok) return { split, repaired: 0 };
   let repaired = 0;
   const fixed = split.sections.map((section) => {
-    const canonical = canonicalHandbookTags(section.content);
+    const canonical = canonicalFtpTags(section.content);
     repaired += canonical.repaired;
     return { id: section.id, content: canonical.text };
   });
@@ -242,7 +242,7 @@ export function readPastedSections(
 }
 
 /** Whether two section texts are the same content, line endings aside. */
-export function sameHandbookText(a: string, b: string): boolean {
+export function sameFtpText(a: string, b: string): boolean {
   return a.replace(/\r\n/g, "\n") === b.replace(/\r\n/g, "\n");
 }
 
@@ -268,7 +268,7 @@ function wordsOf(text: string): string {
 
 /** Every tag the section carries, so a moved tag is not a missing one. */
 function tagSet(text: string): string {
-  return handbookTagTokens(text)
+  return ftpTagTokens(text)
     .map((token) => token.raw)
     .sort()
     .join("");
@@ -321,7 +321,7 @@ function quote(line: string, at: number): string {
   return `\`${from > 0 ? "…" : ""}${window}${ellipsis}\``;
 }
 
-export type HandbookSectionMatch = {
+export type FtpSectionMatch = {
   /** Whether the file already says what the paste says. */
   same: boolean;
   /**
@@ -347,16 +347,16 @@ export type HandbookSectionMatch = {
  * What is left is a difference in the writing, and that is the answer worth
  * giving: the section, and the first line where the two disagree.
  */
-export function compareHandbookSection(
+export function compareFtpSection(
   fileText: string,
   pasteText: string,
-): HandbookSectionMatch {
+): FtpSectionMatch {
   const file = withoutTagGaps(fileText);
   const paste = withoutTagGaps(pasteText);
   if (file === paste) {
     return { same: true, kind: "identical", reason: "Identical." };
   }
-  const repaired = withoutTagGaps(canonicalHandbookTags(pasteText).text);
+  const repaired = withoutTagGaps(canonicalFtpTags(pasteText).text);
   if (file === repaired) {
     return {
       same: true,

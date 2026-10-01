@@ -57,10 +57,10 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/api/extension": ["./extension/**/*"],
     "/resources/browser-extension": ["./extension/**/*"],
-    // The FTD handbook's sections (`docs/handbook/**`), which the Handbook tab
+    // The FTD FTP's sections (`docs/ftp/**`), which the FTP tab
     // reads and publishes through this route.
-    "/api/handbook": ["./docs/handbook/**/*"],
-    "/divisions/ftd/fd-command": ["./docs/handbook/**/*"],
+    "/api/ftp": ["./docs/ftp/**/*"],
+    "/divisions/ftd/fd-command": ["./docs/ftp/**/*"],
   },
 };
 

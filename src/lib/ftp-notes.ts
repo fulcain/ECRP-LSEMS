@@ -11,9 +11,9 @@
  * Everything here is pure: no file reads, no database, no network.
  *
  * This module also derived the paperwork page's Guide and Script from the
- * handbook for a while, through the generated `handbook-content.ts` module. It
+ * FTP for a while, through the generated `ftp-content.ts` module. It
  * does not any more: those views are written by hand per phase again
- * (`paperwork/lib/phase-notes/`), and what stays derived from the handbook is
+ * (`paperwork/lib/phase-notes/`), and what stays derived from the FTP is
  * the profile an FTO is handed - the copy that must never drift.
  */
 
@@ -21,7 +21,7 @@
  * The trainer's own details, as a signature block is signed with them.
  *
  * They come from the member - the name and signature the Staff Page holds, the
- * rank the app resolves - and are never asked for twice. The handbook cannot
+ * rank the app resolves - and are never asked for twice. The FTP cannot
  * carry them: it is the same file for every trainer.
  */
 export type MedicSignature = {
@@ -74,7 +74,7 @@ const SIGNATURE_FILLS: readonly {
   { find: "RANK", wholeLine: true, from: "rank", write: (value) => value },
 ];
 
-/** Fill the member's own details into a piece of handbook text. */
+/** Fill the member's own details into a piece of FTP text. */
 export function fillMedicSignature(
   text: string,
   medic: MedicSignature,

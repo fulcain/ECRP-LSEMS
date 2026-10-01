@@ -1,4 +1,4 @@
-import { signatureBlock } from "@/lib/handbook-notes";
+import { signatureBlock } from "@/lib/ftp-notes";
 
 /** Pure BBCode assembler for reinstatement paperwork (returning EMT). */
 export function generateReinstatementBBCode(

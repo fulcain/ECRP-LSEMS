@@ -1,21 +1,21 @@
 /**
- * The FTD handbook on disk: the one place that reads a section, writes one back,
+ * The FTD FTP on disk: the one place that reads a section, writes one back,
  * and asks git what it looked like before.
  *
  * A published section is a **file in the repository** and nothing else. There is
  * no database copy and no cache to fall back on: if this deployment cannot write
  * to its own filesystem the write is refused and the caller is handed the text
- * to apply by hand. That is deliberate - handbook content living in two places is
+ * to apply by hand. That is deliberate - FTP content living in two places is
  * exactly how the app and the forum drift apart.
  *
- * `docs/handbook/**` travels with the deployment through
+ * `docs/ftp/**` travels with the deployment through
  * `outputFileTracingIncludes` in `next.config.ts`, so a deployed build can still
  * *read* every section and serve it to the editor.
  *
  * Writing a section also assembles the two profiles back into
- * `handbook-content.ts`, because the contract workflow that hands an FTO the
+ * `ftp-content.ts`, because the contract workflow that hands an FTO the
  * profile is a client module and cannot read a file. That module is generated,
- * never edited, and `npm run handbook:check` fails when it stops matching.
+ * never edited, and `npm run ftp:check` fails when it stops matching.
  */
 
 import { execFile } from "node:child_process";
@@ -27,29 +27,35 @@ import {
   carriesPlaceholder,
 } from "@/app/constants/profile-placeholders";
 import {
-  HANDBOOK_TAGS,
-  HANDBOOK_VOID_TAGS,
-  sameHandbookText,
-} from "@/lib/handbook-markup";
+  FTP_TAGS,
+  FTP_VOID_TAGS,
+  sameFtpText,
+} from "@/lib/ftp-markup";
 import {
-  HANDBOOK_FORMATS,
-  HANDBOOK_SECTIONS,
-  handbookFormatOf,
-  handbookSection,
+  FTP_FORMATS,
+  FTP_SECTIONS,
+  ftpFormatOf,
+  ftpSection,
   sectionHeading,
-  type HandbookFormat,
-  type HandbookSection,
-} from "@/app/constants/divisions/ftd/handbook";
+  type FtpFormat,
+  type FtpSection,
+} from "@/app/constants/divisions/ftd/ftp";
 
 const run = promisify(execFile);
-const ROOT = process.cwd();
+/**
+ * The checkout root, resolved per call rather than at module load: the GitHub
+ * commit path stages an update into a scratch directory and runs the same write
+ * helpers with the process rooted there, so a load-time constant would read and
+ * write the checkout no matter where the caller pointed.
+ */
+const ROOT = () => process.cwd();
 
 /** A section as the editor needs it: the declaration plus the file's own text. */
-export type HandbookSectionContent = {
+export type FtpSectionContent = {
   id: string;
   title: string;
   hint: string;
-  format: HandbookFormat["key"];
+  format: FtpFormat["key"];
   formatLabel: string;
   file: string;
   mustKeep: readonly string[];
@@ -60,14 +66,14 @@ export type HandbookSectionContent = {
   available: boolean;
 };
 
-export type HandbookFormatContent = {
-  key: HandbookFormat["key"];
+export type FtpFormatContent = {
+  key: FtpFormat["key"];
   label: string;
   hint: string;
-  sections: HandbookSectionContent[];
+  sections: FtpSectionContent[];
 };
 
-export type HandbookValidation = {
+export type FtpValidation = {
   /** Publish is refused while this is not empty. */
   problems: string[];
   /** Published anyway, but worth saying out loud. */
@@ -75,8 +81,10 @@ export type HandbookValidation = {
 };
 
 function absolute(file: string): string {
-  return path.join(ROOT, file);
+  return path.join(ROOT(), file);
 }
+/** For a caller that stages an update elsewhere and needs the same join. */
+export { absolute as ftpAbsolute };
 
 /** The file's text, or null when it is not there. */
 async function readSectionFile(file: string): Promise<string | null> {
@@ -90,11 +98,11 @@ async function readSectionFile(file: string): Promise<string | null> {
 /**
  * Every section of every format, in declared order, with its text. A file that
  * cannot be read comes back as `available: false` rather than taking the page
- * down - a missing handbook file is worth seeing, not worth a 500.
+ * down - a missing FTP file is worth seeing, not worth a 500.
  */
-export async function readHandbook(): Promise<HandbookFormatContent[]> {
+export async function readFtp(): Promise<FtpFormatContent[]> {
   return Promise.all(
-    HANDBOOK_FORMATS.map(async (format) => ({
+    FTP_FORMATS.map(async (format) => ({
       key: format.key,
       label: format.label,
       hint: format.hint,
@@ -130,7 +138,7 @@ export async function readHandbook(): Promise<HandbookFormatContent[]> {
  * does not.
  */
 export function foreignSectionHeadings(
-  formats: readonly HandbookFormatContent[],
+  formats: readonly FtpFormatContent[],
   id: string,
 ): string[] {
   return formats
@@ -141,24 +149,24 @@ export function foreignSectionHeadings(
 }
 
 /** Where the generated module the client reads the profile from lives. */
-export const HANDBOOK_CONTENT_MODULE =
-  "src/app/constants/divisions/ftd/handbook-content.ts";
+export const FTP_CONTENT_MODULE =
+  "src/app/constants/divisions/ftd/ftp-content.ts";
 
 /**
  * The generated module's text for the files as they are on disk right now.
  *
- * The pages that show or copy the handbook - the contract workflow, the
+ * The pages that show or copy the FTP - the contract workflow, the
  * paperwork Guide and Script - are client modules: they cannot read a file, so
  * the sections have to reach them some other way. Rather than keep a second copy
  * beside them - which is what had drifted - each section's own text is written
  * into this module, and the assembled profile is derived from those by order.
- * One copy of the text, and `npm run handbook:check` fails the moment it stops
+ * One copy of the text, and `npm run ftp:check` fails the moment it stops
  * matching the files.
  */
-export async function renderHandbookContentModule(): Promise<string> {
+export async function renderFtpContentModule(): Promise<string> {
   const sections: Record<string, Record<string, string>> = {};
   const order: Record<string, string[]> = {};
-  for (const format of HANDBOOK_FORMATS) {
+  for (const format of FTP_FORMATS) {
     sections[format.key] = {};
     order[format.key] = format.sections.map((section) => section.id);
     for (const section of format.sections) {
@@ -167,41 +175,41 @@ export async function renderHandbookContentModule(): Promise<string> {
     }
   }
   return `/**
- * The handbook's two profiles, assembled - GENERATED FILE, DO NOT EDIT.
+ * The FTP's two profiles, assembled - GENERATED FILE, DO NOT EDIT.
  *
- * Written from \`docs/handbook/**\` when a section is published. It exists
+ * Written from \`docs/ftp/**\` when a section is published. It exists
  * because the contract workflow is a client module: it cannot read a file, and
- * the profile it copies has to be the handbook's own text rather than a second
+ * the profile it copies has to be the FTP's own text rather than a second
  * copy of it - edit the section files, never this.
  *
- * \`npm run handbook:check\` fails when this stops matching the files.
+ * \`npm run ftp:check\` fails when this stops matching the files.
  */
 
-import type { HandbookFormatKey } from "./handbook";
+import type { FtpFormatKey } from "./ftp";
 
 /**
  * Every section's own text, by id. This is the one copy the client side has, and
  * it is what the Guide and the Script in FTD Paperwork are built from.
  */
-export const HANDBOOK_SECTION_TEXTS: Record<
-  HandbookFormatKey,
+export const FTP_SECTION_TEXTS: Record<
+  FtpFormatKey,
   Record<string, string>
 > = ${JSON.stringify(sections, null, 2)};
 
 /** The order the sections are assembled in, which is the declaration's order. */
-const ORDER: Record<HandbookFormatKey, readonly string[]> = ${JSON.stringify(
+const ORDER: Record<FtpFormatKey, readonly string[]> = ${JSON.stringify(
     order,
     null,
     2,
   )};
 
 /** Each format's own document: its sections in order, one newline between them. */
-export const HANDBOOK_DOCUMENTS: Record<HandbookFormatKey, string> = {
+export const FTP_DOCUMENTS: Record<FtpFormatKey, string> = {
   regular: ORDER.regular
-    .map((id) => HANDBOOK_SECTION_TEXTS.regular[id] ?? "")
+    .map((id) => FTP_SECTION_TEXTS.regular[id] ?? "")
     .join("\\n"),
   reinstatement: ORDER.reinstatement
-    .map((id) => HANDBOOK_SECTION_TEXTS.reinstatement[id] ?? "")
+    .map((id) => FTP_SECTION_TEXTS.reinstatement[id] ?? "")
     .join("\\n"),
 };
 `;
@@ -212,14 +220,14 @@ export const HANDBOOK_DOCUMENTS: Record<HandbookFormatKey, string> = {
  * git's own object store, so it needs a checkout - which the deployed app does
  * not have, and the caller is told so rather than shown an empty page.
  */
-export async function readHandbookVersion(
+export async function readFtpVersion(
   file: string,
   revision: string,
 ): Promise<string | null> {
   if (!/^[0-9a-f]{7,40}$/i.test(revision)) return null;
   try {
     const { stdout } = await run("git", ["show", `${revision}:${file}`], {
-      cwd: ROOT,
+      cwd: ROOT(),
       maxBuffer: 8 * 1024 * 1024,
     });
     return stdout;
@@ -228,7 +236,7 @@ export async function readHandbookVersion(
   }
 }
 
-export type HandbookCommit = {
+export type FtpCommit = {
   revision: string;
   date: string;
   subject: string;
@@ -236,10 +244,10 @@ export type HandbookCommit = {
 };
 
 /** The commits that touched a section - its version history. */
-export async function readHandbookHistory(
+export async function readFtpHistory(
   file: string,
   limit = 25,
-): Promise<HandbookCommit[]> {
+): Promise<FtpCommit[]> {
   try {
     const { stdout } = await run(
       "git",
@@ -251,7 +259,7 @@ export async function readHandbookHistory(
         "--",
         file,
       ],
-      { cwd: ROOT, maxBuffer: 1024 * 1024 },
+      { cwd: ROOT(), maxBuffer: 1024 * 1024 },
     );
     return stdout
       .split("\n")
@@ -266,11 +274,46 @@ export async function readHandbookHistory(
   }
 }
 
+/**
+ * The commits that touched any of `files`, newest first - the version history
+ * the panel lists. Git sorts across pathspecs itself, so one log over the
+ * section files is the whole FTP's history in date order.
+ */
+export async function readFtpHistoryAll(
+  files: readonly string[],
+  limit = 30,
+): Promise<FtpCommit[]> {
+  if (files.length === 0) return [];
+  try {
+    const { stdout } = await run(
+      "git",
+      [
+        "log",
+        `--max-count=${limit}`,
+        "--date=short",
+        "--format=%h%x1f%ad%x1f%an%x1f%s",
+        "--",
+        ...files,
+      ],
+      { cwd: ROOT(), maxBuffer: 1024 * 1024 },
+    );
+    return stdout
+      .split("\n")
+      .filter(Boolean)
+      .map((line) => {
+        const [revision, date, author, subject] = line.split("\u001f");
+        return { revision, date, author, subject };
+      });
+  } catch {
+    return [];
+  }
+}
+
 /** Whether this deployment can write its own source files. */
-export function canWriteHandbook(): boolean {
-  // A serverless build ships the repository read-only, so the editor offers the
-  // file to apply by hand instead of promising a write that cannot happen.
-  return !process.env.VERCEL;
+export function canWriteFtp(): boolean {
+  // A deployment with the GitHub token configured can commit its changes to the
+  // repository instead, which is how an update works without a checkout.
+  return !process.env.VERCEL || Boolean(process.env.GITHUB_FTP_TOKEN);
 }
 
 /**
@@ -284,11 +327,11 @@ export function canWriteHandbook(): boolean {
  * the split unable to tell where a section begins.
  */
 export function validateSection(
-  section: HandbookSection,
+  section: FtpSection,
   content: string,
   /** Other sections' own headings, from `foreignSectionHeadings`. */
   foreignHeadings: readonly string[] = [],
-): HandbookValidation {
+): FtpValidation {
   const problems: string[] = [];
   const warnings: string[] = [];
   const text = content.trim();
@@ -311,10 +354,10 @@ export function validateSection(
   // catches is a whole profile pasted into the editor for one section - the
   // header ends up carrying every phase, the joined document says them twice,
   // and the split can no longer find where the next section begins, which is
-  // the state `npm run handbook:check` fails on and nobody meant to create.
+  // the state `npm run ftp:check` fails on and nobody meant to create.
   const carried = foreignHeadings.filter((heading) => content.includes(heading));
   if (carried.length > 0) {
-    const label = handbookFormatOf(section)?.label;
+    const label = ftpFormatOf(section)?.label;
     problems.push(
       `The text carries ${
         carried.length === 1
@@ -329,7 +372,7 @@ export function validateSection(
   // A section owns its spoilers: one left open would swallow the next section's
   // body inside its own collapse on the forum, which is how the profile's
   // Personnel File Post template ended up buried in Certification. This is a
-  // refusal rather than a warning because `npm run handbook:check` fails on it,
+  // refusal rather than a warning because `npm run ftp:check` fails on it,
   // and a publish must not be able to create the state the check rejects.
   // An untitled `[spoiler]` opens one too, so both spellings count - counting
   // only the titled ones let a section pass the check while it left a spoiler
@@ -349,7 +392,7 @@ export function validateSection(
   for (let match = pattern.exec(content); match; match = pattern.exec(content)) {
     const [, closing, rawName] = match;
     const name = rawName.toLowerCase();
-    if (!HANDBOOK_TAGS.includes(name) || HANDBOOK_VOID_TAGS.has(name)) continue;
+    if (!FTP_TAGS.includes(name) || FTP_VOID_TAGS.has(name)) continue;
     if (closing) {
       const open = stack.pop();
       if (open !== name) {
@@ -370,7 +413,7 @@ export function validateSection(
   return { problems, warnings };
 }
 
-export type HandbookWriteResult =
+export type FtpWriteResult =
   | { ok: true; written: true; file: string; bytes: number }
   | {
       ok: false;
@@ -381,7 +424,7 @@ export type HandbookWriteResult =
     };
 
 /** What a write of several sections left behind. */
-export type HandbookSectionsWrite = {
+export type FtpSectionsWrite = {
   files: string[];
   bytes: number;
   /** The sections whose file actually changed, and the ones that did not. */
@@ -391,7 +434,7 @@ export type HandbookSectionsWrite = {
   kept: string[];
 };
 
-export type HandbookWriteOptions = {
+export type FtpWriteOptions = {
   /**
    * A whole pasted profile skips the sections it may not rewrite - the profile's
    * own header, which is the same on every profile and not what an update is
@@ -410,14 +453,14 @@ export type HandbookWriteOptions = {
  *
  * A whole profile has to move as one unit: regenerating the module per file would
  * leave the assembled profile disagreeing with the sections it is built from on
- * every write but the last, which is the one state `npm run handbook:check`
+ * every write but the last, which is the one state `npm run ftp:check`
  * exists to refuse.
  */
-export async function writeHandbookSections(
+export async function writeFtpSections(
   entries: readonly { id: string; content: string }[],
-  options: HandbookWriteOptions = {},
-): Promise<HandbookSectionsWrite | null> {
-  if (!canWriteHandbook() || entries.length === 0) return null;
+  options: FtpWriteOptions = {},
+): Promise<FtpSectionsWrite | null> {
+  if (!canWriteFtp() || entries.length === 0) return null;
 
   const files: string[] = [];
   const changed: string[] = [];
@@ -425,14 +468,14 @@ export async function writeHandbookSections(
   const kept: string[] = [];
   let bytes = 0;
   for (const entry of entries) {
-    const section = handbookSection(entry.id);
+    const section = ftpSection(entry.id);
     if (!section) return null;
     if (options.keepProtected && section.protectedFromPaste) {
       kept.push(entry.id);
       continue;
     }
     const current = await readSectionFile(section.file);
-    if (current !== null && sameHandbookText(current, entry.content)) {
+    if (current !== null && sameFtpText(current, entry.content)) {
       unchanged.push(entry.id);
       continue;
     }
@@ -446,8 +489,8 @@ export async function writeHandbookSections(
   if (changed.length === 0) return { files, bytes, changed, unchanged, kept };
 
   await writeFile(
-    absolute(HANDBOOK_CONTENT_MODULE),
-    await renderHandbookContentModule(),
+    absolute(FTP_CONTENT_MODULE),
+    await renderFtpContentModule(),
     "utf8",
   );
   return { files, bytes, changed, unchanged, kept };
@@ -458,14 +501,14 @@ export async function writeHandbookSections(
  * write, and hands the text back so the member can still apply it - the one
  * thing this must never do is keep the change only in the browser or a database.
  */
-export async function writeHandbookSection(
+export async function writeFtpSection(
   id: string,
   content: string,
-): Promise<HandbookWriteResult | null> {
-  const section = handbookSection(id);
+): Promise<FtpWriteResult | null> {
+  const section = ftpSection(id);
   if (!section) return null;
 
-  if (!canWriteHandbook()) {
+  if (!canWriteFtp()) {
     return {
       ok: false,
       written: false,
@@ -478,7 +521,7 @@ export async function writeHandbookSection(
 
   // The assembled module moves with it, or a published section would leave the
   // profile the contract workflow hands out stale until a rebuild.
-  const written = await writeHandbookSections([{ id, content }]);
+  const written = await writeFtpSections([{ id, content }]);
   // A publish of identical text is not a write, and the caller has to say so
   // rather than report a save that never happened.
   if (written && written.changed.length === 0) {
@@ -499,8 +542,8 @@ export async function writeHandbookSection(
 }
 
 /** The file one section lives in, for the editor's line about where it goes. */
-export function handbookFilePath(id: string): string | null {
-  return handbookSection(id)?.file ?? null;
+export function ftpFilePath(id: string): string | null {
+  return ftpSection(id)?.file ?? null;
 }
 
-export { HANDBOOK_SECTIONS, handbookFormatOf };
+export { FTP_SECTIONS, ftpFormatOf };

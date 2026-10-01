@@ -3,9 +3,9 @@
  *
  * The conversion is one thing (`lib/phase-notes-build.ts`); this is the half that
  * touches the disk, and both callers go through it so a Guide written by the
- * Handbook tab and one written by `npm run notes:build --write` cannot differ:
+ * FTP tab and one written by `npm run notes:build --write` cannot differ:
  * the update path asks for the sections a paste actually changed, and the command
- * asks for every section in the handbook.
+ * asks for every section in the FTP.
  *
  * Planning and writing are two functions for the same reason the importer has a
  * `write: false`: what the notes *would* say is knowable without moving a file, so
@@ -23,10 +23,10 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { HANDBOOK_SECTIONS } from "@/app/constants/divisions/ftd/handbook";
+import { FTP_SECTIONS } from "@/app/constants/divisions/ftd/ftp";
 import type { PhaseNotePlacement } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/sections";
 import {
-  handbookSteps,
+  ftpSteps,
   renderPhaseGuide,
 } from "@/lib/phase-notes-build";
 
@@ -71,21 +71,21 @@ export async function planPhaseNotes(
   const skipped: PhaseNotesSkip[] = [];
 
   for (const placement of placements) {
-    const section = HANDBOOK_SECTIONS.find(
+    const section = FTP_SECTIONS.find(
       (candidate) => candidate.id === placement.section,
     );
     if (!section) {
       skipped.push({
         component: placement.component,
         section: placement.section,
-        reason: "the section is not declared in the handbook",
+        reason: "the section is not declared in the FTP",
       });
       continue;
     }
-    const handbook = await readFile(path.join(root, section.file), "utf8").catch(
+    const ftp = await readFile(path.join(root, section.file), "utf8").catch(
       () => "",
     );
-    if (handbookSteps(handbook).length === 0) {
+    if (ftpSteps(ftp).length === 0) {
       skipped.push({
         component: placement.component,
         section: section.id,
@@ -101,7 +101,7 @@ export async function planPhaseNotes(
         sectionId: section.id,
         file: section.file,
         component: placement.component,
-        handbook,
+        ftp,
       }),
     });
   }

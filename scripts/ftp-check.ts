@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * Asserts the FTD handbook's declarations match the files on disk.
+ * Asserts the FTD FTP's declarations match the files on disk.
  *
- * The handbook is editable in the app, which means the app and the repository
+ * The FTP is editable in the app, which means the app and the repository
  * have to agree about it down to the last file. What this pins:
  *
  *   • every declared section has a file, and every file is a declared section
@@ -30,43 +30,43 @@
  *   • editing it is the Discord admins' and nobody else's - the one gate in the
  *     app that can't be granted from inside it, because it writes the source;
  *   • and neither the editor's route nor its library has a database path, so a
- *     published handbook change can only ever be a change in the repository.
+ *     published FTP change can only ever be a change in the repository.
  *
- * Run it after touching `app/constants/divisions/ftd/handbook.ts`, a file under
- * `docs/handbook/`, or the Handbook tab:
+ * Run it after touching `app/constants/divisions/ftd/ftp.ts`, a file under
+ * `docs/ftp/`, or the FTP tab:
  *
- *   npm run handbook:check
+ *   npm run ftp:check
  */
 
 import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 
 import {
-  HANDBOOK_FORMATS,
-  HANDBOOK_SECTIONS,
-  handbookFormatOf,
+  FTP_FORMATS,
+  FTP_SECTIONS,
+  ftpFormatOf,
   sectionHeading,
-  splitHandbookDocument,
-} from "@/app/constants/divisions/ftd/handbook";
-import { HANDBOOK_DOCUMENTS } from "@/app/constants/divisions/ftd/handbook-content";
-import { convertHandbookBbcode } from "@/lib/handbook-bbcode";
+  splitFtpDocument,
+} from "@/app/constants/divisions/ftd/ftp";
+import { FTP_DOCUMENTS } from "@/app/constants/divisions/ftd/ftp-content";
+import { convertFtpBbcode } from "@/lib/ftp-bbcode";
 import {
   foreignSectionHeadings,
-  readHandbook,
+  readFtp,
   validateSection,
-} from "@/lib/handbook";
-import { importHandbookDocument } from "@/lib/handbook-import";
+} from "@/lib/ftp";
+import { importFtpDocument } from "@/lib/ftp-import";
 import {
-  canonicalHandbookTags,
-  compareHandbookSection,
+  canonicalFtpTags,
+  compareFtpSection,
   readPastedSections,
-} from "@/lib/handbook-markup";
+} from "@/lib/ftp-markup";
 import {
   NAME_SPELLINGS,
   carriesPlaceholder,
   isFillInMarker,
 } from "@/app/constants/profile-placeholders";
-import { fillMedicSignature, signatureBlock } from "@/lib/handbook-notes";
+import { fillMedicSignature, signatureBlock } from "@/lib/ftp-notes";
 import { paperworkConfig } from "@/app/(routes)/divisions/ftd/paperwork/lib/paperworkConfig";
 import {
   allPhaseNotePlacements,
@@ -87,7 +87,7 @@ function expect(label: string, actual: unknown, wanted: unknown) {
 }
 
 const ROOT = process.cwd();
-const DIR = path.join(ROOT, "docs", "handbook");
+const DIR = path.join(ROOT, "docs", "ftp");
 
 function read(file: string): string | null {
   try {
@@ -97,8 +97,8 @@ function read(file: string): string | null {
   }
 }
 
-/** Every file under `docs/handbook/`, relative to the repository root. */
-function filesOnDisk(dir = DIR, prefix = "docs/handbook"): string[] {
+/** Every file under `docs/ftp/`, relative to the repository root. */
+function filesOnDisk(dir = DIR, prefix = "docs/ftp"): string[] {
   const found: string[] = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const relative = `${prefix}/${entry.name}`;
@@ -109,7 +109,7 @@ function filesOnDisk(dir = DIR, prefix = "docs/handbook"): string[] {
 }
 
 /* ---- one file per section, one section per file ---- */
-const declared = HANDBOOK_SECTIONS.map((section) => section.file);
+const declared = FTP_SECTIONS.map((section) => section.file);
 expect(
   "every declared section has a file",
   declared.filter((file) => read(file) === null),
@@ -127,31 +127,31 @@ expect(
 );
 expect(
   "no section id is used twice",
-  new Set(HANDBOOK_SECTIONS.map((section) => section.id)).size,
-  HANDBOOK_SECTIONS.length,
+  new Set(FTP_SECTIONS.map((section) => section.id)).size,
+  FTP_SECTIONS.length,
 );
 expect(
   "no section is empty",
-  HANDBOOK_SECTIONS.filter((section) => !(read(section.file) ?? "").trim()).map(
+  FTP_SECTIONS.filter((section) => !(read(section.file) ?? "").trim()).map(
     (section) => section.id,
   ),
   [],
 );
 expect(
   "every section is in exactly one format",
-  HANDBOOK_SECTIONS.filter((section) => !handbookFormatOf(section)).map(
+  FTP_SECTIONS.filter((section) => !ftpFormatOf(section)).map(
     (section) => section.id,
   ),
   [],
 );
 expect(
   "and both formats are non-empty",
-  HANDBOOK_FORMATS.map((format) => format.sections.length > 0),
-  HANDBOOK_FORMATS.map(() => true),
+  FTP_FORMATS.map((format) => format.sections.length > 0),
+  FTP_FORMATS.map(() => true),
 );
 
 /* ---- the placeholders a section promised to keep ---- */
-for (const section of HANDBOOK_SECTIONS) {
+for (const section of FTP_SECTIONS) {
   const content = read(section.file) ?? "";
   const missing = (section.mustKeep ?? []).filter(
     (token) => !carriesPlaceholder(content, token),
@@ -160,7 +160,7 @@ for (const section of HANDBOOK_SECTIONS) {
 }
 
 /* ---- a section is a section: it opens and closes its own spoilers ---- */
-for (const section of HANDBOOK_SECTIONS) {
+for (const section of FTP_SECTIONS) {
   const content = read(section.file) ?? "";
   // `[spoiler]` opens one as much as `[spoiler=…]` does, so both count.
   const opens = (content.match(/\[spoiler(?:\s*=[^\]]*)?\]/g) ?? []).length;
@@ -177,9 +177,9 @@ for (const section of HANDBOOK_SECTIONS) {
 // them twice, and the split can no longer tell where a section begins. It is a
 // refusal at publish time because it is a state this script fails on - a file
 // that reaches it is one nobody meant to create.
-const stored = await readHandbook();
+const stored = await readFtp();
 function carriesForeignHeading(id: string, content: string): boolean {
-  const section = HANDBOOK_SECTIONS.find((candidate) => candidate.id === id);
+  const section = FTP_SECTIONS.find((candidate) => candidate.id === id);
   if (!section) return false;
   return validateSection(
     section,
@@ -189,7 +189,7 @@ function carriesForeignHeading(id: string, content: string): boolean {
 }
 expect(
   "no section file carries another section's heading",
-  HANDBOOK_SECTIONS.filter((section) =>
+  FTP_SECTIONS.filter((section) =>
     carriesForeignHeading(section.id, read(section.file) ?? ""),
   ).map((section) => section.id),
   [],
@@ -197,8 +197,8 @@ expect(
 // The first two sections of the regular profile: the header, which has no
 // heading of its own, and the phase below it - pasting the second into the first
 // is the mistake that is refused.
-if (HANDBOOK_FORMATS[0].sections.length > 1) {
-  const [header, next] = HANDBOOK_FORMATS[0].sections;
+if (FTP_FORMATS[0].sections.length > 1) {
+  const [header, next] = FTP_FORMATS[0].sections;
   const merged = `${read(header.file) ?? ""}\n${sectionHeading(read(next.file) ?? "") ?? ""}\nbody`;
   expect(
     "and a whole profile pasted into one section is refused",
@@ -213,7 +213,7 @@ if (HANDBOOK_FORMATS[0].sections.length > 1) {
 }
 
 /* ---- the profile a format builds is its sections, in order ---- */
-for (const format of HANDBOOK_FORMATS) {
+for (const format of FTP_FORMATS) {
   const parts = format.sections.map((section) => read(section.file) ?? "");
   const document = parts.join("\n");
   expect(
@@ -232,10 +232,10 @@ for (const format of HANDBOOK_FORMATS) {
   );
   // The contract workflow is a client module and cannot read a file, so it
   // copies the profile out of the generated module. These two are the same text
-  // or the FTO pastes something the handbook does not say.
+  // or the FTO pastes something the FTP does not say.
   expect(
     `the generated ${format.key} document is exactly its files`,
-    HANDBOOK_DOCUMENTS[format.key],
+    FTP_DOCUMENTS[format.key],
     document,
   );
 }
@@ -245,7 +245,7 @@ for (const format of HANDBOOK_FORMATS) {
 // so a section is found again by its own heading. A section that stopped opening
 // with one would send the paste into the wrong files - and a paste is the one
 // edit nobody reads line by line before publishing.
-for (const format of HANDBOOK_FORMATS) {
+for (const format of FTP_FORMATS) {
   const pieces = format.sections.map((section) => ({
     id: section.id,
     title: section.title,
@@ -261,7 +261,7 @@ for (const format of HANDBOOK_FORMATS) {
   );
 
   const document = pieces.map((piece) => piece.content).join("\n");
-  const split = splitHandbookDocument(pieces, document);
+  const split = splitFtpDocument(pieces, document);
   expect(`the ${format.key} profile splits back up`, split.ok, true);
   expect(
     `and splitting it loses nothing`,
@@ -277,7 +277,7 @@ for (const format of HANDBOOK_FORMATS) {
 // section's close back to it - the failure this catches is a paste that leaves
 // Certification unclosed and Personnel File Post carrying a stray close, which
 // is what the update refused every profile paste over.
-const nesting = HANDBOOK_FORMATS.find((format) => format.key === "regular");
+const nesting = FTP_FORMATS.find((format) => format.key === "regular");
 if (nesting) {
   const pieces = nesting.sections.map((section) => ({
     id: section.id,
@@ -293,7 +293,7 @@ if (nesting) {
   nested[certification] = nested[certification].slice(0, at).trimEnd();
   nested[personnel] = `${nested[personnel]}\n[/spoiler]`;
 
-  const split = splitHandbookDocument(pieces, nested.join("\n"));
+  const split = splitFtpDocument(pieces, nested.join("\n"));
   expect("a paste that nests a section inside another splits", split.ok, true);
   const balance = (content: string) =>
     (content.match(/\[spoiler(?:\s*=[^\]]*)?\]/g) ?? []).length -
@@ -334,35 +334,35 @@ if (nesting) {
 // phpBB's order is not a change at all.
 expect(
   "every section file is already the text the tags are put right to",
-  HANDBOOK_SECTIONS.map((section) => ({
+  FTP_SECTIONS.map((section) => ({
     id: section.id,
-    repaired: canonicalHandbookTags(read(section.file) ?? "").repaired,
+    repaired: canonicalFtpTags(read(section.file) ?? "").repaired,
   })).filter((entry) => entry.repaired !== 0),
   [],
 );
 expect(
   "a close that does not line up closes the tag it was written inside",
-  canonicalHandbookTags("[b][center]x[/b][/center]").text,
+  canonicalFtpTags("[b][center]x[/b][/center]").text,
   "[b][center]x[/center][/b]",
 );
 expect(
   "a close with nothing to close is dropped",
-  canonicalHandbookTags("[spoiler=A][/b]x[/spoiler]").text,
+  canonicalFtpTags("[spoiler=A][/b]x[/spoiler]").text,
   "[spoiler=A]x[/spoiler]",
 );
 expect(
   "a tag left open is closed where the thing it was opened in closes",
-  canonicalHandbookTags("[spoiler=A]\n[divbox=white]\nx\n[/spoiler]").text,
+  canonicalFtpTags("[spoiler=A]\n[divbox=white]\nx\n[/spoiler]").text,
   "[spoiler=A]\n[divbox=white]\nx\n[/divbox][/spoiler]",
 );
 expect(
   "and a pair written the other way round is put back in order",
-  canonicalHandbookTags("[list]\n[spoiler=A]\nx\n[/list][/spoiler]").text,
+  canonicalFtpTags("[list]\n[spoiler=A]\nx\n[/list][/spoiler]").text,
   "[list]\n[spoiler=A]\nx\n[/spoiler][/list]",
 );
 expect(
   "a section carrying its tags the forum's way is not an edit",
-  compareHandbookSection(
+  compareFtpSection(
     "[b][center]x[/center][/b]",
     "[b][center]x[/b][/center]",
   ).same,
@@ -370,12 +370,12 @@ expect(
 );
 expect(
   "while a word that moved is",
-  compareHandbookSection("[b]10-4[/b]", "[b]10-43[/b]").kind,
+  compareFtpSection("[b]10-4[/b]", "[b]10-43[/b]").kind,
   "written",
 );
 expect(
   "and the report says which word, not just that there is one",
-  /10-4/.test(compareHandbookSection("[b]10-4[/b]", "[b]10-43[/b]").reason),
+  /10-4/.test(compareFtpSection("[b]10-4[/b]", "[b]10-43[/b]").reason),
   true,
 );
 /** A section with every correctly nested close pair written the way phpBB stores it. */
@@ -389,7 +389,7 @@ function asPhpbbStoresIt(text: string): string {
 // End to end, through the one whole-profile path: the live profile with every
 // correctly nested close pair written the way phpBB stores it, and then the same
 // paste with one word changed.
-const spelled = HANDBOOK_FORMATS.find((format) => format.key === "regular");
+const spelled = FTP_FORMATS.find((format) => format.key === "regular");
 if (spelled) {
   const pieces = spelled.sections.map((section) => ({
     id: section.id,
@@ -402,7 +402,7 @@ if (spelled) {
     document !== pieces.map((piece) => piece.content).join("\n"),
     true,
   );
-  const forumSpelling = await importHandbookDocument({
+  const forumSpelling = await importFtpDocument({
     content: document,
     format: "regular",
     write: false,
@@ -417,7 +417,7 @@ if (spelled) {
     forumSpelling.ok && forumSpelling.conversions.some((conversion) => conversion.kind === "tag-order"),
     true,
   );
-  const edited = await importHandbookDocument({
+  const edited = await importFtpDocument({
     content: document.replace("MANAGING THEIR UNIT**", "MANAGING THEIR UNITttttt**"),
     format: "regular",
     write: false,
@@ -431,7 +431,7 @@ if (spelled) {
 // What the write hands over is the paste with its tags put right, so the forum's
 // spelling can never reach the files - and the tab decides it the same way, or it
 // promises an update the route then reports differently.
-for (const format of HANDBOOK_FORMATS) {
+for (const format of FTP_FORMATS) {
   const pieces = format.sections.map((section) => ({
     id: section.id,
     title: section.title,
@@ -447,7 +447,7 @@ for (const format of HANDBOOK_FORMATS) {
       ? placed.sections
           .map((entry) => ({
             id: entry.id,
-            repaired: canonicalHandbookTags(entry.content).repaired,
+            repaired: canonicalFtpTags(entry.content).repaired,
           }))
           .filter((entry) => entry.repaired !== 0)
       : ["unusable"],
@@ -529,9 +529,9 @@ expect(
   ].map((file) => (read(file) ?? "").includes("ftoName: details.ftoName")),
   [true, true],
 );
-/* ---- a name the app fills is one the handbook may keep ---- */
+/* ---- a name the app fills is one the FTP may keep ---- */
 // Two things replace a name in a template and they have to agree: the copy flow
-// that fills it in, and the handbook that refuses to lose it. One declaration,
+// that fills it in, and the FTP that refuses to lose it. One declaration,
 // or a paste spelling the name the old way is refused for no reason.
 const contractActions =
   read(
@@ -550,12 +550,12 @@ expect(
   false,
 );
 expect(
-  "the handbook check reads that same declaration",
+  "the FTP check reads that same declaration",
   carriesPlaceholder("…Fname Lname…", "{{applicantName}}"),
   true,
 );
 
-/* ---- the profile is handed out from the handbook, not from a second copy ---- */
+/* ---- the profile is handed out from the FTP, not from a second copy ---- */
 /** The longest backtick literal in a module - a profile pasted back in shows up here. */
 function longestLiteral(code: string): number {
   let longest = 0;
@@ -583,8 +583,8 @@ const CONSUMERS = [
 for (const [file, key] of CONSUMERS) {
   const code = readFileSync(path.join(ROOT, file), "utf8");
   expect(
-    `${path.basename(file)} hands out the handbook's ${key} profile`,
-    code.includes(`HANDBOOK_DOCUMENTS.${key}`),
+    `${path.basename(file)} hands out the FTP's ${key} profile`,
+    code.includes(`FTP_DOCUMENTS.${key}`),
     true,
   );
   expect(
@@ -594,13 +594,13 @@ for (const [file, key] of CONSUMERS) {
   );
 }
 
-/* ---- the paperwork Guides are built from the handbook ---- */
-// A Guide is built from the phase's handbook section: a trainer reading a guide
+/* ---- the paperwork Guides are built from the FTP ---- */
+// A Guide is built from the phase's FTP section: a trainer reading a guide
 // that disagrees with the profile is worse off than one with no guide at all,
 // which is how the Phase 1 notes came to still say panics do not show in PD/SD
 // dispatch after the section had stopped saying it. So it is *converted*, not
 // written twice (`lib/phase-notes-build.ts`, driven by `npm run notes:build` and
-// by the Handbook tab's own update), and what these hold is that there is one per
+// by the FTP tab's own update), and what these hold is that there is one per
 // phase and that it is drawn rather than pasted.
 const PHASE_NOTES_DIR =
   "src/app/(routes)/divisions/ftd/paperwork/lib/phase-notes";
@@ -617,7 +617,7 @@ const notesFiles: string[] = [];
 
 expect(
   "the Guide is the paperwork's own writing, not the profile printed back",
-  /handbookSectionText\(/.test(registry),
+  /ftpSectionText\(/.test(registry),
   false,
 );
 const mapped = new Set(
@@ -635,7 +635,7 @@ expect(
 // A Guide carries the section's *words* - that is the point of building it from
 // the section - so what may not be in there is the section's *markup*: a view of
 // the profile is the paperwork page's own components, and the profile itself is
-// what `components/handbook/bbcode-preview.tsx` renders in the Handbook tab.
+// what `components/ftp/bbcode-preview.tsx` renders in the FTP tab.
 const PASTED_MARKUP =
   /\[(?:list|spoiler|spoil|divbox|lsemssubtitle|lsemsfooter|code|url|img|center|ooc|c|cb|color|size)\b/i;
 // Only the views themselves: the email bodies beside them are paste-ready forum
@@ -645,7 +645,7 @@ const notesViews = allPhaseNotePlacements().map(
 );
 const pasted: string[] = notesViews
   .filter((file) => PASTED_MARKUP.test(read(file) ?? ""))
-  .map((file) => `${file} carries handbook markup`);
+  .map((file) => `${file} carries FTP markup`);
 expect("and no Guide is the profile pasted in", pasted, []);
 
 /* ---- the Hippocratic Oath is handed over a line at a time, always ---- */
@@ -688,7 +688,7 @@ expect(
 );
 
 /* ---- and every phase names the section its Guide is drawn from ---- */
-// The Guide is the trainers' writing and the handbook is the profile, so the two
+// The Guide is the trainers' writing and the FTP is the profile, so the two
 // are allowed to say a thing differently - which is exactly why each phase has to
 // name the section it is drawn from. `npm run notes:build` converts that section
 // into the phase's Guide, and `npm run notes:check` says which of its steps a
@@ -697,11 +697,11 @@ expect(
 // long after the profile had stopped saying so.
 const placements = allPhaseNotePlacements();
 expect(
-  "every phase names the handbook section its Guide is drawn from",
+  "every phase names the FTP section its Guide is drawn from",
   placements
     .filter(
       (placement) =>
-        !HANDBOOK_SECTIONS.some((section) => section.id === placement.section),
+        !FTP_SECTIONS.some((section) => section.id === placement.section),
     )
     .map((placement) => `${placement.component} -> ${placement.section}`),
   [],
@@ -715,15 +715,15 @@ expect(
 );
 
 
-/* ---- the handbook can be drawn: a tag it uses is a tag the renderer knows ---- */
-// `components/handbook/bbcode-preview.tsx` is the app's one renderer of a
+/* ---- the FTP can be drawn: a tag it uses is a tag the renderer knows ---- */
+// `components/ftp/bbcode-preview.tsx` is the app's one renderer of a
 // section, so a tag it does not know is text a reader sees as `[ooc] … [/ooc]`
 // on every line - and a blank like `[Callsign]` treated as a tag swallowed
-// everything after it. Every bracket token in the handbook is therefore either
+// everything after it. Every bracket token in the FTP is therefore either
 // something that renderer draws or a declared blank, and a new one fails here
 // until it is one of those.
 const previewSource = readFileSync(
-  path.join(ROOT, "src/components/handbook/bbcode-preview.tsx"),
+  path.join(ROOT, "src/components/ftp/bbcode-preview.tsx"),
   "utf8",
 );
 const drawnTags = new Set(
@@ -748,7 +748,7 @@ expect(
   true,
 );
 const undrawnTags = new Set<string>();
-for (const section of HANDBOOK_SECTIONS) {
+for (const section of FTP_SECTIONS) {
   const tokens = (read(section.file) ?? "").matchAll(
     /\[(?:\/)?([a-zA-Z*][a-zA-Z0-9]*)(?:=[^\]]*)?\]/g,
   );
@@ -765,7 +765,7 @@ expect(
 
 /* ---- the generated module is generated, and reaches for nothing ---- */
 const contentModule = readFileSync(
-  path.join(ROOT, "src/app/constants/divisions/ftd/handbook-content.ts"),
+  path.join(ROOT, "src/app/constants/divisions/ftd/ftp-content.ts"),
   "utf8",
 );
 expect(
@@ -779,22 +779,22 @@ expect(
   false,
 );
 
-/* ---- a published handbook change is a change in the repository ---- */
+/* ---- a published FTP change is a change in the repository ---- */
 const SOURCES = [
-  "src/app/api/handbook/route.ts",
-  "src/lib/handbook.ts",
-  "src/components/handbook/handbook-manager.tsx",
-  "src/app/constants/divisions/ftd/handbook.ts",
+  "src/app/api/ftp/route.ts",
+  "src/lib/ftp.ts",
+  "src/components/ftp/ftp-manager.tsx",
+  "src/app/constants/divisions/ftd/ftp.ts",
   "src/app/(routes)/divisions/ftd/fd-command/page.tsx",
   "src/app/(routes)/divisions/ftd/fd-command/components/command-tabs.tsx",
-  "src/lib/handbook-bbcode.ts",
-  "src/lib/handbook-import.ts",
-  "src/lib/handbook-markup.ts",
+  "src/lib/ftp-bbcode.ts",
+  "src/lib/ftp-import.ts",
+  "src/lib/ftp-markup.ts",
 ];
 for (const source of SOURCES) {
   const code = readFileSync(path.join(ROOT, source), "utf8");
   expect(
-    `${path.basename(source)} keeps no database copy of the handbook`,
+    `${path.basename(source)} keeps no database copy of the FTP`,
     /@\/lib\/store|mongodb|MongoClient/i.test(code),
     false,
   );
@@ -820,31 +820,31 @@ expect(
   "publishing one section validates before it writes",
   sectionPublish.indexOf("validateSection(") > -1 &&
     sectionPublish.indexOf("validateSection(") <
-      sectionPublish.indexOf("writeHandbookSection("),
+      sectionPublish.indexOf("writeFtpSection("),
   true,
 );
-// Replacing a whole profile is one function (`lib/handbook-import.ts`) because
+// Replacing a whole profile is one function (`lib/ftp-import.ts`) because
 // three callers need the same answer, so these read that function's own source
 // rather than the route's - the route delegates, and says so in the next block.
 const importerSource = readFileSync(
-  path.join(ROOT, "src/lib/handbook-import.ts"),
+  path.join(ROOT, "src/lib/ftp-import.ts"),
   "utf8",
 );
-const formatPublish = functionBody(importerSource, "importHandbookDocument");
+const formatPublish = functionBody(importerSource, "importFtpDocument");
 // The Guides are rebuilt by the write itself rather than by a second
 // command a member has to know about, and they are rebuilt for the profile the
 // paste was read as: the paste is taken as that profile being current, so a guide
 // already behind its section is not left behind it.
 expect(
   "and an update rebuilds every Guide that profile is read by",
-  /writeHandbookSections\(/.test(importerSource) &&
+  /writeFtpSections\(/.test(importerSource) &&
     /writePhaseNotesForSections\(\s*phaseNotePlacementsForFormat\(format\.key\)/.test(
       importerSource,
     ),
   true,
 );
 // Every phase of the profile the paste was read as is in the rebuild, and every
-// section it is built from is one the handbook declares - so the set is the
+// section it is built from is one the FTP declares - so the set is the
 // format's own phases, neither a subset of them nor a path nobody declared.
 expect(
   "which is every phase of that format and no other",
@@ -855,7 +855,7 @@ expect(
       placements.every(
         (placement) =>
           placement.component !== undefined &&
-          HANDBOOK_SECTIONS.some(
+          FTP_SECTIONS.some(
             (section) => section.id === placement.section,
           ),
       )
@@ -874,14 +874,14 @@ expect(
   "and replacing a whole profile validates every section before it writes",
   formatPublish.indexOf("validateSection(") > -1 &&
     formatPublish.indexOf("validateSection(") <
-      formatPublish.indexOf("writeHandbookSections("),
+      formatPublish.indexOf("writeFtpSections("),
   true,
 );
 expect(
   "which it only does from a paste it could split",
   formatPublish.indexOf("readPastedSections(") > -1 &&
     formatPublish.indexOf("readPastedSections(") <
-      formatPublish.indexOf("writeHandbookSections("),
+      formatPublish.indexOf("writeFtpSections("),
   true,
 );
 // The update path is one button per declared format, and it only offers what
@@ -891,7 +891,7 @@ const managerSource = readFileSync(path.join(ROOT, SOURCES[2]), "utf8");
 const routeSource = readFileSync(path.join(ROOT, SOURCES[0]), "utf8");
 const librarySource = readFileSync(path.join(ROOT, SOURCES[1]), "utf8");
 expect(
-  "the Handbook tab offers an update for every format",
+  "the FTP tab offers an update for every format",
   /data\.formats\.map/.test(managerSource) &&
     /Update \{format\.label\}/.test(managerSource),
   true,
@@ -901,16 +901,16 @@ expect(
 // update the write then refuses, so both ask the one function.
 expect(
   "and the tab and the importer decide a paste the same way",
-  /compareHandbookSection\(/.test(managerSource) &&
+  /compareFtpSection\(/.test(managerSource) &&
     /readPastedSections\(/.test(managerSource) &&
-    /compareHandbookSection\(/.test(importerSource) &&
+    /compareFtpSection\(/.test(importerSource) &&
     /readPastedSections\(/.test(importerSource) &&
     !/sameSectionText/.test(managerSource),
   true,
 );
 expect(
   "and it only writes the sections a paste actually changes",
-  /compareHandbookSection\(/.test(managerSource) &&
+  /compareFtpSection\(/.test(managerSource) &&
     /changedCount/.test(managerSource) &&
     /changedCount === 0/.test(managerSource),
   true,
@@ -937,7 +937,7 @@ expect(
 // An update is about the phases. The profile's own header is not the member's to
 // change through a paste, so the section is declared and the update path skips it
 // - a paste carrying a blank header would otherwise replace it silently.
-const headerSections = HANDBOOK_SECTIONS.filter((section) =>
+const headerSections = FTP_SECTIONS.filter((section) =>
   section.id.endsWith("header"),
 );
 expect(
@@ -971,7 +971,7 @@ expect(
 // that names it directly cannot put a different header in place either.
 expect(
   "and the tab offers no way to write one section on its own",
-  /Publish|writeHandbookSection\(/.test(managerSource),
+  /Publish|writeFtpSection\(/.test(managerSource),
   false,
 );
 expect(
@@ -989,15 +989,15 @@ expect(
 // a `[b:1a2b3c4d]` in a section file. One converter holds it, and the tab, the
 // terminal and the route all go through it before they go any further.
 const bbcodeSource = readFileSync(
-  path.join(ROOT, "src/lib/handbook-bbcode.ts"),
+  path.join(ROOT, "src/lib/ftp-bbcode.ts"),
   "utf8",
 );
 // The tab converts as the member types, in the browser, so this module may not
-// reach for a file, a database or a server-only library - importing `lib/handbook`
+// reach for a file, a database or a server-only library - importing `lib/ftp`
 // here would put `node:child_process` in the client bundle.
 expect(
   "the converter runs in the browser as well as in the terminal",
-  /node:|from "next\/|@\/lib\/store|@\/lib\/handbook"/.test(bbcodeSource),
+  /node:|from "next\/|@\/lib\/store|@\/lib\/FTP"/.test(bbcodeSource),
   false,
 );
 expect(
@@ -1019,9 +1019,9 @@ const rawSample = [
   "[/list:u]",
   "[/spoiler]",
 ].join("\r\n");
-const convertedSample = convertHandbookBbcode(rawSample);
+const convertedSample = convertFtpBbcode(rawSample);
 expect(
-  "a paste in phpBB's own flavour comes back in the handbook's",
+  "a paste in phpBB's own flavour comes back in the FTP's",
   convertedSample.text,
   [
     "[spoiler=Phase 1]",
@@ -1053,9 +1053,9 @@ expect(
 // than handed nine rewritten sections.
 expect(
   "and converting a section that is already in this format changes nothing",
-  HANDBOOK_SECTIONS.filter((section) => {
+  FTP_SECTIONS.filter((section) => {
     const content = read(section.file) ?? "";
-    const converted = convertHandbookBbcode(content);
+    const converted = convertFtpBbcode(content);
     return converted.text !== content || converted.conversions.length > 0;
   }).map((section) => section.id),
   [],
@@ -1072,11 +1072,11 @@ function asPasted(document: string): string {
     .replace(/\n/g, "\r\n");
 }
 
-for (const format of HANDBOOK_FORMATS) {
+for (const format of FTP_FORMATS) {
   const document = format.sections
     .map((section) => read(section.file) ?? "")
     .join("\n");
-  const report = await importHandbookDocument({
+  const report = await importFtpDocument({
     content: asPasted(document),
     write: false,
   });
@@ -1107,8 +1107,8 @@ for (const format of HANDBOOK_FORMATS) {
 // split in the route and not in the app.
 expect(
   "the route hands a whole profile to that one importer",
-  /importHandbookDocument\(/.test(routeSource) &&
-    !/splitHandbookDocument\(/.test(routeSource),
+  /importFtpDocument\(/.test(routeSource) &&
+    !/splitFtpDocument\(/.test(routeSource),
   true,
 );
 expect(
@@ -1120,25 +1120,25 @@ expect(
 );
 expect(
   "and so does the terminal's entry point",
-  /importHandbookDocument\(/.test(
-    readFileSync(path.join(ROOT, "scripts/handbook-import.ts"), "utf8"),
+  /importFtpDocument\(/.test(
+    readFileSync(path.join(ROOT, "scripts/ftp-import.ts"), "utf8"),
   ),
   true,
 );
 expect(
   "and the tab converts what it is given before it previews it",
-  /convertHandbookBbcode\(/.test(managerSource),
+  /convertFtpBbcode\(/.test(managerSource),
   true,
 );
 expect(
   "and the conversion happens before the split",
-  formatPublish.indexOf("convertHandbookBbcode(") > -1 &&
-    formatPublish.indexOf("convertHandbookBbcode(") <
+  formatPublish.indexOf("convertFtpBbcode(") > -1 &&
+    formatPublish.indexOf("convertFtpBbcode(") <
       formatPublish.indexOf("readPastedSections("),
   true,
 );
 
-/* ---- editing the handbook is the Discord admins', and nobody else's ---- */
+/* ---- editing the FTP is the Discord admins', and nobody else's ---- */
 // The one gate in this app that writes source files. Everything else is a stored
 // row or a Discord role, and either of those could be handed out from inside the
 // app - which is exactly what must not happen here.
@@ -1154,50 +1154,102 @@ const tabClient = readFileSync(
   "utf8",
 );
 expect(
-  "the publish route answers to the Discord admins",
-  /isDiscordAdmin\(/.test(route),
+  "the publish route answers to the FTP gate",
+  /canEditFtp\(/.test(route),
   true,
 );
 expect(
   "and the Command page decides the tab on the server",
-  /isDiscordAdmin\(/.test(tabPage),
+  /mayEditFtp\(/.test(tabPage),
+  true,
+);
+// The gate itself is one function, and it is read from the role registry -
+// never from a matrix row the permission editor could hand out, and never by
+// guessing a role from its name.
+expect(
+  "the gate is one function the route and the page share",
+  /export function canEditFtp\(/.test(
+    readFileSync(path.join(ROOT, "src/lib/role-config.ts"), "utf8"),
+  ) &&
+    /DISCORD_ADMIN_IDS/.test(
+      readFileSync(path.join(ROOT, "src/lib/role-config.ts"), "utf8"),
+    ),
   true,
 );
 expect(
-  "the Handbook tab is withheld from everyone else",
-  /tab\.value !== "handbook" \|\| canEditHandbook/.test(tabClient),
+  "the FTP tab is withheld from everyone else",
+  /tab\.value !== "ftp" \|\| canEditFtp/.test(tabClient),
   true,
 );
 expect(
-  "and a ?tab=handbook link is not a way in",
-  /canEditHandbook && <HandbookManager \/>/.test(tabClient),
+  "and a ?tab=ftp link is not a way in",
+  /canEditFtp && <FtpManager \/>/.test(tabClient),
   true,
 );
 expect(
-  "the page says it only works locally",
+  "the page says it only works locally when it cannot commit",
   /only works on a local development server/.test(
     readFileSync(path.join(ROOT, SOURCES[2]), "utf8"),
   ),
   true,
 );
 
+/* ---- a restore is an update of an older version ---- */
+// Going back must be the same pipeline as going forward: the restore reads the
+// old section files and hands them to the one importer, so it cannot skip the
+// conversion, the split or the placeholder check on its way in.
+const restoreBody = functionBody(routeSource, "restoreVersion");
+expect(
+  "a restore is the same importer a paste goes through",
+  restoreBody.includes("importFtpDocument(") &&
+    restoreBody.includes("fileAtCommit(") &&
+    restoreBody.includes("readFtpVersion("),
+  true,
+);
+expect(
+  "and restores whole profiles only, skipping one that already agrees",
+  restoreBody.includes("FTP_FORMATS") && restoreBody.includes("differs"),
+  true,
+);
+// The version history is git's own, wherever it lives - GitHub on a deployment
+// that commits, the checkout's log on a development machine - and never a
+// second record the app keeps beside it.
+expect(
+  "the version history is the repository's, not a second record",
+  /get\("history"\) === "all"/.test(routeSource) &&
+    /commitHistory\(files\)/.test(routeSource) &&
+    /readFtpHistoryAll\(files\)/.test(routeSource),
+  true,
+);
+// A commit is the record of a change, so an update that moves nothing - the
+// paste already agreed, and the Guides already said it - writes no commit.
+const stagedBody = functionBody(
+  readFileSync(path.join(ROOT, "src/lib/ftp-import.ts"), "utf8"),
+  "stagedUpdate",
+);
+expect(
+  "an update that moved nothing commits nothing",
+  /changed\.length === 0 && notes\.files\.length === 0/.test(stagedBody),
+  true,
+);
+
 // The folder has to travel with the deployment, or a deployed build reads an
-// empty handbook and every section looks missing.
+// empty FTP and every section looks missing.
 const nextConfig = readFileSync(path.join(ROOT, "next.config.ts"), "utf8");
 expect(
-  "the handbook folder is traced into the deployment",
-  ["/api/handbook", "/divisions/ftd/fd-command"].every((route) =>
+  "the FTP folder is traced into the deployment",
+  ["/api/ftp", "/divisions/ftd/fd-command"].every((route) =>
     nextConfig.includes(route),
-  ) && nextConfig.includes("./docs/handbook/**/*"),
+  ) && nextConfig.includes("./docs/ftp/**/*"),
   true,
 );
 
 console.log(
-  `\n${checks - failures}/${checks} checks passed - ${HANDBOOK_SECTIONS.length} sections in ${HANDBOOK_FORMATS.length} formats, ${filesOnDisk().length} files`,
+  `\n${checks - failures}/${checks} checks passed - ${FTP_SECTIONS.length} sections in ${FTP_FORMATS.length} formats, ${filesOnDisk().length} files`,
 );
 if (failures > 0) {
   console.log(
-    "A section that was applied by hand leaves the generated module behind - run `npm run handbook:sync` and commit both.",
+    "A section that was applied by hand leaves the generated module behind - run `npm run ftp:sync` and commit both.",
   );
 }
 process.exitCode = failures > 0 ? 1 : 0;

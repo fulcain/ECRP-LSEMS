@@ -3,7 +3,7 @@
  *
  * One declaration, because two things read it and they have to agree: the copy
  * flow, which replaces these with the name typed into the Applicant Info card,
- * and the handbook, which refuses to let a section file lose its name line.
+ * and the FTP, which refuses to let a section file lose its name line.
  *
  * The primary, canonical token is `{{applicantName}}`. The older implicit tokens
  * (`FName LName` / `Fname Lname` / `First Last`) are still recognised - they are
@@ -40,9 +40,9 @@ export function placeholderSpellings(token: string): readonly string[] {
  * `[Callsign]`, `[Lastname]`, `[Location]` and a bare `[text]` are what the
  * profile is teaching with, not markup - so the renderer shows them as written
  * rather than trying to draw them. Declaring them is what lets the renderer,
- * and the check that holds it against the handbook, tell a blank from a tag the
+ * and the check that holds it against the FTP, tell a blank from a tag the
  * app has not learned: a bracket token nobody claimed is markup it should be
- * drawing, and `npm run handbook:check` fails until it does.
+ * drawing, and `npm run ftp:check` fails until it does.
  */
 export const FILL_IN_MARKERS = [
   "call",

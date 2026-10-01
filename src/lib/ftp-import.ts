@@ -3,7 +3,7 @@
  *
  * The member writes the profile somewhere else and brings back the finished
  * document, and the whole of that job is here: convert what the paste is written
- * in (`lib/handbook-bbcode.ts`), work out which profile it is, cut it back into
+ * in (`lib/ftp-bbcode.ts`), work out which profile it is, cut it back into
  * the sections its own headings mark, refuse a section that would lose a
  * placeholder, and write the files that actually differ. Writing those also
  * rebuilds the module the contract workflow copies the profile from and the phase
@@ -12,34 +12,45 @@
  * the profile, and none of them is left holding the old text because someone
  * forgot a second command.
  *
- * It is one function because three callers need the same answer: the Handbook
- * tab's paste, `POST /api/handbook`, and `npm run handbook:import`. A paste that
+ * It is one function because three callers need the same answer: the FTP
+ * tab's paste, `POST /api/ftp`, and `npm run ftp:import`. A paste that
  * reached the files by any other path would be a paste that skipped the
  * conversion or the placeholder check, which is exactly the two things that make
  * a paste safe to accept without reading it line by line.
  */
 
 import {
-  type HandbookFormatKey,
-  type HandbookSection,
-} from "@/app/constants/divisions/ftd/handbook";
+  type FtpFormatKey,
+  type FtpSection,
+} from "@/app/constants/divisions/ftd/ftp";
 import {
-  convertHandbookBbcode,
-  type HandbookConversion,
-} from "@/lib/handbook-bbcode";
+  convertFtpBbcode,
+  type FtpConversion,
+} from "@/lib/ftp-bbcode";
 import {
-  HANDBOOK_SECTIONS,
-  canWriteHandbook,
+  FTP_SECTIONS,
+  FTP_CONTENT_MODULE,
+  canWriteFtp,
   foreignSectionHeadings,
-  readHandbook,
+  readFtp,
   validateSection,
-  writeHandbookSections,
-} from "@/lib/handbook";
+  writeFtpSections,
+  ftpAbsolute,
+} from "@/lib/ftp";
+import { copyFile, mkdir, mkdtemp, rm } from "node:fs/promises";
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { tmpdir } from "node:os";
 import {
-  compareHandbookSection,
+  commitFtpFiles,
+  commitsThroughGitHub,
+  type GitHubFileChange,
+} from "@/lib/github-ftp";
+import {
+  compareFtpSection,
   describeTagRepair,
   readPastedSections,
-} from "@/lib/handbook-markup";
+} from "@/lib/ftp-markup";
 import { phaseNotePlacementsForFormat } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/sections";
 import {
   writePhaseNotesForSections,
@@ -47,7 +58,7 @@ import {
 } from "@/lib/phase-notes-write";
 
 /** Where one section of a paste would land - or where it did. */
-export type HandbookImportSection = {
+export type FtpImportSection = {
   id: string;
   title: string;
   file: string;
@@ -65,7 +76,7 @@ export type HandbookImportSection = {
   reason: string;
 };
 
-export type HandbookImportReport =
+export type FtpImportReport =
   | {
       ok: false;
       /** What a route answers with - a refusal knows how hard it is. */
@@ -76,11 +87,11 @@ export type HandbookImportReport =
     }
   | {
       ok: true;
-      format: HandbookFormatKey;
+      format: FtpFormatKey;
       formatLabel: string;
       /** What the paste had to be converted for; empty when it needed nothing. */
-      conversions: HandbookConversion[];
-      sections: HandbookImportSection[];
+      conversions: FtpConversion[];
+      sections: FtpImportSection[];
       changed: string[];
       unchanged: string[];
       kept: string[];
@@ -109,6 +120,8 @@ export type HandbookImportReport =
       notesPhases: string[];
       /** The phases left as they were, with the reason. */
       notesSkipped: PhaseNotesSkip[];
+      /** The commit that carries the update, when the deployment commits. */
+      commit?: string;
     };
 
 function refuse(
@@ -116,11 +129,11 @@ function refuse(
   error: string,
   problems: string[] = [],
   warnings: string[] = [],
-): HandbookImportReport {
+): FtpImportReport {
   return { ok: false, status, error, problems, warnings };
 }
 
-type Formats = Awaited<ReturnType<typeof readHandbook>>[number];
+type Formats = Awaited<ReturnType<typeof readFtp>>[number];
 type Chosen = { ok: true; format: Formats } | { ok: false; error: string; problems: string[] };
 
 /**
@@ -165,17 +178,27 @@ function fitFormat(formats: readonly Formats[], document: string): Chosen {
  * member before they press the button, and what `--dry` prints - so the preview
  * and the update are decided by the same code and cannot disagree.
  */
-export async function importHandbookDocument(input: {
+export async function importFtpDocument(input: {
   content: string;
   /** The format the paste belongs to; worked out from the paste when omitted. */
   format?: string;
   write?: boolean;
-}): Promise<HandbookImportReport> {
+  /**
+   * Who is making the update, for the commit the GitHub backend authors. Only
+   * read when the deployment commits rather than writing its own checkout.
+   */
+  author?: { name: string; email: string };
+  /**
+   * The whole commit subject, when the caller needs it to say something other
+   * than "from a pasted profile" - a restore names the version it went back to.
+   */
+  commitSubject?: string;
+}): Promise<FtpImportReport> {
   const write = input.write === true;
   if (!input.content.trim()) {
     return refuse(422, "Nothing was pasted.");
   }
-  if (write && !canWriteHandbook()) {
+  if (write && !canWriteFtp()) {
     // Rewriting nine files at once is not something to hand over to apply by
     // hand, so this one says where it has to happen instead of pretending.
     return refuse(
@@ -184,8 +207,8 @@ export async function importHandbookDocument(input: {
     );
   }
 
-  const stored = await readHandbook();
-  const { text, conversions } = convertHandbookBbcode(input.content);
+  const stored = await readFtp();
+  const { text, conversions } = convertFtpBbcode(input.content);
 
   let format: Formats | undefined;
   if (input.format) {
@@ -200,7 +223,7 @@ export async function importHandbookDocument(input: {
   // The split puts each section's own tags right as it cuts them out, because a
   // profile published on the forum is written the way the forum left it: a close
   // glued to the wrong tag, a tag left open where phpBB closed it for the writer.
-  // None of that is a change to write, and `compareHandbookSection` is where that
+  // None of that is a change to write, and `compareFtpSection` is where that
   // is decided - on both sides of the paste, so a section nobody edited is not
   // reported as one they did.
   const { split, repaired } = readPastedSections(format.sections, text);
@@ -216,7 +239,7 @@ export async function importHandbookDocument(input: {
   // The paste is compared against the files as they stand, so a member sees what
   // an update actually touches - and an update that changed one phase leaves one
   // file changed rather than the whole format.
-  const sections: HandbookImportSection[] = format.sections.map((section) => {
+  const sections: FtpImportSection[] = format.sections.map((section) => {
     const pasted = split.sections.find((entry) => entry.id === section.id);
     if (section.protectedFromPaste) {
       return {
@@ -228,7 +251,7 @@ export async function importHandbookDocument(input: {
         reason: "An update never rewrites the profile's header.",
       };
     }
-    const match = compareHandbookSection(section.content, pasted?.content ?? "");
+    const match = compareFtpSection(section.content, pasted?.content ?? "");
     return {
       id: section.id,
       title: section.title,
@@ -238,14 +261,14 @@ export async function importHandbookDocument(input: {
       reason: match.reason,
     };
   });
-  const idsIn = (state: HandbookImportSection["state"]) =>
+  const idsIn = (state: FtpImportSection["state"]) =>
     sections.filter((section) => section.state === state).map((section) => section.id);
 
   const problems: string[] = [];
   const warnings: string[] = [];
   for (const entry of split.sections) {
     const state = sections.find((section) => section.id === entry.id)?.state;
-    const section: HandbookSection | undefined = HANDBOOK_SECTIONS.find(
+    const section: FtpSection | undefined = FTP_SECTIONS.find(
       (candidate) => candidate.id === entry.id,
     );
     if (!section) continue;
@@ -307,9 +330,25 @@ export async function importHandbookDocument(input: {
         : section.content,
   }));
 
+  // On a deployment that commits, the update is staged into a scratch root and
+  // handed to the GitHub backend as one commit; on a checkout it writes in
+  // place and the member commits by hand, exactly as before. Both paths run the
+  // same generators, so the committed files and the local ones cannot differ.
+  if (commitsThroughGitHub()) {
+    return stagedUpdate(
+      format,
+      entries,
+      input.author,
+      conversions,
+      sections,
+      warnings,
+      input.commitSubject,
+    );
+  }
+
   // Writing the sections also rebuilds the module the contract workflow copies
   // the profile from, which is the other half of "everywhere".
-  const result = await writeHandbookSections(entries, { keepProtected: true });
+  const result = await writeFtpSections(entries, { keepProtected: true });
   if (!result) {
     return refuse(500, "The sections could not be written.", [], warnings);
   }
@@ -340,4 +379,120 @@ export async function importHandbookDocument(input: {
     notesPhases: notes.phases,
     notesSkipped: notes.skipped,
   };
+}
+
+/**
+ * Runs the same write into a scratch root and commits what changed.
+ *
+ * Staging rather than committing section-by-section is what keeps the update one
+ * commit: the section files, the generated module and the phase Guides are
+ * computed exactly as a local write computes them, and the GitHub backend is
+ * handed the finished files in one go. A failure anywhere before the commit
+ * leaves the repository untouched.
+ */
+async function stagedUpdate(
+  format: Formats,
+  entries: readonly { id: string; content: string }[],
+  author: { name: string; email: string } | undefined,
+  conversions: FtpConversion[],
+  sections: FtpImportSection[],
+  warnings: string[],
+  commitSubject?: string,
+): Promise<FtpImportReport> {
+  const stage = await mkdtemp(path.join(tmpdir(), "FTP-"));
+  try {
+    // The stage begins as the FTP as it stands, so a write that leaves a
+    // file alone stages its current text and the commit carries no change for it.
+    for (const section of FTP_SECTIONS) {
+      await mkdir(path.join(stage, path.dirname(section.file)), { recursive: true });
+      await copyFile(ftpAbsolute(section.file), path.join(stage, section.file)).catch(
+        () => {},
+      );
+    }
+    // The write helpers read the checkout, so the stage is reached by running
+    // them with the process rooted there: the same functions, one cwd over.
+    const previous = process.cwd();
+    try {
+      process.chdir(stage);
+      const staged = await writeFtpSections(entries, { keepProtected: true });
+      if (!staged) return refuse(500, "The sections could not be written.", [], warnings);
+      const notes = await writePhaseNotesForSections(
+        phaseNotePlacementsForFormat(format.key),
+      );
+
+      // An update that moved nothing - the paste already agreed with the files,
+      // and the Guides already said what the sections say - writes no commit at
+      // all, the same as the local path writes no file. A commit is the record
+      // of a change, and an empty one would be a version in the history that
+      // stands for nothing.
+      if (staged.changed.length === 0 && notes.files.length === 0) {
+        return {
+          ok: true,
+          format: format.key,
+          formatLabel: format.label,
+          conversions,
+          sections,
+          changed: staged.changed,
+          unchanged: staged.unchanged,
+          kept: staged.kept,
+          warnings,
+          written: true,
+          files: [],
+          bytes: staged.bytes,
+          notes: [],
+          notesPhases: [],
+          notesSkipped: notes.skipped,
+        };
+      }
+
+      // Every file the update produced, plus the generated module the write
+      // already rebuilt - the same set a local commit would carry.
+      const paths = [...staged.files, FTP_CONTENT_MODULE, ...notes.files];
+      const files: GitHubFileChange[] = paths.map((file) => ({
+        path: file,
+        content: readFileSync(path.join(stage, file), "utf8"),
+      }));
+      const label = changedTitles(staged.changed);
+      const commit = await commitFtpFiles({
+        files,
+        message:
+          commitSubject ??
+          `ftp: update ${format.label} from a pasted profile${label ? ` - ${label}` : ""}`,
+        authorName: author?.name || "LSEMS FTP",
+        authorEmail: author?.email || "FTP@lsems.app",
+      });
+      if (!commit.ok) return refuse(502, commit.reason, [], warnings);
+
+      return {
+        ok: true,
+        format: format.key,
+        formatLabel: format.label,
+        conversions,
+        sections,
+        changed: staged.changed,
+        unchanged: staged.unchanged,
+        kept: staged.kept,
+        warnings,
+        written: true,
+        files: paths,
+        bytes: staged.bytes,
+        notes: notes.files,
+        notesPhases: notes.phases,
+        notesSkipped: notes.skipped,
+        commit: commit.commitUrl,
+      };
+    } finally {
+      process.chdir(previous);
+    }
+  } finally {
+    await rm(stage, { recursive: true, force: true });
+  }
+}
+
+/** The section titles behind the changed ids, for the commit subject. */
+function changedTitles(changed: readonly string[]): string {
+  return changed
+    .map((id) => FTP_SECTIONS.find((section) => section.id === id)?.title ?? id)
+    .slice(0, 4)
+    .join(", ");
 }

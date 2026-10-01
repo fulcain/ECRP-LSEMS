@@ -8,33 +8,59 @@ import {
   Check,
   ClipboardPaste,
   GitCommitHorizontal,
+  History,
   Loader2,
   Terminal,
+  Undo2,
 } from "lucide-react";
 
-import { sectionHeading } from "@/app/constants/divisions/ftd/handbook";
+import { sectionHeading } from "@/app/constants/divisions/ftd/ftp";
 import { carriesPlaceholder } from "@/app/constants/profile-placeholders";
 import {
-  convertHandbookBbcode,
+  convertFtpBbcode,
   describeConversions,
-} from "@/lib/handbook-bbcode";
+} from "@/lib/ftp-bbcode";
 import {
-  compareHandbookSection,
+  compareFtpSection,
   describeTagRepair,
   readPastedSections,
-} from "@/lib/handbook-markup";
+} from "@/lib/ftp-markup";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BBCodeEditor } from "@/components/ui/bbcode-editor";
 
 /**
- * The one thing to know before touching this page: it writes files in the
- * checkout the app is running from, so it only does anything on a local
- * development server. A deployed build says so in `writable` rather than letting
- * a member paste a whole profile and be told afterwards that nothing was saved.
+ * What this deployment can do with an update, said before anything is pasted.
+ *
+ * Three answers, not two: a deployment with the GitHub token commits the update
+ * itself; a local checkout writes its own files and the member commits by hand;
+ * anything else cannot save a paste at all, and says so before the member
+ * writes nine sections into a box that will drop them.
  */
-function LocalOnlyNote({ writable }: { writable?: boolean }) {
+function LocalOnlyNote({
+  writable,
+  commits,
+}: {
+  writable?: boolean;
+  commits?: boolean;
+}) {
+  if (commits) {
+    return (
+      <div className="flex items-start gap-2 rounded-xl border border-emerald-300/40 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200">
+        <GitCommitHorizontal className="mt-0.5 h-4 w-4 shrink-0" />
+        <div className="min-w-0">
+          <p className="font-medium">
+            Updates here commit straight to the repository.
+          </p>
+          <p className="mt-1 text-xs text-emerald-800/80 dark:text-emerald-200/80">
+            An accepted update is one commit on the FTP files, and the
+            version history below is how you go back to an earlier one.
+          </p>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="flex items-start gap-2 rounded-xl border border-amber-300/40 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
       <Terminal className="mt-0.5 h-4 w-4 shrink-0" />
@@ -45,7 +71,7 @@ function LocalOnlyNote({ writable }: { writable?: boolean }) {
         {writable !== undefined && (
           <p className="mt-1 text-xs text-amber-800/80 dark:text-amber-200/80">
             {writable
-              ? "Updating a profile writes the section files under docs/handbook/, so the change is a commit you push like any other."
+              ? "Updating a profile writes the section files under docs/ftp/, so the change is a commit you push like any other."
               : "This deployment cannot write its own files, so an update has to be made on a local development server."}
           </p>
         )}
@@ -55,10 +81,208 @@ function LocalOnlyNote({ writable }: { writable?: boolean }) {
 }
 
 /**
- * FTD's handbook, updated where the members who maintain it already are.
+ * The version history: every commit that touched a section file, newest first,
+ * each with the one thing this panel exists for - a way back.
  *
- * The handbook is a set of files in the repository - `docs/handbook/**`, one
- * file per section, declared in `app/constants/divisions/ftd/handbook.ts` - and
+ * History is git's own, wherever it lives: GitHub answers on a deployment that
+ * commits, and a checkout reads its local log. A restore is a whole-profile
+ * update of the old text, so what it does is exactly what any update does -
+ * one commit, authored by the member who pressed the button - and the version
+ * it restored to is one more entry at the top of this list.
+ */
+function VersionHistoryPanel({
+  onNotice,
+  onRestored,
+}: {
+  onNotice: (notice: Notice) => void;
+  onRestored: () => void;
+}) {
+  const [entries, setEntries] = useState<VersionEntry[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState<string | null>(null);
+  const [restoring, setRestoring] = useState(false);
+
+  useEffect(() => {
+    let live = true;
+    void (async () => {
+      try {
+        const response = await fetch("/api/ftp?history=all", {
+          cache: "no-store",
+        });
+        const payload = (await response.json()) as {
+          history?: VersionEntry[];
+          error?: string;
+        };
+        if (!live) return;
+        if (!response.ok) {
+          setError(payload.error ?? "The version history could not be read.");
+        } else {
+          setEntries(payload.history ?? []);
+        }
+      } catch {
+        if (live) setError("The version history could not be read.");
+      }
+    })();
+    return () => {
+      live = false;
+    };
+  }, []);
+
+  const restore = async (sha: string) => {
+    setRestoring(true);
+    try {
+      const response = await fetch("/api/ftp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ restore: true, commit: sha }),
+      });
+      const payload = (await response.json()) as {
+        written?: boolean;
+        restored?: { label: string; changed: string[]; commit?: string }[];
+        error?: string;
+        problems?: string[];
+      };
+      if (response.ok && payload.written) {
+        const restored = payload.restored ?? [];
+        const label = restored.map((entry) => entry.label).join(" and ");
+        onNotice({
+          kind: "ok",
+          title: `Rolled ${label || "the FTP"} back`,
+          detail:
+            restored.length > 0 && restored[0].changed.length > 0
+              ? `The sections that differed were put back the way they read at that version - ${restored
+                  .flatMap((entry) => entry.changed)
+                  .slice(0, 4)
+                  .join(", ")}${
+                  restored.reduce((sum, entry) => sum + entry.changed.length, 0) > 4
+                    ? ", and more"
+                    : ""
+                }.`
+              : "The sections that differed were put back the way they read at that version.",
+          written: restored
+            .map((entry) => entry.label)
+            .filter((label): label is string => label.length > 0),
+          commit: restored.find((entry) => entry.commit)?.commit,
+        });
+        onRestored();
+        toast.success("Rolled back to the earlier version");
+      } else {
+        onNotice({
+          kind: "error",
+          title: "The version was not restored",
+          detail:
+            payload.error ?? "The restore could not be completed on this deployment.",
+          warnings: payload.problems,
+        });
+        toast.error(payload.error ?? "The version was not restored");
+      }
+    } catch {
+      onNotice({
+        kind: "error",
+        title: "The restore could not be sent",
+        detail: "The request failed before the FTP was touched.",
+      });
+    } finally {
+      setRestoring(false);
+      setConfirming(null);
+    }
+  };
+
+  return (
+    <div className="rounded-xl border border-border bg-surface/60 p-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="flex items-center gap-2 text-sm font-medium text-foreground">
+            <History className="h-4 w-4 text-muted-foreground" />
+            Version history
+          </p>
+          <p className="mt-1 max-w-3xl text-xs text-muted-foreground">
+            Every update is a commit, so going back is picking one. Restoring
+            puts the sections that differ back the way they read at that
+            version - as one more commit, so nothing is ever lost by going back.
+          </p>
+        </div>
+      </div>
+
+      {error ? (
+        <p className="mt-3 text-xs text-amber-700 dark:text-amber-300">{error}</p>
+      ) : entries === null ? (
+        <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          Reading the history…
+        </p>
+      ) : entries.length === 0 ? (
+        <p className="mt-3 text-xs text-muted-foreground">
+          No FTP commits here yet. They appear once an update is accepted -
+          on this deployment, or on the one that commits.
+        </p>
+      ) : (
+        <ul className="mt-3 divide-y divide-border">
+          {entries.slice(0, 15).map((entry) => (
+            <li key={entry.sha} className="flex flex-wrap items-center gap-x-3 gap-y-1 py-2">
+              <code className="font-mono text-[11px] text-muted-foreground">
+                {entry.sha.slice(0, 7)}
+              </code>
+              <span className="text-xs text-foreground">{entry.message}</span>
+              <span className="text-[11px] text-muted-foreground">
+                {entry.author} · {entry.date}
+              </span>
+              <span className="ml-auto flex items-center gap-2">
+                <a
+                  href={entry.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono text-[11px] text-muted-foreground underline"
+                >
+                  view
+                </a>
+                {confirming === entry.sha ? (
+                  <span className="flex items-center gap-1.5">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      disabled={restoring}
+                      onClick={() => setConfirming(null)}
+                    >
+                      Keep the current one
+                    </Button>
+                    <Button
+                      size="sm"
+                      disabled={restoring}
+                      onClick={() => void restore(entry.sha)}
+                    >
+                      {restoring ? (
+                        <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Undo2 className="mr-1.5 h-3.5 w-3.5" />
+                      )}
+                      Restore
+                    </Button>
+                  </span>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setConfirming(entry.sha)}
+                  >
+                    <Undo2 className="mr-1.5 h-3.5 w-3.5" />
+                    Restore
+                  </Button>
+                )}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+/**
+ * FTD's FTP, updated where the members who maintain it already are.
+ *
+ * The FTP is a set of files in the repository - `docs/ftp/**`, one
+ * file per section, declared in `app/constants/divisions/ftd/ftp.ts` - and
  * the profile itself is written somewhere else: a document, the forum's own
  * editor. So this page does one thing per format: paste the finished profile and
  * let it be cut back into its sections at their own headings.
@@ -68,7 +292,7 @@ function LocalOnlyNote({ writable }: { writable?: boolean }) {
  * that no longer agrees with the rest of the profile it belongs to - which is
  * the drift the paste exists to end.
  *
- * `POST /api/handbook` does the conversion, the split and the write, and this
+ * `POST /api/ftp` does the conversion, the split and the write, and this
  * page shows what it would do before it does it. Nothing is stored anywhere
  * else, which is why the page says plainly when a deployment cannot write.
  */
@@ -94,9 +318,19 @@ type FormatContent = {
   sections: SectionContent[];
 };
 
-type HandbookPayload = {
+type FtpPayload = {
   writable: boolean;
+  /** True when this deployment commits updates through GitHub. */
+  commits?: boolean;
   formats: FormatContent[];
+};
+
+type VersionEntry = {
+  sha: string;
+  date: string;
+  author: string;
+  message: string;
+  url: string;
 };
 
 type Notice = {
@@ -119,28 +353,30 @@ type Notice = {
   /** What the paste had to be converted for, when it needed anything. */
   converted?: string;
   warnings?: string[];
+  /** The commit that carries the update, when the deployment commits. */
+  commit?: string;
 };
 
-type HandbookRead =
-  | { ok: true; payload: HandbookPayload }
+type FtpRead =
+  | { ok: true; payload: FtpPayload }
   | { ok: false; error: string };
 
 /** The sections, as the API serves them. */
-async function fetchHandbook(): Promise<HandbookRead> {
+async function fetchFtp(): Promise<FtpRead> {
   try {
-    const response = await fetch("/api/handbook", { cache: "no-store" });
-    const payload = (await response.json()) as HandbookPayload & {
+    const response = await fetch("/api/ftp", { cache: "no-store" });
+    const payload = (await response.json()) as FtpPayload & {
       error?: string;
     };
     if (!response.ok) {
       return {
         ok: false,
-        error: payload.error ?? "The handbook could not be read.",
+        error: payload.error ?? "The FTP could not be read.",
       };
     }
     return { ok: true, payload };
   } catch {
-    return { ok: false, error: "The handbook could not be read." };
+    return { ok: false, error: "The FTP could not be read." };
   }
 }
 
@@ -178,7 +414,7 @@ function PasteProfilePanel({
   // be written. A paste is the one edit nobody reads line by line, so the step
   // before it is a named list of the files, not a browser dialog nobody styles.
   const [confirming, setConfirming] = useState(false);
-  const converted = useMemo(() => convertHandbookBbcode(value), [value]);
+  const converted = useMemo(() => convertFtpBbcode(value), [value]);
   const text = converted.text;
   // Cutting the paste up also puts each section's own tags right, and that is
   // reported beside the conversion: a profile off the forum arrives with the tags
@@ -240,7 +476,7 @@ function PasteProfilePanel({
               reason: "An update never rewrites the profile's header.",
             };
           }
-          const match = compareHandbookSection(
+          const match = compareFtpSection(
             section.content,
             pasted?.content ?? "",
           );
@@ -360,7 +596,7 @@ function PasteProfilePanel({
                 rebuilt from the sections, which is what the button says when
                 there is nothing else to say. */}
             {changedCount === 0
-              ? `Rebuild the Guides and Scripts for ${format.label}`
+              ? `Rebuild the Guides for ${format.label}`
               : `Update ${changedCount} changed section${
                   changedCount === 1 ? "" : "s"
                 }`}
@@ -373,7 +609,7 @@ function PasteProfilePanel({
           <p className="flex items-center gap-2 text-sm font-medium text-foreground">
             <GitCommitHorizontal className="h-4 w-4 text-primary" />
             {changedCount === 0
-              ? `Rebuild the Guides and Scripts for ${format.label}?`
+              ? `Rebuild the Guides for ${format.label}?`
               : `Write ${changedCount} ${files} into ${format.label}?`}
           </p>
           <div className="mt-2 flex flex-wrap items-center gap-1.5">
@@ -395,7 +631,7 @@ function PasteProfilePanel({
             ) : (
               <>
                 Each one is a file under{" "}
-                <code className="font-mono">docs/handbook/</code>, so the change
+                <code className="font-mono">docs/ftp/</code>, so the change
                 is a commit you push like any other.{" "}
               </>
             )}
@@ -476,7 +712,7 @@ function PasteProfilePanel({
           </ul>
           <p className="mt-2 text-[11px] text-muted-foreground">
             {changedCount === 0
-              ? "No section file differs - but the Guides and Scripts a trainer reads are drawn from these sections, and accepting is what rebuilds them."
+              ? "No section file differs - but the Guides a trainer reads are drawn from these sections, and accepting is what rebuilds them."
               : `Only those ${changedCount} file${
                   changedCount === 1 ? "" : "s"
                 } will be written; the rest are left exactly as they are.`}{" "}
@@ -570,8 +806,8 @@ function NoticeCard({ notice }: { notice: Notice }) {
               )}
             >
               <BookOpen className="h-3.5 w-3.5" />
-              {notice.notes} phase guide{notice.notes === 1 ? "" : "s"} and
-              script{notice.notes === 1 ? "" : "s"} written from the handbook
+              {notice.notes} phase guide{notice.notes === 1 ? "" : "s"} written
+              from the FTP
               {notice.noteFiles
                 ? ` (${notice.noteFiles} file${notice.noteFiles === 1 ? "" : "s"})`
                 : ""}
@@ -594,7 +830,20 @@ function NoticeCard({ notice }: { notice: Notice }) {
             </p>
           ) : null}
 
-          {written.length > 0 && notice.kind === "ok" ? (
+          {notice.commit ? (
+            <a
+              href={notice.commit}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                "mt-2.5 flex items-center gap-1.5 font-mono text-[11px] underline",
+                tone.detail,
+              )}
+            >
+              <GitCommitHorizontal className="h-3.5 w-3.5" />
+              View the commit - the deployment goes live as it rolls out
+            </a>
+          ) : written.length > 0 && notice.kind === "ok" ? (
             <p
               className={cn(
                 "mt-2.5 flex items-center gap-1.5 font-mono text-[11px]",
@@ -602,7 +851,7 @@ function NoticeCard({ notice }: { notice: Notice }) {
               )}
             >
               <GitCommitHorizontal className="h-3.5 w-3.5" />
-              docs/handbook/ - commit it like any other change
+              docs/ftp/ - commit it like any other change
             </p>
           ) : null}
 
@@ -619,8 +868,8 @@ function NoticeCard({ notice }: { notice: Notice }) {
   );
 }
 
-export function HandbookManager() {
-  const [data, setData] = useState<HandbookPayload | null>(null);
+export function FtpManager() {
+  const [data, setData] = useState<FtpPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
@@ -628,11 +877,14 @@ export function HandbookManager() {
   const [pasting, setPasting] = useState<string | null>(null);
   const [pasted, setPasted] = useState("");
   const [replacing, setReplacing] = useState(false);
+  // Bumped after a restore, so the sections re-read and the version history
+  // picks up the commit the restore itself made.
+  const [version, setVersion] = useState(0);
 
   useEffect(() => {
     let live = true;
     void (async () => {
-      const read = await fetchHandbook();
+      const read = await fetchFtp();
       if (!live) return;
       if (read.ok) {
         setData(read.payload);
@@ -644,7 +896,7 @@ export function HandbookManager() {
     return () => {
       live = false;
     };
-  }, []);
+  }, [version]);
 
   const pastingFormat =
     data?.formats.find((format) => format.key === pasting) ?? null;
@@ -655,7 +907,7 @@ export function HandbookManager() {
     setReplacing(true);
     setNotice(null);
     try {
-      const response = await fetch("/api/handbook", {
+      const response = await fetch("/api/ftp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ format: format.key, content: pasted }),
@@ -673,12 +925,13 @@ export function HandbookManager() {
         notesPhases?: string[];
         notesSkipped?: { component: string; reason: string }[];
         conversions?: { kind: string; count: number; note: string }[];
+        commit?: string;
       };
 
       if (response.ok && payload.written) {
         // The files are the source of truth now, so read them back rather than
         // patching local state by hand.
-        const read = await fetchHandbook();
+        const read = await fetchFtp();
         if (read.ok) setData(read.payload);
         setPasting(null);
         setPasted("");
@@ -691,7 +944,7 @@ export function HandbookManager() {
         // and Script - saying "already up to date" there is what made a member
         // think the update had not run.
         const phases = (payload.notesPhases ?? []).length;
-        const rebuilt = `${phases} phase Guide${phases === 1 ? "" : "s"} and Script${phases === 1 ? "" : "s"} rebuilt`;
+        const rebuilt = `${phases} phase Guide${phases === 1 ? "" : "s"} rebuilt`;
         const outcome =
           changed.length > 0
             ? {
@@ -712,7 +965,7 @@ export function HandbookManager() {
               : {
                   title: `${format.label} was already up to date`,
                   detail:
-                    "Nothing you pasted differs from the files, and the Guides and Scripts already say what these sections say.",
+                    "Nothing you pasted differs from the files, and the Guides already say what these sections say.",
                   toast: `${format.label} was already up to date`,
                 };
         // The paste was converted on the way in, and what it had to be
@@ -734,6 +987,7 @@ export function HandbookManager() {
           notes: (payload.notesPhases ?? []).length,
           noteFiles: payload.notes?.length ?? 0,
           converted,
+          commit: payload.commit,
           // A phase that could not be rebuilt says so here rather than in a
           // console nobody reads: it is the one thing about an update that the
           // member can still fix.
@@ -764,7 +1018,7 @@ export function HandbookManager() {
       setNotice({
         kind: "error",
         title: "The update could not be sent",
-        detail: "The request failed before the handbook was touched.",
+        detail: "The request failed before the FTP was touched.",
       });
     } finally {
       setReplacing(false);
@@ -777,7 +1031,7 @@ export function HandbookManager() {
         <LocalOnlyNote />
         <div className="flex items-center gap-2 rounded-xl border border-border px-4 py-8 text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" />
-          Reading the handbook…
+          Reading the FTP…
         </div>
       </div>
     );
@@ -790,12 +1044,12 @@ export function HandbookManager() {
         <div className="rounded-xl border border-amber-300/40 bg-amber-50 px-4 py-6 text-sm dark:border-amber-500/30 dark:bg-amber-500/10">
           <p className="flex items-center gap-2 font-medium text-amber-800 dark:text-amber-200">
             <AlertTriangle className="h-4 w-4" />
-            {loadError ?? "The handbook could not be read."}
+            {loadError ?? "The FTP could not be read."}
           </p>
           <p className="mt-1 text-amber-800/80 dark:text-amber-200/80">
-            The sections live in <code className="font-mono">docs/handbook/</code> in
-            the repository, and only a Discord admin listed in{" "}
-            <code className="font-mono">DISCORD_ADMIN_IDS</code> can open them.
+            The sections live in <code className="font-mono">docs/ftp/</code> in
+            the repository, and the FTP tab is only shown to FTD Head,
+            Assistant Head of FTD and Command+.
           </p>
         </div>
       </div>
@@ -806,7 +1060,7 @@ export function HandbookManager() {
     <div className="space-y-5">
       <ToastContainer position="top-right" autoClose={2500} hideProgressBar />
 
-      <LocalOnlyNote writable={data.writable} />
+      <LocalOnlyNote writable={data.writable} commits={data.commits} />
 
       {/*
        * The job that brings a member here, and the only way it is done: the
@@ -852,11 +1106,11 @@ export function HandbookManager() {
         <div className="min-w-0">
           <p className="flex items-center gap-2 text-sm font-medium text-foreground">
             <BookOpen className="h-4 w-4 text-muted-foreground" />
-            The handbook is the repository
+            The FTP is the repository
           </p>
           <p className="mt-1 max-w-3xl text-xs text-muted-foreground">
             Each section is one file under{" "}
-            <code className="font-mono">docs/handbook/</code>, and an update
+            <code className="font-mono">docs/ftp/</code>, and an update
             writes them, so the change is a commit you push like any other -
             there is no second copy in a database to drift out of step.
           </p>
@@ -869,9 +1123,11 @@ export function HandbookManager() {
               : "border-amber-300/40 text-amber-700 dark:text-amber-300",
           )}
         >
-          {data.writable
-            ? "This deployment writes the source files"
-            : "Read-only deployment - an update has to happen locally"}
+          {data.commits
+            ? "This deployment commits updates to GitHub"
+            : data.writable
+              ? "This deployment writes the source files"
+              : "Read-only deployment - an update has to happen locally"}
         </span>
       </div>
 
@@ -885,6 +1141,11 @@ export function HandbookManager() {
           onReplace={() => void replaceFormat()}
         />
       )}
+
+      <VersionHistoryPanel
+        onNotice={setNotice}
+        onRestored={() => setVersion((value) => value + 1)}
+      />
     </div>
   );
 }

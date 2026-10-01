@@ -1,13 +1,13 @@
 /**
- * The FTD handbook, section by section.
+ * The FTD FTP, section by section.
  *
- * The handbook is the EMR profile post - the one document a trainee's whole
+ * The FTP is the EMR profile post - the one document a trainee's whole
  * training is recorded on - and it has two formats, kept apart on purpose: the
  * regular one and the reinstatement one. Each format is a run of sections, and
- * each section is **one file** under `docs/handbook/<format>/`.
+ * each section is **one file** under `docs/ftp/<format>/`.
  *
  * That shape is what makes it editable in the app rather than in a code editor:
- * a section is a file, so the Handbook tab can show the section's own text,
+ * a section is a file, so the FTP tab can show the section's own text,
  * write it back when a member publishes, and - because it is a file in the
  * repository - hand the change over as a git diff like any other edit. Nothing
  * here is stored in the database: a publish either writes the file or says it
@@ -15,7 +15,7 @@
  *
  * The files are BBCode, exactly as the forum takes it, and the sections are
  * joined in order with a newline between them - so the listing order below *is*
- * the document's order, and `npm run handbook:check` fails if a file is missing,
+ * the document's order, and `npm run ftp:check` fails if a file is missing,
  * orphaned, or repeated.
  *
  * `mustKeep` is the placeholders a section cannot lose: the name line, the date,
@@ -23,9 +23,9 @@
  * hurry drops, and publishing is refused without them.
  */
 
-export type HandbookFormatKey = "regular" | "reinstatement";
+export type FtpFormatKey = "regular" | "reinstatement";
 
-export type HandbookSection = {
+export type FtpSection = {
   /** The name the app and a link use. Stable: it is a URL parameter. */
   id: string;
   /** What the section is called on the page. */
@@ -50,21 +50,21 @@ export type HandbookSection = {
   protectedFromPaste?: boolean;
 };
 
-export type HandbookFormat = {
-  key: HandbookFormatKey;
+export type FtpFormat = {
+  key: FtpFormatKey;
   label: string;
   hint: string;
-  sections: readonly HandbookSection[];
+  sections: readonly FtpSection[];
 };
 
 /**
- * The placeholders the handbook's own formats use, for the insert menu.
+ * The placeholders the FTP's own formats use, for the insert menu.
  *
  * A `{{token}}` is filled in before the post is copied - by the contract
  * workflow, which knows the applicant and the supervisor - so it must survive an
  * edit untouched. The BBCode ones are conventions the trainer fills in by hand.
  */
-export const HANDBOOK_VARIABLES: readonly {
+export const FTP_VARIABLES: readonly {
   token: string;
   hint: string;
 }[] = [
@@ -157,7 +157,7 @@ const SIGNED: readonly string[] = ["[img]SIGNATURE[/img]"];
  */
 const REINSTATEMENT_SIGNED: readonly string[] = ["SIGNATURE\nRANK"];
 
-export const HANDBOOK_FORMATS: readonly HandbookFormat[] = [
+export const FTP_FORMATS: readonly FtpFormat[] = [
   {
     key: "regular",
     label: "Regular FTP",
@@ -167,7 +167,7 @@ export const HANDBOOK_FORMATS: readonly HandbookFormat[] = [
         id: "profile-header",
         title: "Student Information",
         hint: "The top of the profile: who the trainee is, when they were hired, and the phase checklist.",
-        file: "docs/handbook/regular/preamble.txt",
+        file: "docs/ftp/regular/preamble.txt",
         protectedFromPaste: true,
         mustKeep: [
           "{{applicantName}}",
@@ -180,56 +180,56 @@ export const HANDBOOK_FORMATS: readonly HandbookFormat[] = [
         id: "introduction",
         title: "Introduction",
         hint: "The first session: uniform, bodycam, and what the trainee may not do yet.",
-        file: "docs/handbook/regular/introduction.txt",
+        file: "docs/ftp/regular/introduction.txt",
         mustKeep: SIGNED,
       },
       {
         id: "phase-1",
         title: "Phase 1",
         hint: "Radio codes, radio calls, calls list, panics and the department radio.",
-        file: "docs/handbook/regular/phase-1.txt",
+        file: "docs/ftp/regular/phase-1.txt",
         mustKeep: SIGNED,
       },
       {
         id: "phase-2",
         title: "Phase 2",
         hint: "Treatment and the medical side, from a patient's first assessment onwards.",
-        file: "docs/handbook/regular/phase-2.txt",
+        file: "docs/ftp/regular/phase-2.txt",
         mustKeep: SIGNED,
       },
       {
         id: "phase-3",
         title: "Phase 3",
         hint: "Driving, scene management and the practice track.",
-        file: "docs/handbook/regular/phase-3.txt",
+        file: "docs/ftp/regular/phase-3.txt",
         mustKeep: SIGNED,
       },
       {
         id: "pre-certification",
         title: "Pre-Certification",
         hint: "The evaluation session, and the questions a trainer should be able to ask.",
-        file: "docs/handbook/regular/pre-certification.txt",
+        file: "docs/ftp/regular/pre-certification.txt",
         mustKeep: SIGNED,
       },
       {
         id: "certification",
         title: "Certification",
         hint: "The final session, the roster line, and the certificate itself.",
-        file: "docs/handbook/regular/certification.txt",
+        file: "docs/ftp/regular/certification.txt",
         mustKeep: SIGNED,
       },
       {
         id: "personnel-file-post",
         title: "Personnel File Post",
         hint: "The post a passed trainee is given in their personnel file.",
-        file: "docs/handbook/regular/personnel-file-post.txt",
+        file: "docs/ftp/regular/personnel-file-post.txt",
         mustKeep: ["{{applicantName}}"],
       },
       {
         id: "ride-along-paperwork",
         title: "Ride-Along Paperwork",
         hint: "The record of a mandatory ride-along, whose time counts towards certification.",
-        file: "docs/handbook/regular/ride-along-paperwork.txt",
+        file: "docs/ftp/regular/ride-along-paperwork.txt",
         mustKeep: SIGNED,
       },
     ],
@@ -243,7 +243,7 @@ export const HANDBOOK_FORMATS: readonly HandbookFormat[] = [
         id: "reinstatement-header",
         title: "Reinstatee Information",
         hint: "The top of the profile: who is coming back, who is running it, and to which rank.",
-        file: "docs/handbook/reinstatement/preamble.txt",
+        file: "docs/ftp/reinstatement/preamble.txt",
         protectedFromPaste: true,
         mustKeep: [
           "Reinstatee Name:",
@@ -259,21 +259,21 @@ export const HANDBOOK_FORMATS: readonly HandbookFormat[] = [
         id: "reinstatement-phase-i",
         title: "Reinstatement - Phase I",
         hint: "The first session back: hospitals, calls and unit management.",
-        file: "docs/handbook/reinstatement/reinstatement-phase-i.txt",
+        file: "docs/ftp/reinstatement/reinstatement-phase-i.txt",
         mustKeep: REINSTATEMENT_SIGNED,
       },
       {
         id: "reinstatement-phase-ii",
         title: "Reinstatement - Phase II",
         hint: "The second session back: treatment and the medical side.",
-        file: "docs/handbook/reinstatement/reinstatement-phase-ii.txt",
+        file: "docs/ftp/reinstatement/reinstatement-phase-ii.txt",
         mustKeep: REINSTATEMENT_SIGNED,
       },
       {
         id: "reinstatement-certification",
         title: "Reinstatement - Certification",
         hint: "The closing session, and what a reinstatee signs off on.",
-        file: "docs/handbook/reinstatement/reinstatement-certification.txt",
+        file: "docs/ftp/reinstatement/reinstatement-certification.txt",
         mustKeep: REINSTATEMENT_SIGNED,
       },
     ],
@@ -281,18 +281,18 @@ export const HANDBOOK_FORMATS: readonly HandbookFormat[] = [
 ];
 
 /** Every section, in the order the document is assembled in. */
-export const HANDBOOK_SECTIONS: readonly HandbookSection[] =
-  HANDBOOK_FORMATS.flatMap((format) => format.sections);
+export const FTP_SECTIONS: readonly FtpSection[] =
+  FTP_FORMATS.flatMap((format) => format.sections);
 
 /** A section as a whole-profile paste needs it: what it is called, and its text. */
-export type HandbookSplitSection = {
+export type FtpSplitSection = {
   id: string;
   title: string;
   /** The section's text as it stands - its heading is what a paste is cut at. */
   content: string;
 };
 
-export type HandbookSplitResult =
+export type FtpSplitResult =
   | { ok: true; sections: { id: string; content: string }[] }
   | { ok: false; reason: string };
 
@@ -317,16 +317,16 @@ export function sectionHeading(content: string): string | null {
  * so the app has to find the sections again rather than ask anyone to retype them
  * one at a time. Each section's own heading is where the next one begins, and the
  * text before the first heading is the header - so the pieces joined back with a
- * newline are the pasted document, which `npm run handbook:check` asserts by
+ * newline are the pasted document, which `npm run ftp:check` asserts by
  * round-tripping this function against the files.
  *
  * The one thing it does not reproduce exactly is nesting: see
  * `handBackNestedCloses`.
  */
-export function splitHandbookDocument(
-  sections: readonly HandbookSplitSection[],
+export function splitFtpDocument(
+  sections: readonly FtpSplitSection[],
   document: string,
-): HandbookSplitResult {
+): FtpSplitResult {
   const bounds: number[] = [0];
   for (let index = 1; index < sections.length; index += 1) {
     const section = sections[index];
@@ -385,7 +385,7 @@ function countCloses(content: string): number {
  * Personnel File Post template inside Certification - so cutting at every heading
  * leaves Certification opening a spoiler it never closes and Personnel File Post
  * closing one it never opened. A section file has to stand on its own, which is
- * what `npm run handbook:check` fails on, so the enclosing section's closing tag
+ * what `npm run ftp:check` fails on, so the enclosing section's closing tag
  * moves up to it: the same tags, one boundary higher, which is also how the
  * profile's own files are laid out.
  *
@@ -417,15 +417,15 @@ function handBackNestedCloses(
 }
 
 /** A section by id, or undefined - a stale link matches nothing. */
-export function handbookSection(id: string): HandbookSection | undefined {
-  return HANDBOOK_SECTIONS.find((section) => section.id === id);
+export function ftpSection(id: string): FtpSection | undefined {
+  return FTP_SECTIONS.find((section) => section.id === id);
 }
 
 /** The format a section belongs to, for grouping the list and the profile it builds. */
-export function handbookFormatOf(
-  section: HandbookSection,
-): HandbookFormat | undefined {
-  return HANDBOOK_FORMATS.find((format) =>
+export function ftpFormatOf(
+  section: FtpSection,
+): FtpFormat | undefined {
+  return FTP_FORMATS.find((format) =>
     format.sections.some((entry) => entry.id === section.id),
   );
 }

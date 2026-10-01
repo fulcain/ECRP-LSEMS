@@ -1,5 +1,5 @@
 /**
- * A pasted profile, converted into the markup the handbook files are written in.
+ * A pasted profile, converted into the markup the FTP files are written in.
  *
  * The profile is written somewhere else - the forum's own editor, a document, a
  * copy taken off the live post - and what comes back is not always what these
@@ -10,21 +10,21 @@
  * `<br>`, `&nbsp;`, `<strong>` - with the newlines of another operating system.
  *
  * None of that is content, and none of it is the member's to clean up by hand:
- * an id left on a tag is a tag `npm run handbook:check` reads back out, a quoted
+ * an id left on a tag is a tag `npm run ftp:check` reads back out, a quoted
  * heading is a section the split cannot find, and `[/*]` is a list the parser
  * never closes. So a paste is converted once, here, before anything looks at it.
  *
  * What it deliberately leaves alone is the writing: spacing, trailing
  * whitespace, blank lines, spelling, line order. That is what makes the claim
- * `npm run handbook:check` holds this file to - converting a section that is
+ * `npm run ftp:check` holds this file to - converting a section that is
  * already in this format changes nothing - and it is why a paste of a profile
  * nobody edited writes no file at all.
  *
- * It imports nothing, on purpose: the Handbook tab converts as the member types,
+ * It imports nothing, on purpose: the FTP tab converts as the member types,
  * in the browser, so this module must be as portable as the markup it reads.
  */
 
-export type HandbookConversionKind =
+export type FtpConversionKind =
   /** phpBB's own tag id: `[b:1a2b3c4d]` is `[b]`. */
   | "tag-id"
   /** phpBB's end of a list item, `[/*]`, where this format opens the next. */
@@ -46,26 +46,26 @@ export type HandbookConversionKind =
   /**
    * A close that does not line up with the tag before it, or a tag phpBB closed
    * on the writer's behalf, put where the forum renders it. Not this module's
-   * own work - `lib/handbook-markup.ts` does it, and the report says it here so
+   * own work - `lib/ftp-markup.ts` does it, and the report says it here so
    * the tab and the terminal tell one story.
    */
   | "tag-order";
 
-export type HandbookConversion = {
-  kind: HandbookConversionKind;
+export type FtpConversion = {
+  kind: FtpConversionKind;
   count: number;
   /** One plain line saying what was converted - read by the tab and the terminal. */
   note: string;
 };
 
-export type HandbookConversionResult = {
+export type FtpConversionResult = {
   text: string;
   /** Only what actually happened, in the order it happened. */
-  conversions: HandbookConversion[];
+  conversions: FtpConversion[];
 };
 
 type Rule = {
-  kind: HandbookConversionKind;
+  kind: FtpConversionKind;
   pattern: RegExp;
   replace: (whole: string, groups: (string | undefined)[]) => string;
   note: (count: number) => string;
@@ -180,12 +180,12 @@ const RULES: readonly Rule[] = [
  * Converts a pasted document, and says what it changed.
  *
  * An empty list of conversions is the answer for text that is already written
- * the way the handbook is - which is the whole of what a paste of an unchanged
+ * the way the FTP is - which is the whole of what a paste of an unchanged
  * profile should be able to report.
  */
-export function convertHandbookBbcode(raw: string): HandbookConversionResult {
+export function convertFtpBbcode(raw: string): FtpConversionResult {
   let text = raw;
-  const conversions: HandbookConversion[] = [];
+  const conversions: FtpConversion[] = [];
 
   for (const rule of RULES) {
     let count = 0;
@@ -205,7 +205,7 @@ export function convertHandbookBbcode(raw: string): HandbookConversionResult {
 
 /** One line for a notice or a terminal: what a paste had to be converted for. */
 export function describeConversions(
-  conversions: readonly HandbookConversion[],
+  conversions: readonly FtpConversion[],
 ): string {
   return conversions.map((conversion) => conversion.note).join("; ");
 }

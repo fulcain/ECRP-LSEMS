@@ -264,6 +264,33 @@ export function hasSessionEditAccess(
 }
 
 /**
+ * Who may edit the ftp: the same triple the FTD Command page gates on -
+ * FTD Head, Assistant Head of FTD, and Command+ (Command ranks plus the
+ * CommandPlusTeam role) - with the Discord admins named in `DISCORD_ADMIN_IDS`
+ * always in. Publishing a FTP update commits to the repository, so the
+ * gate is decided here and in `/api/ftp` from roles, never from a stored
+ * row the permission editor could hand out.
+ */
+export function canEditFtp(
+  userRoleIds: readonly string[],
+  discordId?: string,
+): boolean {
+  if (discordId && ADMIN_USER_IDS.has(discordId)) return true;
+  const requiredIds = new Set<string>();
+  for (const alias of [
+    "FTHead",
+    "FTAssHead",
+    "Command",
+    "CommandPlusTeam",
+    "HighCommand",
+  ] as const) {
+    const id = ROLES[alias].id;
+    if (id) requiredIds.add(id);
+  }
+  return userRoleIds.some((id) => requiredIds.has(id));
+}
+
+/**
  * Filter a list of nav-style links down to only those the caller is
  * permitted to open. Reuses `userHasAccess`, so the sidebar and the gate can
  * never disagree about a page - the nav is the matrix, read for rendering.

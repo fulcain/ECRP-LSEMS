@@ -1,48 +1,54 @@
 import { NextResponse } from "next/server";
 
+import { FTP_FORMATS, FTP_SECTIONS, ftpSection } from "@/app/constants/divisions/ftd/ftp";
 import { AUTH_COOKIE_NAME } from "@/lib/cookies";
-import { verifySessionToken } from "@/lib/jwt";
-import { isDiscordAdmin } from "@/lib/role-config";
-import { handbookSection } from "@/app/constants/divisions/ftd/handbook";
 import {
-  canWriteHandbook,
+  commitHistory,
+  fileAtCommit,
+  isGitHubCommitConfigured,
+} from "@/lib/github-ftp";
+import { verifySessionToken } from "@/lib/jwt";
+import { canEditFtp } from "@/lib/role-config";
+import {
+  canWriteFtp,
   foreignSectionHeadings,
-  readHandbook,
-  readHandbookHistory,
-  readHandbookVersion,
+  readFtp,
+  readFtpHistory,
+  readFtpHistoryAll,
+  readFtpVersion,
   validateSection,
-  writeHandbookSection,
-} from "@/lib/handbook";
-import { importHandbookDocument } from "@/lib/handbook-import";
+  writeFtpSection,
+} from "@/lib/ftp";
+import { importFtpDocument } from "@/lib/ftp-import";
+import { sameFtpText } from "@/lib/ftp-markup";
 
 /**
- * GET  /api/handbook          - every section, its text, and whether this
+ * GET  /api/ftp          - every section, its text, and whether this
  *                               deployment can write one back.
- * GET  /api/handbook?id=…     - that section's history (git, when there is one).
- * GET  /api/handbook?id=…&at=…- what that section said at one commit.
- * POST /api/handbook          - publish one section. Body: `{ id, content }`.
- * POST /api/handbook          - or replace a whole profile at once, which is how
+ * GET  /api/ftp?id=…     - that section's history (git, when there is one).
+ * GET  /api/ftp?id=…&at=…- what that section said at one commit.
+ * POST /api/ftp          - publish one section. Body: `{ id, content }`.
+ * POST /api/ftp          - or replace a whole profile at once, which is how
  *                               a member who writes it elsewhere gets it in:
  *                               body `{ format, content }`, converted from
  *                               whatever the paste was written in and split back
  *                               into the format's sections at their headings.
  *
- * The handbook is a set of files in the repository (`docs/handbook/**`), so this
+ * The FTP is a set of files in the repository (`docs/ftp/**`), so this
  * route reads and writes files and nothing else. There is deliberately no
  * database path: on a deployment that cannot write its own files the publish is
  * refused, with the text handed back so it can still be applied by hand.
  *
- * Who may do this is `DISCORD_ADMIN_IDS` and nothing else. Every other gate in
- * the app is a stored row or a Discord role, and either could be handed out from
- * inside the app; this endpoint writes the repository, so it is gated on the one
- * identity the app cannot grant - and re-read here rather than trusting that the
- * request came from the page that shows the editor.
+ * Who may do this is FTD Head, Assistant Head of FTD and Command+ (with the
+ * Discord admins named in `DISCORD_ADMIN_IDS` always in) - the same triple the
+ * FTD Command page gates on, re-read here rather than trusting that the request
+ * came from the page that shows the editor.
  */
 
 export const dynamic = "force-dynamic";
 
 type Editor =
-  | { ok: true }
+  | { ok: true; session: { roles: string[]; discordId?: string; username?: string | null } }
   | { ok: false; response: NextResponse };
 
 async function requireEditor(): Promise<Editor> {
@@ -61,19 +67,19 @@ async function requireEditor(): Promise<Editor> {
       response: NextResponse.json({ error: "Not signed in." }, { status: 401 }),
     };
   }
-  if (!isDiscordAdmin(session.discordId)) {
+  if (!canEditFtp(session.roles, session.discordId)) {
     return {
       ok: false,
       response: NextResponse.json(
         {
           error:
-            "Forbidden: the handbook is edited by the Discord admins named in DISCORD_ADMIN_IDS.",
+            "Forbidden: the FTP is edited by FTD Head, Assistant Head of FTD and Command+.",
         },
         { status: 403 },
       ),
     };
   }
-  return { ok: true };
+  return { ok: true, session };
 }
 
 export async function GET(request: Request) {
@@ -83,16 +89,19 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const id = url.searchParams.get("id");
 
-  // A section's history, and one version of it: only a checkout can answer, and
-  // an empty list is how a deployed build says it has none.
+  // A section's history, and one version of it. On a deployment that commits,
+  // GitHub answers; on a checkout, git does. An empty list is how a build with
+  // neither says it has no history.
   if (id) {
-    const section = handbookSection(id);
+    const section = ftpSection(id);
     if (!section) {
       return NextResponse.json({ error: "No such section." }, { status: 404 });
     }
     const at = url.searchParams.get("at");
     if (at) {
-      const content = await readHandbookVersion(section.file, at);
+      const content = isGitHubCommitConfigured()
+        ? await fileAtCommit(section.file, at)
+        : await readFtpVersion(section.file, at);
       if (content === null) {
         return NextResponse.json(
           { error: "That version could not be read here." },
@@ -101,23 +110,125 @@ export async function GET(request: Request) {
       }
       return NextResponse.json({ id, at, content });
     }
-    return NextResponse.json({
-      id,
-      history: await readHandbookHistory(section.file),
-    });
+    const history = isGitHubCommitConfigured()
+      ? await commitHistory([section.file])
+      : await readFtpHistory(section.file);
+    return NextResponse.json({ id, history });
+  }
+
+  // The whole FTP's history, for the version panel: every commit that
+  // touched any section file, newest first. GitHub answers on a deployment
+  // that commits; a checkout reads its own git.
+  if (url.searchParams.get("history") === "all") {
+    const files = FTP_SECTIONS.map((section) => section.file);
+    const history = isGitHubCommitConfigured()
+      ? await commitHistory(files)
+      : await readFtpHistoryAll(files);
+    return NextResponse.json({ history });
   }
 
   return NextResponse.json({
-    writable: canWriteHandbook(),
-    formats: await readHandbook(),
+    writable: canWriteFtp(),
+    commits: isGitHubCommitConfigured(),
+    formats: await readFtp(),
   });
+}
+
+/**
+ * Restores a version: reads a past commit's section files and publishes them
+ * back through the normal update, so going back is the same pipeline as going
+ * forward - one commit, authored by the member who pressed the button.
+ *
+ * Only whole profiles are restorable. A single section's history is viewable
+ * from the editor, but putting one section back alone is exactly the
+ * section-by-section editing the update path exists to end.
+ *
+ * Each format is put back only if the version actually differs from what the
+ * files say now - a rollback to a commit that touched one profile leaves the
+ * other one, and its history, exactly where they are.
+ */
+async function restoreVersion(
+  editor: { session: { roles: string[]; discordId?: string; username?: string | null } },
+  commit: string,
+) {
+  if (!/^[0-9a-f]{7,40}$/i.test(commit)) {
+    return NextResponse.json(
+      { error: "That version could not be identified." },
+      { status: 400 },
+    );
+  }
+  const author = {
+    name: editor.session.username || "LSEMS FTP",
+    email: `${editor.session.discordId ?? "unknown"}@users.noreply.github.com`,
+  };
+  const stored = await readFtp();
+  const restored: { format: string; label: string; changed: string[]; commit?: string }[] = [];
+  const problems: string[] = [];
+  for (const format of FTP_FORMATS) {
+    // The document is the version's own sections in the declaration's order -
+    // the same shape a pasted profile arrives in, so it goes through the one
+    // importer with its conversion, split and placeholder checks intact. The
+    // header is carried along but never written, whichever text it held then.
+    const parts: string[] = [];
+    let differs = false;
+    for (const section of format.sections) {
+      const current =
+        stored
+          .find((entry) => entry.key === format.key)
+          ?.sections.find((entry) => entry.id === section.id)?.content ?? "";
+      const at = isGitHubCommitConfigured()
+        ? await fileAtCommit(section.file, commit)
+        : await readFtpVersion(section.file, commit);
+      // A section this version predates keeps its own text.
+      parts.push(at ?? current);
+      if (
+        !section.protectedFromPaste &&
+        at !== null &&
+        !sameFtpText(at, current)
+      ) {
+        differs = true;
+      }
+    }
+    if (!differs) continue;
+
+    const report = await importFtpDocument({
+      content: parts.join("\n"),
+      format: format.key,
+      write: true,
+      author,
+      commitSubject: `ftp: restore ${format.label} to ${commit.slice(0, 12)}`,
+    });
+    if (!report.ok) {
+      problems.push(`${format.label}: ${report.error}`);
+      continue;
+    }
+    restored.push({
+      format: report.format,
+      label: report.formatLabel,
+      changed: report.changed,
+      commit: report.commit,
+    });
+  }
+
+  if (restored.length === 0) {
+    return NextResponse.json(
+      problems.length > 0
+        ? { error: problems[0], problems }
+        : {
+            error:
+              "The files already say what that version says - there is nothing to restore.",
+          },
+      { status: problems.length > 0 ? 422 : 409 },
+    );
+  }
+  return NextResponse.json({ written: true, restored });
 }
 
 /**
  * Replace a whole profile from a pasted document.
  *
  * The conversion, the split, the placeholder check and the write are one
- * function - `importHandbookDocument` - shared with `npm run handbook:import`
+ * function - `importFtpDocument` - shared with `npm run ftp:import`
  * and with the tab's own preview, so the three cannot disagree about what a
  * paste does. This route's whole job is to answer for it: who may ask, and
  * which status a refusal is.
@@ -134,8 +245,20 @@ export async function GET(request: Request) {
  * drift this all exists to end. A phase whose notes come out identical is left
  * where it is, so the rebuild is visible in the result but not in the diff.
  */
-async function replaceFormat(key: string, content: string) {
-  const report = await importHandbookDocument({ content, format: key, write: true });
+async function replaceFormat(
+  key: string,
+  content: string,
+  editor: { session: { roles: string[]; discordId?: string; username?: string | null } },
+) {
+  const report = await importFtpDocument({
+    content,
+    format: key,
+    write: true,
+    author: {
+      name: editor.session.username || "LSEMS FTP",
+      email: `${editor.session.discordId ?? "unknown"}@users.noreply.github.com`,
+    },
+  });
   if (!report.ok) {
     // A deployment that cannot write is a refusal, not a failure: the member is
     // told where the update has to happen rather than shown an error.
@@ -171,6 +294,9 @@ async function replaceFormat(key: string, content: string) {
     notesPhases: report.notesPhases,
     notesSkipped: report.notesSkipped,
     warnings: report.warnings,
+    // The commit the update landed in, when the deployment commits - the link
+    // the tab shows so "what just changed" is one click away.
+    commit: report.commit,
   });
 }
 
@@ -178,24 +304,42 @@ export async function POST(request: Request) {
   const editor = await requireEditor();
   if (!editor.ok) return editor.response;
 
-  let body: { id?: unknown; format?: unknown; content?: unknown };
+  let body: {
+    id?: unknown;
+    format?: unknown;
+    content?: unknown;
+    restore?: unknown;
+    commit?: unknown;
+  };
   try {
     body = (await request.json()) as {
       id?: unknown;
       format?: unknown;
       content?: unknown;
+      restore?: unknown;
+      commit?: unknown;
     };
   } catch {
     return NextResponse.json({ error: "Expected a JSON body." }, { status: 400 });
   }
 
+  // Restoring a version is an update like any other: the old text of a whole
+  // profile, pasted back in and published - the same pipeline, the same commit,
+  // and a message that says where the text came from.
+  if (body.restore === true) {
+    return restoreVersion(
+      editor,
+      typeof body.commit === "string" ? body.commit : "",
+    );
+  }
+
   const content = typeof body.content === "string" ? body.content : "";
   if (typeof body.format === "string") {
-    return replaceFormat(body.format, content);
+    return replaceFormat(body.format, content, editor);
   }
 
   const id = typeof body.id === "string" ? body.id : "";
-  const section = handbookSection(id);
+  const section = ftpSection(id);
   if (!section) {
     return NextResponse.json({ error: "No such section." }, { status: 404 });
   }
@@ -216,7 +360,7 @@ export async function POST(request: Request) {
   const validation = validateSection(
     section,
     content,
-    foreignSectionHeadings(await readHandbook(), id),
+    foreignSectionHeadings(await readFtp(), id),
   );
   if (validation.problems.length > 0) {
     return NextResponse.json(
@@ -225,13 +369,13 @@ export async function POST(request: Request) {
     );
   }
 
-  const result = await writeHandbookSection(id, content);
+  const result = await writeFtpSection(id, content);
   if (!result) {
     return NextResponse.json({ error: "No such section." }, { status: 404 });
   }
   if (!result.ok) {
     // Handed back rather than stored anywhere: the member applies it and commits
-    // it, which is the only way a handbook change reaches the repository.
+    // it, which is the only way a FTP change reaches the repository.
     return NextResponse.json(
       {
         written: false,
