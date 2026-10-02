@@ -9,6 +9,7 @@ export const mrCertificationTemplate = {
   value: "mr-certification",
   label: "Mountain Rescue Certification",
   renderBody: ({
+    completionDate,
     answers,
     instructorName,
     instructorRank,
@@ -25,7 +26,7 @@ export const mrCertificationTemplate = {
 [divbox=white]
 [b]Instructor In-Charge:[/b] ${nameLine}
 [b]Instructor’s Rank:[/b] ${rankLine}
-[b]Date:[/b] DD/MM/YYYY
+[b]Date:[/b] ${completionDate}
 [/divbox]
 
 [lsemssubtitle]MOUNTAINOUS OPERATION THEORY[/lsemssubtitle]

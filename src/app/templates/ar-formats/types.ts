@@ -42,6 +42,8 @@ export type ARCertificateContext = {
 export type MRCertificationContext = {
   /** The member being certified as a Mountain Rescuer. */
   studentName: string;
+  /** The day the certification was run, as it is written on GOV. */
+  completionDate: string;
   /** The instructor's answers, section by section, in the format's own order. */
   answers: {
     kamachoDriving: string;

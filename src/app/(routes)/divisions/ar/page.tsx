@@ -373,6 +373,7 @@ export default function ARFormatsPage() {
     if (selectedDocument === "mr-certification") {
       const context: MRCertificationContext = {
         studentName: student,
+        completionDate: completionDate || "DD/MMM/YYYY",
         answers: {
           kamachoDriving: mrAnswers.kamachoDriving ?? "",
           kamachoPolicies: mrAnswers.kamachoPolicies ?? "",
@@ -568,7 +569,7 @@ export default function ARFormatsPage() {
                   </p>
                 )}
 
-                {isCertificate ? (
+                {(isCertificate || selectedDocument === "mr-certification") && (
                   <div className="space-y-2">
                     <Label htmlFor="completion-date">Date</Label>
                     <div className="flex items-center gap-2">
@@ -590,12 +591,13 @@ export default function ARFormatsPage() {
                       </Button>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      The date on the certificate. Format:{" "}
+                      The date on the document. Format:{" "}
                       <span className="font-mono">DD/MMM/YYYY</span>. Certified
                       by is read off your Staff Page rank and signature.
                     </p>
                   </div>
-                ) : (
+                )}
+                {!isCertificate && (
                   <div className="space-y-3">
                     {activeFields.map((field) => (
                       <div key={field.key} className="space-y-1.5">
