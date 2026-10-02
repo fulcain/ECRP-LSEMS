@@ -38,3 +38,56 @@ export type ARCertificateContext = {
   /** "Rank Fname Lname" - the member who ran the certification. */
   certifiedBy: string;
 };
+
+export type MRCertificationContext = {
+  /** The member being certified as a Mountain Rescuer. */
+  studentName: string;
+  /** The instructor's answers, section by section, in the format's own order. */
+  answers: {
+    kamachoDriving: string;
+    kamachoPolicies: string;
+    callsignBriefing: string;
+    securingRating: string;
+    hillsStruggle: string;
+    citySpeedLaws: string;
+    practiceRating: string;
+    offroadStruggle: string;
+    roadSituation: string;
+    roadsHandling: string;
+    summitTrek: string;
+    summitTime: string;
+    summitStalls: string;
+    summitHandling: string;
+    summitSpeed: string;
+    summitConfidence: string;
+    descentTrek: string;
+    descentStalls: string;
+    descentHandling: string;
+    descentConfidence: string;
+    finalComments: string;
+    result: string;
+  };
+  /** Who ran the certification - from the Staff Page, like every signature. */
+  instructorName?: string;
+  instructorRank?: string;
+  instructorSignature?: string;
+};
+
+export type MRCertificateContext = {
+  /** The member being certified as a Mountain Rescuer. */
+  studentName: string;
+  /** The day the certification was passed, as it is written on GOV. */
+  completionDate: string;
+  /** "Rank Fname Lname" - the member who ran the certification. */
+  certifiedBy: string;
+};
+
+/** Both irregularity formats share one body; only the banner image differs. */
+export type ARIrregularityContext = {
+  name: string;
+  rank: string;
+  date: string;
+  time: string;
+  information: string;
+  nextStep: string;
+};

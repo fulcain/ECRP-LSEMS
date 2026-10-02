@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  AlertTriangle,
   Award,
   Check,
   ClipboardCopy,
@@ -22,13 +23,20 @@ import {
 import { useMedic } from "@/app/context/MedicContext";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import {
-  arCertificateTemplate,
   arCertificationTemplate,
+  arCertificateTemplate,
+  arIrregularityTemplate,
   arTemplates,
+  mrCertificationTemplate,
+  mrCertificateTemplate,
+  mrIrregularityTemplate,
 } from "@/app/templates/ar-formats";
 import type {
   ARCertificateContext,
   ARCertificationContext,
+  ARIrregularityContext,
+  MRCertificationContext,
+  MRCertificateContext,
 } from "@/app/templates/ar-formats";
 import { PageContainer } from "@/components/ui/page-container";
 import { DivisionQuickLinksLink } from "@/components/division-quick-links-link";
@@ -58,19 +66,22 @@ import { AR_PAPERWORK, isARDocument, type ARDocument } from "./components/paperw
 const COPIED_FLASH_MS = 1800;
 
 /**
- * The page is one workspace, so it has no tabs: the certification paperwork
- * and the certificate are the two cards in the picker below.
+ * The page is one workspace, so it has no tabs: the pilot and Mountain Rescue
+ * paperwork are the two groups of cards in the picker below.
  */
 const PAGE_TITLE = "Paperwork";
 const PAGE_PURPOSE =
   "Pick what you are writing, fill it in, then copy it into GOV - the extension pastes it in for you.";
 
-/** The questions of the certification, section by section, in the format's order. */
-const CERTIFICATION_FIELDS: readonly {
-  key: keyof ARCertificationContext["answers"];
+type AnswerField = {
+  key: string;
   label: string;
   hint?: string;
-}[] = [
+  type?: "text" | "textarea" | "passfail";
+};
+
+/** The questions of the pilot certification, in the format's order. */
+const PILOT_CERTIFICATION_FIELDS: readonly AnswerField[] = [
   { key: "radioCalls", label: "Were all of the radio calls covered?" },
   { key: "helipadInspection", label: "Did the student understand how to conduct a helipad inspection?" },
   { key: "medevacLanding", label: "Did the student understand how to land a medevac properly?" },
@@ -78,7 +89,7 @@ const CERTIFICATION_FIELDS: readonly {
   { key: "radioProtocolRating", label: "Rating: knowledge of Radio Protocols 1-5" },
   { key: "helicopterSafetyRating", label: "Rating: understanding of Helicopter Safety 1-5" },
   { key: "practicePerformance", label: "Rating: performance during practice 1-5" },
-  { key: "strengthsWeaknesses", label: "Piloting strengths and weaknesses during the practical training" },
+  { key: "strengthsWeaknesses", label: "Piloting strengths and weaknesses during the practical training", type: "textarea" },
   { key: "collisions", label: "Did the student collide with anything during the practical training?" },
   { key: "basketRescue", label: "Did the student understand how to perform a basket rescue, as well as when to do it?" },
   { key: "courseFlightSafety", label: "Did the student fly safely throughout the course?" },
@@ -89,21 +100,85 @@ const CERTIFICATION_FIELDS: readonly {
   { key: "courseTime", label: "How long did the course take (from liftoff to landing & engine off)" },
   { key: "trialTime", label: "Time Trial time", hint: "MM:SS" },
   { key: "trialComments", label: "Time Trial comments (optional)" },
-  { key: "finalThoughts", label: "Final thoughts" },
-  { key: "status", label: "Status" },
+  { key: "finalThoughts", label: "Final thoughts", type: "textarea" },
+  { key: "status", label: "Status", type: "passfail" },
 ];
 
-const FIELD_STORAGE_KEY = "ar-certification-answers-v1";
+/** The questions of the Mountain Rescue certification, in the format's order. */
+const MR_CERTIFICATION_FIELDS: readonly AnswerField[] = [
+  { key: "kamachoDriving", label: "Did the student understand how to accurately drive the Kamacho?" },
+  { key: "kamachoPolicies", label: "Does the student clearly understand the policies for driving the Kamacho?" },
+  { key: "callsignBriefing", label: "Was the student briefed on what their callsign will be when driving the Kamacho?" },
+  { key: "securingRating", label: "Rating: understanding of how to properly secure themselves 1-5" },
+  { key: "hillsStruggle", label: "Did the student struggle with any of the hills to trek up or down? If so, which one?" },
+  { key: "citySpeedLaws", label: "When driving on paved and noticeable roads, did the student follow city speed laws?" },
+  { key: "practiceRating", label: "Rating: performance during practice 1-5" },
+  { key: "offroadStruggle", label: "Did the student struggle navigating through the offroad paths?" },
+  { key: "roadSituation", label: "Did the student drive reasonably considering the road situation?" },
+  { key: "roadsHandling", label: "Handling (RATING) 1-5" },
+  { key: "summitTrek", label: "Was the student able to safely trek all the way up Mount Chilliad?" },
+  { key: "summitTime", label: "How long did it take for the student to reach the top?" },
+  { key: "summitStalls", label: "How many times, if any, did they stall the Kamacho?" },
+  { key: "summitHandling", label: "Handling (RATING) 1-5" },
+  { key: "summitSpeed", label: "Speed (RATING) 1-5" },
+  { key: "summitConfidence", label: "Confidence (RATING) 1-5" },
+  { key: "descentTrek", label: "Was the student able to safely trek down Mount Chilliad towards Paleto / Paleto MD?" },
+  { key: "descentStalls", label: "How many times, if any, did they stall the Kamacho?" },
+  { key: "descentHandling", label: "Handling (RATING) 1-5" },
+  { key: "descentConfidence", label: "Confidence (RATING) 1-5" },
+  { key: "finalComments", label: "Final Comments", type: "textarea" },
+  { key: "result", label: "Result", type: "passfail" },
+];
+
+/** Both irregularities carry the same fields - only the banner differs. */
+const IRREGULARITY_FIELDS: readonly AnswerField[] = [
+  { key: "date", label: "Date", hint: "DD/MMM/YYYY" },
+  { key: "time", label: "Time", hint: "MM/HH am/pm" },
+  { key: "information", label: "Information", type: "textarea" },
+  { key: "nextStep", label: "What was the student instructed to do next", type: "textarea" },
+];
+
+const DOCUMENT_KIND: Record<ARDocument, "certification" | "certificate" | "irregularity"> = {
+  certification: "certification",
+  certificate: "certificate",
+  "pilot-irregularity": "irregularity",
+  "mr-certification": "certification",
+  "mr-certificate": "certificate",
+  "mr-irregularity": "irregularity",
+};
+
 type StoredAnswers = Record<string, string>;
 
-const EMPTY_ANSWERS: StoredAnswers = {
-  ...Object.fromEntries(
-    CERTIFICATION_FIELDS.map((field) => [field.key as string, ""]),
-  ),
+function emptyAnswers(fields: readonly AnswerField[], passFailKey?: string): StoredAnswers {
+  const base = Object.fromEntries(fields.map((field) => [field.key, ""]));
   // A certification is passed unless it is failed, so that is where the
   // dropdown starts.
-  status: "PASS",
-};
+  if (passFailKey) base[passFailKey] = "PASS";
+  return base;
+}
+
+const PILOT_STORAGE_KEY = "ar-certification-answers-v1";
+const MR_STORAGE_KEY = "ar-mr-certification-answers-v1";
+const PILOT_IRREGULARITY_STORAGE_KEY = "ar-pilot-irregularity-v1";
+const MR_IRREGULARITY_STORAGE_KEY = "ar-mr-irregularity-v1";
+
+const EMPTY_PILOT_ANSWERS = emptyAnswers(PILOT_CERTIFICATION_FIELDS, "status");
+const EMPTY_MR_ANSWERS = emptyAnswers(MR_CERTIFICATION_FIELDS, "result");
+const EMPTY_PILOT_IRREGULARITY = emptyAnswers(IRREGULARITY_FIELDS);
+const EMPTY_MR_IRREGULARITY = emptyAnswers(IRREGULARITY_FIELDS);
+
+/** A PASS/FAIL stored before it was a dropdown may still be the old placeholder. */
+function normalizePassFail(value: string | undefined): string {
+  return ["PASS", "FAIL"].includes(value ?? "") ? (value as string) : "PASS";
+}
+
+function titleCase(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/(^|[\s\-'])(\p{L})/gu, (_m, prefix: string, ch: string) => prefix + ch.toUpperCase())
+    .trim()
+    .replace(/\s+/g, " ");
+}
 
 export default function ARFormatsPage() {
   const { medicCredentials, divisionRanks } = useMedic();
@@ -150,11 +225,24 @@ export default function ARFormatsPage() {
     "ar-format-completion-date",
     "DD/MMM/YYYY",
   );
-  // The certification's answers live in one stored record: the format has
-  // twenty of them, and losing one to a refresh means retyping a whole section.
-  const [answers, setAnswers] = useLocalStorage<StoredAnswers>(
-    FIELD_STORAGE_KEY,
-    EMPTY_ANSWERS,
+  // Each format keeps its own answers: a pilot run and a Mountain Rescue run
+  // are different pieces of work, and losing one to a refresh means retyping a
+  // whole section.
+  const [pilotAnswers, setPilotAnswers] = useLocalStorage<StoredAnswers>(
+    PILOT_STORAGE_KEY,
+    EMPTY_PILOT_ANSWERS,
+  );
+  const [mrAnswers, setMrAnswers] = useLocalStorage<StoredAnswers>(
+    MR_STORAGE_KEY,
+    EMPTY_MR_ANSWERS,
+  );
+  const [pilotIrregularity, setPilotIrregularity] = useLocalStorage<StoredAnswers>(
+    PILOT_IRREGULARITY_STORAGE_KEY,
+    EMPTY_PILOT_IRREGULARITY,
+  );
+  const [mrIrregularity, setMrIrregularity] = useLocalStorage<StoredAnswers>(
+    MR_IRREGULARITY_STORAGE_KEY,
+    EMPTY_MR_IRREGULARITY,
   );
   const [copied, setCopied] = useState(false);
   const [animKey, setAnimKey] = useState(0);
@@ -176,26 +264,47 @@ export default function ARFormatsPage() {
     };
   }, []);
 
-  const updateAnswer = (key: string, value: string) =>
-    setAnswers((prev) => ({ ...prev, [key]: value }));
-
   const activeFormat =
     arTemplates.find((format) => format.value === selectedDocument) ?? null;
+
+  const documentKind = selectedDocument ? DOCUMENT_KIND[selectedDocument] : null;
+  const isCertificate = documentKind === "certificate";
+  const isIrregularity = documentKind === "irregularity";
+  const isMountain = selectedDocument?.startsWith("mr-") ?? false;
+
+  // The field list, the stored answers and the setter that belong to the
+  // document the member has chosen - one selection drives the whole form.
+  const activeFields: readonly AnswerField[] = isIrregularity
+    ? IRREGULARITY_FIELDS
+    : selectedDocument === "mr-certification"
+      ? MR_CERTIFICATION_FIELDS
+      : selectedDocument === "certification"
+        ? PILOT_CERTIFICATION_FIELDS
+        : [];
+
+  const activeAnswers = isIrregularity
+    ? isMountain
+      ? mrIrregularity
+      : pilotIrregularity
+    : isMountain
+      ? mrAnswers
+      : pilotAnswers;
+
+  const updateAnswer = (key: string, value: string) => {
+    if (isIrregularity) {
+      (isMountain ? setMrIrregularity : setPilotIrregularity)((prev) => ({
+        ...prev,
+        [key]: value,
+      }));
+    } else {
+      (isMountain ? setMrAnswers : setPilotAnswers)((prev) => ({
+        ...prev,
+        [key]: value,
+      }));
+    }
+  };
+
   const arRank = divisionRanks["Air & Rescue"] ?? "";
-  const isCertificate = selectedDocument === "certificate";
-
-  // The status is a PASS/FAIL dropdown, but an answer saved before it was one
-  // may still carry the old free-text placeholder - normalise, PASS by default.
-  const statusAnswer = ["PASS", "FAIL"].includes(answers.status ?? "")
-    ? (answers.status as string)
-    : "PASS";
-
-  const titleCase = (value: string) =>
-    value
-      .toLowerCase()
-      .replace(/(^|[\s\-'])(\p{L})/gu, (_m, prefix: string, ch: string) => prefix + ch.toUpperCase())
-      .trim()
-      .replace(/\s+/g, " ");
 
   const student = titleCase(studentName) || "Fname Lname";
 
@@ -212,53 +321,133 @@ export default function ARFormatsPage() {
       : medicCredentials.rank || undefined;
   }, [medicCredentials.rank, medicCredentials.directorRole, arRank]);
 
-  const certificationBBCode = useMemo(() => {
-    if (selectedDocument !== "certification") return "";
-    const context: ARCertificationContext = {
-      studentName: student,
-      answers: {
-        radioCalls: answers.radioCalls ?? "",
-        helipadInspection: answers.helipadInspection ?? "",
-        medevacLanding: answers.medevacLanding ?? "",
-        questions: answers.questions ?? "",
-        radioProtocolRating: answers.radioProtocolRating ?? "",
-        helicopterSafetyRating: answers.helicopterSafetyRating ?? "",
-        practicePerformance: answers.practicePerformance ?? "",
-        strengthsWeaknesses: answers.strengthsWeaknesses ?? "",
-        collisions: answers.collisions ?? "",
-        basketRescue: answers.basketRescue ?? "",
-        courseFlightSafety: answers.courseFlightSafety ?? "",
-        landings: answers.landings ?? "",
-        courseCollisions: answers.courseCollisions ?? "",
-        handling: answers.handling ?? "",
-        confidence: answers.confidence ?? "",
-        courseTime: answers.courseTime ?? "",
-        trialTime: answers.trialTime ?? "MM:SS",
-        trialComments: answers.trialComments ?? "ANSWER",
-        finalThoughts: answers.finalThoughts ?? "",
-        status: statusAnswer,
-      },
-      instructorName: medicCredentials.name || undefined,
-      instructorRank,
-      instructorSignature: medicCredentials.signature || undefined,
-    };
-    return arCertificationTemplate.renderBody(context);
-  }, [selectedDocument, student, answers, statusAnswer, medicCredentials.name, medicCredentials.signature, instructorRank]);
+  const instructorName =
+    titleCase(medicCredentials.name || "") || "Fname Lname";
 
-  const certificateBBCode = useMemo(() => {
-    if (selectedDocument !== "certificate") return "";
-    const context: ARCertificateContext = {
-      studentName: student,
-      completionDate: completionDate || "DD/MMM/YYYY",
-      certifiedBy: instructorRank
-        ? `${instructorRank} ${medicCredentials.name || "Fname Lname"}`
-        : `Rank ${medicCredentials.name || "Fname Lname"}`,
-    };
-    return arCertificateTemplate.renderBody(context);
-  }, [selectedDocument, student, completionDate, instructorRank, medicCredentials.name]);
+  const bbcodeOutput = useMemo(() => {
+    if (!selectedDocument) return "";
 
-  const bbcodeOutput =
-    selectedDocument === "certificate" ? certificateBBCode : certificationBBCode;
+    if (selectedDocument === "certification") {
+      const context: ARCertificationContext = {
+        studentName: student,
+        answers: {
+          radioCalls: pilotAnswers.radioCalls ?? "",
+          helipadInspection: pilotAnswers.helipadInspection ?? "",
+          medevacLanding: pilotAnswers.medevacLanding ?? "",
+          questions: pilotAnswers.questions ?? "",
+          radioProtocolRating: pilotAnswers.radioProtocolRating ?? "",
+          helicopterSafetyRating: pilotAnswers.helicopterSafetyRating ?? "",
+          practicePerformance: pilotAnswers.practicePerformance ?? "",
+          strengthsWeaknesses: pilotAnswers.strengthsWeaknesses ?? "",
+          collisions: pilotAnswers.collisions ?? "",
+          basketRescue: pilotAnswers.basketRescue ?? "",
+          courseFlightSafety: pilotAnswers.courseFlightSafety ?? "",
+          landings: pilotAnswers.landings ?? "",
+          courseCollisions: pilotAnswers.courseCollisions ?? "",
+          handling: pilotAnswers.handling ?? "",
+          confidence: pilotAnswers.confidence ?? "",
+          courseTime: pilotAnswers.courseTime ?? "",
+          trialTime: pilotAnswers.trialTime ?? "MM:SS",
+          trialComments: pilotAnswers.trialComments ?? "ANSWER",
+          finalThoughts: pilotAnswers.finalThoughts ?? "",
+          status: normalizePassFail(pilotAnswers.status),
+        },
+        instructorName: medicCredentials.name || undefined,
+        instructorRank,
+        instructorSignature: medicCredentials.signature || undefined,
+      };
+      return arCertificationTemplate.renderBody(context);
+    }
+
+    if (selectedDocument === "certificate") {
+      const context: ARCertificateContext = {
+        studentName: student,
+        completionDate: completionDate || "DD/MMM/YYYY",
+        certifiedBy: instructorRank
+          ? `${instructorRank} ${medicCredentials.name || "Fname Lname"}`
+          : `Rank ${medicCredentials.name || "Fname Lname"}`,
+      };
+      return arCertificateTemplate.renderBody(context);
+    }
+
+    if (selectedDocument === "mr-certification") {
+      const context: MRCertificationContext = {
+        studentName: student,
+        answers: {
+          kamachoDriving: mrAnswers.kamachoDriving ?? "",
+          kamachoPolicies: mrAnswers.kamachoPolicies ?? "",
+          callsignBriefing: mrAnswers.callsignBriefing ?? "",
+          securingRating: mrAnswers.securingRating ?? "",
+          hillsStruggle: mrAnswers.hillsStruggle ?? "",
+          citySpeedLaws: mrAnswers.citySpeedLaws ?? "",
+          practiceRating: mrAnswers.practiceRating ?? "",
+          offroadStruggle: mrAnswers.offroadStruggle ?? "",
+          roadSituation: mrAnswers.roadSituation ?? "",
+          roadsHandling: mrAnswers.roadsHandling ?? "",
+          summitTrek: mrAnswers.summitTrek ?? "",
+          summitTime: mrAnswers.summitTime ?? "",
+          summitStalls: mrAnswers.summitStalls ?? "",
+          summitHandling: mrAnswers.summitHandling ?? "",
+          summitSpeed: mrAnswers.summitSpeed ?? "",
+          summitConfidence: mrAnswers.summitConfidence ?? "",
+          descentTrek: mrAnswers.descentTrek ?? "",
+          descentStalls: mrAnswers.descentStalls ?? "",
+          descentHandling: mrAnswers.descentHandling ?? "",
+          descentConfidence: mrAnswers.descentConfidence ?? "",
+          finalComments: mrAnswers.finalComments ?? "",
+          result: normalizePassFail(mrAnswers.result),
+        },
+        instructorName: medicCredentials.name || undefined,
+        instructorRank,
+        instructorSignature: medicCredentials.signature || undefined,
+      };
+      return mrCertificationTemplate.renderBody(context);
+    }
+
+    if (selectedDocument === "mr-certificate") {
+      const context: MRCertificateContext = {
+        studentName: student,
+        completionDate: completionDate || "DD/MMM/YYYY",
+        certifiedBy: instructorRank
+          ? `${instructorRank} ${medicCredentials.name || "Fname Lname"}`
+          : `Rank ${medicCredentials.name || "Fname Lname"}`,
+      };
+      return mrCertificateTemplate.renderBody(context);
+    }
+
+    const irregularity = isMountain ? mrIrregularity : pilotIrregularity;
+    const context: ARIrregularityContext = {
+      name: instructorName,
+      rank: instructorRank || "Fullrank",
+      date: irregularity.date || "DD/MMM/YYYY",
+      time: irregularity.time || "MM/HH am/pm",
+      information: irregularity.information || "",
+      nextStep: irregularity.nextStep || "",
+    };
+    return isMountain
+      ? mrIrregularityTemplate.renderBody(context)
+      : arIrregularityTemplate.renderBody(context);
+  }, [
+    selectedDocument,
+    isMountain,
+    student,
+    completionDate,
+    pilotAnswers,
+    mrAnswers,
+    pilotIrregularity,
+    mrIrregularity,
+    instructorRank,
+    instructorName,
+    medicCredentials.name,
+    medicCredentials.signature,
+  ]);
+
+  const builderTitle = isCertificate
+    ? "Certificate"
+    : isIrregularity
+      ? "Irregularity Report"
+      : "Certification Builder";
+  const BuilderIcon = isCertificate ? Award : isIrregularity ? AlertTriangle : FileCheck2;
 
   const flashCopied = (setter: (value: boolean) => void) => {
     if (copyTimerRef.current !== undefined) {
@@ -285,8 +474,6 @@ export default function ARFormatsPage() {
     await navigator.clipboard.writeText(bbcodeOutput);
     flashCopied(setCopied);
   };
-
-
 
   // The certificate goes in the member's divisional profile, so the section
   // it belongs in is one link away - read from the division's own quick links
@@ -335,22 +522,21 @@ export default function ARFormatsPage() {
           <BuilderShell>
             {/* ════ LEFT COLUMN ════ */}
             <BuilderForm>
-              <BuilderSection
-                icon={isCertificate ? Award : FileCheck2}
-                title={isCertificate ? "Certificate" : "Certification Builder"}
-              >
-                <div className="space-y-2">
-                  <Label htmlFor="student-name">
-                    {isCertificate ? "Member certified" : "Student name"}
-                  </Label>
-                  <Input
-                    id="student-name"
-                    value={studentName}
-                    onChange={(event) => setStudentName(event.target.value)}
-                    placeholder="Enter the member's name"
-                    className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
-                  />
-                </div>
+              <BuilderSection icon={BuilderIcon} title={builderTitle}>
+                {!isIrregularity && (
+                  <div className="space-y-2">
+                    <Label htmlFor="student-name">
+                      {isCertificate ? "Member certified" : "Student name"}
+                    </Label>
+                    <Input
+                      id="student-name"
+                      value={studentName}
+                      onChange={(event) => setStudentName(event.target.value)}
+                      placeholder="Enter the member's name"
+                      className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
+                    />
+                  </div>
+                )}
 
                 {/* The post this format belongs in - handed to the browser
                     extension so it can open the post and fill the format in. */}
@@ -363,7 +549,9 @@ export default function ARFormatsPage() {
                     placeholder={
                       isCertificate
                         ? "Paste the divisional profile post URL"
-                        : "Paste the student's profile post URL"
+                        : isIrregularity
+                          ? "Paste the post URL"
+                          : "Paste the student's profile post URL"
                     }
                     className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
                   />
@@ -372,6 +560,13 @@ export default function ARFormatsPage() {
                     into it. Leave it empty to keep the copy-only flow.
                   </p>
                 </div>
+
+                {isIrregularity && (
+                  <p className="text-xs text-muted-foreground">
+                    Your name and rank are read off your Staff Page - the report
+                    never asks for them twice.
+                  </p>
+                )}
 
                 {isCertificate ? (
                   <div className="space-y-2">
@@ -402,7 +597,7 @@ export default function ARFormatsPage() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {CERTIFICATION_FIELDS.map((field) => (
+                    {activeFields.map((field) => (
                       <div key={field.key} className="space-y-1.5">
                         <Label htmlFor={`answer-${field.key}`} className="text-xs">
                           {field.label}
@@ -412,11 +607,11 @@ export default function ARFormatsPage() {
                             </span>
                           ) : null}
                         </Label>
-                        {field.key === "status" ? (
+                        {field.type === "passfail" ? (
                           <Select
-                            value={statusAnswer}
+                            value={normalizePassFail(activeAnswers[field.key])}
                             onValueChange={(value) =>
-                              updateAnswer(field.key as string, value)
+                              updateAnswer(field.key, value)
                             }
                           >
                             <SelectTrigger
@@ -430,23 +625,45 @@ export default function ARFormatsPage() {
                               <SelectItem value="FAIL">FAIL</SelectItem>
                             </SelectContent>
                           </Select>
-                        ) : field.key === "finalThoughts" ||
-                        field.key === "strengthsWeaknesses" ? (
+                        ) : field.type === "textarea" ? (
                           <textarea
                             id={`answer-${field.key}`}
-                            value={answers[field.key] ?? ""}
+                            value={activeAnswers[field.key] ?? ""}
                             onChange={(event) =>
-                              updateAnswer(field.key as string, event.target.value)
+                              updateAnswer(field.key, event.target.value)
                             }
                             rows={3}
                             className="w-full rounded-md border border-border bg-surface-hover px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2"
                           />
+                        ) : field.key === "date" ? (
+                          <div className="flex items-center gap-2">
+                            <Input
+                              id={`answer-${field.key}`}
+                              value={activeAnswers[field.key] ?? ""}
+                              onChange={(event) =>
+                                updateAnswer(field.key, event.target.value)
+                              }
+                              placeholder="e.g. 01/OCT/2026"
+                              className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                updateAnswer(field.key, getCurrentDateShort())
+                              }
+                              className="shrink-0"
+                            >
+                              Today
+                            </Button>
+                          </div>
                         ) : (
                           <Input
                             id={`answer-${field.key}`}
-                            value={answers[field.key] ?? ""}
+                            value={activeAnswers[field.key] ?? ""}
                             onChange={(event) =>
-                              updateAnswer(field.key as string, event.target.value)
+                              updateAnswer(field.key, event.target.value)
                             }
                             className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
                           />

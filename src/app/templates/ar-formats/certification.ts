@@ -9,7 +9,7 @@ const SPACER = "[color=transparent]spacer[/color]";
  */
 export const arCertificationTemplate = {
   value: "certification",
-  label: "Certification",
+  label: "Pilot Certification",
   renderBody: ({
     answers,
     instructorName,

@@ -8,7 +8,7 @@ import type { ARCertificateContext } from "./types";
  */
 export const arCertificateTemplate = {
   value: "certificate",
-  label: "Certificate",
+  label: "Pilot Certificate",
   renderBody: ({
     studentName,
     completionDate,

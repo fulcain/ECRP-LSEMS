@@ -13,6 +13,16 @@ export type ChangeLogEntry = {
 
 export const changeLog: ChangeLogEntry[] = [
   {
+    date: "Oct 2, 2026",
+    changes: [
+      {
+        type: "feature",
+        description:
+          "A&R now covers both branches: the pilot paperwork is named Pilot Certification and Pilot Certificate, each with an irregularity report, and a Mountain Rescue set (certification, certificate and irregularity) sits beside them in the picker - all with Copy & Open so the extension pastes them into GOV."
+      },
+    ],
+  },
+  {
     date: "Oct 1, 2026",
     changes: [
       {
