@@ -11,6 +11,22 @@ import {
 import { ENTRY_ROUTE } from "@/configs/routes";
 
 /**
+ * Static file extensions, the same set the matcher below tries to keep out.
+ *
+ * The matcher alone is not enough: middleware demonstrably still runs for
+ * `/General.png`, so a signed-out request for an emblem was answered with the
+ * login page's HTML. `next/image` fetches its source over HTTP internally, so
+ * it received that HTML instead of a PNG and answered `400 - the requested
+ * resource isn't a valid image`, which left the sidebar logo and every division
+ * header emblem broken in production while looking fine in dev.
+ *
+ * A path ending in one of these can only be a file in `public/` - no page route
+ * carries an extension - so letting them past costs no access control, and it
+ * is what the matcher already claims to do.
+ */
+const STATIC_EXTENSION = /\.(?:svg|png|jpe?g|gif|webp|avif|ico|bmp|woff2?|ttf|css|js|mjs|map|txt|xml|json|pdf|zip)$/i;
+
+/**
  * Paths that should NEVER go through Discord auth: OAuth flow itself,
  * public sign-in / denied pages, the extension download, and the Next.js
  * internals.
@@ -35,7 +51,10 @@ function isPublicPath(pathname: string): boolean {
   ) {
     return true;
   }
-  return false;
+  // Everything in `public/` - the emblems, the store art, any static file a
+  // page links to. Guarded here as well as in the matcher because the matcher
+  // is not honoured for these in a production build.
+  return STATIC_EXTENSION.test(pathname);
 }
 
 /**
@@ -180,6 +199,10 @@ export const config = {
      * Match everything EXCEPT:
      *  - _next/static, _next/image (static assets)
      *  - favicon.ico / other files with extensions in the regex
+     *
+     * This is the first line of defence only. A production build still routes
+     * `.png` requests through the middleware, which is why `isPublicPath`
+     * re-checks the extensions itself rather than trusting this to hold.
      */
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|map)$).*)",
   ],
