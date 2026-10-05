@@ -37,7 +37,7 @@ export default function DivisionSelector({
             >
               <div className="mb-2 flex h-12 w-12 items-center justify-center transition-transform duration-200 hover:scale-[1.02]">
                 <Image
-                  src={item.image}
+                  src={item.cardImage ?? item.image}
                   alt={item.label}
                   width={48}
                   height={48}

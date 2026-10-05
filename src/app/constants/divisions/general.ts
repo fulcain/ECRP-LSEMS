@@ -3,6 +3,10 @@ import { ranksForDivision } from "@/configs/roles";
 export const General = {
   label: "General",
   image: "/General.png",
+  // The Select Division card is the one place the new emblem is used: it is
+  // shown at 48px there, where the 150x150 `image` above is visibly soft.
+  // Nothing else reads this - see `cardImage` on `DivisionPage`.
+  cardImage: "/General-card.png",
   data: {
     imageSize: "150,150",
     image: "https://i.ibb.co/dsKf0v2p/C6b52lr.png",
