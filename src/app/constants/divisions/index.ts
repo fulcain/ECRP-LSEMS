@@ -27,15 +27,6 @@ import { RED } from "./red";
 export type DivisionPage = {
   label: string;
   image: string;
-  /**
-   * A higher-resolution emblem for the division-templates selector's card,
-   * when the one above is too small to survive being shown there. It is only
-   * ever read by that card: every other consumer - the sidebar, the division
-   * header, the quick-links browser, the Staff Page and the emblem a generated
-   * document carries - keeps `image`, so a card can look better without any of
-   * them changing.
-   */
-  cardImage?: string;
   data: DivisionData;
 };
 

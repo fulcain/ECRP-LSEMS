@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Suspense } from "react";
 import { LoginButton } from "@/app/login/LoginButton";
 
@@ -12,6 +13,17 @@ export default function LoginPage() {
     <div className="flex min-h-[calc(100vh-3rem)] items-center justify-center p-6">
       <div className="w-full max-w-sm rounded-lg border border-border/40 bg-surface p-8 text-center space-y-6">
         <div className="flex flex-col items-center gap-4">
+          {/* The one emblem the app owns - the same file the sidebar, the
+              page headers and the favicon draw, so a signed-out member is
+              already looking at the same mark they will see inside. */}
+          <Image
+            src="/General.png"
+            alt=""
+            width={64}
+            height={64}
+            className="h-16 w-16 object-contain"
+            priority
+          />
           <div className="space-y-1">
             <h1 className="text-xl font-semibold tracking-tight">
               LSEMS
