@@ -1,4 +1,4 @@
-const DAY_SUFFIXES = ["th", "st", "nd", "rd"];
+const DAY_SUFFIXES = ["th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th"];
 
 export const getCurrentDateFormatted = (): string => {
   const now = new Date();
@@ -19,11 +19,11 @@ export const getCurrentDateFormatted = (): string => {
   const month = monthNames[now.getUTCMonth()];
   const year = now.getUTCFullYear();
 
-  // 11th-13th take "th"; the teens are the exception to the 1/2/3 rule.
+  // One entry per last digit, so 4th-9th, 14th-19th and 24th-29th read "th".
   const day = now.getUTCDate();
-  const suffix = day % 100 === 11 || day % 100 === 12 || day % 100 === 13
+  const suffix = day % 100 >= 11 && day % 100 <= 13
     ? "th"
-    : DAY_SUFFIXES[Math.min(day % 10, 4)];
+    : DAY_SUFFIXES[day % 10];
 
   return `${month} ${day}${suffix}, ${year}`;
 };
