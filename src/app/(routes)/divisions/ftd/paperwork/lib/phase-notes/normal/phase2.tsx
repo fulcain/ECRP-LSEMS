@@ -93,7 +93,19 @@ export function Phase2Notes() {
         </Item>
       </Category>
       <ParagraphList>
-        <ParaItem><Bold>Advanced Treatment</Bold> Explain to the EMR that if there is no AMU around and they want to do more advanced treatment with the help of the doctors we have, they are more than welcome to do so. <OOC>The portion is mostly OOC and is done in cases where the patient brought to a hospital wants to do more advanced treatment RP. Tell the EMR that if AMU is not around and they are willing to do advanced RP, they are more than welcome to do so, as long as the other party wants to do it after asking in <Command>/b</Command>. Here is how it is done, and you will be explaining this to the EMR: Take the injured player to any hospital. Feel free to drop them off if they are injured or just keep them in the ambulance, however you want to do it. Start doing RP lines along with <Command>/me calls the nurses to come take the patient into the ICU Room.</Command>, <Command>/do The patient would be inside.</Command> Do any type of treatment you want. You can say the nurses are doing the RP, the doctors are performing surgery, or go into any kind of depth you&apos;d like, such as removing bullets, bandaging, or even performing surgeries. It will all be done through RP lines with the help of the &quot;doctors&quot; inside of Pillbox, so feel free to go into as much detail as you&apos;d like. After everything is done, you can do <Command>/do The patient would be treated and recovered, then taken out of the ICU and released from the hospital.</Command> or any other line you&apos;d like. If you feel like the RP was good, reward the player with a <Command>/heal</Command>.</OOC> <Bold>Methadone</Bold></ParaItem>
+        <ParaItem><Bold>Advanced Treatment</Bold> Explain to the EMR that if there is no AMU around and they want to do more advanced treatment with the help of the doctors we have, they are more than welcome to do so.</ParaItem>
+      </ParagraphList>
+      <div className="mt-1">
+        <OOC>The portion is mostly OOC and is done in cases where the patient brought to a hospital wants to do more advanced treatment RP. Tell the EMR that if AMU is not around and they are willing to do advanced RP, they are more than welcome to do so, as long as the other party wants to do it after asking in <Command>/b</Command>. Here is how it is done, and you will be explaining this to the EMR:</OOC>
+      </div>
+      <BulletList>
+        <Item><OOC>Take the injured player to any hospital. Feel free to drop them off if they are injured or just keep them in the ambulance, however you want to do it.</OOC></Item>
+        <Item><OOC>Start doing RP lines along with <Command>/me calls the nurses to come take the patient into the ICU Room.</Command>, <Command>/do The patient would be inside.</Command></OOC></Item>
+        <Item><OOC>Do any type of treatment you want. You can say the nurses are doing the RP, the doctors are performing surgery, or go into any kind of depth you&apos;d like, such as removing bullets, bandaging, or even performing surgeries. It will all be done through RP lines with the help of the &quot;doctors&quot; inside of Pillbox, so feel free to go into as much detail as you&apos;d like.</OOC></Item>
+        <Item><OOC>After everything is done, you can do <Command>/do The patient would be treated and recovered, then taken out of the ICU and released from the hospital.</Command> or any other line you&apos;d like. If you feel like the RP was good, reward the player with a <Command>/heal</Command>.</OOC></Item>
+      </BulletList>
+      <ParagraphList>
+        <ParaItem><Bold>Methadone</Bold></ParaItem>
       </ParagraphList>
       <BulletList>
         <Item>Instruct the EMR to open the following section in the Department Manual: <BbLink href="https://gov.eclipse-rp.net/viewtopic.php?t=106075#9">7.9 - Methadone</BbLink></Item>

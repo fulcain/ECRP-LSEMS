@@ -228,6 +228,66 @@ function cleanText(text: string): string {
 }
 
 /** One run of nodes: what leads it, and whatever block content sits inside. */
+/**
+ * Whether an `[ooc]` carries a list of its own.
+ *
+ * A list inside an aside is still a list a trainer has to read: flattening it
+ * is how the Advanced Treatment steps ended up as one wall of text. An aside
+ * with a list in it is read as flow - the sentence that leads it, then the
+ * steps under it - and an aside without one stays the run it is, because half
+ * the asides in the profile sit in the middle of a sentence.
+ */
+function oocCarriesList(tokens: readonly Token[], from: number): boolean {
+  let depth = 0;
+  for (let index = from; index < tokens.length; index += 1) {
+    const token = tokens[index];
+    if (token.t === "open" && token.tag === "ooc") {
+      depth += 1;
+      continue;
+    }
+    if (token.t === "close" && token.tag === "ooc") {
+      if (depth === 0) return false;
+      depth -= 1;
+      continue;
+    }
+    if (depth === 0 && token.t === "open" && token.tag === "list") return true;
+  }
+  return false;
+}
+
+/** The blocks of an aside, kept as an aside all the way down. */
+function asAside(blocks: readonly NoteBlock[]): NoteBlock[] {
+  const wrap = (runs: NoteRun[]): NoteRun[] => {
+    if (runs.length === 0) return [...runs];
+    // Already an aside - `(( inside (( ))` - would only grow a second pair of
+    // brackets around nothing new.
+    if (runs.length === 1 && runs[0].kind === "ooc") return [...runs];
+    return [{ kind: "ooc", runs }];
+  };
+  return blocks.map((block) => {
+    switch (block.kind) {
+      case "paragraph":
+      case "heading":
+      case "center":
+        return { ...block, runs: wrap(block.runs) };
+      case "list":
+        return {
+          ...block,
+          label: block.label ? wrap(block.label) : null,
+          before: asAside(block.before),
+          items: block.items.map((item) => ({
+            lead: wrap(item.lead),
+            blocks: asAside(item.blocks),
+          })),
+        };
+      case "spoiler":
+        return { ...block, blocks: asAside(block.blocks) };
+      default:
+        return block;
+    }
+  });
+}
+
 function readFlow(
   tokens: Token[],
   state: { index: number },
@@ -322,6 +382,21 @@ function readFlow(
     }
     // A wrapper the Guide has no use for: its contents belong to this level.
     if (tag === "divbox" || tag === "size" || tag === "table") {
+      continue;
+    }
+    // An aside that carries a list is block content, not a run: read it as
+    // flow so its steps stay steps, then put it back as an aside.
+    if (tag === "ooc" && oocCarriesList(tokens, state.index)) {
+      const inner = readFlow(
+        tokens,
+        state,
+        (candidate) => candidate.t === "close" && candidate.tag === "ooc",
+      );
+      skipUntilClose(tokens, state, "ooc");
+      if (inner.lead.length > 0) {
+        push({ kind: "paragraph", runs: [{ kind: "ooc", runs: inner.lead }] });
+      }
+      for (const block of asAside(inner.blocks)) push(block);
       continue;
     }
     pending.push(...inlineFrom(tokens, state, tag, value, []));
