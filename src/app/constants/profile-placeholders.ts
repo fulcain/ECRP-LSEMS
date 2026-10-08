@@ -47,6 +47,7 @@ export function placeholderSpellings(token: string): readonly string[] {
 export const FILL_IN_MARKERS = [
   "call",
   "callsign",
+  "id",
   "lastname",
   "location",
   "name",
