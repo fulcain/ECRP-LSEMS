@@ -171,6 +171,7 @@ export function Phase1Notes() {
         <Item>Inform the EMR that if they want to do a backup call, they have to provide a brief summary of the situation. Explain they should also specify if the backup is MD only. <OOC>/backup [text]</OOC></Item>
         <Item>Tell the EMR that if they ask for backup they must stay put at the location as these are associated with their cruiser.</Item>
         <Item>Explain that an EMR&apos;s panic button is connected to the location of their radio. Let them know that panics cannot have reasonings specified when creating them <OOC>CTRL + E</OOC></Item>
+        <Item><OOC>Let the EMR know that, in addition to /resp [id], they can ONLY respond to other backups and panics using Ctrl + R, not the 911 calls.</OOC></Item>
         <Item>Let the EMR know that our panics/backups appear in now appear PD / SD dispatch, and if they create a panic/backup for a situation that doesn&apos;t require PD/SD support, they should use the department radio to inform those departments to disregard it. <OOC>/calls</OOC>.</Item>
         <Item>Tell the EMR that if they need help from PD or SD, they should use the department radio and provide them with the backup/panic call number to provide more information. <OOC><Command>/dep</Command></OOC>.</Item>
         <Item>
@@ -229,7 +230,7 @@ export function Phase1Notes() {
         <Item>A&amp;R (Air &amp; Rescue) is a division that focuses on rescuing from tough-to-reach spots and locations, utilizing helicopters and offroad vehicles.</Item>
         <Item>F&amp;R (Fire &amp; Rescue) is a division that focuses on firefighting and rescuing people from vehicles or objects.</Item>
         <Item>If a situation where the assistance of a specialized unit is required pops up, but none are available, an EMR must know the minimum of what to do.</Item>
-        <Item><OOC><Bold>Inform the EMR that if they feel they need to page for AMU or otherwise, the patient has to be asked if they <Em>actually want to do that roleplay</Em> via <Command>/b</Command>. Both of these involve more in-depth character specific RP, and as such, the patient needs to have the time and willingness to do this RP!</Bold></OOC></Item>
+        <Item><OOC><Bold>Inform the EMR that if they feel they need to page for AMU or otherwise, the patient has to be asked if they <Em>actually want to do that roleplay</Em> via <Command>/b</Command>. Both of these involve more in-depth character specific RP, and as such, the patient needs to have the time and willingness to do this RP!</Bold> Additionally, let them know that they are more than welcome, and actually encouraged, to do Advanced RP or AMU RP with NPCs using /me and /do. This will be explained in more detail in Phase 2 under the Treatment section.</OOC></Item>
         <Item>
           Steps to take if you encounter someone stuck in a tough-to-reach spot and no A&amp;R trained unit is available:
           <BulletList>
