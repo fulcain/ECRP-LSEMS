@@ -265,6 +265,17 @@ export function ResignationProcessor() {
         icon: Archive,
       },
       {
+        id: "discharge-notice",
+        label: "Post the Discharge notice under Employee Adjustments",
+        copyText: dischargeNoticeBBCode,
+        titleText: dischargeTitle,
+        icon: ClipboardCheck,
+        action: {
+          label: "Copy & Open Employee Adjustment",
+          url: "https://gov.eclipse-rp.net/posting.php?mode=post&f=573",
+        },
+      },
+      {
         id: "roster",
         label:
           "Update the Roster, removing them (CTRL+F for name & callsign)",
@@ -357,17 +368,6 @@ export function ResignationProcessor() {
         action: {
           label: "Open Employee Adjustments",
           url: "https://gov.eclipse-rp.net/viewforum.php?f=573",
-        },
-      },
-      {
-        id: "discharge-notice",
-        label: "Post the Discharge notice under Employee Adjustments",
-        copyText: dischargeNoticeBBCode,
-        titleText: dischargeTitle,
-        icon: ClipboardCheck,
-        action: {
-          label: "Copy & Open Employee Adjustment",
-          url: "https://gov.eclipse-rp.net/posting.php?mode=post&f=573",
         },
       },
       {
@@ -550,6 +550,10 @@ export function ResignationProcessor() {
               placeholder="https://gov.eclipse-rp.net/viewtopic.php?t=..."
               className="border-border bg-surface-raised text-foreground placeholder:text-muted-foreground"
             />
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              In case of termination, use their Employee Adjustment link
+              instead.
+            </p>
           </div>
           <div className="sm:col-span-2">
             <Label className="mb-1 block text-xs text-muted-foreground">
