@@ -127,6 +127,10 @@ export function OOC({ children }: { children: React.ReactNode }) {
     <Button
       variant="ghost"
       size="sm"
+      // The base Button is `whitespace-nowrap`, and an aside is a paragraph:
+      // left as it comes, a long one runs off the right of the panel instead
+      // of wrapping down.
+      style={{ whiteSpace: "normal" }}
       className="inline-flex h-auto p-0 hover:bg-transparent items-start justify-start text-left"
     >
       <span className="inline text-blue-700/80 dark:text-sky-300/85 italic">
@@ -156,7 +160,7 @@ export function Command({ children }: { children: React.ReactNode }) {
 
   return (
     <span className="inline-flex items-center gap-1">
-      <code className="px-1.5 py-0.5 rounded bg-zinc-900/85 dark:bg-zinc-800/85 text-emerald-700 dark:text-emerald-300 font-mono text-[12px] border border-zinc-700/70 dark:border-zinc-600 whitespace-nowrap align-baseline">
+      <code className="px-1.5 py-0.5 rounded bg-zinc-900/85 dark:bg-zinc-800/85 text-emerald-700 dark:text-emerald-300 font-mono text-[12px] border border-zinc-700/70 dark:border-zinc-600 whitespace-normal break-words align-baseline">
         {children}
       </code>
 
