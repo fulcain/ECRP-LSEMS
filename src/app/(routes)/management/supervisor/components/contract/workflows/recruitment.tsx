@@ -492,10 +492,6 @@ If you would like to resign from LSEMS, as sad as it'll be to see you go, please
         "On Discord, assign the 'EMR Trainee' and 'Employee' roles, then remove the 'Applicant' role.",
     },
     {
-      id: "ooc-rec-1",
-      label: "On Discord, assign the 'Emergency Medical Services' and '[LSEMS] EMR' server-group roles if they are not set by the role assignment above.",
-    },
-    {
       id: "ooc-rec-2",
       label:
         "Send the LSEMS Discord invite via Discord PM if the new EMR joins the server for the first time.",

@@ -334,10 +334,6 @@ If you would like to resign from LSEMS, as sad as it'll be to see you go, please
     },
     { id: "ooc-rei-1", label: "Discord: assign 'EMR Trainee' and 'Employee' roles." },
     {
-      id: "ooc-rei-2",
-      label: "Discord: assign 'Emergency Medical Services' and '[LSEMS] EMR' roles if they are not set by the role assignment above.",
-    },
-    {
       id: "ooc-rei-3",
       label:
         "Submit a government site name-change request in the LSEMS Discord #Forum-request channel.",
