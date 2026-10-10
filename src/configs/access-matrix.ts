@@ -1,31 +1,4 @@
-/**
- * The live permission matrix: which ranks may open which tabs and pages.
- *
- * **This is the only place that says who may open what.** `configs/roles.ts`
- * declares roles and divisions; the access rules are here, stored in the Vercel
- * Global Config under `ACCESS_MATRIX_KEY`, and edited in the app. A page with no
- * stored row opens to `DEFAULT_PAGE_ROLES` (every employee) rather than to a rule
- * in the repository, so `configs/roles.ts` never has to be edited to change
- * access - and can never disagree with what the editor shows.
- *
- * Both halves are **derived, never hand-listed**:
- *   • the rows are the routes in `ROUTE_META` - a new page appears in the editor
- *     the moment it is named there, and `npm run matrix:check` fails if a page
- *     in the sidebar or the FTD tab bar has no row;
- *   • the ranks are every alias in the registry - a ladder rung, a division's
- *     rank or membership role, or one of the guild roles nothing gates on. A
- *     rank the app can name is a rank the matrix can grant.
- *
- * This module is deliberately free of React and of anything heavy: the
- * middleware imports it to resolve the stored rows, so it is bundled into the
- * Edge function.
- *
- * Two rules hold the design together:
- *   • an entry is keyed by the route the middleware actually gates, so the
- *     matrix can never describe a page that doesn't exist;
- *   • `locked` entries are never writable, so the manager page can't be edited
- *     away by the very people using it.
- */
+/** The live permission matrix: which ranks may open which tabs and pages. */
 
 import { ROUTES } from "@/configs/routes";
 import {
@@ -42,7 +15,9 @@ import {
 } from "@/configs/roles";
 import { LSEMS_RANKS } from "@/app/constants/general/ranks";
 
-/** The section an entry lives in, in the order the editor lists them. */
+/**
+ * The section an entry lives in, in the order the editor lists them.
+ */
 export type AccessMatrixGroup =
   | "FTD"
   | "Workspace"
@@ -100,6 +75,8 @@ const ROUTE_META: Record<string, { label: string; group: AccessMatrixGroup }> = 
     group: "Resources",
   },
   [ROUTES.resources.userGroups]: { label: "User Groups", group: "Resources" },
+
+  [ROUTES.resources.report]: { label: "Report Form", group: "Resources" },
 
   [ROUTES.management.supervisor]: { label: "Supervisor", group: "Management" },
   [ROUTES.management.access]: {

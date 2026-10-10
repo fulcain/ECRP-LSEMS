@@ -1,5 +1,4 @@
-/**
- * Access decisions, built on the role registry in `configs/roles.ts`:
+/** Access decisions, built on the role registry in `configs/roles.ts`:
  *   • `ROLES` is the one place a Discord role id or role name is declared - it
  *     feeds the route gates *and* the department ladder, divisions, directors
  *     and templates.
@@ -36,8 +35,7 @@ export type {
 };
 export { divisionForRoute };
 
-/**
- * Minimal shape a nav item must satisfy for `filterAccessibleLinks` to
+/** Minimal shape a nav item must satisfy for `filterAccessibleLinks` to
  * reason about who can see it. Top-level items expose an optional
  * `href`; dropdown/grouped items expose `children` whose entries each
  * carry their own `href`.
@@ -151,8 +149,7 @@ export function userHasAccess(
   return false;
 }
 
-/**
- * Whether `discordId` is one of the developers named in `DISCORD_ADMIN_IDS`.
+/** Whether `discordId` is one of the developers named in `DISCORD_ADMIN_IDS`.
  *
  * This list is the app's one identity that cannot be granted from inside it: it
  * is an environment variable (`.env` on a machine, the project's own variables in
@@ -204,6 +201,7 @@ const LANDING_ORDER: readonly string[] = [
   ROUTES.divisions.ar,
   ROUTES.divisions.bls,
   ROUTES.workspace.staff,
+  ROUTES.resources.report,
   ROUTES.management.supervisor,
   ROUTES.management.access,
 ];

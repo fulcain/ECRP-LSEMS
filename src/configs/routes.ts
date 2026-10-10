@@ -42,6 +42,8 @@ export const ROUTES = {
     browserExtension: "/resources/browser-extension",
     /** Adding a member to one of the forum's own groups - open to all staff. */
     userGroups: "/resources/user-groups",
+    /** Report form that reaches the developer - restricted to Employee and Legal Faction Management. */
+    report: "/resources/report",
   },
   management: {
     supervisor: "/management/supervisor",

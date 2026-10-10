@@ -1,6 +1,22 @@
 import { ROUTES } from "@/configs/routes";
 import type { LucideIcon } from "lucide-react";
-import { Activity, BookOpen, Clock3, FileText, GraduationCap, Link2, Plane, Puzzle, Settings2, Shield, ShieldCheck, UserCog, UsersRound, ClipboardList } from "lucide-react";
+import {
+  Activity,
+  BookOpen,
+  ClipboardList,
+  Clock3,
+  FileText,
+  GraduationCap,
+  Link2,
+  MessageSquare,
+  Plane,
+  Puzzle,
+  Shield,
+  ShieldCheck,
+  Settings2,
+  UserCog,
+  UsersRound,
+} from "lucide-react";
 
 export type HeaderLink = {
   label: string;
@@ -20,6 +36,7 @@ export type HeaderLink = {
    * beneath `/divisions/ftd`.
    */
   match?: readonly string[];
+  children?: readonly { label: string; href: string; description?: string; icon?: LucideIcon }[];
 };
 
 /**
@@ -101,6 +118,13 @@ export const headerLinks: HeaderLink[] = [
     group: "Resources",
   },
   {
+    // Restricted to Employee and Legal Faction Management.
+    label: "Report Form",
+    href: ROUTES.resources.report,
+    icon: MessageSquare,
+    group: "Resources",
+  },
+  {
     label: "Supervisor",
     href: `${ROUTES.management.supervisor}?tab=loa`,
     icon: ClipboardList,
@@ -120,5 +144,13 @@ export const headerLinks: HeaderLink[] = [
     href: ROUTES.system.changelog,
     icon: BookOpen,
     group: "System",
+    children: [
+      {
+        label: "Report Form",
+        href: ROUTES.resources.report,
+        description: "Send bugs and feature ideas to the developer.",
+        icon: MessageSquare,
+      },
+    ],
   },
 ];
