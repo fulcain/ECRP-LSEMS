@@ -24,21 +24,28 @@ export const recruitmentWorkflow: ContractWorkflow = {
       id: "rec-roles",
       title: "Assign Forum Usergroups",
       description:
-        "Set the EMR usergroup as default and the LSEMS usergroup as non-default on the government site.",
+        "Use the app's User Groups section to set EMR as the default group and LSEMS as a non-default group.",
       actions: [
         {
-          label: "User Control Panel",
-          url: "https://gov.eclipse-rp.net/ucp.php",
-          description: "Open the government site User Control Panel.",
-        },
-        {
-          label: "Open User Groups",
+          label: "Open EMR Group",
           description:
             "Open the app's User Groups tool with this applicant's name and the EMR group ready to add them to.",
           internal: {
             href: userGroupsHref({
               member: "{{applicantName}}",
               group: "emr",
+            }),
+            label: "User Groups",
+          },
+        },
+        {
+          label: "Open LSEMS Group",
+          description:
+            "Open the app's User Groups tool with this applicant's name and the LSEMS group ready to add them to.",
+          internal: {
+            href: userGroupsHref({
+              member: "{{applicantName}}",
+              group: "lsems",
             }),
             label: "User Groups",
           },

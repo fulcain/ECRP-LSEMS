@@ -33,15 +33,10 @@ export const emtpWorkflow: ContractWorkflow = {
       id: "emtp-roles",
       title: "Update Forum Usergroups",
       description:
-        "Assign the EMT-P usergroup on the government site and remove the previous one (e.g. Master EMT or EMR).",
+        "Use the app's User Groups section to assign EMT-P and remove the previous group (e.g. Master EMT or EMR).",
       actions: [
         {
-          label: "User Control Panel",
-          url: "https://gov.eclipse-rp.net/ucp.php",
-          description: "Open the government site User Control Panel.",
-        },
-        {
-          label: "Open User Groups",
+          label: "Open EMT-P Group",
           description:
             "Open the app's User Groups tool with this employee's name and the EMT-P group ready to add them to.",
           internal: {

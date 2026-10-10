@@ -57,7 +57,7 @@ export function ReinstatementCertPassedNotes() {
       </Category>
       <Category title="Useful Links" ordered>
         <Item><BbLink href="https://gov.eclipse-rp.net/viewtopic.php?f=597&t=9497">Staff Roster</BbLink></Item>
-        <Item><BbLink href="https://gov.eclipse-rp.net/ucp.php?i=ucp_groups&mode=manage">Groups</BbLink></Item>
+        <Item><BbLink href="/resources/user-groups">User Groups</BbLink></Item>
         <Item><BbLink href="https://gov.eclipse-rp.net/viewforum.php?f=605">Personnel Files</BbLink></Item>
         <Item><BbLink href="https://gov.eclipse-rp.net/viewtopic.php?t=74487">Promotion Checklist (Supervisor Handbook Section 5</BbLink></Item>
       </Category>

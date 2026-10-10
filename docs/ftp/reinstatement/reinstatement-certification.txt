@@ -25,7 +25,7 @@
 
 [*][color=#800000][b]Useful Links[/b][/color]
 [list][*][url=https://gov.eclipse-rp.net/viewtopic.php?f=597&t=9497]Staff Roster[/url]
-[*][url=https://gov.eclipse-rp.net/ucp.php?i=ucp_groups&mode=manage]Groups[/url]
+[*][url=/resources/user-groups]User Groups[/url]
 [*][url=https://gov.eclipse-rp.net/viewforum.php?f=605]Personnel Files[/url]
 [*][url=https://gov.eclipse-rp.net/viewtopic.php?t=74487]Promotion Checklist (Supervisor Handbook Section 5[/url]
 [/list]
