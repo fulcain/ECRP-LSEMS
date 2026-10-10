@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { memberDisplayName } from "@/lib/member-name";
+import { discordDefaultAvatarUrl } from "@/lib/discord";
 import { LogOut, MessageCircle, User as UserIcon } from "lucide-react";
 import Link from "next/link";
 
@@ -15,10 +16,12 @@ interface MeResponseUser {
   roles: string[];
 }
 
-export function UserMenu() {
+export function UserMenu({ collapsed = false }: { collapsed?: boolean }) {
   const [user, setUser] = useState<MeResponseUser | null | undefined>(
     undefined,
   );
+  const [avatarFailed, setAvatarFailed] = useState(false);
+  const [defaultAvatarFailed, setDefaultAvatarFailed] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -48,16 +51,43 @@ export function UserMenu() {
     return (
       <Link
         href="/login"
-        className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-[#5865F2] px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#4752c4]"
+        className={`inline-flex cursor-pointer items-center justify-center gap-2 rounded-md bg-[#5865F2] text-sm font-semibold text-white transition-colors hover:bg-[#4752c4] ${collapsed ? "h-9 w-9 p-0" : "w-full px-3 py-2"}`}
         title="Sign in with Discord"
       >
         <MessageCircle className="h-4 w-4 shrink-0" />
-        <span className="whitespace-nowrap">Sign in</span>
+        {!collapsed && <span className="whitespace-nowrap">Sign in</span>}
       </Link>
     );
   }
 
   const displayName = memberDisplayName(user) ?? user.username;
+  const useDefaultAvatar = !user.avatarUrl || avatarFailed;
+  const avatarSrc = useDefaultAvatar
+    ? discordDefaultAvatarUrl(user.discordId)
+    : user.avatarUrl!;
+
+  if (collapsed) {
+    return (
+      <div className="flex w-full justify-center" title={displayName}>
+        {defaultAvatarFailed ? (
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-hover">
+            <UserIcon className="h-4 w-4 text-muted-foreground" />
+          </div>
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={avatarSrc}
+            alt={`${displayName}'s Discord avatar`}
+            className="h-9 w-9 rounded-full ring-2 ring-border"
+            onError={() => {
+              if (useDefaultAvatar) setDefaultAvatarFailed(true);
+              else setAvatarFailed(true);
+            }}
+          />
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-2.5">
@@ -67,17 +97,21 @@ export function UserMenu() {
           never a viewport breakpoint - the column is a fixed 256px and the
           mobile sheet 320px, so `sm:` hid the name at exactly those sizes. */}
       <div className="flex w-full min-w-0 items-center gap-2.5">
-        {user.avatarUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={user.avatarUrl}
-            alt={displayName}
-            className="h-9 w-9 shrink-0 rounded-full ring-2 ring-border"
-          />
-        ) : (
+        {defaultAvatarFailed ? (
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-surface-hover">
             <UserIcon className="h-4 w-4 text-muted-foreground" />
           </div>
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={avatarSrc}
+            alt={`${displayName}'s Discord avatar`}
+            className="h-9 w-9 shrink-0 rounded-full ring-2 ring-border"
+            onError={() => {
+              if (useDefaultAvatar) setDefaultAvatarFailed(true);
+              else setAvatarFailed(true);
+            }}
+          />
         )}
         <span
           className="min-w-0 flex-1 truncate text-sm font-semibold leading-tight text-foreground"

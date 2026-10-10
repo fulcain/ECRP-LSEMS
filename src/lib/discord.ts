@@ -189,7 +189,20 @@ export async function fetchGuildMember(
   return (await res.json()) as DiscordGuildMember;
 }
 
-/** Builds the CDN URL for a user's avatar, or returns null when unset. */
+/** Discord's default avatar for users without a custom avatar. */
+export function discordDefaultAvatarUrl(userId: string): string {
+  const index = /^\d+$/.test(userId)
+    ? Math.floor(
+        [...userId].reduce(
+          (remainder, digit) => (remainder * 10 + Number(digit)) % 25_165_824,
+          0,
+        ) / 4_194_304,
+      )
+    : 0;
+  return `https://cdn.discordapp.com/embed/avatars/${index}.png`;
+}
+
+/** Builds the CDN URL for a user's custom avatar, or returns null when unset. */
 export function discordAvatarUrl(
   userId: string,
   avatarHash: string | null,
