@@ -6,7 +6,6 @@ import { QuickLinksPanel } from "./contract/QuickLinksPanel";
 import { SubTabs } from "./contract/SubTabs";
 import { WorkflowHeader } from "./contract/WorkflowHeader";
 import { WorkflowStepsList } from "./contract/WorkflowStepsList";
-import { TeamSpeakCredentialsCard } from "./TeamSpeakCredentialsCard";
 import type { ContractTab } from "./contract/types";
 import { workflowByValue } from "./contract/workflows";
 import { useMemo, useEffect, useRef } from "react";
@@ -217,8 +216,6 @@ export function ContractSigningProcessor() {
         isManualDate={isManualDate}
         onManualDateToggle={setIsManualDate}
       />
-
-      <TeamSpeakCredentialsCard />
 
       <WorkflowStepsList
         workflow={workflow}
