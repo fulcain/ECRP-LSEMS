@@ -150,7 +150,7 @@ function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, empl
     employeeNumber: employeeNumber || null,
     employeeProfileLink: employeeProfileLink || null,
     personnelFileLink: personnelFileLink || null,
-    badgeNumber: badgeNumber || null,
+    badgeNumber: employeeProfileNumber(employeeProfileLink) ?? badgeNumber ?? null,
     personnelFileNumber: employeeProfileNumber(employeeProfileLink),
   };
 
