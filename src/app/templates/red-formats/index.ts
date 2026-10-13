@@ -19,11 +19,13 @@ import {
   reinstatementReceivedTemplate,
 } from "./reinstatement";
 import { withdrawnTemplate } from "./withdrawn";
+import { walkInWelcomeEmailTemplate } from "./walk-in-welcome-email";
 
 export { type REDTemplateDefinition } from "./types";
 export { OFFER_HOURS, OFFER_TIERS } from "./reinstatement";
 
 export const redTemplates = [
+  walkInWelcomeEmailTemplate,
   pendingReviewTemplate,         // 8.1 - Application Received
   pendingEditTemplate,           // 8.2 - Application On Hold
   deniedTemplate,                // 8.3 - Application Denied

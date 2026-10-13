@@ -202,11 +202,12 @@ export default function REDFormatsPage() {
       ? selectedDocument
       : null;
   const redRank = divisionRanks.RED ?? "";
-  // The two letters that leave the forum: they are private messages to a
-  // person, so they take a recipient instead of an application link.
+  // Private-message formats open the composer instead of asking for a post link.
   const isFeedbackRequest =
     selectedDocument === "feedback-request" ||
     selectedDocument === "frd-feedback-request";
+  const isWelcomeEmail = selectedDocument === "walk-in-welcome-email";
+  const isPrivateMessageFormat = isFeedbackRequest || isWelcomeEmail;
   const feedbackRecipient = isFeedbackRequest ? recipient.trim() : "";
   const supportsReasons =
     selectedDocument === "pending-edit" ||
@@ -239,7 +240,9 @@ export default function REDFormatsPage() {
   const bbcodeOutput = useMemo(() => {
     // Nothing is being written yet: the picker is on its own.
     if (!activeFormat) return "";
-    const applicant = `${gender} ${applicantName.trim() || "Applicant Name"}`;
+    const applicant = isWelcomeEmail
+      ? applicantName.trim() || "Applicant Name"
+      : `${gender} ${applicantName.trim() || "Applicant Name"}`;
     // A director covering RED signs as the director, not as a RED rank they
     // don't hold.
     const directorTitle = directorTitleForDivisionKey(
@@ -267,6 +270,7 @@ export default function REDFormatsPage() {
     });
   }, [
     activeFormat,
+    isWelcomeEmail,
     applicantName,
     gender,
     reasons,
@@ -301,16 +305,14 @@ export default function REDFormatsPage() {
     ? FORMAT_POST_TARGETS[activeFormat.value]
     : undefined;
 
-  // Where Copy & Open lands for this format. A feedback request is a message to
-  // a person, so a link pasted for some earlier post must not win over the
-  // composer - the member is writing to somebody, not replying on their thread.
+  // A private message always opens the composer, even when an earlier post link is saved.
   const formatUrl = isFeedbackRequest
     ? GOV_PM_COMPOSE_URL
-    : govLink.trim() || formatPostTarget;
+    : isWelcomeEmail
+      ? GOV_PM_COMPOSE_URL
+      : govLink.trim() || formatPostTarget;
 
-  // The generated format is a GOV post, so the extension is told what to fill
-  // with it - the body from Copy BBCode, the title from Copy tag, and, for a
-  // letter to somebody, who it is addressed to.
+  // Give the extension the generated body and, for a private message, its recipient.
   const formatPost = {
     subject: fullTitle ?? undefined,
     feature: "the RED format generator",
@@ -412,7 +414,7 @@ export default function REDFormatsPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground">
-                      Application Builder
+                      {isWelcomeEmail ? "Welcome Email" : "Application Builder"}
                     </h3>
                   </div>
                 </div>
@@ -423,6 +425,7 @@ export default function REDFormatsPage() {
                     key={selectedDocument + "-fields"}
                     className="animate-fade-up space-y-4"
                   >
+                    {!isWelcomeEmail && (
                     <div className="space-y-2">
                       <Label htmlFor="applicant-gender">
                         Applicant title
@@ -451,10 +454,11 @@ export default function REDFormatsPage() {
                         </SelectContent>
                       </Select>
                     </div>
+                    )}
 
                     <div className="space-y-2">
                       <Label htmlFor="applicant-name">
-                        Applicant name
+                        {isWelcomeEmail ? "Applicant full name" : "Applicant name"}
                       </Label>
                       <Input
                         id="applicant-name"
@@ -462,7 +466,7 @@ export default function REDFormatsPage() {
                         onChange={(event) =>
                           setApplicantName(event.target.value)
                         }
-                        placeholder="Enter the applicant's name"
+                        placeholder={isWelcomeEmail ? "Enter the applicant's full name" : "Enter the applicant's name"}
                         disabled={selectedDocument === "discord-invite"}
                         className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
                       />
@@ -494,7 +498,7 @@ export default function REDFormatsPage() {
                   {/* GOV application link - handed to the browser extension so
                       it can open the post and fill this format into it. A
                       feedback request has no post to reply on. */}
-                  {!isFeedbackRequest && (
+                  {!isPrivateMessageFormat && (
                     <div className="space-y-2">
                       <Label htmlFor="gov-link">GOV Application Link</Label>
                       <Input
@@ -846,15 +850,15 @@ export default function REDFormatsPage() {
                       size="sm"
                       className="border-border text-muted-foreground hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
                       title={
-                        isFeedbackRequest
-                          ? "Opens a new GOV private message with the letter pasted in"
+                        isPrivateMessageFormat
+                          ? "Opens a new GOV private message with the format copied in"
                           : formatUrl
                             ? "Opens the GOV page with this format filled in"
                             : "Paste the GOV Application Link above first"
                       }
                     >
                       <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
-                      Copy &amp; Open
+                      {isWelcomeEmail ? "Copy & Open GOV Email" : "Copy & Open"}
                     </Button>
                     {fullTitle && (
                       <>
@@ -881,6 +885,7 @@ export default function REDFormatsPage() {
                         </Button>
                       </>
                     )}
+                    {!isWelcomeEmail && (
                     <Button
                       onClick={handleCopy}
                       size="default"
@@ -897,6 +902,7 @@ export default function REDFormatsPage() {
                       )}
                       {copied ? "Copied!" : "Copy BBCode"}
                     </Button>
+                    )}
                   </div>
                 </div>
 

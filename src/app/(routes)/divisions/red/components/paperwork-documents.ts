@@ -7,6 +7,7 @@ import {
   Hourglass,
   Inbox,
   MessageSquare,
+  Mail,
   MessageSquareQuote,
   MessagesSquare,
   PauseCircle,
@@ -52,6 +53,7 @@ export function isREDDocument(value: string): value is REDWorkItem {
 }
 
 export type REDWorkItem =
+  | "walk-in-welcome-email"
   | "pending-review"
   | "pending-edit"
   | "pending-employer-feedback"
@@ -96,6 +98,11 @@ export const RED_PAPERWORK: readonly PickerGroup<REDWorkItem>[] = [
     label: "New applications",
     hint: "Where their application sits right now.",
     documents: [
+      formatDocument(
+        "walk-in-welcome-email",
+        "Welcome a new walk-in applicant and direct them to the application form.",
+        Mail,
+      ),
       formatDocument(
         "pending-review",
         "A new application is in - acknowledge it and say what happens next.",
