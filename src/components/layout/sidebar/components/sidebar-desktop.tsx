@@ -22,7 +22,7 @@ export function SidebarDesktop({ headerLinks }: SidebarDesktopProps) {
   return (
     <aside
       className={cn(
-        "hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:flex lg:flex-col lg:border-r lg:border-border lg:bg-sidebar lg:backdrop-blur-xl",
+        "hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:flex lg:flex-col lg:border-r lg:border-sidebar-border/70 lg:bg-sidebar/90 lg:shadow-[18px_0_60px_-48px_color-mix(in_oklch,var(--primary)_45%,transparent)] lg:backdrop-blur-2xl",
         collapsed ? "lg:w-[76px]" : "lg:w-64",
       )}
     >
@@ -44,7 +44,7 @@ export function SidebarDesktop({ headerLinks }: SidebarDesktopProps) {
             href={ENTRY_ROUTE}
             aria-label="LSEMS home"
             className={cn(
-              "flex min-w-0 items-center gap-2.5 rounded-xl px-1.5 py-1.5 transition-colors hover:bg-surface-hover",
+              "flex min-w-0 items-center gap-2.5 rounded-2xl border border-transparent px-1.5 py-2 transition-colors hover:border-border/70 hover:bg-surface-raised/80",
               collapsed && "justify-center",
             )}
           >
@@ -54,7 +54,7 @@ export function SidebarDesktop({ headerLinks }: SidebarDesktopProps) {
               alt=""
               width={28}
               height={28}
-              className="h-7 w-7 shrink-0 object-contain"
+              className="h-8 w-8 shrink-0 rounded-xl bg-primary/10 p-1 object-contain ring-1 ring-primary/20"
             />
             {!collapsed && (
               <span className="min-w-0">
@@ -81,7 +81,7 @@ export function SidebarDesktop({ headerLinks }: SidebarDesktopProps) {
           </div>
         </div>
 
-        <div className="mb-2.5 h-px bg-border" />
+        <div className="mb-2.5 h-px bg-gradient-to-r from-primary/40 via-border to-transparent" />
         <SidebarNav links={headerLinks} collapsed={collapsed} />
 
         <div className={cn("mt-3 space-y-2.5 border-t border-border pt-3", collapsed && "flex flex-col items-center") }>

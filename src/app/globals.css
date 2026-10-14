@@ -162,6 +162,10 @@
     overflow-x: hidden;
   }
 
+  body {
+    background-image: radial-gradient(ellipse at 78% -20%, color-mix(in oklch, var(--primary) 10%, transparent), transparent 44%);
+  }
+
   /* Keyboard focus is visible by default, so a control that forgets its own
      ring is still reachable rather than silently invisible. */
   :focus-visible {
@@ -228,11 +232,11 @@
    wins - `panel p-5` keeps the panel surface and takes the page's padding. */
 @layer components {
   .panel {
-    @apply rounded-2xl border border-border bg-surface;
+    @apply rounded-3xl border border-border/80 bg-surface/90 shadow-[0_18px_60px_-38px_color-mix(in_oklch,var(--primary)_30%,transparent)] backdrop-blur-xl;
   }
 
   .panel-inner {
-    @apply rounded-xl border border-border bg-surface-raised;
+    @apply rounded-2xl border border-border/80 bg-surface-raised/90;
   }
 
   .field {
@@ -340,5 +344,96 @@
   .hover\:scale-\[1\.02\]:hover,
   [class*="active:scale-"]:active {
     transform: none !important;
+  }
+}
+
+.motion-scene {
+  --spotlight-x: 50;
+  --spotlight-y: 180;
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+}
+
+.nav-link-active::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 24%;
+  bottom: 24%;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--primary);
+  box-shadow: 0 0 18px color-mix(in oklch, var(--primary) 75%, transparent);
+}
+
+.motion-scene::before {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(620px circle at calc(var(--spotlight-x) * 1px) calc(var(--spotlight-y) * 1px), color-mix(in oklch, var(--primary) 6%, transparent), transparent 70%);
+}
+
+.ambient-orb {
+  position: fixed;
+  z-index: -1;
+  width: 30rem;
+  aspect-ratio: 1;
+  border-radius: 9999px;
+  filter: blur(100px);
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.ambient-orb--one {
+  top: -16rem;
+  right: 4vw;
+  background: var(--primary);
+}
+
+.ambient-orb--two {
+  left: 20vw;
+  bottom: -24rem;
+  background: var(--primary);
+  opacity: 0.07;
+}
+
+.dark .motion-scene::before {
+  opacity: 0.9;
+}
+
+.dark .motion-scene::after {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.1;
+  background-image:
+    linear-gradient(to right, var(--border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(to bottom, black, transparent 76%);
+}
+
+@media (max-width: 1023px), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .motion-scene::before {
+    display: none;
+  }
+
+  .motion-scene::after {
+    display: none;
+  }
+
+  .ambient-orb {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
   }
 }

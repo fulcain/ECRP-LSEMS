@@ -170,12 +170,12 @@ export function SidebarNav({
               title={collapsed ? item.label : undefined}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "group flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm transition-colors",
+                "group relative flex items-center gap-2.5 rounded-2xl border border-transparent px-2.5 py-2 text-sm transition-[background-color,border-color,color] duration-200",
                 closeOnNavigate && "min-h-11",
                 collapsed && "justify-center px-2",
                 isActive
-                  ? "bg-primary/10 text-primary ring-1 ring-inset ring-primary/20"
-                  : "text-muted-foreground hover:bg-surface-hover hover:text-foreground",
+                  ? "nav-link-active bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:border-border/70 hover:bg-surface-raised/70 hover:text-foreground",
               )}
             >
               <Icon
