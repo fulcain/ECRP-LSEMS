@@ -8,4 +8,6 @@
 export const SUPPORT_CONTACT = {
   /** Written as it should be shown, handle prefix included. */
   handle: "@fulcain",
+  /** Discord user ID used to open a direct message. */
+  discordId: "290467278540242944",
 } as const;

@@ -86,7 +86,11 @@ export function SidebarDesktop({ headerLinks }: SidebarDesktopProps) {
 
         <div className={cn("mt-3 space-y-2.5 border-t border-border pt-3", collapsed && "flex flex-col items-center") }>
           <UserMenu collapsed={collapsed} />
-          <DiscordContactIndicator variant={collapsed ? "icon" : "pill"} />
+          <DiscordContactIndicator
+            variant={collapsed ? "icon" : "pill"}
+            label="Developed by @fulcain"
+            prefix="Developed by"
+          />
         </div>
       </div>
     </aside>

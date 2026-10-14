@@ -7,6 +7,7 @@ type DiscordContactIndicatorProps = {
   handle?: string;
   variant?: "pill" | "icon";
   label?: string;
+  prefix?: string;
   iconClassName?: string;
   className?: string;
 };
@@ -15,6 +16,7 @@ export function DiscordContactIndicator({
   handle = SUPPORT_CONTACT.handle,
   variant = "pill",
   label,
+  prefix,
   iconClassName,
   className,
 }: DiscordContactIndicatorProps) {
@@ -23,7 +25,10 @@ export function DiscordContactIndicator({
 
   if (variant === "icon") {
     return (
-      <div
+      <a
+        href={`https://discord.com/users/${SUPPORT_CONTACT.discordId}`}
+        target="_blank"
+        rel="noreferrer"
         title={accessibleLabel}
         aria-label={accessibleLabel}
         className={
@@ -32,16 +37,21 @@ export function DiscordContactIndicator({
         }
       >
         <DiscordIcon className={iconClassName ?? "h-4 w-4"} />
-      </div>
+      </a>
     );
   }
 
   return (
-    <div
+    <a
+      href={`https://discord.com/users/${SUPPORT_CONTACT.discordId}`}
+      target="_blank"
+      rel="noreferrer"
       className={
         "flex items-center gap-2.5 rounded-lg border border-border bg-white/[0.02] px-3 py-2 text-[11px] text-muted-foreground transition-colors hover:border-indigo-500/20 hover:bg-indigo-500/5" +
         (className ? ` ${className}` : "")
       }
+      aria-label={accessibleLabel}
+      title={accessibleLabel}
     >
       <DiscordIcon
         className={
@@ -49,8 +59,9 @@ export function DiscordContactIndicator({
         }
       />
       <span className="truncate">
+        {prefix && <span>{prefix} </span>}
         <span className="font-medium text-muted-foreground">{handle}</span>
       </span>
-    </div>
+    </a>
   );
 }
