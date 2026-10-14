@@ -82,7 +82,7 @@ export function PreCertNotes() {
         </Item>
       </NumberedList>
       <ParagraphList>
-        <ParaItem><Bold>Note:</Bold> The EMR should <Underline>only</Underline> be <BbLink href="https://pastebin.com/raw/wCL1v4K7">sent</BbLink> the quiz if they <Bold>fail</Bold> their Pre-Certification.</ParaItem>
+        <ParaItem><Bold>Note:</Bold> The EMR should <Underline>only</Underline> be <BbLink href="https://pastebin.com/nQ8gzLQA">sent</BbLink> the quiz if they <Bold>fail</Bold> their Pre-Certification.</ParaItem>
       </ParagraphList>
     </div>
   );
