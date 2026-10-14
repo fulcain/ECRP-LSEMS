@@ -39,8 +39,12 @@ export function StaffSettingsCard({
   title = "Staff Settings",
   description = "Your name, rank and director role come from Discord. Save your signature here to reuse it across tools.",
 }: StaffSettingsCardProps) {
-  const { medicCredentials, setMedicCredentials, divisionRanks, setDivisionRanks } =
-    useMedic();
+  const {
+    medicCredentials,
+    setMedicCredentials,
+    divisionRanks,
+    setDivisionRanks,
+  } = useMedic();
   const [showEditForm, setShowEditForm] = useState(false);
 
   const {
@@ -76,21 +80,21 @@ export function StaffSettingsCard({
         directorRole: syncedDirectorRole(prev.directorRole, next),
       }));
 
-      setDivisionRanks((prev) => {
-        const { ranks, lastSynced } = autoFilledDivisionRanks(
-          prev,
-          lastSyncedRef.current,
-          next,
-          rankManagedDivisions.map((division) => division.label),
-        );
-        setLastSyncedRanks(lastSynced);
-        return ranks;
-      });
+      const { ranks, lastSynced } = autoFilledDivisionRanks(
+        divisionRanks,
+        lastSyncedRef.current,
+        next,
+        rankManagedDivisions.map((division) => division.label),
+      );
+      lastSyncedRef.current = lastSynced;
+      setDivisionRanks(ranks);
+      setLastSyncedRanks(lastSynced);
     },
     [
       setDivisionRanks,
       setLastSyncedRanks,
       setMedicCredentials,
+      divisionRanks,
     ],
   );
 
