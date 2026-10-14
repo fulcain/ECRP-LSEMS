@@ -58,7 +58,7 @@ Did the EMR know how to utilize all necessary radio calls and codes throughout?
 Did the EMR treat properly and timely?
 Did the EMR roam properly and safely?
 [/list][/spoiler][/list]
-[b]Note:[/b] The EMR should [u]only[/u] be [url=https://pastebin.com/raw/wCL1v4K7]sent[/url] the quiz if they [b][color=red]fail[/color][/b] their Pre-Certification.
+[b]Note:[/b] The EMR should [u]only[/u] be [url=https://pastebin.com/nQ8gzLQA]sent[/url] the quiz if they [b][color=red]fail[/color][/b] their Pre-Certification.
 
 [spoiler=Paperwork]
 [code]
@@ -109,5 +109,4 @@ Rank
 [lsemsfooter][/lsemsfooter]
 [/code]
 [/spoiler]
-[/divbox]
-[/spoiler]
+[/divbox][/spoiler]
