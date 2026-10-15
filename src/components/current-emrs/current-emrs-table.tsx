@@ -47,7 +47,9 @@ import { ExternalLink } from "lucide-react";
  * remote CSV re-caches.
  */
 export function CurrentEMRsTable() {
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "startDate", desc: false },
+  ]);
   const [pageSizeInput, setPageSizeInput] = useState(10);
   const [nameFilter, setNameFilter] = useState("");
   const [data, setData] = useState<TableDataType[]>([]);

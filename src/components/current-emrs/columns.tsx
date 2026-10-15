@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TableDataType } from "@/lib/types";
+import { ArrowUpDown } from "lucide-react";
 
 const StatusBox = ({ value }: { value: string }) => {
   const isTrue = value === "TRUE";
@@ -42,6 +43,31 @@ export interface CurrentEMRColumnOptions {
 export function createCurrentEMRColumns(
   options: CurrentEMRColumnOptions,
 ): ColumnDef<TableDataType>[] {
+  const MONTH_MAP: Record<string, number> = {
+    jan: 1,
+    feb: 2,
+    mar: 3,
+    apr: 4,
+    may: 5,
+    jun: 6,
+    jul: 7,
+    aug: 8,
+    sep: 9,
+    oct: 10,
+    nov: 11,
+    dec: 12,
+  };
+
+  function parseDayMonth(val: unknown): number {
+    if (typeof val !== "string") return 0;
+    const [dayStr, monthStr] = val.trim().split("/");
+    const day = parseInt(dayStr, 10);
+    const month = MONTH_MAP[monthStr?.toLowerCase() ?? ""];
+
+    if (!day || !month) return 0;
+    return month * 100 + day;
+  }
+
   return [
     {
       accessorKey: "EMR",
@@ -51,9 +77,24 @@ export function createCurrentEMRColumns(
     },
     {
       accessorKey: "Start Date",
-      header: "Start Date",
-      cell: (info) => info.getValue(),
-      enableSorting: true,
+      sortingFn: (rowA, rowB, columnId) => {
+        const a = parseDayMonth(rowA.getValue(columnId));
+        const b = parseDayMonth(rowB.getValue(columnId));
+        return a - b;
+      },
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="-ml-3 h-8 data-[state=open]:bg-accent"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            <span>Start Date</span>
+            <ArrowUpDown className="ml-2 h-4 w-4 text-muted-foreground" />
+          </Button>
+        );
+      },
     },
     {
       accessorKey: "Training Reminder Date",
