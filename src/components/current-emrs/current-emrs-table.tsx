@@ -33,6 +33,9 @@ import { fetchCurrentEMRs } from "./fetchCurrentEMRs";
 import { CreateNewEMR } from "@/components/create-new-emr/create-new-emr";
 import { EditEMRDialog } from "@/components/current-emrs/edit-emr-dialog";
 import { DeleteEMRDialog } from "@/components/current-emrs/delete-emr-dialog";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ExternalLink } from "lucide-react";
 
 /**
  * Active-EMR roster with inline edit/delete actions.
@@ -97,7 +100,8 @@ export function CurrentEMRsTable() {
   }, []);
 
   const columns = useMemo(
-    () => createCurrentEMRColumns({ onEdit: handleEdit, onDelete: handleDelete }),
+    () =>
+      createCurrentEMRColumns({ onEdit: handleEdit, onDelete: handleDelete }),
     [handleEdit, handleDelete],
   );
 
@@ -134,8 +138,19 @@ export function CurrentEMRsTable() {
             Normal: <span className="font-semibold">{emrStats.normal}</span>
           </span>
           <span className="bg-secondary/50 rounded-md px-3 py-1.5">
-            Reinstated: <span className="font-semibold">{emrStats.reinstated}</span>
+            Reinstated:{" "}
+            <span className="font-semibold">{emrStats.reinstated}</span>
           </span>
+          <Button variant="outline" size="sm">
+            <Link
+              className="flex flex-row gap-2 items-center justify-center"
+              target="_blank"
+              href="https://gov.eclipse-rp.net/viewforum.php?f=615"
+            >
+              <ExternalLink />
+              Active LOAs
+            </Link>
+          </Button>
         </div>
       )}
 
@@ -154,54 +169,54 @@ export function CurrentEMRsTable() {
       </div>
 
       {/* === Table === */}
-        {loading ? (
-          <Skeleton className="h-96 w-full rounded-b" />
-        ) : (
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
+      {loading ? (
+        <Skeleton className="h-96 w-full rounded-b" />
+      ) : (
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+
+          <TableBody>
+            {table.getRowModel().rows.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
                   ))}
                 </TableRow>
-              ))}
-            </TableHeader>
-
-            <TableBody>
-              {table.getRowModel().rows.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        )}
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      )}
 
       {/* === Pagination === */}
       {!loading && (
