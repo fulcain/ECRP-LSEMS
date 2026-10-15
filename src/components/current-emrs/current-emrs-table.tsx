@@ -24,6 +24,13 @@ import {
 } from "@/components/ui/table";
 
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+import {
   createCurrentEMRColumns,
   mapEmployeeDataRaw,
 } from "@/components/current-emrs/columns";
@@ -35,20 +42,11 @@ import { EditEMRDialog } from "@/components/current-emrs/edit-emr-dialog";
 import { DeleteEMRDialog } from "@/components/current-emrs/delete-emr-dialog";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, FileText } from "lucide-react";
 
-/**
- * Active-EMR roster with inline edit/delete actions.
- *
- * Fetches the published sheet on mount, exposes a name filter, and
- * surfaces per-row edit/delete dialogs via the `EditEMRDialog`
- * and `DeleteEMRDialog` components. Both dialogs push changes back
- * to `setData` directly so the table reflects them before the
- * remote CSV re-caches.
- */
 export function CurrentEMRsTable() {
   const [sorting, setSorting] = useState<SortingState>([
-    { id: "startDate", desc: false },
+    { id: "Start Date", desc: false },
   ]);
   const [pageSizeInput, setPageSizeInput] = useState(10);
   const [nameFilter, setNameFilter] = useState("");
@@ -57,6 +55,7 @@ export function CurrentEMRsTable() {
 
   const [editRow, setEditRow] = useState<TableDataType | null>(null);
   const [deleteRow, setDeleteRow] = useState<TableDataType | null>(null);
+  const [viewNote, setViewNote] = useState<string | null>(null);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
@@ -101,10 +100,18 @@ export function CurrentEMRsTable() {
     setDeleteOpen(true);
   }, []);
 
+  const handleViewNote = useCallback((note: string) => {
+    setViewNote(note);
+  }, []);
+
   const columns = useMemo(
     () =>
-      createCurrentEMRColumns({ onEdit: handleEdit, onDelete: handleDelete }),
-    [handleEdit, handleDelete],
+      createCurrentEMRColumns({
+        onEdit: handleEdit,
+        onDelete: handleDelete,
+        onViewNote: handleViewNote,
+      }),
+    [handleEdit, handleDelete, handleViewNote],
   );
 
   const table = useReactTable({
@@ -241,6 +248,30 @@ export function CurrentEMRsTable() {
         onOpenChange={setDeleteOpen}
         setData={setData}
       />
+
+      {/* === Note Preview Modal === */}
+      <Dialog
+        open={!!viewNote}
+        onOpenChange={(open) => !open && setViewNote(null)}
+      >
+        <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto border-border/50 bg-background/95 backdrop-blur-sm shadow-2xl">
+          <DialogHeader className="space-y-1.5 pb-2 border-b border-border/40">
+            <DialogTitle className="flex items-center gap-2.5 text-base font-semibold tracking-tight">
+              <div className="p-2 text-primary">
+                <FileText className="w-4 h-4" />
+              </div>
+              Note Details
+            </DialogTitle>
+          </DialogHeader>
+          <div className="pt-4">
+            <div className="relative rounded-xl bg-muted/50 p-4 border border-border/50">
+              <span className="text-sm whitespace-pre-wrap break-words text-foreground/90 leading-relaxed font-sans pr-4">
+                {viewNote}
+              </span>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

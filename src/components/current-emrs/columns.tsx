@@ -1,5 +1,4 @@
 "use client";
-
 import { ColumnDef } from "@tanstack/react-table";
 import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,6 +30,7 @@ export function mapEmployeeDataRaw(rawData: TableDataType[]): TableDataType[] {
 export interface CurrentEMRColumnOptions {
   onEdit: (row: TableDataType) => void;
   onDelete: (row: TableDataType) => void;
+  onViewNote?: (note: string) => void;
 }
 
 /**
@@ -123,7 +123,26 @@ export function createCurrentEMRColumns(
       header: "LOA?",
       cell: (info) => <StatusBox value={info.getValue() as string} />,
     },
-    { accessorKey: "Notes", header: "Notes", cell: (info) => info.getValue() },
+    {
+      accessorKey: "Notes",
+      header: "Notes",
+      cell: ({ row }) => {
+        const note = (row.getValue("Notes") as string) || "";
+        if (!note.trim())
+          return <span className="text-muted-foreground">-</span>;
+
+        return (
+          <button
+            type="button"
+            onClick={() => options.onViewNote?.(note)}
+            title="Click to view full note"
+            className="block max-w-[120px] truncate text-left text-sm hover:underline cursor-pointer text-foreground"
+          >
+            {note}
+          </button>
+        );
+      },
+    },
     {
       accessorKey: "Profile Link",
       header: "Profile Link",
