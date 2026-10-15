@@ -13,12 +13,22 @@ export type ChangeLogEntry = {
 
 export const changeLog: ChangeLogEntry[] = [
   {
+    date: "Oct 15, 2026",
+    changes: [
+      {
+        type: "feature",
+        description:
+          "Added some enhancements to the current EMRs table on the FTD Command page.",
+      },
+    ],
+  },
+  {
     date: "Oct 10, 2026",
     changes: [
       {
         type: "feature",
         description:
-          "New Report Form under Resources: pick Bug or Feature, write it out and it is sent straight to the developer to fix the bug or build the feature."
+          "New Report Form under Resources: pick Bug or Feature, write it out and it is sent straight to the developer to fix the bug or build the feature.",
       },
     ],
   },
@@ -37,7 +47,7 @@ export const changeLog: ChangeLogEntry[] = [
       {
         type: "feature",
         description:
-          "A&R now covers both branches: the pilot paperwork is named Pilot Certification and Pilot Certificate, each with an irregularity report, and a Mountain Rescue set (certification, certificate and irregularity) sits beside them in the picker - all with Copy & Open so the extension pastes them into GOV."
+          "A&R now covers both branches: the pilot paperwork is named Pilot Certification and Pilot Certificate, each with an irregularity report, and a Mountain Rescue set (certification, certificate and irregularity) sits beside them in the picker - all with Copy & Open so the extension pastes them into GOV.",
       },
     ],
   },
@@ -47,17 +57,17 @@ export const changeLog: ChangeLogEntry[] = [
       {
         type: "feature",
         description:
-          "The FTD Command page has an Update Profiles tab: paste a member's current profile in and it comes back in the FTP's own wording - the student information, each session's signature and its earned ticks are kept, the rest is the FTP's text - ready to copy back into GOV, with the format's profiles board one click away."
+          "The FTD Command page has an Update Profiles tab: paste a member's current profile in and it comes back in the FTP's own wording - the student information, each session's signature and its earned ticks are kept, the rest is the FTP's text - ready to copy back into GOV, with the format's profiles board one click away.",
       },
       {
         type: "feature",
         description:
-          "A&R has its own page under Divisions: a Medevac Pilot certification builder (theory, airfield practice, agility course and time trial) and the certificate for the member's divisional profile, both with Copy & Open so the extension pastes them into GOV. The page opens to the whole A&R division, with Command+ and LFM as everywhere."
+          "A&R has its own page under Divisions: a Medevac Pilot certification builder (theory, airfield practice, agility course and time trial) and the certificate for the member's divisional profile, both with Copy & Open so the extension pastes them into GOV. The page opens to the whole A&R division, with Command+ and LFM as everywhere.",
       },
       {
         type: "feature",
         description:
-          "The FTP tab now works on a deployment: an accepted update commits straight to the repository, is shown to FTD Head, Assistant Head of FTD and Command+, and a version history lists every FTP commit with a one-click way back to an earlier one."
+          "The FTP tab now works on a deployment: an accepted update commits straight to the repository, is shown to FTD Head, Assistant Head of FTD and Command+, and a version history lists every FTP commit with a one-click way back to an earlier one.",
       },
     ],
   },
@@ -67,12 +77,12 @@ export const changeLog: ChangeLogEntry[] = [
       {
         type: "feature",
         description:
-          "A feature for local development: the whole FTP training profile - Regular and Reinstatement - can be pasted in on the FTD Command Handbook tab, and every section of it is updated from the pasted handbook data."
+          "A feature for local development: the whole FTP training profile - Regular and Reinstatement - can be pasted in on the FTD Command Handbook tab, and every section of it is updated from the pasted handbook data.",
       },
       {
         type: "feature",
         description:
-          "New Firearm Discharge Notice template on the Templates page, beside the LOA one: the employee name, rank and signature come off the Staff Page, the time has a Now button (UTC), and the footage and proof-of-RP links go in as clickable links."
+          "New Firearm Discharge Notice template on the Templates page, beside the LOA one: the employee name, rank and signature come off the Staff Page, the time has a Now button (UTC), and the footage and proof-of-RP links go in as clickable links.",
       },
     ],
   },
@@ -220,8 +230,7 @@ export const changeLog: ChangeLogEntry[] = [
     changes: [
       {
         type: "change",
-        description:
-          "The app logo has been changed to the LSEMS emblem.",
+        description: "The app logo has been changed to the LSEMS emblem.",
       },
     ],
   },
@@ -299,8 +308,7 @@ export const changeLog: ChangeLogEntry[] = [
     changes: [
       {
         type: "feature",
-        description:
-          "Added Resignation to supervisor tab.",
+        description: "Added Resignation to supervisor tab.",
       },
     ],
   },
@@ -314,8 +322,7 @@ export const changeLog: ChangeLogEntry[] = [
       },
       {
         type: "change",
-        description:
-          "Moved the Upcoming Course page into the BLS page.",
+        description: "Moved the Upcoming Course page into the BLS page.",
       },
       {
         type: "feature",
@@ -339,12 +346,12 @@ export const changeLog: ChangeLogEntry[] = [
     changes: [
       {
         type: "feature",
-        description:
-          "URL query-param for tabs/selectors.",
+        description: "URL query-param for tabs/selectors.",
       },
       {
         type: "feature",
-        description: "Added the Director role to staff credentials and the email signature.",
+        description:
+          "Added the Director role to staff credentials and the email signature.",
       },
       {
         type: "feature",
