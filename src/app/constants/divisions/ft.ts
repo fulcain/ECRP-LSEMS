@@ -48,6 +48,10 @@ export const FT = {
         url: "https://gov.eclipse-rp.net/viewforum.php?f=3748",
       },
       {
+        name: "Quiz Guidelines, Answer Sheet & Formats",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?t=173488",
+      },
+      {
         name: "Discussion Board",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=1882",
       },
@@ -55,7 +59,6 @@ export const FT = {
         name: "FTD - Command Area",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=1928",
       },
-      
     ],
   },
 };
