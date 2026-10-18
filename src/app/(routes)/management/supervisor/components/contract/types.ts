@@ -28,6 +28,15 @@ export type ExternalLink = {
   requiresMetadata?: MetadataKey[];
   /** Copy/button stays disabled until the applicant name is filled in. */
   requiresName?: boolean;
+  /**
+   * Fill only the canonical `{{applicantName}}` token and leave the legacy
+   * spellings (`Fname Lname` and friends) standing. The FTP profiles are the
+   * one copy that wants this: their name comes once, in the Student (or
+   * Reinstatee) Information line, and every other touch of the name in them is
+   * the form's own blank - the Personnel File Post's `Fname Lname`, the
+   * ride-along signature - which the trainer fills, not the hire.
+   */
+  canonicalNameOnly?: boolean;
 };
 
 export type ContractStep = {

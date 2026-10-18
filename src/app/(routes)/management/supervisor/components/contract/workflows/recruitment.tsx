@@ -331,6 +331,7 @@ If you would like to resign from LSEMS, as sad as it'll be to see you go, please
           url: "https://gov.eclipse-rp.net/posting.php?mode=post&f=617",
           postTitle: "[Pending Introduction] {{applicantName}}",
           copyText: FTP_DOCUMENTS.regular,
+          canonicalNameOnly: true,
         },
         {
           label: "Copy FTP Title",

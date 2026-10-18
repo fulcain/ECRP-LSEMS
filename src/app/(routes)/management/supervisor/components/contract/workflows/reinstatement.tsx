@@ -251,6 +251,7 @@ If you would like to resign from LSEMS, as sad as it'll be to see you go, please
           url: "https://gov.eclipse-rp.net/posting.php?mode=post&f=601",
           postTitle: "Reinstatee Profile | {{applicantName}}",
           copyText: FTP_DOCUMENTS.reinstatement,
+          canonicalNameOnly: true,
         },
         {
           label: "Copy Profile Title",

@@ -1,4 +1,4 @@
-import { NAME_SPELLINGS } from "@/app/constants/profile-placeholders";
+import { NAME_SPELLINGS, NAME_TOKEN } from "@/app/constants/profile-placeholders";
 import { copyBBCode } from "@/app/helpers/copyBBCode";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
 import { isTitleOnlyText, pickPostTarget } from "@/app/helpers/forumHandoff";
@@ -81,10 +81,13 @@ function interpolatePlaceholders(
   personnelName: string | null,
   metadata: MetadataValues,
   medic?: MedicValues,
+  /** Fill only `{{applicantName}}`, leaving the legacy name spellings alone. */
+  canonicalNameOnly = false,
 ): string {
   let out = text;
   if (personnelName) {
-    for (const placeholder of NAME_SPELLINGS) {
+    const spellings = canonicalNameOnly ? [NAME_TOKEN] : NAME_SPELLINGS;
+    for (const placeholder of spellings) {
       out = out.split(placeholder).join(personnelName);
     }
   }
@@ -135,13 +138,20 @@ export function handleContractAction(
       personnelName,
       values,
       medic,
+      action.canonicalNameOnly,
     );
     // A step copies a post body or a bare title line, and the extension wants
     // them in different fields: the title fills the subject, the body the
     // editor. A step that posts both names its title outright; otherwise a line
     // short enough to be a title is treated as one.
     const title = action.postTitle
-      ? interpolatePlaceholders(action.postTitle, personnelName, values, medic)
+      ? interpolatePlaceholders(
+          action.postTitle,
+          personnelName,
+          values,
+          medic,
+          action.canonicalNameOnly,
+        )
       : null;
     const titleOnly = !title && isTitleOnlyText(interpolated);
     const post = {
