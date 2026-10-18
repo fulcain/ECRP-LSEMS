@@ -259,6 +259,16 @@ export function Figure({
   height?: number;
 }) {
   const [errored, setErrored] = React.useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(src);
+      toast.success("Image link copied!");
+    } catch {
+      toast.error("Couldn't copy the image link");
+    }
+  };
+
   if (errored) {
     return (
       <figure className="my-2 rounded-md border border-dashed border-border/60 px-3 py-2 text-xs text-muted-foreground">
@@ -268,6 +278,16 @@ export function Figure({
             {caption}
           </span>
         ) : null}
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={handleCopy}
+          className="mt-1.5 h-6 gap-1 px-1.5 text-[11px]"
+        >
+          <Copy className="h-3 w-3" />
+          Copy link
+        </Button>
       </figure>
     );
   }
@@ -289,6 +309,20 @@ export function Figure({
           {caption}
         </figcaption>
       ) : null}
+      <div className="flex justify-end">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={handleCopy}
+          title="Copy image link"
+          aria-label="Copy image link"
+          className="h-6 shrink-0 gap-1 px-2 text-[11px]"
+        >
+          <Copy className="h-3 w-3" />
+          Copy link
+        </Button>
+      </div>
     </figure>
   );
 }
