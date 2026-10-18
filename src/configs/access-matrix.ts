@@ -76,7 +76,7 @@ const ROUTE_META: Record<string, { label: string; group: AccessMatrixGroup }> = 
   },
   [ROUTES.resources.userGroups]: { label: "User Groups", group: "Resources" },
 
-  [ROUTES.resources.report]: { label: "Report Form", group: "Resources" },
+  [ROUTES.resources.report]: { label: "App Bugs and Features", group: "Resources" },
 
   [ROUTES.management.supervisor]: { label: "Supervisor", group: "Management" },
   [ROUTES.management.access]: {

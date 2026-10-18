@@ -13,6 +13,16 @@ export type ChangeLogEntry = {
 
 export const changeLog: ChangeLogEntry[] = [
   {
+    date: "Oct 18, 2026",
+    changes: [
+      {
+        type: "feature",
+        description:
+          "Feat add a new Quiz section for FTIs",
+      },
+    ],
+  },
+  {
     date: "Oct 15, 2026",
     changes: [
       {

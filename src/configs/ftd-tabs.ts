@@ -63,7 +63,7 @@ export const FTD_TABS = [
     href: ROUTES.divisions.ftd.fti,
     title: "Field Training Instructor",
     description:
-      "Phase notes, trainer info, and auto-generated FTO certification paperwork.",
+      "Phase notes, quiz marking, trainer info and auto-generated FTO certification paperwork.",
     accent: "border-amber-300/40 dark:border-amber-400/40 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300",
   },
 ] as const satisfies readonly FtdTabConfig[];

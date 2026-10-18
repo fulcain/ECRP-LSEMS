@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { ReportForm } from "./ReportForm";
 
 export const metadata: Metadata = {
-  title: "Report Form",
+  title: "App Bugs and Features",
   description: "Send a bug report or a feature request to the developer",
 };
 

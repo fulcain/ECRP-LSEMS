@@ -119,7 +119,7 @@ export const headerLinks: HeaderLink[] = [
   },
   {
     // Restricted to Employee and Legal Faction Management.
-    label: "Report Form",
+    label: "App Bugs and Features",
     href: ROUTES.resources.report,
     icon: MessageSquare,
     group: "Resources",

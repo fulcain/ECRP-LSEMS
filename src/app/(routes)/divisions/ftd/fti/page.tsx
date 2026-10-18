@@ -7,9 +7,11 @@ import {
   BookOpen,
   CheckCircle,
   ChevronDown,
+  ClipboardCheck,
   Copy,
   ExternalLink,
   FileText,
+  MessagesSquare,
   UserCheck,
   Users,
 } from "lucide-react";
@@ -23,6 +25,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  DocumentPicker,
+  type PickerGroup,
+} from "@/components/division/document-picker";
 import { Textarea } from "@/components/ui/textarea";
 import {
   handOffAndOpenForumPost,
@@ -39,12 +45,55 @@ import {
   generateDivisionalFile,
   generateTrainerInfoBBCode,
 } from "@/components/employee-stats/lib/generate-fti-certification-bbcode";
+import { QuizMarking } from "@/app/(routes)/divisions/ftd/fti/components/quiz-marking";
 
 /* ------------------------------------------------------------------ */
 /*  Form persistence key                                                */
 /* ------------------------------------------------------------------ */
 
 const FORM_KEY = "fti-certification-form-v1";
+
+/* ------------------------------------------------------------------ */
+/*  In-page cards                                                       */
+/* ------------------------------------------------------------------ */
+
+type FtiTool =
+  | "phase-notes"
+  | "quiz"
+  | "ftdInstructorBoard";
+
+const FTI_GROUPS: readonly PickerGroup<FtiTool>[] = [
+  {
+    label: "Run the training",
+    hint: "Phase notes for the session, and marking an EMR's quiz.",
+    documents: [
+      {
+        value: "phase-notes",
+        label: "Phase Notes",
+        hint: "Phase 1 and Phase 2 notes, plus the FTO certification paperwork.",
+        icon: BookOpen,
+      },
+      {
+        value: "quiz",
+        label: "Quiz Marking",
+        hint: "Mark a submitted quiz against the answer sheet - the results email builds itself.",
+        icon: ClipboardCheck,
+      },
+    ],
+  },
+  {
+    label: "Post on the board",
+    hint: "FTD instructors' discussion topic - open a thread on the board.",
+    documents: [
+      {
+        value: "ftdInstructorBoard",
+        label: "FTD Instructor Discussion Board",
+        hint: "Open a topic in the instructors' board.",
+        icon: MessagesSquare,
+      },
+    ],
+  },
+];
 
 /* ------------------------------------------------------------------ */
 /*  Collapsible section                                                 */
@@ -227,6 +276,11 @@ function PhaseTwoNotes() {
 /* ------------------------------------------------------------------ */
 
 export default function FtiPage() {
+  /* ---- In-page cards ---- */
+  // Nothing is picked for the member: the page opens on the cards and the
+  // content appears only once one is chosen - the same flow BLS and RED run.
+  const [picked, setPicked] = useState<FtiTool | null>(null);
+
   /* ---- The member's own details, straight from the Staff Page ---- */
   const { medicCredentials, divisionRanks } = useMedic();
   const sigName = medicCredentials.name;
@@ -382,263 +436,278 @@ export default function FtiPage() {
     <div className="space-y-6">
       <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
 
-      {/* ---- Phase Notes ---- */}
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
-            Phase Notes
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Collapsible label="Phase 1 - Overview">
-            <PhaseOneNotes />
-          </Collapsible>
-          <Collapsible label="Phase 2 - Evaluation">
-            <PhaseTwoNotes />
-          </Collapsible>
-        </CardContent>
-      </Card>
+      {/* ---- What are you working on? - one card per tool ---- */}
+      <DocumentPicker
+        groups={FTI_GROUPS}
+        value={picked}
+        onChange={setPicked}
+        legend="What are you working on?"
+      />
 
-      {/* ---- Trainer Information ---- */}
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            <UserCheck className="h-4 w-4 text-muted-foreground" />
-            Trainer Information
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Certified by</Label>
-              <Input
-                value={certifiedBy}
-                onChange={(e) => setCertifiedBy(e.target.value)}
-                placeholder="Rank Fname Lname"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">
-                Date of Completion
-              </Label>
-              <Input
-                value={completionDate}
-                onChange={(e) => setCompletionDate(e.target.value)}
-                placeholder="DD/MMM/YYYY"
-              />
-            </div>
-          </div>
+      {picked === "phase-notes" ? (
+        <>
+        {/* ---- Phase Notes ---- */}
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <BookOpen className="h-4 w-4 text-muted-foreground" />
+              Phase Notes
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Collapsible label="Phase 1 - Overview">
+              <PhaseOneNotes />
+            </Collapsible>
+            <Collapsible label="Phase 2 - Evaluation">
+              <PhaseTwoNotes />
+            </Collapsible>
+          </CardContent>
+        </Card>
 
-          <Button
-            size="sm"
-            onClick={() => copyToClipboard(trainerInfoBBCode, "Trainer info")}
-            className="px-4 mt-3"
-          >
-            <Copy className="h-4 w-4 mr-2" />
-            Copy Trainer Info
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* ---- Paperwork ---- */}
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
-            Paperwork
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-8">
-          {/* ---- FTO Certification Paperwork ---- */}
-          <div className="space-y-4">
-            <h3 className="text-base font-semibold">
-              FTO Certification Paperwork - FTO Profile
-            </h3>
-
-            {/* Student details needed for the paperwork */}
+        {/* ---- Trainer Information ---- */}
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <UserCheck className="h-4 w-4 text-muted-foreground" />
+              Trainer Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Student Name</Label>
+                <Label className="text-xs text-muted-foreground">Certified by</Label>
                 <Input
-                  value={studentName}
-                  onChange={(e) => setStudentName(e.target.value)}
-                  placeholder="Fname Lname"
+                  value={certifiedBy}
+                  onChange={(e) => setCertifiedBy(e.target.value)}
+                  placeholder="Rank Fname Lname"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Student Rank</Label>
+                <Label className="text-xs text-muted-foreground">
+                  Date of Completion
+                </Label>
                 <Input
-                  value={studentRank}
-                  onChange={(e) => setStudentRank(e.target.value)}
-                  placeholder="EMR"
+                  value={completionDate}
+                  onChange={(e) => setCompletionDate(e.target.value)}
+                  placeholder="DD/MMM/YYYY"
                 />
               </div>
             </div>
 
-            <p className="text-xs text-muted-foreground">
-              Fill in the five evaluation answers below. Signature, your name and rank come from your Staff Page.
-            </p>
+            <Button
+              size="sm"
+              onClick={() => copyToClipboard(trainerInfoBBCode, "Trainer info")}
+              className="px-4 mt-3"
+            >
+              <Copy className="h-4 w-4 mr-2" />
+              Copy Trainer Info
+            </Button>
+          </CardContent>
+        </Card>
 
-            <div className="grid gap-4 sm:grid-cols-1">
-              <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">
-                  1. Did the student FTO understand the meaning behind the three pillars of
-                  training clearly?
-                </Label>
-                <Textarea
-                  value={answer1}
-                  onChange={(e) => setAnswer1(e.target.value)}
-                  placeholder="Your answer..."
-                  rows={2}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">
-                  2. Was the student FTO able to navigate to the 5 listed sections?
-                </Label>
-                <Textarea
-                  value={answer2}
-                  onChange={(e) => setAnswer2(e.target.value)}
-                  placeholder="Your answer..."
-                  rows={2}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">
-                  3. Was the student FTO able to chew through everything in the Regulations
-                  Section of the FT Handbook?
-                </Label>
-                <Textarea
-                  value={answer3}
-                  onChange={(e) => setAnswer3(e.target.value)}
-                  placeholder="Your answer..."
-                  rows={2}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">
-                  4. Did the student FTO successfully deliver the training phases in their
-                  certification?
-                </Label>
-                <Textarea
-                  value={answer4}
-                  onChange={(e) => setAnswer4(e.target.value)}
-                  placeholder="Your answer..."
-                  rows={2}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">
-                  5. Are you confident that the student FTO will be able to train an EMR?
-                </Label>
-                <Textarea
-                  value={answer5}
-                  onChange={(e) => setAnswer5(e.target.value)}
-                  placeholder="Your answer..."
-                  rows={2}
-                />
-              </div>
-            </div>
+        {/* ---- Paperwork ---- */}
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <FileText className="h-4 w-4 text-muted-foreground" />
+              Paperwork
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-8">
+            {/* ---- FTO Certification Paperwork ---- */}
+            <div className="space-y-4">
+              <h3 className="text-base font-semibold">
+                FTO Certification Paperwork - FTO Profile
+              </h3>
 
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">
-                FTO Profile Link
-              </Label>
-              <Input
-                value={ftoProfileLink}
-                onChange={(e) => setFtoProfileLink(e.target.value)}
-                placeholder="Paste the FTO's student profile post URL"
-                className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground"
-              />
+              {/* Student details needed for the paperwork */}
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">Student Name</Label>
+                  <Input
+                    value={studentName}
+                    onChange={(e) => setStudentName(e.target.value)}
+                    placeholder="Fname Lname"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">Student Rank</Label>
+                  <Input
+                    value={studentRank}
+                    onChange={(e) => setStudentRank(e.target.value)}
+                    placeholder="EMR"
+                  />
+                </div>
+              </div>
+
               <p className="text-xs text-muted-foreground">
-                The profile this certification paperwork belongs in - Open FTO
-                Profile opens it.
+                Fill in the five evaluation answers below. Signature, your name and rank come from your Staff Page.
               </p>
-            </div>
 
-            <div className="flex flex-wrap gap-2">
-              <Button
-                size="sm"
-                onClick={() => copyToClipboard(certBBCode, "Certification paperwork")}
-                className="px-6"
-              >
-                <Copy className="h-4 w-4 mr-2" />
-                Copy Certification Paperwork
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={!ftoProfileLink.trim()}
-                onClick={openFtoProfile}
-                className="px-6"
-                title={
-                  ftoProfileLink.trim()
-                    ? "Opens this FTO's profile post"
-                    : "Paste the FTO Profile Link above first"
-                }
-              >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Open FTO Profile
-              </Button>
-              {/* Certified today means a forum group changes today, and this
-                  page already knows the student - so it hands the name over. */}
-              <Button asChild size="sm" variant="outline" className="px-6">
-                <Link
-                  href={userGroupsHref({
-                    member: studentName,
-                    group: "ftd-instructor",
-                  })}
+              <div className="grid gap-4 sm:grid-cols-1">
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">
+                    1. Did the student FTO understand the meaning behind the three pillars of
+                    training clearly?
+                  </Label>
+                  <Textarea
+                    value={answer1}
+                    onChange={(e) => setAnswer1(e.target.value)}
+                    placeholder="Your answer..."
+                    rows={2}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">
+                    2. Was the student FTO able to navigate to the 5 listed sections?
+                  </Label>
+                  <Textarea
+                    value={answer2}
+                    onChange={(e) => setAnswer2(e.target.value)}
+                    placeholder="Your answer..."
+                    rows={2}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">
+                    3. Was the student FTO able to chew through everything in the Regulations
+                    Section of the FT Handbook?
+                  </Label>
+                  <Textarea
+                    value={answer3}
+                    onChange={(e) => setAnswer3(e.target.value)}
+                    placeholder="Your answer..."
+                    rows={2}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">
+                    4. Did the student FTO successfully deliver the training phases in their
+                    certification?
+                  </Label>
+                  <Textarea
+                    value={answer4}
+                    onChange={(e) => setAnswer4(e.target.value)}
+                    placeholder="Your answer..."
+                    rows={2}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">
+                    5. Are you confident that the student FTO will be able to train an EMR?
+                  </Label>
+                  <Textarea
+                    value={answer5}
+                    onChange={(e) => setAnswer5(e.target.value)}
+                    placeholder="Your answer..."
+                    rows={2}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">
+                  FTO Profile Link
+                </Label>
+                <Input
+                  value={ftoProfileLink}
+                  onChange={(e) => setFtoProfileLink(e.target.value)}
+                  placeholder="Paste the FTO's student profile post URL"
+                  className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground"
+                />
+                <p className="text-xs text-muted-foreground">
+                  The profile this certification paperwork belongs in - Open FTO
+                  Profile opens it.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  size="sm"
+                  onClick={() => copyToClipboard(certBBCode, "Certification paperwork")}
+                  className="px-6"
                 >
-                  <Users className="h-4 w-4 mr-2" />
-                  Add them to the FTD Instructor group
-                </Link>
-              </Button>
-            </div>
-          </div>
-
-          {/* ---- Divider ---- */}
-          <hr className="border-border/50" />
-
-          {/* ---- Divisional File ---- */}
-          <div className="space-y-4">
-            <h3 className="text-base font-semibold flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-emerald-600" />
-              FTO Student Passed Paperwork - Divisional File
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              This is auto-generated from the student name, completion date, and your shared
-              signature.
-            </p>
-
-            <div className="flex flex-wrap gap-2">
-              <Button
-                size="sm"
-                onClick={() => copyToClipboard(divisionalBBCode, "Divisional file")}
-                className="px-6"
-              >
-                <Copy className="h-4 w-4 mr-2" />
-                Copy Divisional File
-              </Button>
-              <Button asChild variant="outline" size="sm" className="px-6">
-                <a
-                  href="https://gov.eclipse-rp.net/viewforum.php?f=4155"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copy Certification Paperwork
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={!ftoProfileLink.trim()}
+                  onClick={openFtoProfile}
+                  className="px-6"
+                  title={
+                    ftoProfileLink.trim()
+                      ? "Opens this FTO's profile post"
+                      : "Paste the FTO Profile Link above first"
+                  }
                 >
                   <ExternalLink className="h-4 w-4 mr-2" />
-                  Divisional Personnel Files
-                </a>
-              </Button>
+                  Open FTO Profile
+                </Button>
+                {/* Certified today means a forum group changes today, and this
+                    page already knows the student - so it hands the name over. */}
+                <Button asChild size="sm" variant="outline" className="px-6">
+                  <Link
+                    href={userGroupsHref({
+                      member: studentName,
+                      group: "ftd-instructor",
+                    })}
+                  >
+                    <Users className="h-4 w-4 mr-2" />
+                    Add them to the FTD Instructor group
+                  </Link>
+                </Button>
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
 
-      {/* ---- Instructor Discussion Board ---- */}
-      {/* The instructors' board: it used to be a card in the paperwork picker,
-          where a member writing a session had to go looking for it. */}
-      <DiscussionBoardComposer boardKey="ftdInstructorBoard" />
+            {/* ---- Divider ---- */}
+            <hr className="border-border/50" />
+
+            {/* ---- Divisional File ---- */}
+            <div className="space-y-4">
+              <h3 className="text-base font-semibold flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-emerald-600" />
+                FTO Student Passed Paperwork - Divisional File
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                This is auto-generated from the student name, completion date, and your shared
+                signature.
+              </p>
+
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  size="sm"
+                  onClick={() => copyToClipboard(divisionalBBCode, "Divisional file")}
+                  className="px-6"
+                >
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copy Divisional File
+                </Button>
+                <Button asChild variant="outline" size="sm" className="px-6">
+                  <a
+                    href="https://gov.eclipse-rp.net/viewforum.php?f=4155"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Divisional Personnel Files
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        </>
+      ) : picked === "quiz" ? (
+        /* ---- Quiz Marking ---- */
+        <QuizMarking />
+      ) : picked === "ftdInstructorBoard" ? (
+        /* The instructors' board gets its own card: it is not notes and not a
+           form, so it is offered beside them rather than under one of them. */
+        <DiscussionBoardComposer boardKey="ftdInstructorBoard" />
+      ) : null}
     </div>
   );
 }
