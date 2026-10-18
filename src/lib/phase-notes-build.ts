@@ -353,9 +353,12 @@ function readFlow(
       continue;
     }
     if (tag === "img") {
-      // An image is a picture, not a step a Guide has to say - the oath's
-      // banner and sign-off are decoration either way.
-      skipUntilClose(tokens, state, "img");
+      // A picture a trainer reads - the hospital and course maps of Phase 3.
+      // An image written inside a run (`[center][img]…[/img][/center]`, the
+      // oath's banner) is read as inline and stays out, and a blank such as
+      // `[img]SIGNATURE[/img]` is the profile's placeholder, not a picture.
+      const src = readUntilClose(tokens, state, "img").trim();
+      if (/^https?:\/\//i.test(src)) push({ kind: "image", src });
       continue;
     }
     if (tag === "lsemssubtitle") {
