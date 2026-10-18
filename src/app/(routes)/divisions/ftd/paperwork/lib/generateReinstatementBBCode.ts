@@ -119,7 +119,9 @@ ${values.notesNextTraining}
 
   // filter(Boolean) keeps skipped sections from leaving double blank lines.
   const sessionDetailsParts = [
-    values.rideAlongType ? rideAlongSection : "",
+    phase === "reinstatementRideAlong" && values.rideAlongType
+      ? rideAlongSection
+      : "",
     `[b]Time Started:[/b] ${values.timeStarted || ""}`,
     `[b]Time Ended:[/b] ${values.timeEnded || ""}`,
     `[b]Were there any department calls?[/b] ${yesNo(values.departmentCalls)}`,

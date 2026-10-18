@@ -132,7 +132,7 @@ ${signatureSection}
 
   // filter(Boolean) keeps skipped sections from leaving double blank lines.
   const sessionDetailsParts = [
-    values.rideAlongType ? rideAlongSection : "",
+    phase === "rideAlong" && values.rideAlongType ? rideAlongSection : "",
     `[b]Time Started:[/b] ${values.timeStarted || ""}`,
     `[b]Time Ended:[/b] ${values.timeEnded || ""}`,
     `[b]Did the EMR participate in a 10-15 call?[/b] ${yesNo(values.participated)}
