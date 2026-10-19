@@ -55,6 +55,14 @@
 [*]Misuse of this command will result in the removal of the medical license[b][color=blue]))[/color][/b]
 [/list][/list]
 
+[ooc][b]Injured Player Commands[/b]
+
+To drag an injured player after they have been treated and are on a stretcher, or if you simply want to help them walk, use [c]/drag[/c].
+
+To place an injured player in the ambulance while you are inside it yourself, use [c]/invehicle[/c].
+
+To get an injured player out of the ambulance while you are on foot, use [c]/outambulance[/c]. Additionally, to get someone out of a regular vehicle, use [c]/dragout[/c].[/ooc]
+
 [b]Advanced Treatment[/b]
 Explain to the EMR that if there is no AMU around and they want to do more advanced treatment with the help of the doctors we have, they are more than welcome to do so.
 

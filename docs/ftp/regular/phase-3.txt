@@ -46,8 +46,8 @@ Explain to the EMR that this section will consist of 2 different driving tests.
 [*]Have the EMR practice in that area as much as they want, allowing them to go as fast as they feel comfortable with.
 [spoiler=Course 2 - Senora Road][img]https://i.ibb.co/7tV3WjRD/phase-3.png[/img][/spoiler]
 [*]Take over and explain the next course by showing them the route above. It will be a mix of dirt and asphalt trails with a good amount of turns, which can be a bit challenging but will definitely be helpful for them. Once you have shown them the route and explained what to expect, have them complete the course themselves.
-[list=none]First reverse lap [b]Code 4[/b]
-Second reverse lap [b]Code 3[/b]
+[list=none]First lap [b]Code 4[/b]
+Second lap [b]Code 3[/b]
 [/list]
 [*]Finally, have the EMR drive to the Sandy Firestation ([c]27 Panorama Dr[/c]), [b]Code 3[/b].
 [spoiler=Map Location of Sandy Firestation][img]https://i.ibb.co/dwjHb5D8/Rm51q-YX.png[/img][/spoiler]
@@ -84,6 +84,11 @@ Second reverse lap [b]Code 3[/b]
 [img]https://i.ibb.co/3ySMgpC4/boat-doc-blip.png[/img]
 [hr]
 [img]https://i.ibb.co/SX5z3YnX/boat-doc-location.jpg[/img]
+[/spoiler]
+[spoiler=Lifeguard Tower]
+[img]https://i.ibb.co/c72WQG1/image.png[/img]
+[hr]
+[img]https://i.ibb.co/nMyYK5qj/image.png[/img]
 [/spoiler]
 [/list]
 [color=transparent]spacer[/color]
