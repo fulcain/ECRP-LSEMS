@@ -88,7 +88,7 @@ export function Phase3Notes() {
         <Item>
           Take over and explain the next course by showing them the route above. It will be a mix of dirt and asphalt trails with a good amount of turns, which can be a bit challenging but will definitely be helpful for them. Once you have shown them the route and explained what to expect, have them complete the course themselves.
           <ParagraphList>
-            <ParaItem>First reverse lap <Bold>Code 4</Bold> Second reverse lap <Bold>Code 3</Bold></ParaItem>
+            <ParaItem>First lap <Bold>Code 4</Bold> Second lap <Bold>Code 3</Bold></ParaItem>
           </ParagraphList>
         </Item>
         <Item>
@@ -129,6 +129,11 @@ export function Phase3Notes() {
             <Figure src="https://i.ibb.co/3ySMgpC4/boat-doc-blip.png" />
             <Divider />
             <Figure src="https://i.ibb.co/SX5z3YnX/boat-doc-location.jpg" />
+          </Spoiler>
+          <Spoiler title="Lifeguard Tower">
+            <Figure src="https://i.ibb.co/c72WQG1/image.png" />
+            <Divider />
+            <Figure src="https://i.ibb.co/nMyYK5qj/image.png" />
           </Spoiler>
         </Item>
       </Category>

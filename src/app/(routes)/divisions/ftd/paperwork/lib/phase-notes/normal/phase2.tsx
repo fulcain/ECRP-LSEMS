@@ -90,7 +90,7 @@ export function Phase2Notes() {
         </Item>
       </Category>
       <ParagraphList>
-        <ParaItem><Bold>Advanced Treatment</Bold> Explain to the EMR that if there is no AMU around and they want to do more advanced treatment with the help of the doctors we have, they are more than welcome to do so.</ParaItem>
+        <ParaItem><OOC><Bold>Injured Player Commands</Bold> To drag an injured player after they have been treated and are on a stretcher, or if you simply want to help them walk, use <Command>/drag</Command>. To place an injured player in the ambulance while you are inside it yourself, use <Command>/invehicle</Command>. To get an injured player out of the ambulance while you are on foot, use <Command>/outambulance</Command>. Additionally, to get someone out of a regular vehicle, use <Command>/dragout</Command>.</OOC> <Bold>Advanced Treatment</Bold> Explain to the EMR that if there is no AMU around and they want to do more advanced treatment with the help of the doctors we have, they are more than welcome to do so.</ParaItem>
       </ParagraphList>
       <div className="mt-1">
         <OOC>The portion is mostly OOC and is done in cases where the patient brought to a hospital wants to do more advanced treatment RP. Tell the EMR that if AMU is not around and they are willing to do advanced RP, they are more than welcome to do so, as long as the other party wants to do it after asking in <Command>/b</Command>. Here is how it is done, and you will be explaining this to the EMR:</OOC>
