@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
+import { Loader2 } from "lucide-react";
 import * as React from "react";
 
 const buttonVariants = cva(
@@ -42,19 +43,47 @@ function Button({
   variant,
   size,
   asChild = false,
+  loading = false,
+  disabled,
+  children,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
+    /** Shows a spinner and blocks interaction while an action is in flight. */
+    loading?: boolean;
   }) {
-  const Comp = asChild ? Slot : "button";
+  if (asChild) {
+    // Slot's props carry no `disabled` of their own - the child decides that
+    // for itself - so it only travels when the caller set it.
+    const slotProps =
+      disabled !== undefined ? { disabled } : ({} as Record<string, never>);
+    return (
+      <Slot
+        data-slot="button"
+        className={cn(buttonVariants({ variant, size, className }))}
+        aria-busy={loading || undefined}
+        {...slotProps}
+        {...props}
+      >
+        {children}
+      </Slot>
+    );
+  }
 
   return (
-    <Comp
+    <button
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
+      aria-busy={loading || undefined}
+      disabled={disabled || loading}
       {...props}
-    />
+    >
+      {loading && (
+        <Loader2 className="animate-spin" aria-hidden="true" />
+      )}
+      {children}
+    </button>
   );
 }
 

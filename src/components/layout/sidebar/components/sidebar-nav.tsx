@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Search, X } from "lucide-react";
 import {
   isHeaderLinkActive,
@@ -45,8 +45,10 @@ export function SidebarNav({
   closeOnNavigate = false,
 }: SidebarNavProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const { toggleCollapsed } = useSidebar();
   const [query, setQuery] = useState("");
+  const [activeIndex, setActiveIndex] = useState(0);
   const [focusOnExpand, setFocusOnExpand] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -66,11 +68,23 @@ export function SidebarNav({
     [links, terms],
   );
 
+  // The highlighted result follows the visible list, not the previous one.
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [query]);
+
   // A destination was reached, so the next look at the nav shows all of it
   // again rather than the filter from last time.
   useEffect(() => {
     setQuery("");
   }, [pathname]);
+
+  // Enter in the search field opens the highlighted result, so the field is
+  // usable without reaching for the mouse.
+  const openActive = () => {
+    const item = visible[activeIndex];
+    if (item?.href) router.push(item.href);
+  };
 
   // The rail has no room for the field, so its icon expands it first.
   useEffect(() => {
@@ -114,6 +128,17 @@ export function SidebarNav({
               if (event.key === "Escape") {
                 setQuery("");
                 searchRef.current?.blur();
+              } else if (event.key === "ArrowDown") {
+                event.preventDefault();
+                setActiveIndex((value) =>
+                  Math.min(value + 1, visible.length - 1),
+                );
+              } else if (event.key === "ArrowUp") {
+                event.preventDefault();
+                setActiveIndex((value) => Math.max(value - 1, 0));
+              } else if (event.key === "Enter") {
+                event.preventDefault();
+                openActive();
               }
             }}
             placeholder="Search pages"
@@ -133,6 +158,14 @@ export function SidebarNav({
               <X className="h-3.5 w-3.5" />
             </button>
           )}
+          {!query && (
+            <kbd
+              aria-hidden="true"
+              className="pointer-events-none absolute right-2.5 top-1/2 hidden -translate-y-1/2 rounded border border-border bg-surface-raised px-1.5 py-0.5 text-[10px] text-muted-foreground sm:block"
+            >
+              Ctrl K
+            </kbd>
+          )}
         </div>
       )}
 
@@ -143,12 +176,25 @@ export function SidebarNav({
           closeOnNavigate && "overscroll-contain pr-1",
         )}
       >
+        {query && (
+          <p
+            role="status"
+            className="px-3 pb-1 text-[11px] text-muted-foreground"
+          >
+            {visible.length === 1
+              ? "1 page found"
+              : `${visible.length} pages found`}
+          </p>
+        )}
+
         {visible.length === 0 && (
           <div className="px-3 py-6 text-center">
             <p className="text-xs text-muted-foreground">
-              {`No page matches "${query.trim()}".`}
+              {links.length === 0
+                ? "No pages are set up for your account yet."
+                : `No page matches "${query.trim()}".`}
             </p>
-            {quickLinksHref && (
+            {links.length > 0 && quickLinksHref && (
               <Link
                 href={quickLinksHref}
                 className="mt-1.5 inline-block text-xs text-primary underline-offset-2 hover:underline"
@@ -162,6 +208,7 @@ export function SidebarNav({
         {visible.map((item, index) => {
           const Icon = item.icon;
           const isActive = isHeaderLinkActive(item, pathname);
+          const isHighlighted = terms.length > 0 && index === activeIndex;
           const showGroup =
             index === 0 || item.group !== visible[index - 1].group;
           const link = (
@@ -176,6 +223,8 @@ export function SidebarNav({
                 isActive
                   ? "nav-link-active bg-primary/10 text-primary"
                   : "text-muted-foreground hover:border-border/70 hover:bg-surface-raised/70 hover:text-foreground",
+                isHighlighted &&
+                  "border-border/70 bg-surface-raised/70 text-foreground",
               )}
             >
               <Icon
@@ -204,6 +253,34 @@ export function SidebarNav({
                 <SheetClose asChild>{link}</SheetClose>
               ) : (
                 link
+              )}
+              {!collapsed && item.children && item.children.length > 0 && (
+                <div className="ml-6 mt-0.5 space-y-0.5 border-l border-border/60 pl-2">
+                  {item.children.map((child) => {
+                    const childLink = (
+                      <Link
+                        key={child.href}
+                        href={child.href}
+                        title={child.description}
+                        aria-current={
+                          pathname === child.href.split("?")[0]
+                            ? "page"
+                            : undefined
+                        }
+                        className="block truncate rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
+                      >
+                        {child.label}
+                      </Link>
+                    );
+                    return closeOnNavigate ? (
+                      <SheetClose key={child.href} asChild>
+                        {childLink}
+                      </SheetClose>
+                    ) : (
+                      childLink
+                    );
+                  })}
+                </div>
               )}
             </div>
           );

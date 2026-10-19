@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -66,14 +66,13 @@ export function EditEmployeeStatsRowDialog({
 
     const trimmed = name.trim();
     if (!trimmed) {
-      toast.error("Name can't be empty", { theme: "dark" });
+      toast.error("Name can't be empty");
       return;
     }
 
     if (originalSheetRow == null) {
       toast.error(
-        "Missing sheet row identifier - reload the page so the row index re-syncs.",
-        { theme: "dark" },
+        "Missing sheet row identifier - reload the page so the row index re-syncs."
       );
       return;
     }
@@ -96,19 +95,18 @@ export function EditEmployeeStatsRowDialog({
       const result = await res.json();
 
       if (result.success) {
-        toast.success(`Saved "${trimmed}".`, { theme: "dark" });
+        toast.success(`Saved "${trimmed}".`);
         onOpenChange(false);
         onEdited?.(trimmed, r15, r40, r100, r165);
       } else {
         toast.error(
           `Something went wrong: ${
             result.error ?? result.raw ?? JSON.stringify(result)
-          }`,
-          { theme: "dark" },
+          }`
         );
       }
     } catch (err) {
-      toast.error("Network error or Apps Script blocked", { theme: "dark" });
+      toast.error("Network error or Apps Script blocked");
       console.error(err);
     } finally {
       setSubmitting(false);
@@ -117,7 +115,6 @@ export function EditEmployeeStatsRowDialog({
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
 
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-md">
@@ -131,8 +128,9 @@ export function EditEmployeeStatsRowDialog({
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
-              <Label>Name</Label>
+              <Label htmlFor="edit-row-name">Name</Label>
               <Input
+                id="edit-row-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Fname Lname"
@@ -199,8 +197,8 @@ export function EditEmployeeStatsRowDialog({
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={submitting}>
-                {submitting ? "Saving…" : "Save Changes"}
+              <Button type="submit" loading={submitting}>
+                Save Changes
               </Button>
             </DialogFooter>
           </form>

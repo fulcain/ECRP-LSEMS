@@ -3,7 +3,6 @@ import {
   Bold,
   BulletList,
   Category,
-  Divider,
   Em,
   EyebrowLabel,
   Item,
@@ -28,8 +27,6 @@ export function IntroductionNotes() {
           INTRODUCTION - EMT-I+
         </EyebrowLabel>
       </div>
-      <Divider />
-      <Divider />
       <Category title="Uniform and On Duty" ordered>
         <Item>Let the EMR know that they <Bold>cannot</Bold> be on duty without a trainer. Make sure they understand this. If they cannot find a trainer by using the radio then direct them to the Student area.</Item>
         <Item><OOC>Link the EMR to the <Bold><BbLink href="https://gov.eclipse-rp.net/viewtopic.php?t=233319">radio guide</BbLink></Bold> and have them set it up later during the session.</OOC></Item>
@@ -119,8 +116,6 @@ export function IntroductionNotes() {
         <Item>Take the EMR inside Paleto MD, showing them where they could clock on, as well as where the plastic surgeon is located.</Item>
         <Item>Inform the EMR that if they wish to clock on at Paleto MD, they should park their vehicle at Paleto Parking, as it is unsafe to park at Paleto MD.</Item>
       </Category>
-      <Divider />
-      <Divider />
       <Category title="OOC Corruption + Faction Commands" ordered>
         <Item><OOC>Explain the OOC corruption ruling that LSEMS has in place to the EMR. Inform them we don&apos;t require IC evidence to terminate due to any illegal activities.</OOC></Item>
         <Item><OOC>Explain that faction-related commands are a privilege and not given out to mess around with. Explain that they cannot use the commands without first doing the applicable roleplay before using the command. If found to have done so it can lead to Faction repercussions and/or server punishments.</OOC></Item>
@@ -128,8 +123,6 @@ export function IntroductionNotes() {
         <Item><OOC>Explain that if they receive an admin punishment that they MUST tell High Command within 48 hours. Let them know that they need to send the link to the report and to inform High Command when it is concluded along with the result.</OOC></Item>
         <Item><OOC>Let them know that in the event that they cannot post an LOA for OOC reasons then they should reach out to someone from Command or High Command to let them know.</OOC></Item>
       </Category>
-      <Divider />
-      <Divider />
       <Category title="Ending Introduction" ordered>
         <Item>Tell the EMR they can use the radio to attempt to reach a certified Field Training Officer for training and teach them how to do it.</Item>
         <Item>Example: &quot;EMR Smith to dispatch, are there any available FTOs?&quot; <OOC><Bold>NO VOIP RADIO</Bold></OOC></Item>
@@ -138,8 +131,6 @@ export function IntroductionNotes() {
         <Item>If you want you can take the EMR on a ride-along or ask someone else if they can take them if they want to see how it works.</Item>
         <Item><Bold>Before proceeding to do your paperwork, check if the EMR has received the Introduction email. If not, send the EMR the Introduction email:</Bold> <BbLink href="https://pastebin.com/raw/gq687baN">Introduction E-mail</BbLink></Item>
       </Category>
-      <Divider />
-      <Divider />
     </div>
   );
 }

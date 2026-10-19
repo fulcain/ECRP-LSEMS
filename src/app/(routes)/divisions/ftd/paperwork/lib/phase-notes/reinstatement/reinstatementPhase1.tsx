@@ -4,7 +4,6 @@ import {
   BulletList,
   Category,
   Command,
-  Divider,
   Em,
   EyebrowLabel,
   Item,
@@ -32,8 +31,6 @@ export function ReinstatementPhase1Notes() {
       <WarningCallout>
         <Bold>THE REINSTATEE SHOULD DO TREATMENT &amp; HANDLE UNIT/CALL MANAGEMENT TOWARDS THE END OF THE PHASE</Bold>
       </WarningCallout>
-      <Divider />
-      <Divider />
       <Category title="Hospitals" ordered>
         <Item>Explain to the reinstatee the hospitals we&apos;ve opened. (Make sure to let them know that we no longer have Zonah, Central and Sandy dropoffs, but have garages at Sandy, Zonah and Fire Station 7; reference the general handbook Section 1)</Item>
         <Item>Review where we can drop of patients at Paleto and Pillbox.</Item>

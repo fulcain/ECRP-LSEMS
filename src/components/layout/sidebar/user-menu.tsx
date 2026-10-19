@@ -51,7 +51,7 @@ export function UserMenu({ collapsed = false }: { collapsed?: boolean }) {
     return (
       <Link
         href="/login"
-        className={`inline-flex cursor-pointer items-center justify-center gap-2 rounded-md bg-[#5865F2] text-sm font-semibold text-white transition-colors hover:bg-[#4752c4] ${collapsed ? "h-9 w-9 p-0" : "w-full px-3 py-2"}`}
+        className={`inline-flex cursor-pointer items-center justify-center gap-2 rounded-md bg-discord text-sm font-semibold text-white transition-colors hover:bg-discord-hover ${collapsed ? "h-9 w-9 p-0" : "w-full px-3 py-2"}`}
         title="Sign in with Discord"
       >
         <MessageCircle className="h-4 w-4 shrink-0" />

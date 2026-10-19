@@ -370,8 +370,10 @@ function readFlow(
       continue;
     }
     if (tag === "color" && (value ?? "").toLowerCase() === "transparent") {
+      // The formats pad their sections with an invisible line. It is spacing in
+      // a forum post, not a step a trainer reads, so it is dropped whole rather
+      // than drawn as a divider.
       readUntilClose(tokens, state, "color");
-      push({ kind: "spacer" });
       continue;
     }
     if (tag === "hr") {

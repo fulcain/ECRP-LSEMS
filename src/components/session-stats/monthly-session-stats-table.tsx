@@ -182,7 +182,7 @@ export function MonthlySessionStatsTable() {
               <SelectTrigger className="w-[140px]">
                 <SelectValue placeholder="Year" />
               </SelectTrigger>
-              <SelectContent className="text-gray-100">
+              <SelectContent>
                 {yearList.map((y) => (
                   <SelectItem key={y} value={y}>
                     {y}
@@ -195,7 +195,7 @@ export function MonthlySessionStatsTable() {
               <SelectTrigger className="w-[160px]">
                 <SelectValue placeholder="Month" />
               </SelectTrigger>
-              <SelectContent className="text-gray-100">
+              <SelectContent>
                 {MONTHS.map((m) => (
                   <SelectItem key={m} value={m}>
                     {m}

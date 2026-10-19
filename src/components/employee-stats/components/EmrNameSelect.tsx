@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -46,10 +46,11 @@ export function EmrNameSelect({
   children,
 }: EmrNameSelectProps) {
   const [search, setSearch] = useState("");
+  const selectId = useId();
 
   return (
     <div className="space-y-1.5">
-      <Label className="text-[11px] text-muted-foreground">{label}</Label>
+      <Label htmlFor={selectId} className="text-[11px] text-muted-foreground">{label}</Label>
       <Select
         value={value || undefined}
         onValueChange={(picked) => {
@@ -61,7 +62,7 @@ export function EmrNameSelect({
           if (!open) setSearch("");
         }}
       >
-        <SelectTrigger className="cursor-pointer">
+        <SelectTrigger id={selectId} className="cursor-pointer">
           <SelectValue placeholder="Select EMR" />
         </SelectTrigger>
         <SelectContent>
@@ -76,6 +77,7 @@ export function EmrNameSelect({
                 onClick={(e) => e.stopPropagation()}
               >
                 <Input
+                  aria-label="Search EMR"
                   placeholder="Search EMR..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -97,6 +99,7 @@ export function EmrNameSelect({
         </SelectContent>
       </Select>
       <Input
+        aria-label={`${label} (manual entry)`}
         value={manualValue}
         onChange={(e) => {
           onManualChange(e.target.value);

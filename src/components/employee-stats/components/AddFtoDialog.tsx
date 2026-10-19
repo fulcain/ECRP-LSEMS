@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,7 +21,6 @@ export interface AddFtoDialogProps {
   onAdded?: (insertedName: string) => void;
 }
 
-
 export function AddFtoDialog({ open, onOpenChange, onAdded }: AddFtoDialogProps) {
   const [submitting, setSubmitting] = useState(false);
   const [name, setName] = useState("");
@@ -32,7 +31,7 @@ export function AddFtoDialog({ open, onOpenChange, onAdded }: AddFtoDialogProps)
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed) {
-      toast.error("Enter a name", { theme: "dark" });
+      toast.error("Enter a name");
       return;
     }
 
@@ -46,7 +45,7 @@ export function AddFtoDialog({ open, onOpenChange, onAdded }: AddFtoDialogProps)
       const result = await res.json();
 
       if (result.success) {
-        toast.success(`FTO "${trimmed}" added.`, { theme: "dark" });
+        toast.success(`FTO "${trimmed}" added.`);
         setName("");
         onOpenChange(false);
         onAdded?.(trimmed);
@@ -54,12 +53,11 @@ export function AddFtoDialog({ open, onOpenChange, onAdded }: AddFtoDialogProps)
         toast.error(
           `Something went wrong: ${
             result.error ?? result.raw ?? JSON.stringify(result)
-          }`,
-          { theme: "dark" },
+          }`
         );
       }
     } catch (err) {
-      toast.error("Network error or Apps Script blocked", { theme: "dark" });
+      toast.error("Network error or Apps Script blocked");
       console.error(err);
     } finally {
       setSubmitting(false);
@@ -68,7 +66,6 @@ export function AddFtoDialog({ open, onOpenChange, onAdded }: AddFtoDialogProps)
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -80,8 +77,9 @@ export function AddFtoDialog({ open, onOpenChange, onAdded }: AddFtoDialogProps)
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
-              <Label>FTO Name</Label>
+              <Label htmlFor="add-fto-name">FTO Name</Label>
               <Input
+                id="add-fto-name"
                 placeholder="Fname Lname"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -98,8 +96,8 @@ export function AddFtoDialog({ open, onOpenChange, onAdded }: AddFtoDialogProps)
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={submitting || !canSubmit}>
-                {submitting ? "Adding…" : "Add FTO"}
+              <Button type="submit" loading={submitting} disabled={!canSubmit}>
+                Add FTO
               </Button>
             </DialogFooter>
           </form>

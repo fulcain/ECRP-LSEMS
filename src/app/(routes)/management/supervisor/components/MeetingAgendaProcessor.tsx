@@ -29,8 +29,8 @@ import {
   FileText,
   AlertTriangle,
 } from "lucide-react";
-import React, { useState, useEffect, useMemo } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import React, { useState, useEffect, useMemo, useRef } from "react";
+import { toast } from "react-toastify";
 import { meetingTemplates, MeetingType } from "@/app/templates/meetings";
 import {
   forumPostToast,
@@ -79,6 +79,43 @@ export function MeetingAgendaProcessor() {
   );
   const [copied, setCopied] = useState(false);
   const [copiedSubject, setCopiedSubject] = useState(false);
+
+  // A second copy must not have its "Copied!" cut short by the first one's
+  // timer, so each flash replaces the timer still running and the pair is
+  // cleared on the way out.
+  const copiedTimerRef = useRef<number | undefined>(undefined);
+  const copiedSubjectTimerRef = useRef<number | undefined>(undefined);
+
+  const flashCopied = () => {
+    setCopied(true);
+    if (copiedTimerRef.current !== undefined) {
+      window.clearTimeout(copiedTimerRef.current);
+    }
+    copiedTimerRef.current = window.setTimeout(() => setCopied(false), 2000);
+  };
+
+  const flashCopiedSubject = () => {
+    setCopiedSubject(true);
+    if (copiedSubjectTimerRef.current !== undefined) {
+      window.clearTimeout(copiedSubjectTimerRef.current);
+    }
+    copiedSubjectTimerRef.current = window.setTimeout(
+      () => setCopiedSubject(false),
+      2000,
+    );
+  };
+
+  useEffect(
+    () => () => {
+      if (copiedTimerRef.current !== undefined) {
+        window.clearTimeout(copiedTimerRef.current);
+      }
+      if (copiedSubjectTimerRef.current !== undefined) {
+        window.clearTimeout(copiedSubjectTimerRef.current);
+      }
+    },
+    [],
+  );
 
   const isCredentialsEmpty =
     !medicCredentials.name || !medicCredentials.signature || !medicCredentials.rank;
@@ -188,9 +225,8 @@ export function MeetingAgendaProcessor() {
     if (!output) return;
     const handedOff = handOffAgenda();
     navigator.clipboard.writeText(output).then(() => {
-      setCopied(true);
+      flashCopied();
       toast.success(forumPostToast(handedOff, "BBCode copied to clipboard!"));
-      setTimeout(() => setCopied(false), 2000);
     });
   };
 
@@ -198,9 +234,8 @@ export function MeetingAgendaProcessor() {
     if (!subjectLine) return;
     const handedOff = handOffAgenda();
     navigator.clipboard.writeText(subjectLine).then(() => {
-      setCopiedSubject(true);
+      flashCopiedSubject();
       toast.success(forumPostToast(handedOff, "Subject line copied!"));
-      setTimeout(() => setCopiedSubject(false), 2000);
     });
   };
 
@@ -219,7 +254,6 @@ export function MeetingAgendaProcessor() {
 
   return (
     <div className="space-y-5">
-      <ToastContainer position="top-right" autoClose={2500} />
 
       {/* Credentials Warning */}
       {isCredentialsEmpty && (
@@ -282,13 +316,14 @@ export function MeetingAgendaProcessor() {
 
             {/* Date & Time (UTC) */}
             <div className="flex flex-col gap-1.5">
-              <Label className="text-sm font-medium text-muted-foreground">
+              <Label htmlFor="meeting-date" className="text-sm font-medium text-muted-foreground">
                 Meeting Date & Time (UTC)
               </Label>
               <div className="flex flex-wrap items-center gap-2">
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
+                      id="meeting-date"
                       variant="outline"
                       className={cn(
                         "w-[260px] justify-start text-left font-normal border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-border",
@@ -313,6 +348,8 @@ export function MeetingAgendaProcessor() {
                 </Popover>
 
                 <Input
+                  id="meeting-time"
+                  aria-label="Meeting time (UTC)"
                   type="time"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
@@ -329,7 +366,7 @@ export function MeetingAgendaProcessor() {
           <Button
             variant="outline"
             type="submit"
-            className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-indigo-500/40 hover:bg-indigo-50/20 dark:hover:bg-indigo-950/20 hover:text-indigo-200 active:scale-[0.98]"
+            className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-indigo-500/40 hover:bg-indigo-50/20 dark:hover:bg-indigo-950/20 hover:text-indigo-800 dark:hover:text-indigo-200 active:scale-[0.98]"
           >
             Generate
           </Button>
@@ -430,7 +467,7 @@ export function MeetingAgendaProcessor() {
                 onClick={() => {
                   const handedOff = handOffAgenda(true);
                   navigator.clipboard.writeText(output).then(() => {
-                    setCopied(true);
+                    flashCopied();
                     toast.success(
                       forumPostToast(
                         handedOff,
@@ -438,7 +475,6 @@ export function MeetingAgendaProcessor() {
                         true,
                       ),
                     );
-                    setTimeout(() => setCopied(false), 2000);
                   });
                 }}
               >

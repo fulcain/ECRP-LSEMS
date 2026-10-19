@@ -33,7 +33,7 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
-import { Bounce, ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 
 const COPIED_FLASH_MS = 1800;
@@ -142,11 +142,6 @@ export function FirearmDischargeTemplate() {
 
   return (
     <div className="space-y-6">
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        transition={Bounce}
-      />
 
       <BuilderShell>
         <BuilderForm>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Bounce, ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { Copy, ExternalLink, RotateCcw } from "lucide-react";
 
 import { divisions } from "@/app/constants/divisions";
@@ -136,7 +136,6 @@ export function DiscussionBoardComposer({
 
   return (
     <Card className={className}>
-      <ToastContainer position="top-right" autoClose={2000} hideProgressBar transition={Bounce} />
       <CardHeader className="pb-3">
         <CardTitle className="text-base">{board.label}</CardTitle>
         <p className="text-xs text-muted-foreground">{board.description}</p>
@@ -153,8 +152,9 @@ export function DiscussionBoardComposer({
         </div>
 
         <div className="space-y-2">
-          <Label>Post</Label>
+          <Label htmlFor={`${boardKey}-post`}>Post</Label>
           <BBCodeEditor
+            id={`${boardKey}-post`}
             value={body}
             onChange={(value) => {
               setBody(value);
@@ -193,8 +193,7 @@ export function DiscussionBoardComposer({
             onClick={() => {
               setEdited(false);
               toast.info("Post reset to the division template.", {
-                theme: "dark",
-              });
+                });
             }}
             disabled={!edited}
           >

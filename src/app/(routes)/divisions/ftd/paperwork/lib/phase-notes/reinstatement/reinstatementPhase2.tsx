@@ -2,7 +2,6 @@
 import {
   Bold,
   BulletList,
-  Divider,
   EyebrowLabel,
   Item,
   ParagraphList,
@@ -29,8 +28,6 @@ export function ReinstatementPhase2Notes() {
       <WarningCallout>
         <Bold>THE REINSTATEE SHOULD HANDLE EVERYTHING</Bold>
       </WarningCallout>
-      <Divider />
-      <Divider />
       <BulletList>
         <Item>The Reinstatement Phase II is something similar to a regular Pre-Certification within the Field Training Program.</Item>
         <Item>

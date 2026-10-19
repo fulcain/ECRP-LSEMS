@@ -192,7 +192,7 @@ export function StaffSettingsCard({
             <Button
               variant="outline"
               onClick={() => setShowEditForm(true)}
-              className="whitespace-nowrap border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-violet-500/40 hover:bg-violet-50/20 dark:hover:bg-violet-950/20 hover:text-violet-200 active:scale-[0.98]"
+              className="whitespace-nowrap border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-violet-500/40 hover:bg-violet-50/20 dark:hover:bg-violet-950/20 hover:text-violet-800 dark:hover:text-violet-200 active:scale-[0.98]"
             >
               Edit Signature
             </Button>

@@ -148,6 +148,12 @@ export function ContentWrapper({ children }: { children: React.ReactNode }) {
     };
   }, [pathname]);
 
+  // A route change should move focus to the new page, the way a real page
+  // load does - otherwise a keyboard user stays at the top of the old DOM.
+  useEffect(() => {
+    routeRef.current?.focus({ preventScroll: true });
+  }, [pathname]);
+
   return (
     <div ref={sceneRef} className="motion-scene">
       <div aria-hidden="true" className="ambient-orb ambient-orb--one" />
@@ -155,10 +161,16 @@ export function ContentWrapper({ children }: { children: React.ReactNode }) {
       <div
         className={cn(
           "relative z-10 min-h-screen transition-[padding] duration-300 ease-in-out",
-          collapsed ? "lg:pl-[72px]" : "lg:pl-64",
+          collapsed ? "lg:pl-[76px]" : "lg:pl-64",
         )}
       >
-        <div ref={routeRef} key={pathname} className="min-h-screen">
+        <div
+          ref={routeRef}
+          key={pathname}
+          id="main-content"
+          tabIndex={-1}
+          className="min-h-screen outline-none"
+        >
           {children}
         </div>
       </div>

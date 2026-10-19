@@ -631,6 +631,7 @@ export default function REDFormatsPage() {
                             }}
                           >
                             <Input
+                              aria-label={`Reason ${index + 1}`}
                               value={reason}
                               onChange={(e) =>
                                 updateReason(index, e.target.value)
@@ -641,6 +642,7 @@ export default function REDFormatsPage() {
                             {reasons.length > 1 && (
                               <Button
                                 type="button"
+                                aria-label={`Remove reason ${index + 1}`}
                                 onClick={() => removeReason(index)}
                                 size="icon"
                                 variant="ghost"
@@ -747,8 +749,8 @@ export default function REDFormatsPage() {
                       </div>
 
                       <div className="space-y-3">
-                        <Label>Reasons for denial</Label>
-                        <div className="space-y-2">
+                        <Label id="red-reasons-label">Reasons for denial</Label>
+                        <div role="group" aria-labelledby="red-reasons-label" className="space-y-2">
                           {reasons.map((reason, index) => (
                             <div
                               key={index}
@@ -758,6 +760,7 @@ export default function REDFormatsPage() {
                               }}
                             >
                               <Input
+                                aria-label={`Reason ${index + 1}`}
                                 value={reason}
                                 onChange={(e) =>
                                   updateReason(index, e.target.value)
@@ -768,6 +771,7 @@ export default function REDFormatsPage() {
                               {reasons.length > 1 && (
                                 <Button
                                   type="button"
+                                  aria-label={`Remove reason ${index + 1}`}
                                   onClick={() => removeReason(index)}
                                   size="icon"
                                   variant="ghost"

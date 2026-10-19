@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import {
   ClipboardCopy,
   ClipboardPaste,
@@ -243,7 +243,6 @@ export function UpdateProfiles() {
 
   return (
     <div className="space-y-5">
-      <ToastContainer position="top-right" autoClose={2500} hideProgressBar />
 
       <div className="grid gap-3 sm:grid-cols-2">
         {FTP_FORMATS.map((entry) => (

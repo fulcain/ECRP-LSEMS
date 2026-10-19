@@ -36,10 +36,6 @@ export function Phase3Notes() {
       <WarningCallout>
         <Bold>THE EMR SHOULD DRIVE, PROVIDE TREATMENT, AND HANDLE UNIT/CALL MANAGEMENT AT THE END OF THE PHASE</Bold>
       </WarningCallout>
-      <Divider />
-      <Divider />
-      <Divider />
-      <Divider />
       <Category title="Garage and Ambulance" ordered>
         <Item>Show the EMR again how we get a vehicle from Betsy <OOC>Via the vehicle menu, point them to Handbook Section 10.1</OOC></Item>
         <Item>There are 25 ambulances for EMRs to use in total. 10 EMT/orange ambulances, 5 Blue ambulances, and 10 large ambulances.</Item>
@@ -69,8 +65,6 @@ export function Phase3Notes() {
         <Item>If you will be 10-8 during your ride-along, take the EMR on a short roam and ask the EMR to do the radio.</Item>
         <Item>Explain to the EMR that as they roam they should be in motion, and as they roam they have to be 10-8 and take calls.</Item>
       </BulletList>
-      <Divider />
-      <Divider />
       <Category title="Driving Capabilities" ordered>
         <ParagraphList>
           <ParaItem>Explain to the EMR that this section will consist of 2 different driving tests.</ParaItem>
@@ -105,8 +99,6 @@ export function Phase3Notes() {
         </Item>
         <Item>If they need more practice, have them redo any of the courses at the end of the session.</Item>
       </Category>
-      <Divider />
-      <Divider />
       <Category title="Hospitals and Fire Stations of Los Santos" ordered>
         <Item>
           Inform them that they are now at Sandy Fire station and that they can ask Betsy for vehicles here and then direct them to Fire Station 7 and show them where to ask Betsy for vehicles here as well.
@@ -140,8 +132,6 @@ export function Phase3Notes() {
           </Spoiler>
         </Item>
       </Category>
-      <Divider />
-      <Divider />
       <Category title="Scene Management" ordered>
         <Item>
           Instruct the EMR to head to a secluded area. You should use one of the three locations listed below.
@@ -173,8 +163,6 @@ export function Phase3Notes() {
         <Item>Show the EMR how to position the ambulance when arriving on scene, then allow them to attempt it.</Item>
         <Item>Have the EMR show you how they should arrive on scene and perform scene management all at once. <Em>It is not expected for the EMR to get it perfect, however they should at least know how to do it.</Em></Item>
       </Category>
-      <Divider />
-      <Divider />
       <Category title="JTAC" ordered>
         <Item>Explain to the EMR what Jointed Tac (JTAC) is.</Item>
         <Item>Inform the EMR on how it&apos;s used.</Item>
@@ -182,8 +170,6 @@ export function Phase3Notes() {
         <Item>Make sure they understand respect and professionalism is <Bold>utterly</Bold> important here.</Item>
         <Item>Tell the EMR that the JTAC frequencies are <Bold>910.1</Bold> to <Bold>910.5</Bold>, giving us a total of 5 JTAC channels.</Item>
       </Category>
-      <Divider />
-      <Divider />
       <Category title="Ending the Phase - Ride-Along" ordered>
         <Item><Bold>Request Call Priority over radio. Either you, or the EMR may do this request.</Bold></Item>
         <Item>Make sure the EMR can do everything alone, let the EMR take over treatment, radio calls, and driving.</Item>

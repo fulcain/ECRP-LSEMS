@@ -45,7 +45,7 @@ function ReconnectNotice({
       </span>
       <a
         href={`/api/auth/discord/login?returnTo=${encodeURIComponent(returnTo)}`}
-        className="font-semibold underline underline-offset-2 hover:text-amber-100"
+        className="font-semibold underline underline-offset-2 hover:text-amber-950 dark:hover:text-amber-100"
       >
         Reconnect
       </a>

@@ -34,7 +34,7 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
-import { Bounce, ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 
@@ -179,11 +179,6 @@ export function LOATemplate() {
 
   return (
     <div className="space-y-6">
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        transition={Bounce}
-      />
 
       <BuilderShell>
         {/* Left: Form */}

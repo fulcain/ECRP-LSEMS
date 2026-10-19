@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -47,7 +47,7 @@ export function DeleteEMRDialog({
       const result = await res.json();
 
       if (result.success) {
-        toast.success("EMR record deleted", { theme: "dark" });
+        toast.success("EMR record deleted");
         // Remove the row from local state immediately so the table
         // updates right away (the published CSV can be cached for minutes).
         setData((prev) =>
@@ -58,12 +58,11 @@ export function DeleteEMRDialog({
         onOpenChange(false);
       } else {
         toast.error(
-          `Something went wrong: ${result.error ?? result.raw ?? JSON.stringify(result)}`,
-          { theme: "dark" },
+          `Something went wrong: ${result.error ?? result.raw ?? JSON.stringify(result)}`
         );
       }
     } catch (err) {
-      toast.error("Network error or Apps Script blocked", { theme: "dark" });
+      toast.error("Network error or Apps Script blocked");
       console.error(err);
     } finally {
       setSubmitting(false);
@@ -72,7 +71,6 @@ export function DeleteEMRDialog({
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
 
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-md">
@@ -100,9 +98,9 @@ export function DeleteEMRDialog({
               type="button"
               variant="destructive"
               onClick={handleConfirm}
-              disabled={submitting}
+              loading={submitting}
             >
-              {submitting ? "Deleting..." : "Delete"}
+              Delete
             </Button>
           </DialogFooter>
         </DialogContent>

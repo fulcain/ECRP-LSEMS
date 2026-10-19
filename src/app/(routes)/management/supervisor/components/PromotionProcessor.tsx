@@ -15,7 +15,8 @@ import { userGroupsHref } from "@/lib/user-groups";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Bounce, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
+
 import React, { useMemo } from "react";
 import Link from "next/link";
 import {
@@ -68,8 +69,16 @@ type IcStep = {
   };
 };
 
-const copyToClipboard = (text: string) => {
-  navigator.clipboard.writeText(text);
+const copyTitle = async (text: string) => {
+  // The step's body went to the extension; the title is the half the member
+  // pastes by hand, so it is the one that lands on the clipboard - and the
+  // one that has to say it did.
+  try {
+    await navigator.clipboard.writeText(text);
+    toast.success("Title copied to clipboard.");
+  } catch {
+    toast.error("Couldn't copy the title - check browser permissions.");
+  }
 };
 
 export function PromotionProcessor() {
@@ -238,7 +247,6 @@ export function PromotionProcessor() {
 
   return (
     <div className="space-y-4">
-      <ToastContainer position="top-right" autoClose={2000} transition={Bounce} />
 
       {/* Credentials Warning */}
       {isCredentialsEmpty && (
@@ -268,8 +276,9 @@ export function PromotionProcessor() {
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <Label className="mb-1 block text-xs text-muted-foreground">Full name</Label>
+            <Label htmlFor="promotion-full-name" className="mb-1 block text-xs text-muted-foreground">Full name</Label>
             <Input
+              id="promotion-full-name"
               value={personnelName}
               onChange={(e) => setPersonnelName(e.target.value)}
               placeholder="John Smith"
@@ -277,8 +286,8 @@ export function PromotionProcessor() {
             />
           </div>
           <div>
-            <Label className="mb-1 block text-xs text-muted-foreground">Title</Label>
-            <div className="flex gap-1.5">
+            <Label id="promotion-title-label" className="mb-1 block text-xs text-muted-foreground">Title</Label>
+            <div role="group" aria-labelledby="promotion-title-label" className="flex gap-1.5">
               {(["Mr.", "Ms."] as const).map((t) => (
                 <button
                   key={t}
@@ -295,8 +304,9 @@ export function PromotionProcessor() {
             </div>
           </div>
           <div>
-            <Label className="mb-1 block text-xs text-muted-foreground">Previous rank</Label>
+            <Label htmlFor="promotion-previous-rank" className="mb-1 block text-xs text-muted-foreground">Previous rank</Label>
             <Input
+              id="promotion-previous-rank"
               value={previousRank}
               onChange={(e) => setPreviousRank(e.target.value)}
               placeholder="e.g. EMT-B, EMT-I"
@@ -304,8 +314,9 @@ export function PromotionProcessor() {
             />
           </div>
           <div>
-            <Label className="mb-1 block text-xs text-muted-foreground">Promotion date</Label>
+            <Label htmlFor="promotion-date" className="mb-1 block text-xs text-muted-foreground">Promotion date</Label>
             <Input
+              id="promotion-date"
               value={promotionDate}
               onChange={(e) => setPromotionDate(e.target.value.toUpperCase())}
               placeholder="DD/MMM/YYYY"
@@ -412,9 +423,9 @@ export function PromotionProcessor() {
                                 },
                                 step.copyText ?? step.titleText!,
                               );
-                              copyToClipboard(step.titleText!);
+                              copyTitle(step.titleText!);
                             }}
-                            className="inline-flex items-center gap-1.5 rounded-md border border-emerald-300/30 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 text-xs text-emerald-700 dark:text-emerald-300 transition-colors hover:bg-emerald-500/20 hover:text-emerald-200"
+                            className="inline-flex items-center gap-1.5 rounded-md border border-emerald-300/30 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 text-xs text-emerald-700 dark:text-emerald-300 transition-colors hover:bg-emerald-500/20 hover:text-emerald-800 dark:hover:text-emerald-200"
                           >
                             <Copy className="h-3 w-3" />
                             Copy Title
@@ -431,7 +442,7 @@ export function PromotionProcessor() {
                                 },
                               })
                             }
-                            className="inline-flex items-center gap-1.5 rounded-md border border-amber-300/30 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-2.5 py-1 text-xs text-amber-700 dark:text-amber-300 transition-colors hover:bg-amber-500/20 hover:text-amber-200"
+                            className="inline-flex items-center gap-1.5 rounded-md border border-amber-300/30 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-2.5 py-1 text-xs text-amber-700 dark:text-amber-300 transition-colors hover:bg-amber-500/20 hover:text-amber-800 dark:hover:text-amber-200"
                           >
                             <Copy className="h-3 w-3" />
                             {step.secondaryCopyLabel || "Copy"}
@@ -470,7 +481,7 @@ export function PromotionProcessor() {
                                 },
                               });
                             }}
-                            className="inline-flex items-center gap-1.5 rounded-md border border-indigo-300/30 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 text-xs text-indigo-700 dark:text-indigo-300 transition-colors hover:bg-indigo-500/20 hover:text-indigo-200"
+                            className="inline-flex items-center gap-1.5 rounded-md border border-indigo-300/30 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 text-xs text-indigo-700 dark:text-indigo-300 transition-colors hover:bg-indigo-500/20 hover:text-indigo-800 dark:hover:text-indigo-200"
                           >
                             <ExternalLink className="h-3 w-3" />
                             {step.action.label}

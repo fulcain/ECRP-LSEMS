@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import {
   Copy,
   ExternalLink,
@@ -90,13 +90,11 @@ export function FtoCreationCard({ onRefresh }: { onRefresh?: () => void }) {
           ? alsoOpenGov
             ? "BBCode copied - the GOV post that opened will paste it in"
             : "BBCode copied - press Alt+Shift+F on the GOV post to put it in"
-          : "BBCode copied to clipboard",
-        { theme: "dark" },
+          : "BBCode copied to clipboard"
       );
     } catch {
       toast.error("Couldn't copy to clipboard - check browser permissions.", {
-        theme: "dark",
-      });
+        });
       return;
     }
     if (alsoOpenGov) {
@@ -107,11 +105,10 @@ export function FtoCreationCard({ onRefresh }: { onRefresh?: () => void }) {
   const copyNameAndOpenRoster = async () => {
     try {
       await navigator.clipboard.writeText(ftoTraineeName);
-      toast.success("Application name copied to clipboard", { theme: "dark" });
+      toast.success("Application name copied to clipboard");
     } catch {
       toast.error("Couldn't copy to clipboard - check browser permissions.", {
-        theme: "dark",
-      });
+        });
       return;
     }
     window.open(GOV_FT_ROSTER_EDIT_URL, "_blank", "noopener,noreferrer");
@@ -131,11 +128,6 @@ export function FtoCreationCard({ onRefresh }: { onRefresh?: () => void }) {
 
   return (
     <div className="space-y-4">
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        hideProgressBar
-      />
 
       <div className="flex items-center gap-3 justify-between">
         <h2 className="text-2xl md:text-3xl font-bold text-foreground">
@@ -162,21 +154,23 @@ export function FtoCreationCard({ onRefresh }: { onRefresh?: () => void }) {
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label className="text-[11px] text-muted-foreground">
+            <Label htmlFor="fto-creation-application-name" className="text-[11px] text-muted-foreground">
               Application Name
             </Label>
             <Input
+              id="fto-creation-application-name"
               value={ftoTraineeName}
               onChange={(e) => setFtoTraineeName(e.target.value)}
               placeholder="Fname Lname"
             />
           </div>
           <div className="space-y-1.5">
-            <Label className="text-[11px] text-muted-foreground flex items-center gap-1">
+            <Label htmlFor="fto-creation-application-date" className="text-[11px] text-muted-foreground flex items-center gap-1">
               <Calendar className="h-3 w-3" />
               Date of Application Acceptance
             </Label>
             <Input
+              id="fto-creation-application-date"
               value={applicationDate}
               onChange={(e) => setApplicationDate(e.target.value)}
               placeholder="DD/MMM/YYYY (e.g. 13/Jul/2026)"

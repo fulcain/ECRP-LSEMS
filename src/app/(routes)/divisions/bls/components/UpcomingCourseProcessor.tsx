@@ -37,8 +37,8 @@ import {
 } from "lucide-react";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
 import { pickPostTarget } from "@/app/helpers/forumHandoff";
-import React, { useState, useEffect, useCallback } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { toast } from "react-toastify";
 
 export type UpcomingCourseType = "new" | "reschedule" | "cancelled";
 
@@ -133,6 +133,28 @@ export function UpcomingCourseProcessor({
 
   const [output, setOutput] = useState("");
   const [copied, setCopied] = useState(false);
+
+  // A second copy must not have its "Copied!" cut short by the first one's
+  // timer, so each flash replaces the timer still running and it is cleared on
+  // the way out.
+  const copiedTimerRef = useRef<number | undefined>(undefined);
+
+  const flashCopied = useCallback(() => {
+    setCopied(true);
+    if (copiedTimerRef.current !== undefined) {
+      window.clearTimeout(copiedTimerRef.current);
+    }
+    copiedTimerRef.current = window.setTimeout(() => setCopied(false), 2000);
+  }, []);
+
+  useEffect(
+    () => () => {
+      if (copiedTimerRef.current !== undefined) {
+        window.clearTimeout(copiedTimerRef.current);
+      }
+    },
+    [],
+  );
 
   const getOrdinal = (n: number) => {
     if (n > 5 && n < 21) return `${n}th`;
@@ -258,9 +280,8 @@ export function UpcomingCourseProcessor({
   const handleCopy = () => {
     if (!output) return;
     navigator.clipboard.writeText(output).then(() => {
-      setCopied(true);
+      flashCopied();
       toast.success("Copied to clipboard!");
-      setTimeout(() => setCopied(false), 2000);
     });
   };
 
@@ -303,7 +324,6 @@ export function UpcomingCourseProcessor({
 
   return (
     <div className="space-y-6">
-      <ToastContainer position="top-right" autoClose={2500} />
 
       <BuilderShell>
         <form onSubmit={handleSubmit}>

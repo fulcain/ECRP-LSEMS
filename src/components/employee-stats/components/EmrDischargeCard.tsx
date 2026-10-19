@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { Check, Copy, ExternalLink, UserX } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -95,9 +95,9 @@ export function EmrDischargeCard() {
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(bbcode);
-      toast.success("Discharge email copied to clipboard", { theme: "dark" });
+      toast.success("Discharge email copied to clipboard");
     } catch {
-      toast.error("Couldn't copy to clipboard - check browser permissions.", { theme: "dark" });
+      toast.error("Couldn't copy to clipboard - check browser permissions.");
     }
   };
 
@@ -122,13 +122,12 @@ export function EmrDischargeCard() {
       setTitleCopied(true);
       setTimeout(() => setTitleCopied(false), 1200);
     } catch {
-      toast.error("Couldn't copy title.", { theme: "dark" });
+      toast.error("Couldn't copy title.");
     }
   };
 
   return (
     <Card>
-      <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
       <CardHeader className="pb-3">
         <CardTitle>
           <UserX className="h-4 w-4 text-muted-foreground" />
@@ -156,9 +155,9 @@ export function EmrDischargeCard() {
 
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label className="text-[11px] text-muted-foreground">Salutation</Label>
+            <Label htmlFor="discharge-salutation" className="text-[11px] text-muted-foreground">Salutation</Label>
             <Select value={salutation} onValueChange={(v) => setSalutation(v)}>
-              <SelectTrigger className="cursor-pointer">
+              <SelectTrigger id="discharge-salutation" className="cursor-pointer">
                 <SelectValue placeholder="Mr. or Ms." />
               </SelectTrigger>
               <SelectContent>
@@ -183,9 +182,10 @@ export function EmrDischargeCard() {
             )}
           </EmrNameSelect>
           <div className="space-y-1.5">
-            <Label className="text-[11px] text-muted-foreground">Discharge Date</Label>
+            <Label htmlFor="discharge-date" className="text-[11px] text-muted-foreground">Discharge Date</Label>
             <div className="flex gap-1.5">
               <Input
+                id="discharge-date"
                 value={dischargeDate}
                 onChange={(e) => setDischargeDate(e.target.value)}
                 placeholder="23/AUG/2026"
@@ -203,8 +203,9 @@ export function EmrDischargeCard() {
             </div>
           </div>
           <div className="space-y-1.5 sm:col-span-2">
-            <Label className="text-[11px] text-muted-foreground">Reason</Label>
+            <Label htmlFor="discharge-reason" className="text-[11px] text-muted-foreground">Reason</Label>
             <Input
+              id="discharge-reason"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="Failure to complete training within the designated timeframe"

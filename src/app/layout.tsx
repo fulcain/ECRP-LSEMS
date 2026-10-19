@@ -1,5 +1,7 @@
 import { ThemeProvider } from "@/components/ui/theme-provider";
-import type { Metadata } from "next";
+import { ToastHost } from "@/components/ui/toast-host";
+import type { Metadata, Viewport } from "next";
+import { cookies } from "next/headers";
 import "./globals.css";
 import "react-toastify/dist/ReactToastify.css";
 import { SidebarLayout } from "@/components/layout/sidebar/sidebar-layout";
@@ -23,6 +25,15 @@ export const metadata: Metadata = {
   // image to update - the stray `app/favicon.ico` it replaces was still the
   // old FTD badge and would win over it.
   icons: { icon: "/General.png" },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f8f8f7" },
+    { media: "(prefers-color-scheme: dark)", color: "#0c0c0f" },
+  ],
 };
 
 /**
@@ -50,6 +61,10 @@ export default async function RootLayout({
   // Only the hrefs travel to the sidebar: the icons are components and can't
   // cross into a client component, so the shell pairs them up on its side.
   const allowedHrefs = links.flatMap((item) => (item.href ? [item.href] : []));
+  // The rail's collapsed state is a cookie so the first paint matches the
+  // member's last choice instead of hydrating expanded and snapping shut.
+  const jar = await cookies();
+  const initialCollapsed = jar.get("sidebar-collapsed")?.value === "1";
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -64,7 +79,15 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <MedicProvider>
-            <SidebarLayout allowedHrefs={allowedHrefs}>{children}</SidebarLayout>
+            <SidebarLayout
+              allowedHrefs={allowedHrefs}
+              signedIn={session !== null}
+              initialCollapsed={initialCollapsed}
+            >
+              {children}
+            </SidebarLayout>
+            {/* One toast container for the whole app, themed with it. */}
+            <ToastHost />
           </MedicProvider>
         </ThemeProvider>
       </body>

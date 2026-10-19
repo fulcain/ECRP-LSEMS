@@ -552,6 +552,7 @@ export default function BLSFormatsPage() {
                             style={{ animationDelay: `${index * 0.05}s` }}
                           >
                             <Input
+                              aria-label={`Reason ${index + 1}`}
                               value={reason}
                               onChange={(e) =>
                                 updateReason(index, e.target.value)
@@ -562,6 +563,7 @@ export default function BLSFormatsPage() {
                             {reasons.length > 1 && (
                               <Button
                                 type="button"
+                                aria-label={`Remove reason ${index + 1}`}
                                 onClick={() => removeReason(index)}
                                 size="icon"
                                 variant="ghost"

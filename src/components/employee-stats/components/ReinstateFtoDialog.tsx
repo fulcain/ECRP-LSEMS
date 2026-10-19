@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,7 +21,6 @@ export interface ReinstateFtoDialogProps {
   exFtos: EmployeeStatsSourceRow[];
   onReinstated?: (reinstatedName: string) => void;
 }
-
 
 export function ReinstateFtoDialog({
   open,
@@ -52,7 +51,7 @@ export function ReinstateFtoDialog({
 
   const handleSubmit = async () => {
     if (!selectedRow) {
-      toast.error("Pick an ex-FTO to reinstate", { theme: "dark" });
+      toast.error("Pick an ex-FTO to reinstate");
       return;
     }
 
@@ -69,8 +68,7 @@ export function ReinstateFtoDialog({
 
       if (result.success) {
         toast.success(
-          `Reinstated "${String(selectedRow["Names"] ?? "").trim()}"`,
-          { theme: "dark" },
+          `Reinstated "${String(selectedRow["Names"] ?? "").trim()}"`
         );
         const chosenName = String(selectedRow["Names"] ?? "").trim();
         setSelectedRow(null);
@@ -81,12 +79,11 @@ export function ReinstateFtoDialog({
         toast.error(
           `Something went wrong: ${
             result.error ?? result.raw ?? JSON.stringify(result)
-          }`,
-          { theme: "dark" },
+          }`
         );
       }
     } catch (err) {
-      toast.error("Network error or Apps Script blocked", { theme: "dark" });
+      toast.error("Network error or Apps Script blocked");
       console.error(err);
     } finally {
       setSubmitting(false);
@@ -95,7 +92,6 @@ export function ReinstateFtoDialog({
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
@@ -110,8 +106,9 @@ export function ReinstateFtoDialog({
 
           <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-2">
-              <Label>Filter ex-FTOs</Label>
+              <Label htmlFor="reinstated-fto-filter">Filter ex-FTOs</Label>
               <input
+                id="reinstated-fto-filter"
                 type="text"
                 value={filterText}
                 onChange={(e) => setFilterText(e.target.value)}
@@ -165,9 +162,10 @@ export function ReinstateFtoDialog({
             <Button
               type="button"
               onClick={handleSubmit}
-              disabled={submitting || !selectedRow}
+              loading={submitting}
+              disabled={!selectedRow}
             >
-              {submitting ? "Reinstating…" : "Reinstate"}
+              Reinstate
             </Button>
           </DialogFooter>
         </DialogContent>

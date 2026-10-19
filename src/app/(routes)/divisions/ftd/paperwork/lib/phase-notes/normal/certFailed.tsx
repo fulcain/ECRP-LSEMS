@@ -29,8 +29,6 @@ export function CertFailedNotes() {
           CERTIFICATION - Junior Paramedic+, 1 Hour 30 Min Minimum/3 Hour Maximum
         </EyebrowLabel>
       </div>
-      <Divider />
-      <Divider />
       <NumberedList>
         <Item>
           <Bold>Beginning</Bold>
@@ -44,11 +42,7 @@ export function CertFailedNotes() {
             <Item>Proceed to observe the EMR</Item>
           </BulletList>
         </Item>
-        <Item>
-          <Bold>Request Call Priority over radio. Either you, or the EMR may do this request.</Bold>
-          <Divider />
-          <Divider />
-        </Item>
+        <Item><Bold>Request Call Priority over radio. Either you, or the EMR may do this request.</Bold></Item>
         <Item>
           <Bold>During the Certification</Bold>
           <BulletList>
@@ -56,8 +50,6 @@ export function CertFailedNotes() {
             <Item>Pay attention to their treatments, scene management, communication, and radio calls.</Item>
             <Item>If there are no PD calls, question the EMR about PD/SD calls and set up a small scenario. Make sure EMR understands them, especially if they did not have too much experience throughout the training.</Item>
           </BulletList>
-          <Divider />
-          <Divider />
         </Item>
         <Item>
           <Bold>Ending the Certification</Bold>
@@ -89,8 +81,6 @@ export function CertFailedNotes() {
               </NumberedList>
             </Item>
           </BulletList>
-          <Divider />
-          <Divider />
         </Item>
         <Item>
           <Bold>Processing a Passed Certification</Bold>
@@ -102,8 +92,6 @@ export function CertFailedNotes() {
             <Item>Archive the student profile.</Item>
             <Item>Post your FT Session Report.</Item>
           </BulletList>
-          <Divider />
-          <Divider />
         </Item>
         <Item>
           <Bold>Processing a Failed Certification</Bold>
@@ -120,8 +108,6 @@ export function CertFailedNotes() {
           </BulletList>
         </Item>
       </NumberedList>
-      <Divider />
-      <Divider />
       <Divider />
       <Spoiler title="Hippocratic Oath">
         <OathLine>I, FName LName, swear to fulfill, to the best of my ability and judgment, this covenant: I will</OathLine>

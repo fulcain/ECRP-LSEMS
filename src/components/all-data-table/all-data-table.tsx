@@ -2,7 +2,7 @@
 
 import { useCallback, useState, useMemo, useEffect } from "react";
 import { format, isAfter, isBefore } from "date-fns";
-import { Calendar as CalendarIcon, RefreshCw } from "lucide-react";
+import { Calendar as CalendarIcon, RefreshCw, AlertTriangle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -44,6 +44,9 @@ import { TableDataType } from "@/lib/types";
 export function AllDataTable({ canEditFT = false }: { canEditFT?: boolean }) {
   const [data, setData] = useState<TableDataType[]>([]);
   const [loading, setLoading] = useState(true);
+  // A failed read is not an empty sheet: the two look the same in the table and
+  // mean very different things, so the failure says itself and offers the retry.
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -106,9 +109,15 @@ export function AllDataTable({ canEditFT = false }: { canEditFT?: boolean }) {
 
   const resync = useCallback(async () => {
     setLoading(true);
+    setLoadError(null);
     try {
       const allData = await fetchAllData();
       setData(allData);
+    } catch (err) {
+      console.error(err);
+      setLoadError(
+        "The session sheet could not be read just now. Check your connection and try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -254,6 +263,17 @@ export function AllDataTable({ canEditFT = false }: { canEditFT?: boolean }) {
       {/* === Table === */}
         {loading ? (
           <Skeleton className="h-96 w-full rounded-b" />
+        ) : loadError ? (
+          <div className="flex flex-col items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-10 text-center">
+            <AlertTriangle className="h-5 w-5 text-destructive" />
+            <p className="max-w-md text-sm text-muted-foreground">
+              {loadError}
+            </p>
+            <Button variant="outline" size="sm" onClick={resync}>
+              <RefreshCw className="h-4 w-4" />
+              Try again
+            </Button>
+          </div>
         ) : (
           <Table>
             <TableHeader>

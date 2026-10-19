@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import {
   Copy,
   Trash2,
@@ -124,7 +124,7 @@ export default function CivilianRideAlongForm() {
     });
     setOutput("");
     setCopied(false);
-    toast.info("All fields cleared", { theme: "dark" });
+    toast.info("All fields cleared");
   };
 
   const update = <K extends keyof typeof defaultFormState>(
@@ -192,7 +192,7 @@ export default function CivilianRideAlongForm() {
     handOffForumPost(rideAlongPost, output);
     await navigator.clipboard.writeText(output);
     setCopied(true);
-    toast.success("Copied!", { theme: "dark" });
+    toast.success("Copied!");
   };
 
   // Copies and opens the applicant's thread in one click, so the decision is
@@ -209,7 +209,6 @@ export default function CivilianRideAlongForm() {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
       <div className="space-y-6">
         <h2 className="sr-only">Civilian Ride-Along Paperwork</h2>
 
@@ -220,11 +219,12 @@ export default function CivilianRideAlongForm() {
         <Card className="border-0 shadow-none bg-muted/30">
           <CardContent className="p-4 space-y-4">
             <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
+              <Label htmlFor="ridealong-applicant-name" className="text-xs text-muted-foreground flex items-center gap-1.5">
                 <User className="h-3.5 w-3.5" />
                 Applicant&apos;s Name
               </Label>
               <Input
+                id="ridealong-applicant-name"
                 value={form.applicantName}
                 onChange={(e) => update("applicantName", e.target.value)}
                 placeholder="Firstname Lastname"
@@ -260,10 +260,12 @@ export default function CivilianRideAlongForm() {
 
             <div className="flex items-start gap-4 flex-wrap">
               <div className="flex-1 min-w-[200px] space-y-1.5">
-                <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
+                <Label htmlFor="ridealong-signature" className="text-xs text-muted-foreground flex items-center gap-1.5">
                   <User className="h-3.5 w-3.5" />
                   Signature (image link)
-                </Label>                  <Input
+                </Label>
+                <Input
+                  id="ridealong-signature"
                   value={details.signature}
                   onChange={(e) =>
                     setDetails((prev) => ({
@@ -276,7 +278,7 @@ export default function CivilianRideAlongForm() {
                 />
               </div>
               <div className="flex-1 min-w-[160px] space-y-1.5">
-                <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
+                <Label htmlFor="ridealong-rank" className="text-xs text-muted-foreground flex items-center gap-1.5">
                   Rank
                   {autoRankLabel && form.rank === autoRankLabel && (
                     <span
@@ -300,8 +302,8 @@ export default function CivilianRideAlongForm() {
                     disabled={!isRankEditing}
                   >
                     <SelectTrigger
+                      id="ridealong-rank"
                       className="bg-background flex-1"
-                      aria-label="Rank"
                     >
                       <SelectValue
                         placeholder={
@@ -367,9 +369,9 @@ export default function CivilianRideAlongForm() {
           {sections.includes("rejectionReasons") && (
             <Card className="border shadow-sm border-destructive/20">
               <CardContent className="p-4 space-y-3">
-                <div className="flex items-center gap-2">
+                <div role="group" aria-labelledby="ridealong-rejection-label" className="flex items-center gap-2">
                   <FileText className="h-4 w-4 text-muted-foreground" />
-                  <Label className="text-sm font-medium">
+                  <Label id="ridealong-rejection-label" className="text-sm font-medium">
                     Rejection Reasons
                   </Label>
                 </div>
@@ -384,6 +386,7 @@ export default function CivilianRideAlongForm() {
                         {index + 1}.
                       </span>
                       <Input
+                        aria-label={`Rejection reason ${index + 1}`}
                         value={r.reason}
                         onChange={(e) =>
                           updateRejectionReason(index, e.target.value)
@@ -423,11 +426,12 @@ export default function CivilianRideAlongForm() {
               <CardContent className="p-4 space-y-3">
                 <div className="flex items-center gap-2">
                   <FileText className="h-4 w-4 text-muted-foreground" />
-                  <Label className="text-sm font-medium">
+                  <Label htmlFor="ridealong-notes" className="text-sm font-medium">
                     Notes (optional but preferred)
                   </Label>
                 </div>
                 <Textarea
+                  id="ridealong-notes"
                   value={form.notes}
                   onChange={(e) => update("notes", e.target.value)}
                   placeholder="Anything noteworthy about how the session went."
@@ -502,7 +506,7 @@ export default function CivilianRideAlongForm() {
           <Card className="border shadow-sm">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-2">
-                <Label className="text-sm font-medium">
+                <Label htmlFor="ridealong-generated-bbcode" className="text-sm font-medium">
                   Generated BBCode
                 </Label>
                 <Button
@@ -516,6 +520,7 @@ export default function CivilianRideAlongForm() {
                 </Button>
               </div>
               <Textarea
+                id="ridealong-generated-bbcode"
                 value={output}
                 readOnly
                 className="min-h-[300px] font-mono text-sm bg-background"

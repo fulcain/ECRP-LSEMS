@@ -4,7 +4,6 @@ import {
   BulletList,
   Category,
   Command,
-  Divider,
   Em,
   EyebrowLabel,
   Item,
@@ -35,8 +34,6 @@ export function Phase1Notes() {
       <ParagraphList>
         <ParaItem><Bold>THE EMR IS NOT TO DRIVE OR PROVIDE TREATMENT DURING PHASE I. BUT IS REQUIRED TO MANAGE THEIR UNIT</Bold></ParaItem>
       </ParagraphList>
-      <Divider />
-      <Divider />
       <Category title="Radio Codes" ordered>
         <Item>Explain to the EMR all the different radio codes we have, and what each one of them means</Item>
         <Item>Have them open Section 14.7 of the General Handbook</Item>
@@ -248,8 +245,6 @@ export function Phase1Notes() {
         <Item>Inform the EMR that these calls do not close themselves, and that it has to be done manually <OOC><Command>/closecall ID</Command></OOC></Item>
         <Item>Finally, have them return the fire extinguisher.</Item>
       </Category>
-      <Divider />
-      <Divider />
       <Category title="Ending the Phase - Ride-Along" ordered>
         <Item><Bold>Request Call Priority over radio. Either you, or the EMR may do this request.</Bold></Item>
         <Item>Let the EMR take care of unit management, responding to calls, and closing calls.</Item>
@@ -260,8 +255,6 @@ export function Phase1Notes() {
         <Item>Assign them 1x mandatory ride along, alongside additional mandatories if they require it.</Item>
         <Item><Em><Bold><Underline>If the EMR performed poorly, be honest and genuine on your report</Underline></Bold></Em> - not stating they didn&apos;t do well is only harming the EMR.</Item>
       </Category>
-      <Divider />
-      <Divider />
     </div>
   );
 }

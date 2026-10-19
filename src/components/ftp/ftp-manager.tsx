@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import {
   AlertTriangle,
   BookOpen,
@@ -1061,7 +1061,6 @@ export function FtpManager() {
 
   return (
     <div className="space-y-5">
-      <ToastContainer position="top-right" autoClose={2500} hideProgressBar />
 
       <LocalOnlyNote writable={data.writable} commits={data.commits} />
 

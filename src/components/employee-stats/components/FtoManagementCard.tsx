@@ -62,6 +62,8 @@ export function FtoManagementCard() {
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const toggleSort = () =>
     setSortDir(sortDir === "desc" ? "asc" : "desc");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
 
   const [addOpen, setAddOpen] = useState(false);
   const [reinstateOpen, setReinstateOpen] = useState(false);
@@ -119,6 +121,19 @@ export function FtoManagementCard() {
       },
     );
   }, [active, filter, sortDir]);
+
+  // A filter change starts a new list, so the first page is the only one that
+  // can still show it; an oversized page number is clamped by `safePage`.
+  useEffect(() => {
+    setPage(1);
+  }, [filter, pageSize]);
+
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const safePage = Math.min(page, pageCount);
+  const visible = filtered.slice(
+    (safePage - 1) * pageSize,
+    safePage * pageSize,
+  );
 
   return (
     <div className="space-y-6">
@@ -180,7 +195,7 @@ export function FtoManagementCard() {
                     <TableRow>
                       <TableHead
                         className="w-16"
-                        title="Display position (1 = first row in the visible, sorted list)"
+                        title="Display position (1 = first row in the sorted list)"
                       >
                         #
                       </TableHead>
@@ -238,7 +253,7 @@ export function FtoManagementCard() {
                         </TableCell>
                       </TableRow>
                     ) : (
-                      filtered.map((row, i) => {
+                      visible.map((row, i) => {
                         // Ribbon state - read from the same keys the
                         // read-only EmployeeStatsTable uses (_3.._6,
                         // per mapEmployeeData in columns.tsx).
@@ -253,7 +268,7 @@ export function FtoManagementCard() {
                           >
   
                             <TableCell className="font-mono text-muted-foreground">
-                              {i + 1}
+                              {(safePage - 1) * pageSize + i + 1}
                             </TableCell>
                             <TableCell>
                               {String(row["Names"] ?? "").trim() || "-"}
@@ -337,6 +352,61 @@ export function FtoManagementCard() {
                     )}
                   </TableBody>
                 </Table>
+              )}
+              {!loading && filtered.length > 0 && (
+                <div className="flex flex-wrap items-center justify-end gap-2 py-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(1)}
+                    disabled={safePage <= 1}
+                  >
+                    First
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={safePage <= 1}
+                  >
+                    Previous
+                  </Button>
+                  <span className="text-sm text-muted-foreground">
+                    Page {safePage} of {pageCount}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
+                    disabled={safePage >= pageCount}
+                  >
+                    Next
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(pageCount)}
+                    disabled={safePage >= pageCount}
+                  >
+                    Last
+                  </Button>
+                  <label className="ml-2 flex items-center gap-2 text-sm text-muted-foreground">
+                    Rows per page
+                    <Input
+                      type="number"
+                      min={1}
+                      value={pageSize}
+                      aria-label="Rows per page"
+                      onChange={(e) => {
+                        const next = Number(e.target.value);
+                        // An emptied or invalid box must not page to zero rows.
+                        if (Number.isFinite(next) && next > 0)
+                          setPageSize(next);
+                      }}
+                      className="h-8 w-20"
+                    />
+                  </label>
+                </div>
               )}
           </div>
         </CardContent>

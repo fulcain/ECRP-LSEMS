@@ -19,7 +19,7 @@ export function ReinstatementRideAlongNotes() {
         title="Quick checklist for ride-alongs"
         message="Use this checklist while you ride along to make sure the EMR covers the core responsibilities before you sign off:"
         tip={
-          <ul className="list-disc pl-5 space-y-1 marker:text-[#800000] text-foreground/85 text-[13.5px]">
+          <ul className="list-disc pl-5 space-y-1 marker:text-[#800000] dark:marker:text-rose-300 text-foreground/85 text-[13.5px]">
             <li>
               <Bold>Request Call Priority</Bold> on the MD frequency (or
               have the trainee do it).

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -54,8 +54,7 @@ export function DeleteSessionDialog({
 
     if (originalRowNumber == null) {
       toast.error(
-        "Missing sheet row identifier - reload the table so the CSV index re-syncs.",
-        { theme: "dark" },
+        "Missing sheet row identifier - reload the table so the CSV index re-syncs."
       );
       return;
     }
@@ -77,7 +76,7 @@ export function DeleteSessionDialog({
       const result = await res.json();
 
       if (result.success) {
-        toast.success("FT session deleted", { theme: "dark" });
+        toast.success("FT session deleted");
         // Remove from local state by Timestamp equality. The row's
         // `__csvIndex` is irrelevant after this - it won't be sent
         // again because the row no longer renders in the table.
@@ -90,12 +89,11 @@ export function DeleteSessionDialog({
         onOpenChange(false);
       } else {
         toast.error(
-          `Something went wrong: ${result.error ?? result.raw ?? result.detail ?? JSON.stringify(result)}`,
-          { theme: "dark" },
+          `Something went wrong: ${result.error ?? result.raw ?? result.detail ?? JSON.stringify(result)}`
         );
       }
     } catch (err) {
-      toast.error("Network error or Apps Script blocked", { theme: "dark" });
+      toast.error("Network error or Apps Script blocked");
       console.error(err);
     } finally {
       setSubmitting(false);
@@ -104,7 +102,6 @@ export function DeleteSessionDialog({
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
 
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-md">
@@ -156,9 +153,9 @@ export function DeleteSessionDialog({
               type="button"
               variant="destructive"
               onClick={handleConfirm}
-              disabled={submitting}
+              loading={submitting}
             >
-              {submitting ? "Deleting..." : "Delete"}
+              Delete
             </Button>
           </DialogFooter>
         </DialogContent>

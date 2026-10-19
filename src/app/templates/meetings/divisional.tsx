@@ -10,7 +10,7 @@ export const divisionalMeetingTemplate: MeetingAgendaDefinition = {
   label: "Divisional Meeting",
   accent: "from-purple-500/25 via-violet-500/15 to-transparent",
   border: "border-purple-300/30 dark:border-purple-400/30",
-  badge: "bg-purple-100 dark:bg-purple-500/20 text-purple-100 ring-1 ring-purple-400/40",
+  badge: "bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 ring-1 ring-purple-400/40",
   forumUrl: "https://gov.eclipse-rp.net/posting.php?mode=post&f=1983",
   renderSubject: (date: string) => `Divisional Meeting | ${date}`,
   renderBody: ({

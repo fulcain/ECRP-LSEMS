@@ -77,7 +77,23 @@ function readSavedTab(allowed: readonly CommandTab[]): CommandTab {
 
 export function CommandTabs({ canEditFtp }: { canEditFtp: boolean }) {
   return (
-    <Suspense fallback={null}>
+    <Suspense
+      fallback={
+        // A waiting shell instead of a blank panel: the tab row and a card of
+        // content, both as quiet pulses.
+        <div className="space-y-6" aria-hidden="true">
+          <div className="flex flex-wrap gap-2">
+            {[0, 1, 2, 3].map((index) => (
+              <div
+                key={index}
+                className="h-11 w-32 animate-pulse rounded-xl bg-surface-hover"
+              />
+            ))}
+          </div>
+          <div className="h-64 animate-pulse rounded-2xl border border-border bg-surface" />
+        </div>
+      }
+    >
       <CommandPageContent canEditFtp={canEditFtp} />
     </Suspense>
   );

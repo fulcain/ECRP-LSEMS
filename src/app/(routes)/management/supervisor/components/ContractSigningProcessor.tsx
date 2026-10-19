@@ -10,7 +10,7 @@ import type { ContractTab } from "./contract/types";
 import { workflowByValue } from "./contract/workflows";
 import { useMemo, useEffect, useRef } from "react";
 import { format } from "date-fns";
-import { Bounce, ToastContainer } from "react-toastify";
+
 
 type ApplicantTitle = "Mr." | "Ms.";
 
@@ -183,11 +183,6 @@ export function ContractSigningProcessor() {
 
   return (
     <div className="space-y-4">
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        transition={Bounce}
-      />
 
       <SubTabs activeTab={activeTab} onChange={setActiveTab} />
 

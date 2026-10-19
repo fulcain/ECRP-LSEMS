@@ -10,7 +10,7 @@ export const supervisorMeetingTemplate: MeetingAgendaDefinition = {
   label: "Supervisor Meeting",
   accent: "from-blue-500/25 via-indigo-500/15 to-transparent",
   border: "border-blue-300/30 dark:border-blue-400/30",
-  badge: "bg-blue-100 dark:bg-blue-500/20 text-blue-100 ring-1 ring-blue-400/40",
+  badge: "bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 ring-1 ring-blue-400/40",
   forumUrl: "https://gov.eclipse-rp.net/posting.php?mode=post&f=1932",
   renderSubject: (date: string) => `Supervisor Meeting | ${date}`,
   renderBody: ({

@@ -9,7 +9,7 @@ import { generateBBCode } from "@/app/(routes)/divisions/ftd/paperwork/lib/gener
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
 import { pickPostTarget } from "@/app/helpers/forumHandoff";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -152,7 +152,7 @@ export default function PaperworkForm() {
     setCopied(false);
     setAdditionalMandatories("");
 
-    toast.info("All fields cleared", { theme: "dark" });
+    toast.info("All fields cleared");
   };
 
   const update = (key: string, value: any) => {
@@ -212,14 +212,13 @@ export default function PaperworkForm() {
     await navigator.clipboard.writeText(output);
     setCopied(true);
 
-    toast.success("Copied!", { theme: "dark" });
+    toast.success("Copied!");
   };
 
   const showSection = (section: string) => config.sections.includes(section);
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
       <div className="space-y-6">
 
         {/* Section heading for screen readers; the page-level <h1> lives in the
@@ -231,10 +230,15 @@ export default function PaperworkForm() {
           <CardContent className="p-4">
             <div className="flex items-start gap-4 flex-wrap">
               <div className="flex-1 min-w-[200px] space-y-1.5">
-                <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
+                <Label
+                  htmlFor="paperwork-signature"
+                  className="text-xs text-muted-foreground flex items-center gap-1.5"
+                >
                   <User className="h-3.5 w-3.5" />
                   Signature (image link)
-                </Label>                  <Input
+                </Label>
+                <Input
+                  id="paperwork-signature"
                   value={details.signature}
                   onChange={(e) =>
                     setDetails((prev) => ({
@@ -247,7 +251,10 @@ export default function PaperworkForm() {
                 />
               </div>
               <div className="flex-1 min-w-[160px] space-y-1.5">
-                <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
+                <Label
+                  htmlFor="paperwork-rank"
+                  className="text-xs text-muted-foreground flex items-center gap-1.5"
+                >
                   Rank
                   {autoRankLabel && form.rank === autoRankLabel && (
                     <span
@@ -271,6 +278,7 @@ export default function PaperworkForm() {
                     disabled={!isRankEditing}
                   >
                     <SelectTrigger
+                      id="paperwork-rank"
                       className="bg-background flex-1"
                       aria-label="Rank"
                     >
@@ -439,10 +447,14 @@ export default function PaperworkForm() {
                         </div>
                         <div className="grid gap-4 sm:grid-cols-2">
                           <div className="space-y-1.5">
-                            <Label className="text-xs text-muted-foreground">
+                            <Label
+                              htmlFor={`ten-fifteen-rating-${index}`}
+                              className="text-xs text-muted-foreground"
+                            >
                               Rating (1-5)
                             </Label>
                             <Input
+                              id={`ten-fifteen-rating-${index}`}
                               value={call.rating}
                               onChange={(e) =>
                                 updateTenFifteenCall(
@@ -456,10 +468,14 @@ export default function PaperworkForm() {
                             />
                           </div>
                           <div className="space-y-1.5 sm:col-span-2">
-                            <Label className="text-xs text-muted-foreground">
+                            <Label
+                              htmlFor={`ten-fifteen-notes-${index}`}
+                              className="text-xs text-muted-foreground"
+                            >
                               Performance Notes
                             </Label>
                             <BbcodeTextarea
+                              id={`ten-fifteen-notes-${index}`}
                               className="min-h-[80px] bg-background"
                               value={call.performanceNotes}
                               onChange={(value) =>
@@ -572,11 +588,15 @@ export default function PaperworkForm() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">
+                  <Label
+                    htmlFor="paperwork-additional-mandatories"
+                    className="text-xs text-muted-foreground"
+                  >
                     Additional Mandatories
                   </Label>
                   <div className="flex items-center gap-3">
                     <Input
+                      id="paperwork-additional-mandatories"
                       value={additionalMandatories}
                       onChange={(e) =>
                         setAdditionalMandatories(e.target.value)
@@ -587,10 +607,14 @@ export default function PaperworkForm() {
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">
+                  <Label
+                    htmlFor="paperwork-focus-areas"
+                    className="text-xs text-muted-foreground"
+                  >
                     Focus Areas
                   </Label>
                   <BbcodeTextarea
+                    id="paperwork-focus-areas"
                     className="min-h-[80px] bg-background"
                     value={form.notesNextTraining}
                     onChange={(value) => update("notesNextTraining", value)}

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Bug, MessageSquare, Send, Sparkles } from "lucide-react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 import {
   BuilderField,
@@ -86,17 +86,17 @@ export function ReportForm() {
       const data = (await res.json().catch(() => ({}))) as { error?: string };
 
       if (!res.ok) {
-        toast.error(data?.error ?? "Something went wrong.", { theme: "dark" });
+        toast.error(data?.error ?? "Something went wrong.");
         return;
       }
 
       setSent(true);
       setMessage("");
-      toast.success("Sent to the developer.", { theme: "dark" });
+      toast.success("Sent to the developer.");
 
       setTimeout(() => setSent(false), 3000);
     } catch {
-      toast.error("Could not reach the server.", { theme: "dark" });
+      toast.error("Could not reach the server.");
     } finally {
       setLoading(false);
     }
@@ -107,7 +107,6 @@ export function ReportForm() {
       {/* Nothing in this app mounts a toast container globally - each page that
           shows a toast renders its own, and without it `toast.*` has nowhere to
           draw. */}
-      <ToastContainer position="top-right" autoClose={2500} hideProgressBar />
       <form onSubmit={handleSubmit} className="space-y-5">
         <BuilderSection
           icon={MessageSquare}

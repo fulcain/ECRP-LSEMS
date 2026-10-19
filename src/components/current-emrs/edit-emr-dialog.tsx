@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -98,7 +98,7 @@ export function EditEMRDialog({
       !startDate ||
       !fourWeeksDate
     ) {
-      toast.error("Fill all required fields", { theme: "dark" });
+      toast.error("Fill all required fields");
       return;
     }
 
@@ -124,7 +124,7 @@ export function EditEMRDialog({
       const result = await res.json();
 
       if (result.success) {
-        toast.success("EMR record updated successfully", { theme: "dark" });
+        toast.success("EMR record updated successfully");
         // Update the row in local state immediately so the table
         // reflects the change right away (published CSV can be cached).
         const updatedRow: TableDataType = {
@@ -149,12 +149,11 @@ export function EditEMRDialog({
         onOpenChange(false);
       } else {
         toast.error(
-          `Something went wrong: ${result.error ?? result.raw ?? JSON.stringify(result)}`,
-          { theme: "dark" },
+          `Something went wrong: ${result.error ?? result.raw ?? JSON.stringify(result)}`
         );
       }
     } catch (err) {
-      toast.error("Network error or Apps Script blocked", { theme: "dark" });
+      toast.error("Network error or Apps Script blocked");
       console.error(err);
     } finally {
       setSubmitting(false);
@@ -163,7 +162,6 @@ export function EditEMRDialog({
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
 
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-lg">
@@ -177,8 +175,9 @@ export function EditEMRDialog({
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
-              <Label>EMR Name</Label>
+              <Label htmlFor="edit-emr-name">EMR Name</Label>
               <Input
+                id="edit-emr-name"
                 placeholder="Enter EMR's Name"
                 value={form.EMR}
                 onChange={(e) => setForm({ ...form, EMR: e.target.value })}
@@ -186,8 +185,9 @@ export function EditEMRDialog({
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label>EMR Profile Link</Label>
+              <Label htmlFor="edit-emr-profile-link">EMR Profile Link</Label>
               <Input
+                id="edit-emr-profile-link"
                 placeholder="Enter EMR profile URL"
                 value={form.profileLink}
                 onChange={(e) =>
@@ -197,10 +197,11 @@ export function EditEMRDialog({
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label>Start Date</Label>
+              <Label htmlFor="edit-emr-start-date">Start Date</Label>
               <Popover open={startOpen} onOpenChange={setStartOpen}>
                 <PopoverTrigger asChild>
                   <Button
+                    id="edit-emr-start-date"
                     variant="outline"
                     className="w-full justify-between font-normal"
                   >
@@ -231,10 +232,13 @@ export function EditEMRDialog({
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label>Training Reminder Date</Label>
+              <Label htmlFor="edit-emr-training-reminder">
+                Training Reminder Date
+              </Label>
               <Popover open={trainingOpen} onOpenChange={setTrainingOpen}>
                 <PopoverTrigger asChild>
                   <Button
+                    id="edit-emr-training-reminder"
                     variant="outline"
                     className="w-full justify-between font-normal"
                   >
@@ -258,10 +262,11 @@ export function EditEMRDialog({
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label>4 Weeks</Label>
+              <Label htmlFor="edit-emr-four-weeks">4 Weeks</Label>
               <Popover open={fourWeeksOpen} onOpenChange={setFourWeeksOpen}>
                 <PopoverTrigger asChild>
                   <Button
+                    id="edit-emr-four-weeks"
                     variant="outline"
                     className="w-full justify-between font-normal"
                   >
@@ -286,37 +291,41 @@ export function EditEMRDialog({
 
             <div className="flex items-center gap-2">
               <Checkbox
+                id="edit-emr-reminder-sent"
                 checked={form.reminderSent}
                 onCheckedChange={(checked) =>
                   setForm({ ...form, reminderSent: !!checked })
                 }
               />
-              <Label>Reminder Sent?</Label>
+              <Label htmlFor="edit-emr-reminder-sent">Reminder Sent?</Label>
             </div>
 
             <div className="flex items-center gap-2">
               <Checkbox
+                id="edit-emr-reinstatee"
                 checked={form.reinstatee}
                 onCheckedChange={(checked) =>
                   setForm({ ...form, reinstatee: !!checked })
                 }
               />
-              <Label>Reinstatee?</Label>
+              <Label htmlFor="edit-emr-reinstatee">Reinstatee?</Label>
             </div>
 
             <div className="flex items-center gap-2">
               <Checkbox
+                id="edit-emr-loa"
                 checked={form.loa}
                 onCheckedChange={(checked) =>
                   setForm({ ...form, loa: !!checked })
                 }
               />
-              <Label>LOA?</Label>
+              <Label htmlFor="edit-emr-loa">LOA?</Label>
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label>Notes</Label>
+              <Label htmlFor="edit-emr-notes">Notes</Label>
               <Input
+                id="edit-emr-notes"
                 placeholder="Notes"
                 value={form.notes}
                 onChange={(e) => setForm({ ...form, notes: e.target.value })}
@@ -332,8 +341,8 @@ export function EditEMRDialog({
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={submitting}>
-                {submitting ? "Saving..." : "Save Changes"}
+              <Button type="submit" loading={submitting}>
+                Save Changes
               </Button>
             </DialogFooter>
           </form>

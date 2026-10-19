@@ -2,7 +2,6 @@
 import {
   Bold,
   BulletList,
-  Divider,
   Em,
   EyebrowLabel,
   Item,
@@ -30,8 +29,6 @@ export function PreCertNotes() {
           PRE-CERTIFICATION - EMT-A+, 1 Hour 30 Min Minimum/3 Hour Maximum
         </EyebrowLabel>
       </div>
-      <Divider />
-      <Divider />
       <NumberedList>
         <Item>
           <Bold>Beginning</Bold>
@@ -42,8 +39,6 @@ export function PreCertNotes() {
             <Item>Make sure the EMR creates its own unit and properly does the entire starting shift process without error.</Item>
             <Item>Let the EMR drive an ambulance out of the garage, and inform them that they may station wherever, as well as roam around.</Item>
           </BulletList>
-          <Divider />
-          <Divider />
         </Item>
         <Item>
           <Bold>During the Pre-Cert</Bold>
@@ -54,8 +49,6 @@ export function PreCertNotes() {
             <Item>If the EMR is still having some troubles, make some notes and give them feedback at the end.</Item>
             <Item>Ensure we watch the driving closely and fail if they are a danger when driving the ambulance. If you see them not following proper emergency vehicle protocol while driving, make note of this.</Item>
           </BulletList>
-          <Divider />
-          <Divider />
         </Item>
         <Item>
           <Bold>Ending</Bold>
@@ -69,8 +62,6 @@ export function PreCertNotes() {
             <Item>Complete the paperwork and make sure to edit the top post with &quot;[Pending Certification] Fname Lname&quot;</Item>
             <Item><Em><Bold><Underline>If the EMR performed poorly, be honest and genuine on your report</Underline></Bold></Em> - not stating they didn&apos;t do well is only harming the EMR.</Item>
           </BulletList>
-          <Divider />
-          <Divider />
         </Item>
         <Item>
           <Bold>Helpful Questions</Bold>

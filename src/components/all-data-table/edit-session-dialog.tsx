@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { NowTimeButton } from "@/components/now-time-button";
 import { Button } from "@/components/ui/button";
 import {
@@ -96,14 +96,13 @@ export function EditSessionDialog({
       !form.emrName ||
       !form.sessionConducted
     ) {
-      toast.error("Fill all required fields", { theme: "dark" });
+      toast.error("Fill all required fields");
       return;
     }
 
     if (originalRowNumber == null) {
       toast.error(
-        "Missing sheet row identifier - reload the table so the CSV index re-syncs.",
-        { theme: "dark" },
+        "Missing sheet row identifier - reload the table so the CSV index re-syncs."
       );
       return;
     }
@@ -129,7 +128,7 @@ export function EditSessionDialog({
       const result = await res.json();
 
       if (result.success) {
-        toast.success("FT session updated successfully", { theme: "dark" });
+        toast.success("FT session updated successfully");
         const formattedDate = formatDisplayDate(selectedDate);
         const updatedRow: TableDataType = {
           ...row,
@@ -150,12 +149,11 @@ export function EditSessionDialog({
         onOpenChange(false);
       } else {
         toast.error(
-          `Something went wrong: ${result.error ?? result.raw ?? result.detail ?? JSON.stringify(result)}`,
-          { theme: "dark" },
+          `Something went wrong: ${result.error ?? result.raw ?? result.detail ?? JSON.stringify(result)}`
         );
       }
     } catch (err) {
-      toast.error("Network error or Apps Script blocked", { theme: "dark" });
+      toast.error("Network error or Apps Script blocked");
       console.error(err);
     } finally {
       setSubmitting(false);
@@ -164,7 +162,6 @@ export function EditSessionDialog({
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
 
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-lg">
@@ -178,8 +175,9 @@ export function EditSessionDialog({
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
             <div className="flex flex-col gap-2">
-              <Label>Sheet Row</Label>
+              <Label htmlFor="session-sheet-row">Sheet Row</Label>
               <Input
+                id="session-sheet-row"
                 value={
                   originalRowNumber != null ? String(originalRowNumber) : "-"
                 }
@@ -190,8 +188,11 @@ export function EditSessionDialog({
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label>Instructor&apos;s Name</Label>
+              <Label htmlFor="session-instructor-name">
+                Instructor&apos;s Name
+              </Label>
               <Input
+                id="session-instructor-name"
                 placeholder="Enter instructor&apos;s name"
                 value={form.yourName}
                 onChange={(e) =>
@@ -201,10 +202,11 @@ export function EditSessionDialog({
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label>Date</Label>
+              <Label htmlFor="session-date">Date</Label>
               <Popover open={dateOpen} onOpenChange={setDateOpen}>
                 <PopoverTrigger asChild>
                   <Button
+                    id="session-date"
                     variant="outline"
                     className="w-full justify-between font-normal"
                   >
@@ -229,9 +231,10 @@ export function EditSessionDialog({
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="flex flex-col gap-2">
-                <Label>Time Start (UTC)</Label>
+                <Label htmlFor="session-time-start">Time Start (UTC)</Label>
                 <div className="flex gap-2">
                   <Input
+                    id="session-time-start"
                     placeholder="Enter start time"
                     value={form.timeStart}
                     onChange={(e) =>
@@ -244,9 +247,10 @@ export function EditSessionDialog({
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <Label>Time Finish (UTC)</Label>
+                <Label htmlFor="session-time-finish">Time Finish (UTC)</Label>
                 <div className="flex gap-2">
                   <Input
+                    id="session-time-finish"
                     placeholder="Enter finish time"
                     value={form.timeFinish}
                     onChange={(e) =>
@@ -261,8 +265,9 @@ export function EditSessionDialog({
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label>EMR&apos;s Name</Label>
+              <Label htmlFor="session-emr-name">EMR&apos;s Name</Label>
               <Input
+                id="session-emr-name"
                 placeholder="Enter EMR&apos;s name"
                 value={form.emrName}
                 onChange={(e) =>
@@ -272,8 +277,9 @@ export function EditSessionDialog({
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label>Session Conducted</Label>
+              <Label htmlFor="session-conducted">Session Conducted</Label>
               <Input
+                id="session-conducted"
                 placeholder="What was conducted in this session?"
                 value={form.sessionConducted}
                 onChange={(e) =>
@@ -291,8 +297,8 @@ export function EditSessionDialog({
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={submitting}>
-                {submitting ? "Saving..." : "Save Changes"}
+              <Button type="submit" loading={submitting}>
+                Save Changes
               </Button>
             </DialogFooter>
           </form>

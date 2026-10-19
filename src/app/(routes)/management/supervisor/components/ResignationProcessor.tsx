@@ -4,6 +4,7 @@ import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { useMedic } from "@/app/context/MedicContext";
 import { copyBBCode } from "@/app/helpers/copyBBCode";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
+import { getCurrentDateShort } from "@/app/helpers/getCurrentDateFormatted";
 import { GOV_STAFF_ROSTER_EDIT_URL } from "@/app/helpers/govLinks";
 import { DASHBOARD_URL } from "./contract/constants";
 import {
@@ -14,7 +15,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Bounce, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
+
 import React, { useMemo } from "react";
 import Link from "next/link";
 import {
@@ -80,8 +82,16 @@ type IcStep = {
   }[];
 };
 
-const copyPlain = (text: string) => {
-  navigator.clipboard.writeText(text);
+const copyPlain = async (text: string) => {
+  // The step's body went to the extension; the title is the half the member
+  // pastes by hand, so it is the one that lands on the clipboard - and the
+  // one that has to say it did.
+  try {
+    await navigator.clipboard.writeText(text);
+    toast.success("Title copied to clipboard.");
+  } catch {
+    toast.error("Couldn't copy the title - check browser permissions.");
+  }
 };
 
 export function ResignationProcessor() {
@@ -449,11 +459,6 @@ export function ResignationProcessor() {
 
   return (
     <div className="space-y-4">
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        transition={Bounce}
-      />
 
       {/* Credentials Warning */}
       {isCredentialsEmpty && (
@@ -487,8 +492,9 @@ export function ResignationProcessor() {
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <Label className="mb-1 block text-xs text-muted-foreground">Full name</Label>
+            <Label htmlFor="resignation-full-name" className="mb-1 block text-xs text-muted-foreground">Full name</Label>
             <Input
+              id="resignation-full-name"
               value={personnelName}
               onChange={(e) => setPersonnelName(e.target.value)}
               placeholder="John Smith"
@@ -497,10 +503,10 @@ export function ResignationProcessor() {
           </div>
 
           <div>
-            <Label className="mb-1 block text-xs text-muted-foreground">
+            <Label id="resignation-discharge-type-label" className="mb-1 block text-xs text-muted-foreground">
               Discharge type
             </Label>
-            <div className="flex gap-1.5">
+            <div role="group" aria-labelledby="resignation-discharge-type-label" className="flex gap-1.5">
               {(["Honorable", "Dishonorable"] as const).map((type) => (
                 <button
                   key={type}
@@ -519,21 +525,35 @@ export function ResignationProcessor() {
             </div>
           </div>
           <div>
-            <Label className="mb-1 block text-xs text-muted-foreground">
+            <Label htmlFor="resignation-discharge-date" className="mb-1 block text-xs text-muted-foreground">
               Discharge date
             </Label>
-            <Input
-              value={dischargeDate}
-              onChange={(e) => setDischargeDate(e.target.value.toUpperCase())}
-              placeholder="DD/MMM/YYYY"
-              className="border-border bg-surface-raised font-mono text-foreground placeholder:text-muted-foreground"
-            />
+            <div className="flex gap-1.5">
+              <Input
+                id="resignation-discharge-date"
+                value={dischargeDate}
+                onChange={(e) => setDischargeDate(e.target.value.toUpperCase())}
+                placeholder="DD/MMM/YYYY"
+                className="flex-1 border-border bg-surface-raised font-mono text-foreground placeholder:text-muted-foreground"
+              />
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                onClick={() => setDischargeDate(getCurrentDateShort())}
+                className="shrink-0 font-mono text-xs"
+                title="Copy today's date"
+              >
+                Today
+              </Button>
+            </div>
           </div>
           <div className="sm:col-span-2">
-            <Label className="mb-1 block text-xs text-muted-foreground">
+            <Label htmlFor="resignation-discharge-reason" className="mb-1 block text-xs text-muted-foreground">
               Discharge reason / justification
             </Label>
             <Input
+              id="resignation-discharge-reason"
               value={dischargeReason}
               onChange={(e) => setDischargeReason(e.target.value)}
               placeholder="Reason for discharge"
@@ -541,10 +561,11 @@ export function ResignationProcessor() {
             />
           </div>
           <div className="sm:col-span-2">
-            <Label className="mb-1 block text-xs text-muted-foreground">
+            <Label htmlFor="resignation-post-url" className="mb-1 block text-xs text-muted-foreground">
               Resignation post URL
             </Label>
             <Input
+              id="resignation-post-url"
               value={resignationPostUrl}
               onChange={(e) => setResignationPostUrl(e.target.value)}
               placeholder="https://gov.eclipse-rp.net/viewtopic.php?t=..."
@@ -556,10 +577,11 @@ export function ResignationProcessor() {
             </p>
           </div>
           <div className="sm:col-span-2">
-            <Label className="mb-1 block text-xs text-muted-foreground">
+            <Label htmlFor="resignation-rp-link" className="mb-1 block text-xs text-muted-foreground">
               RP of discharge link
             </Label>
             <Input
+              id="resignation-rp-link"
               value={dischargeRpLink}
               onChange={(e) => setDischargeRpLink(e.target.value)}
               placeholder="https://..."
@@ -719,7 +741,7 @@ export function ResignationProcessor() {
                                 );
                                 copyPlain(step.titleText!);
                               }}
-                              className="inline-flex items-center gap-1.5 rounded-md border border-emerald-300/30 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 text-xs text-emerald-700 dark:text-emerald-300 transition-colors hover:bg-emerald-500/20 hover:text-emerald-200"
+                              className="inline-flex items-center gap-1.5 rounded-md border border-emerald-300/30 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 text-xs text-emerald-700 dark:text-emerald-300 transition-colors hover:bg-emerald-500/20 hover:text-emerald-800 dark:hover:text-emerald-200"
                             >
                               <Copy className="h-3 w-3" />
                               Copy Title
@@ -749,7 +771,7 @@ export function ResignationProcessor() {
                                   },
                                 });
                               }}
-                              className="inline-flex items-center gap-1.5 rounded-md border border-indigo-300/30 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 text-xs text-indigo-700 dark:text-indigo-300 transition-colors hover:bg-indigo-500/20 hover:text-indigo-200"
+                              className="inline-flex items-center gap-1.5 rounded-md border border-indigo-300/30 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 text-xs text-indigo-700 dark:text-indigo-300 transition-colors hover:bg-indigo-500/20 hover:text-indigo-800 dark:hover:text-indigo-200"
                             >
                               <ExternalLink className="h-3 w-3" />
                               {step.action.label}
@@ -760,7 +782,7 @@ export function ResignationProcessor() {
                               href={step.secondaryAction.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 rounded-md border border-indigo-300/30 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 text-xs text-indigo-700 dark:text-indigo-300 transition-colors hover:bg-indigo-500/20 hover:text-indigo-200"
+                              className="inline-flex items-center gap-1.5 rounded-md border border-indigo-300/30 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 text-xs text-indigo-700 dark:text-indigo-300 transition-colors hover:bg-indigo-500/20 hover:text-indigo-800 dark:hover:text-indigo-200"
                             >
                               <ExternalLink className="h-3 w-3" />
                               {step.secondaryAction.label}
@@ -865,7 +887,7 @@ export function ResignationProcessor() {
                                 item.copyText,
                               );
                             }}
-                            className="inline-flex items-center gap-1.5 rounded-md border border-indigo-300/30 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 text-xs text-indigo-700 dark:text-indigo-300 transition-colors hover:bg-indigo-500/20 hover:text-indigo-200"
+                            className="inline-flex items-center gap-1.5 rounded-md border border-indigo-300/30 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 text-xs text-indigo-700 dark:text-indigo-300 transition-colors hover:bg-indigo-500/20 hover:text-indigo-800 dark:hover:text-indigo-200"
                           >
                             <ExternalLink className="h-3 w-3" />
                             {item.action.label}

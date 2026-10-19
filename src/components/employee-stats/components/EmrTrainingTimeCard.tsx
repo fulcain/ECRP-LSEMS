@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { Check, Copy, ExternalLink, Mail } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -79,9 +79,9 @@ export function EmrTrainingTimeCard() {
   const handleCopy = async (label: string, content: string) => {
     try {
       await navigator.clipboard.writeText(content);
-      toast.success(`${label} copied to clipboard`, { theme: "dark" });
+      toast.success(`${label} copied to clipboard`);
     } catch {
-      toast.error("Couldn't copy to clipboard - check browser permissions.", { theme: "dark" });
+      toast.error("Couldn't copy to clipboard - check browser permissions.");
     }
   };
 
@@ -121,13 +121,12 @@ export function EmrTrainingTimeCard() {
       setTitleCopied(true);
       setTimeout(() => setTitleCopied(false), 1200);
     } catch {
-      toast.error("Couldn't copy title.", { theme: "dark" });
+      toast.error("Couldn't copy title.");
     }
   };
 
   return (
     <Card>
-      <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
       <CardHeader className="pb-3">
         <CardTitle>
           <Mail className="h-4 w-4 text-muted-foreground" />
@@ -162,8 +161,9 @@ export function EmrTrainingTimeCard() {
             onManualChange={setEmrNameManual}
           />
           <div className="space-y-1.5">
-            <Label className="text-[11px] text-muted-foreground">Days Left</Label>
+            <Label htmlFor="emr-days-left" className="text-[11px] text-muted-foreground">Days Left</Label>
             <Input
+              id="emr-days-left"
               value={daysLeft}
               onChange={(e) => setDaysLeft(e.target.value)}
               placeholder="14"

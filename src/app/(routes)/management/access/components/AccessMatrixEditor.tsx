@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { AlertTriangle, Plus, Save, Search, X } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -289,14 +289,13 @@ export function AccessMatrixEditor({
           setConflict(true);
           toast.error(
             data.error ?? "Somebody else changed the matrix first.",
-            { theme: "dark", autoClose: 8000 },
+            { autoClose: 8000 },
           );
           return;
         }
         toast.error(
           data.error ??
-            "Could not save the matrix. Check the store configuration.",
-          { theme: "dark" },
+            "Could not save the matrix. Check the store configuration."
         );
         return;
       }
@@ -308,17 +307,16 @@ export function AccessMatrixEditor({
         toast.warning(
           `Saved, but ${data.dropped.length} stale entr${
             data.dropped.length === 1 ? "y was" : "ies were"
-          } ignored: ${data.dropped.slice(0, 3).join(", ")}`,
-          { theme: "dark" },
+          } ignored: ${data.dropped.slice(0, 3).join(", ")}`
         );
       } else {
-        toast.success("Saved - live within a few seconds.", { theme: "dark" });
+        toast.success("Saved - live within a few seconds.");
       }
       // The sidebar and the tab bars are server-rendered from the same matrix,
       // so they only move on a refresh.
       router.refresh();
     } catch {
-      toast.error("Could not reach the server.", { theme: "dark" });
+      toast.error("Could not reach the server.");
     } finally {
       setSaving(false);
     }
@@ -333,7 +331,6 @@ export function AccessMatrixEditor({
 
   return (
     <div className="space-y-5">
-      <ToastContainer position="top-right" autoClose={2500} hideProgressBar />
 
       {!configured && (
         <div className="flex items-start gap-3 rounded-xl border border-amber-300/40 bg-amber-50 px-4 py-3 text-sm text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">

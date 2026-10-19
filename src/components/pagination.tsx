@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface PaginationProps {
   table: any;
@@ -15,7 +16,15 @@ export const Pagination: React.FC<PaginationProps> = ({
   setPageSize,
 }) => {
   return (
-    <div className="flex items-center justify-end space-x-2 py-4">
+    <div className="flex flex-wrap items-center justify-end gap-2 py-4">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => table.setPageIndex(0)}
+        disabled={!table.getCanPreviousPage()}
+      >
+        First
+      </Button>
       <Button
         variant="outline"
         size="sm"
@@ -24,6 +33,12 @@ export const Pagination: React.FC<PaginationProps> = ({
       >
         Previous
       </Button>
+
+      <span className="text-sm text-muted-foreground">
+        Page {table.getState().pagination.pageIndex + 1} of{" "}
+        {table.getPageCount()}
+      </span>
+
       <Button
         variant="outline"
         size="sm"
@@ -32,32 +47,30 @@ export const Pagination: React.FC<PaginationProps> = ({
       >
         Next
       </Button>
-
-      <span className="ml-2 text-sm text-gray-500">
-        Page {table.getState().pagination.pageIndex + 1} of{" "}
-        {table.getPageCount()}
-      </span>
-
-      <span className="ml-4 text-sm text-gray-500">Rows per page:</span>
-      <input
-        type="number"
-        min={1}
-        className="border rounded px-2 py-1 w-16"
-        value={pageSize}
-        onChange={(e) => setPageSize(Number(e.target.value))}
-      />
-
-      <Button variant="outline" size="sm" onClick={() => table.setPageIndex(0)}>
-        First Page
-      </Button>
-
       <Button
         variant="outline"
         size="sm"
         onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+        disabled={!table.getCanNextPage()}
       >
-        Last Page
+        Last
       </Button>
+
+      <label className="ml-2 flex items-center gap-2 text-sm text-muted-foreground">
+        Rows per page
+        <Input
+          type="number"
+          min={1}
+          value={pageSize}
+          aria-label="Rows per page"
+          onChange={(e) => {
+            const next = Number(e.target.value);
+            // An emptied or invalid box must not page to zero rows.
+            if (Number.isFinite(next) && next > 0) setPageSize(next);
+          }}
+          className="h-8 w-20"
+        />
+      </label>
     </div>
   );
 };

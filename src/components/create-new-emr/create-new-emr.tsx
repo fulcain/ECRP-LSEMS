@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,7 +52,7 @@ export function CreateNewEMR({ setData }: CreateNewEMRProps) {
       !startDate ||
       !fourWeeksDate
     ) {
-      toast.error("Fill all required fields", { theme: "dark" });
+      toast.error("Fill all required fields");
       return;
     }
 
@@ -75,7 +75,7 @@ export function CreateNewEMR({ setData }: CreateNewEMRProps) {
       const result = await res.json();
 
       if (result.success) {
-        toast.success("EMR record created successfully", { theme: "dark" });
+        toast.success("EMR record created successfully");
 
         const formattedStart = formatDisplayDate(startDate);
         const formattedTraining = formatDisplayDate(trainingReminderDate);
@@ -108,12 +108,11 @@ export function CreateNewEMR({ setData }: CreateNewEMRProps) {
         setFourWeeksDate(undefined);
       } else {
         toast.error(
-          `Something went wrong: ${result.error ?? result.raw ?? JSON.stringify(result)}`,
-          { theme: "dark" },
+          `Something went wrong: ${result.error ?? result.raw ?? JSON.stringify(result)}`
         );
       }
     } catch (err) {
-      toast.error("Network error or Apps Script blocked", { theme: "dark" });
+      toast.error("Network error or Apps Script blocked");
       console.error(err);
     } finally {
       setSubmitting(false);
@@ -122,7 +121,6 @@ export function CreateNewEMR({ setData }: CreateNewEMRProps) {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
 
       <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6">
         Create New EMR Record
@@ -133,8 +131,9 @@ export function CreateNewEMR({ setData }: CreateNewEMRProps) {
         className="flex flex-col gap-4 border p-4 rounded-lg"
       >
         <div className="flex flex-col gap-2">
-          <Label>EMR Name</Label>
+          <Label htmlFor="create-emr-name">EMR Name</Label>
           <Input
+            id="create-emr-name"
             placeholder="Enter EMR's Name"
             value={form.EMR}
             onChange={(e) => setForm({ ...form, EMR: e.target.value })}
@@ -142,8 +141,9 @@ export function CreateNewEMR({ setData }: CreateNewEMRProps) {
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label>EMR Profile Link</Label>
+          <Label htmlFor="create-emr-profile-link">EMR Profile Link</Label>
           <Input
+            id="create-emr-profile-link"
             placeholder="Enter EMR profile URL"
             value={form.profileLink}
             onChange={(e) => setForm({ ...form, profileLink: e.target.value })}
@@ -151,10 +151,11 @@ export function CreateNewEMR({ setData }: CreateNewEMRProps) {
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label>Start Date</Label>
+          <Label htmlFor="create-emr-start-date">Start Date</Label>
           <Popover open={startOpen} onOpenChange={setStartOpen}>
             <PopoverTrigger asChild>
               <Button
+                id="create-emr-start-date"
                 variant="outline"
                 className="w-full justify-between font-normal"
               >
@@ -185,10 +186,13 @@ export function CreateNewEMR({ setData }: CreateNewEMRProps) {
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label>Training Reminder Date</Label>
+          <Label htmlFor="create-emr-training-reminder">
+            Training Reminder Date
+          </Label>
           <Popover open={trainingOpen} onOpenChange={setTrainingOpen}>
             <PopoverTrigger asChild>
               <Button
+                id="create-emr-training-reminder"
                 variant="outline"
                 className="w-full justify-between font-normal"
               >
@@ -212,10 +216,11 @@ export function CreateNewEMR({ setData }: CreateNewEMRProps) {
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label>4 Weeks</Label>
+          <Label htmlFor="create-emr-four-weeks">4 Weeks</Label>
           <Popover open={fourWeeksOpen} onOpenChange={setFourWeeksOpen}>
             <PopoverTrigger asChild>
               <Button
+                id="create-emr-four-weeks"
                 variant="outline"
                 className="w-full justify-between font-normal"
               >
@@ -240,33 +245,36 @@ export function CreateNewEMR({ setData }: CreateNewEMRProps) {
 
         <div className="flex items-center gap-2">
           <Checkbox
+            id="create-emr-reinstatee"
             checked={form.reinstatee}
             onCheckedChange={(checked) =>
               setForm({ ...form, reinstatee: !!checked })
             }
           />
-          <Label>Reinstatee?</Label>
+          <Label htmlFor="create-emr-reinstatee">Reinstatee?</Label>
         </div>
 
         <div className="flex items-center gap-2">
           <Checkbox
+            id="create-emr-loa"
             checked={form.loa}
             onCheckedChange={(checked) => setForm({ ...form, loa: !!checked })}
           />
-          <Label>LOA?</Label>
+          <Label htmlFor="create-emr-loa">LOA?</Label>
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label>Notes</Label>
+          <Label htmlFor="create-emr-notes">Notes</Label>
           <Input
+            id="create-emr-notes"
             placeholder="Notes"
             value={form.notes}
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
           />
         </div>
 
-        <Button type="submit" disabled={submitting} className="mt-2 w-full">
-          {submitting ? "Saving..." : "Create Record"}
+        <Button type="submit" loading={submitting} className="mt-2 w-full">
+          Create Record
         </Button>
       </form>
     </>

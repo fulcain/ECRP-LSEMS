@@ -194,6 +194,8 @@ export interface BBCodeEditorProps {
   onChange: (value: string) => void;
   placeholder?: string;
   rows?: number;
+  /** Lets a `<Label htmlFor>` name the box the way it names an `Input`. */
+  id?: string;
   /**
    * How tall the box may grow before it scrolls inside itself.
    *
@@ -210,6 +212,7 @@ export function BBCodeEditor({
   onChange,
   placeholder,
   rows = 12,
+  id,
   maxHeightClass = "max-h-[70vh]",
 }: BBCodeEditorProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -419,6 +422,7 @@ export function BBCodeEditor({
       </div>
       <Textarea
         ref={textareaRef}
+        id={id}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         onKeyDown={handleKeyDown}

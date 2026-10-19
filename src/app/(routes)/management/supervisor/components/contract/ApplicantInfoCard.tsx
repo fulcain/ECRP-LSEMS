@@ -72,6 +72,7 @@ export function ApplicantInfoCard({
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto]">
         <Input
+          aria-label="Applicant's full name"
           value={personnelName}
           onChange={(e) => onNameChange(e.target.value)}
           placeholder="Applicant's full name"
@@ -81,7 +82,7 @@ export function ApplicantInfoCard({
           value={title}
           onValueChange={(value) => onTitleChange(value as ApplicantTitle)}
         >
-          <SelectTrigger className="w-full border-border bg-background text-foreground focus-visible:ring-1 focus-visible:ring-border sm:w-[100px]">
+          <SelectTrigger aria-label="Title" className="w-full border-border bg-background text-foreground focus-visible:ring-1 focus-visible:ring-border sm:w-[100px]">
             <SelectValue placeholder="Title" />
           </SelectTrigger>
           <SelectContent className="border-border bg-surface text-foreground">
@@ -93,8 +94,9 @@ export function ApplicantInfoCard({
 
       <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label className="text-xs text-muted-foreground">Phone Number</Label>
+          <Label htmlFor="contract-phone-number" className="text-xs text-muted-foreground">Phone Number</Label>
           <Input
+            id="contract-phone-number"
             type="tel"
             value={phoneNumber}
             onChange={(e) => onPhoneNumberChange(e.target.value)}
@@ -104,7 +106,7 @@ export function ApplicantInfoCard({
         </div>
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <Label className="text-xs text-muted-foreground">Date Hired</Label>
+            <Label htmlFor="contract-date-hired" className="text-xs text-muted-foreground">Date Hired</Label>
             <button
               type="button"
               onClick={() => onManualDateToggle(!isManualDate)}
@@ -115,6 +117,7 @@ export function ApplicantInfoCard({
           </div>
           {isManualDate ? (
             <Input
+              id="contract-date-hired"
               type="text"
               value={manualDate}
               onChange={(e) => onManualDateChange(e.target.value)}
@@ -125,6 +128,7 @@ export function ApplicantInfoCard({
             <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
               <PopoverTrigger asChild>
                 <Button
+                  id="contract-date-hired"
                   variant="outline"
                   className={cn(
                     "w-full justify-start border-border bg-background text-left font-normal text-foreground hover:bg-surface hover:text-foreground focus-visible:ring-1 focus-visible:ring-border",
@@ -154,8 +158,9 @@ export function ApplicantInfoCard({
 
       <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label className="text-xs text-muted-foreground">Employee Profile Link</Label>
+          <Label htmlFor="contract-employee-profile-link" className="text-xs text-muted-foreground">Employee Profile Link</Label>
           <Input
+            id="contract-employee-profile-link"
             type="url"
             value={employeeProfileLink}
             onChange={(e) => onEmployeeProfileLinkChange(e.target.value)}
@@ -164,8 +169,9 @@ export function ApplicantInfoCard({
           />
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs text-muted-foreground">Personnel File Link</Label>
+          <Label htmlFor="contract-personnel-file-link" className="text-xs text-muted-foreground">Personnel File Link</Label>
           <Input
+            id="contract-personnel-file-link"
             type="url"
             value={personnelFileLink}
             onChange={(e) => onPersonnelFileLinkChange(e.target.value)}

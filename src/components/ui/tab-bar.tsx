@@ -86,8 +86,47 @@ export function TabBar<T extends string>({
 }: TabBarProps<T>) {
   const variant = SIZES[size];
   const usesLinks = tabs.some((tab) => tab.href);
+  const hasActive = tabs.some((tab) => tab.value === active);
 
-  const items = tabs.map(({ value, label, icon, accent, href }) => {
+  // Arrow keys move focus across the row (Enter/Space then activate the focused
+  // tab, as buttons do themselves); without it a keyboard user had to Tab
+  // through every tab. The row is roving-indexed so it is one Tab stop, with
+  // the selected tab holding it.
+  const handleTablistKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const { key } = event;
+    if (
+      key !== "ArrowRight" &&
+      key !== "ArrowLeft" &&
+      key !== "Home" &&
+      key !== "End"
+    ) {
+      return;
+    }
+    const tabButtons = Array.from(
+      event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]'),
+    );
+    if (tabButtons.length === 0) return;
+    const current = tabButtons.indexOf(
+      document.activeElement as HTMLButtonElement,
+    );
+    let next = current;
+    if (key === "ArrowRight") {
+      next = current < 0 ? 0 : (current + 1) % tabButtons.length;
+    } else if (key === "ArrowLeft") {
+      next =
+        current < 0
+          ? tabButtons.length - 1
+          : (current - 1 + tabButtons.length) % tabButtons.length;
+    } else if (key === "Home") {
+      next = 0;
+    } else if (key === "End") {
+      next = tabButtons.length - 1;
+    }
+    event.preventDefault();
+    tabButtons[next]?.focus();
+  };
+
+  const items = tabs.map(({ value, label, icon, accent, href }, index) => {
     const isActive = active === value;
     const classes = cn(
       // The focus ring is on the tab itself, not only the row: keyboard users
@@ -117,6 +156,7 @@ export function TabBar<T extends string>({
         type="button"
         role="tab"
         aria-selected={isActive}
+        tabIndex={isActive || (!hasActive && index === 0) ? 0 : -1}
         onClick={() => onChange?.(value)}
         className={classes}
       >
@@ -134,6 +174,7 @@ export function TabBar<T extends string>({
         <div
           role="tablist"
           aria-label={ariaLabel}
+          onKeyDown={handleTablistKeyDown}
           className={cn("flex flex-wrap", variant.row)}
         >
           {items}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import {
   AlertTriangle,
   BadgeCheck,
@@ -88,7 +88,6 @@ export function ExtensionInstallCard({
 
   return (
     <section className="panel p-5">
-      <ToastContainer position="top-right" autoClose={2000} />
 
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-start gap-3">
@@ -272,7 +271,7 @@ export function ExtensionInstallCard({
         <h3 className="text-sm font-semibold text-foreground">
           {storeUrl
             ? "Installing by hand instead"
-            : "How to install it - once, in six steps"}
+            : "How to install it - once, in five steps"}
         </h3>
         <p className="mt-1 text-xs text-muted-foreground">
           {storeUrl

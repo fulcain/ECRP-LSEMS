@@ -229,7 +229,7 @@ export default function TemplateOptions({
               <Button
                 size="lg"
                 variant="outline"
-                className="w-full cursor-pointer border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-sky-500/40 hover:bg-sky-50/20 dark:hover:bg-sky-950/20 hover:text-sky-200 active:scale-[0.98]"
+                className="w-full cursor-pointer border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-sky-500/40 hover:bg-sky-50/20 dark:hover:bg-sky-950/20 hover:text-sky-800 dark:hover:text-sky-200 active:scale-[0.98]"
                 onClick={handleGenerateSignature}
                 disabled={
                   !selectedDivision ||

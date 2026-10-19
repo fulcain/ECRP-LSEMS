@@ -30,6 +30,8 @@ type BbcodeTextareaProps = {
   className?: string;
   placeholder?: string;
   readOnly?: boolean;
+  /** Lets a <Label htmlFor> point at the box itself, not its toolbar. */
+  id?: string;
 };
 
 const bbcodeTools: BbcodeTool[] = [
@@ -55,6 +57,7 @@ export function BbcodeTextarea({
   className,
   placeholder,
   readOnly,
+  id,
 }: BbcodeTextareaProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -216,6 +219,7 @@ export function BbcodeTextarea({
 
       <Textarea
         ref={textareaRef}
+        id={id}
         className={className}
         value={value}
         placeholder={placeholder}

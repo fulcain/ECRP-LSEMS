@@ -4,7 +4,6 @@ import {
   BulletList,
   Category,
   Command,
-  Divider,
   Em,
   EyebrowLabel,
   Item,
@@ -34,8 +33,6 @@ export function Phase2Notes() {
       <ParagraphList>
         <ParaItem><Bold>THE EMR SHOULD BEGIN TREATMENT OF PATIENTS NEAR THE END OF PHASE 2 AND MANAGING THEIR UNIT</Bold></ParaItem>
       </ParagraphList>
-      <Divider />
-      <Divider />
       <Category title="Volatile Patient List" ordered>
         <Item>Inform the EMR of the <BbLink href="https://gov.eclipse-rp.net/viewtopic.php?p=769876">Volatile Patient List</BbLink></Item>
         <Item>Let them know that they should check this list OFTEN as it can be updated frequently.</Item>
@@ -137,8 +134,6 @@ export function Phase2Notes() {
         <Item>Explain to the EMR that if we are code 3 to call and we approach injured people on the sidewalk, we have to stop.</Item>
         <Item>Inform the EMR that we must drop response to our previous call <OOC>/setcall -1</OOC>, radio call that we are dropping response from our current call, and ask another unit to take the call.</Item>
       </Category>
-      <Divider />
-      <Divider />
       <Category title="Ending the Phase - Ride-Along" ordered>
         <Item><Bold>Request Call Priority over radio. Either you, or the EMR may do this request.</Bold></Item>
         <Item>If the EMR can do radio calls, unit management, and treatment by themselves, then don&apos;t give them any extra additional mandatory ridealongs.</Item>
@@ -147,8 +142,6 @@ export function Phase2Notes() {
         <Item>Assign them 1x mandatory ride along, alongside additional mandatories if they require it.</Item>
         <Item><Em><Bold><Underline>If the EMR performed poorly, be honest and genuine on your report</Underline></Bold></Em> - not stating they didn&apos;t do well is only harming the EMR.</Item>
       </Category>
-      <Divider />
-      <Divider />
     </div>
   );
 }

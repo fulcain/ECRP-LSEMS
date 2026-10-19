@@ -16,7 +16,7 @@ import { useMemo, useState } from "react";
 /** A small rounded tag for a Discord role the member holds. */
 function RoleTag({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-indigo-300/25 dark:border-indigo-400/25 bg-indigo-50 dark:bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-100">
+    <span className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-indigo-300/25 dark:border-indigo-400/25 bg-indigo-50 dark:bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-700 dark:text-indigo-300">
       {children}
     </span>
   );
@@ -167,7 +167,7 @@ export function DiscordProfileCard() {
               </p>
               {/* The one value the app reads off the roles, so it belongs with
                   the name rather than in a section of its own. */}
-              <span className="mt-2 inline-flex max-w-full items-center gap-1.5 rounded-full border border-indigo-300/25 dark:border-indigo-400/25 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 text-xs font-medium text-indigo-100">
+              <span className="mt-2 inline-flex max-w-full items-center gap-1.5 rounded-full border border-indigo-300/25 dark:border-indigo-400/25 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 text-xs font-medium text-indigo-700 dark:text-indigo-300">
                 <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-indigo-700 dark:text-indigo-300" />
                 <span className="min-w-0 truncate">
                   {identity.rankLabel ?? "No rank detected"}

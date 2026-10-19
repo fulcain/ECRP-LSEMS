@@ -9,7 +9,7 @@ import {
   UserPlus,
   X,
 } from "lucide-react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 import {
   GOV_GROUP_SETS,
@@ -352,7 +352,6 @@ export function UserGroupAdd({
         </section>
       ))}
 
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </div>
   );
 }

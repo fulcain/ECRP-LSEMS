@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-[calc(100vh-3rem)] items-center justify-center p-6">
+    <div className="flex min-h-screen items-center justify-center p-6">
       <div className="w-full max-w-sm rounded-lg border border-border/40 bg-surface p-8 text-center space-y-6">
         <div className="flex flex-col items-center gap-4">
           {/* The one emblem the app owns - the same file the sidebar, the
@@ -34,7 +34,14 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <Suspense fallback={null}>
+        <Suspense
+          fallback={
+            <div
+              className="h-10 w-full animate-pulse rounded-md bg-surface-hover"
+              aria-hidden="true"
+            />
+          }
+        >
           <LoginButton />
         </Suspense>
 

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import {
   BookOpen,
   CheckCircle,
@@ -132,7 +132,7 @@ function PhaseOneNotes() {
       </p>
 
       <div>
-        <h4 className="font-semibold text-[#800000]">1. Three Pillars of Training</h4>
+        <h4 className="font-semibold text-[#800000] dark:text-rose-300">1. Three Pillars of Training</h4>
         <p>Explain the Three Pillars in detail:</p>
         <ul className="list-disc pl-5 space-y-1">
           <li>
@@ -156,7 +156,7 @@ function PhaseOneNotes() {
       </div>
 
       <div>
-        <h4 className="font-semibold text-[#800000]">2. Documentation</h4>
+        <h4 className="font-semibold text-[#800000] dark:text-rose-300">2. Documentation</h4>
         <ul className="list-disc pl-5 space-y-1">
           <li>
             Teach the FTO trainee where to find the following:
@@ -412,11 +412,10 @@ export default function FtiPage() {
       toast.success(
         handedOff
           ? `${label} copied - press Alt+Shift+F on the GOV page to put it in`
-          : `${label} copied to clipboard`,
-        { theme: "dark" },
+          : `${label} copied to clipboard`
       );
     } catch {
-      toast.error("Couldn't copy to clipboard - check browser permissions.", { theme: "dark" });
+      toast.error("Couldn't copy to clipboard - check browser permissions.");
     }
   };
 
@@ -434,7 +433,6 @@ export default function FtiPage() {
   // Content only: the FTD section layout owns the container and the heading.
   return (
     <div className="space-y-6">
-      <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
 
       {/* ---- What are you working on? - one card per tool ---- */}
       <DocumentPicker
@@ -475,18 +473,20 @@ export default function FtiPage() {
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Certified by</Label>
+                <Label htmlFor="fti-certified-by" className="text-xs text-muted-foreground">Certified by</Label>
                 <Input
+                  id="fti-certified-by"
                   value={certifiedBy}
                   onChange={(e) => setCertifiedBy(e.target.value)}
                   placeholder="Rank Fname Lname"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">
+                <Label htmlFor="fti-completion-date" className="text-xs text-muted-foreground">
                   Date of Completion
                 </Label>
                 <Input
+                  id="fti-completion-date"
                   value={completionDate}
                   onChange={(e) => setCompletionDate(e.target.value)}
                   placeholder="DD/MMM/YYYY"
@@ -523,16 +523,18 @@ export default function FtiPage() {
               {/* Student details needed for the paperwork */}
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Student Name</Label>
+                  <Label htmlFor="fti-student-name" className="text-xs text-muted-foreground">Student Name</Label>
                   <Input
+                    id="fti-student-name"
                     value={studentName}
                     onChange={(e) => setStudentName(e.target.value)}
                     placeholder="Fname Lname"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Student Rank</Label>
+                  <Label htmlFor="fti-student-rank" className="text-xs text-muted-foreground">Student Rank</Label>
                   <Input
+                    id="fti-student-rank"
                     value={studentRank}
                     onChange={(e) => setStudentRank(e.target.value)}
                     placeholder="EMR"
@@ -546,11 +548,12 @@ export default function FtiPage() {
 
               <div className="grid gap-4 sm:grid-cols-1">
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">
+                  <Label htmlFor="fti-answer-1" className="text-xs text-muted-foreground">
                     1. Did the student FTO understand the meaning behind the three pillars of
                     training clearly?
                   </Label>
                   <Textarea
+                    id="fti-answer-1"
                     value={answer1}
                     onChange={(e) => setAnswer1(e.target.value)}
                     placeholder="Your answer..."
@@ -558,10 +561,11 @@ export default function FtiPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">
+                  <Label htmlFor="fti-answer-2" className="text-xs text-muted-foreground">
                     2. Was the student FTO able to navigate to the 5 listed sections?
                   </Label>
                   <Textarea
+                    id="fti-answer-2"
                     value={answer2}
                     onChange={(e) => setAnswer2(e.target.value)}
                     placeholder="Your answer..."
@@ -569,11 +573,12 @@ export default function FtiPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">
+                  <Label htmlFor="fti-answer-3" className="text-xs text-muted-foreground">
                     3. Was the student FTO able to chew through everything in the Regulations
                     Section of the FT Handbook?
                   </Label>
                   <Textarea
+                    id="fti-answer-3"
                     value={answer3}
                     onChange={(e) => setAnswer3(e.target.value)}
                     placeholder="Your answer..."
@@ -581,11 +586,12 @@ export default function FtiPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">
+                  <Label htmlFor="fti-answer-4" className="text-xs text-muted-foreground">
                     4. Did the student FTO successfully deliver the training phases in their
                     certification?
                   </Label>
                   <Textarea
+                    id="fti-answer-4"
                     value={answer4}
                     onChange={(e) => setAnswer4(e.target.value)}
                     placeholder="Your answer..."
@@ -593,10 +599,11 @@ export default function FtiPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">
+                  <Label htmlFor="fti-answer-5" className="text-xs text-muted-foreground">
                     5. Are you confident that the student FTO will be able to train an EMR?
                   </Label>
                   <Textarea
+                    id="fti-answer-5"
                     value={answer5}
                     onChange={(e) => setAnswer5(e.target.value)}
                     placeholder="Your answer..."
@@ -606,10 +613,11 @@ export default function FtiPage() {
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">
+                <Label htmlFor="fti-profile-link" className="text-xs text-muted-foreground">
                   FTO Profile Link
                 </Label>
                 <Input
+                  id="fti-profile-link"
                   value={ftoProfileLink}
                   onChange={(e) => setFtoProfileLink(e.target.value)}
                   placeholder="Paste the FTO's student profile post URL"

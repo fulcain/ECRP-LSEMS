@@ -55,13 +55,13 @@ export function SessionDetailsCard() {
   const resetEMRSelection = () => {
     update({ emrName: "", emrNameManual: "" });
     setEmrSearch("");
-    toast.info("EMR field cleared", { theme: "dark" });
+    toast.info("EMR field cleared");
   };
 
   const resetNameSelection = () => {
     update({ ftoName: "" });
     setNameSearch("");
-    toast.info("Name field cleared", { theme: "dark" });
+    toast.info("Name field cleared");
   };
 
   const handleTimeChange = (
@@ -110,7 +110,7 @@ export function SessionDetailsCard() {
 
   const clearAll = () => {
     resetSessionFields();
-    toast.info("Session details cleared", { theme: "dark" });
+    toast.info("Session details cleared");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -124,7 +124,7 @@ export function SessionDetailsCard() {
       !resolvedEMR ||
       !details.sessionConducted
     ) {
-      toast.error("Fill all the fields", { theme: "dark" });
+      toast.error("Fill all the fields");
       return;
     }
 
@@ -152,13 +152,12 @@ export function SessionDetailsCard() {
         // must not be the thing that vanishes.
         resetSessionFields();
         toast.success("Session created - details reset for the next one", {
-          theme: "dark",
-        });
+          });
       } else {
-        toast.error("Something went wrong", { theme: "dark" });
+        toast.error("Something went wrong");
       }
     } catch (err) {
-      toast.error("Network error or Apps Script blocked", { theme: "dark" });
+      toast.error("Network error or Apps Script blocked");
       console.error(err);
     } finally {
       setSubmitting(false);
@@ -178,7 +177,7 @@ export function SessionDetailsCard() {
           {/* === Presenter (FTO) === */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <Label>Your Name</Label>
+              <Label htmlFor="session-fto-name">Your Name</Label>
               {isNameSelected && (
                 <Button
                   type="button"
@@ -197,7 +196,7 @@ export function SessionDetailsCard() {
               onValueChange={(v) => update({ ftoName: v })}
               onOpenChange={(open) => { if (!open) setNameSearch(""); }}
             >
-              <SelectTrigger className="cursor-pointer">
+              <SelectTrigger id="session-fto-name" className="cursor-pointer">
                 <SelectValue placeholder="Select your name" />
               </SelectTrigger>
               <SelectContent>
@@ -236,10 +235,14 @@ export function SessionDetailsCard() {
 
           {/* === Date & Time === */}
           <div className="flex flex-col gap-2">
-            <Label>Date</Label>
+            <Label htmlFor="session-date">Date</Label>
             <Popover open={dateOpen} onOpenChange={setDateOpen}>
               <PopoverTrigger asChild>
-                <Button variant="outline" className="w-full justify-between">
+                <Button
+                  id="session-date"
+                  variant="outline"
+                  className="w-full justify-between"
+                >
                   {details.date ? format(details.date, "PPP") : "Select date"}
                 </Button>
               </PopoverTrigger>
@@ -258,11 +261,12 @@ export function SessionDetailsCard() {
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="flex flex-col gap-2">
-              <Label className="text-xs text-muted-foreground">
+              <Label htmlFor="session-time-start" className="text-xs text-muted-foreground">
                 Time Start ((UTC))<span className="opacity-60">(24h)</span>
               </Label>
               <div className="flex gap-2">
                 <Input
+                  id="session-time-start"
                   placeholder="00:00"
                   maxLength={5}
                   value={details.timeStart}
@@ -273,11 +277,12 @@ export function SessionDetailsCard() {
               </div>
             </div>
             <div className="flex flex-col gap-2">
-              <Label className="text-xs text-muted-foreground">
+              <Label htmlFor="session-time-finish" className="text-xs text-muted-foreground">
                 Time Finish ((UTC))<span className="opacity-60">(24h)</span>
               </Label>
               <div className="flex gap-2">
                 <Input
+                  id="session-time-finish"
                   placeholder="00:00"
                   maxLength={5}
                   value={details.timeFinish}
@@ -292,7 +297,7 @@ export function SessionDetailsCard() {
           {/* === Trainee (EMR) === */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <Label>EMR&apos;s Name</Label>
+              <Label htmlFor="session-emr-name">EMR&apos;s Name</Label>
               {isEmrSelected && (
                 <Button
                   type="button"
@@ -315,7 +320,7 @@ export function SessionDetailsCard() {
               }}
               onOpenChange={(open) => { if (!open) setEmrSearch(""); }}
             >
-              <SelectTrigger className="cursor-pointer">
+              <SelectTrigger id="session-emr-name" className="cursor-pointer">
                 <SelectValue placeholder="Select EMR" />
               </SelectTrigger>
               <SelectContent>
@@ -382,12 +387,12 @@ export function SessionDetailsCard() {
 
           {/* === Session Conducted === */}
           <div className="flex flex-col gap-2">
-            <Label>Session Conducted</Label>
+            <Label htmlFor="session-conducted">Session Conducted</Label>
             <Select
               value={details.sessionConducted}
               onValueChange={(v) => update({ sessionConducted: v })}
             >
-              <SelectTrigger>
+              <SelectTrigger id="session-conducted">
                 <SelectValue placeholder="Select session" />
               </SelectTrigger>
               <SelectContent>

@@ -17,7 +17,7 @@ export const reinstatementWorkflow: ContractWorkflow = {
     "Sign returning LSEMS employees who are rejoining after a previous tenure.",
   accent: "border-emerald-300/40 dark:border-emerald-400/40 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300",
   border: "border-emerald-300/30 dark:border-emerald-400/30",
-  badge: "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-100 ring-1 ring-emerald-400/40",
+  badge: "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-400/40",
   icon: <RefreshCcw className="h-4 w-4" />,
   steps: [
     {

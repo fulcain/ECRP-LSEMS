@@ -177,7 +177,7 @@ export function NextPhaseTitleCard() {
     if (!resolvedTitle) return;
     await navigator.clipboard.writeText(fullTitle);
     setPhaseCopied(true);
-    toast.success("Next phase title copied!", { theme: "dark" });
+    toast.success("Next phase title copied!");
     setTimeout(() => setPhaseCopied(false), 2000);
   };
 
@@ -194,13 +194,13 @@ export function NextPhaseTitleCard() {
         <div className="space-y-3">
           {/* Phase title dropdown + copy */}
           <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Title</Label>
+            <Label htmlFor="next-phase-title" className="text-xs text-muted-foreground">Title</Label>
             <div className="flex items-center gap-2">
               <Select
                 value={safeNextPhaseDropdown}
                 onValueChange={(v) => setNextPhaseDropdown(v)}
               >
-                <SelectTrigger className="flex-1">
+                <SelectTrigger id="next-phase-title" className="flex-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -235,7 +235,7 @@ export function NextPhaseTitleCard() {
 
           {/* Inline EMR selector */}
           <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
+            <Label htmlFor="next-phase-emr" className="text-xs text-muted-foreground flex items-center gap-1.5">
               <UserRound className="h-3 w-3" />
               EMR
             </Label>
@@ -255,7 +255,7 @@ export function NextPhaseTitleCard() {
                     if (!open) setEmrSearch("");
                   }}
                 >
-                  <SelectTrigger className="bg-background">
+                  <SelectTrigger id="next-phase-emr" className="bg-background">
                     <SelectValue placeholder="Select EMR…" />
                   </SelectTrigger>
                   <SelectContent>
@@ -264,6 +264,7 @@ export function NextPhaseTitleCard() {
                       onClick={(e) => e.stopPropagation()}
                     >
                       <Input
+                        aria-label="Search EMR"
                         placeholder="Search EMR…"
                         value={emrSearch}
                         onChange={(e) => setEmrSearch(e.target.value)}

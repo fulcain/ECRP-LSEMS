@@ -582,6 +582,7 @@ export function CourseReportsProcessor({
                               {index + 1}
                             </span>
                             <Input
+                              aria-label={`Student ${index + 1} name`}
                               value={student.name}
                               onChange={(e) =>
                                 updateStudent(index, "name", e.target.value)
@@ -595,7 +596,7 @@ export function CourseReportsProcessor({
                                 updateStudent(index, "company", value)
                               }
                             >
-                              <SelectTrigger className="h-10 w-[140px] shrink-0 border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-violet-500/50 focus-visible:ring-2 focus-visible:ring-violet-400/30 dark:focus-visible:ring-violet-500/30">
+                              <SelectTrigger aria-label={`Student ${index + 1} company`} className="h-10 w-[140px] shrink-0 border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-violet-500/50 focus-visible:ring-2 focus-visible:ring-violet-400/30 dark:focus-visible:ring-violet-500/30">
                                 <SelectValue placeholder="Company" />
                               </SelectTrigger>
                               <SelectContent className="border-border/80 bg-surface text-foreground">
@@ -612,13 +613,14 @@ export function CourseReportsProcessor({
                                 onClick={addStudent}
                                 size="icon"
                                 title="Add student"
-                                className="h-10 w-10 shrink-0 bg-violet-100 dark:bg-violet-500/15 text-violet-700 dark:text-violet-300 ring-1 ring-violet-300/30 dark:ring-violet-500/30 transition-all duration-200 hover:scale-[1.02] hover:bg-violet-500/30 hover:text-violet-200"
+                                className="h-10 w-10 shrink-0 bg-violet-100 dark:bg-violet-500/15 text-violet-700 dark:text-violet-300 ring-1 ring-violet-300/30 dark:ring-violet-500/30 transition-all duration-200 hover:scale-[1.02] hover:bg-violet-500/30 hover:text-violet-800 dark:hover:text-violet-200"
                               >
                                 <Plus className="h-4 w-4" />
                               </Button>
                             ) : (
                               <Button
                                 type="button"
+                                aria-label={`Remove student ${index + 1}`}
                                 onClick={() => removeStudent(index)}
                                 size="icon"
                                 variant="ghost"
@@ -690,6 +692,7 @@ export function CourseReportsProcessor({
                               {index + 1}
                             </span>
                             <Input
+                              aria-label={`Graduate ${index + 1} name`}
                               value={graduate.name}
                               onChange={(e) =>
                                 updateGraduate(index, "name", e.target.value)
@@ -704,7 +707,7 @@ export function CourseReportsProcessor({
                                   updateGraduate(index, "company", value)
                                 }
                               >
-                                <SelectTrigger className="h-10 w-[140px] shrink-0 border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-400/30 dark:focus-visible:ring-red-500/30">
+                                <SelectTrigger aria-label={`Graduate ${index + 1} company`} className="h-10 w-[140px] shrink-0 border-border bg-surface-hover text-foreground transition-all duration-200 hover:border-red-500/50 focus-visible:ring-2 focus-visible:ring-red-400/30 dark:focus-visible:ring-red-500/30">
                                   <SelectValue placeholder="Company" />
                                 </SelectTrigger>
                                 <SelectContent className="border-border/80 bg-surface text-foreground">
@@ -722,13 +725,14 @@ export function CourseReportsProcessor({
                                 onClick={addGraduate}
                                 size="icon"
                                 title="Add graduate"
-                                className="h-10 w-10 shrink-0 bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300 ring-1 ring-red-300/30 dark:ring-red-500/30 transition-all duration-200 hover:scale-[1.02] hover:bg-red-500/30 hover:text-red-200"
+                                className="h-10 w-10 shrink-0 bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300 ring-1 ring-red-300/30 dark:ring-red-500/30 transition-all duration-200 hover:scale-[1.02] hover:bg-red-500/30 hover:text-red-800 dark:hover:text-red-200"
                               >
                                 <Plus className="h-4 w-4" />
                               </Button>
                             ) : (
                               <Button
                                 type="button"
+                                aria-label={`Remove graduate ${index + 1}`}
                                 onClick={() => removeGraduate(index)}
                                 size="icon"
                                 variant="ghost"
@@ -847,7 +851,7 @@ export function CourseReportsProcessor({
                             "_blank",
                           )
                         }
-                        className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-cyan-500/40 hover:bg-cyan-50/20 dark:hover:bg-cyan-950/20 hover:text-cyan-200"
+                        className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-cyan-500/40 hover:bg-cyan-50/20 dark:hover:bg-cyan-950/20 hover:text-cyan-800 dark:hover:text-cyan-200"
                       >
                         <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
                         Open Guide Topic
@@ -864,7 +868,7 @@ export function CourseReportsProcessor({
                             "noopener,noreferrer",
                           )
                         }
-                        className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-cyan-500/40 hover:bg-cyan-50/20 dark:hover:bg-cyan-950/20 hover:text-cyan-200"
+                        className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-cyan-500/40 hover:bg-cyan-50/20 dark:hover:bg-cyan-950/20 hover:text-cyan-800 dark:hover:text-cyan-200"
                       >
                         <BookOpen className="mr-1.5 h-3.5 w-3.5" />
                         BLS Quick Guide
@@ -945,7 +949,7 @@ export function CourseReportsProcessor({
                     onClick={handleCopyAndOpen}
                     variant="outline"
                     size="default"
-                    className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-cyan-500/40 hover:bg-cyan-50/20 dark:hover:bg-cyan-950/20 hover:text-cyan-200 active:scale-[0.98]"
+                    className="border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-cyan-500/40 hover:bg-cyan-50/20 dark:hover:bg-cyan-950/20 hover:text-cyan-800 dark:hover:text-cyan-200 active:scale-[0.98]"
                   >
                     <ExternalLink className="h-4 w-4" />
                     Copy &amp; Open Report

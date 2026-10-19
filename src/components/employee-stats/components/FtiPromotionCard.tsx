@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import Link from "next/link";
 import { Check, Copy, ExternalLink, Mail, Users } from "lucide-react";
 
@@ -38,9 +38,9 @@ export function FtiPromotionCard() {
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(bbcode);
-      toast.success("FTI Promotion email copied to clipboard", { theme: "dark" });
+      toast.success("FTI Promotion email copied to clipboard");
     } catch {
-      toast.error("Couldn't copy to clipboard - check browser permissions.", { theme: "dark" });
+      toast.error("Couldn't copy to clipboard - check browser permissions.");
     }
   };
 
@@ -65,13 +65,12 @@ export function FtiPromotionCard() {
       setTitleCopied(true);
       setTimeout(() => setTitleCopied(false), 1200);
     } catch {
-      toast.error("Couldn't copy title.", { theme: "dark" });
+      toast.error("Couldn't copy title.");
     }
   };
 
   return (
     <Card>
-      <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
       <CardHeader className="pb-3">
         <CardTitle>
           <Mail className="h-4 w-4 text-muted-foreground" />

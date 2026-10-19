@@ -12,7 +12,7 @@ import { pickPostTarget } from "@/app/helpers/forumHandoff";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Bounce, ToastContainer } from "react-toastify";
+
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
@@ -355,21 +355,16 @@ export function LOAProcessor() {
 
   return (
     <div className="space-y-6">
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        transition={Bounce}
-      />
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Left: Form */}
         <div className="space-y-5">
           {/* Template Selector */}
           <div className="panel-inner p-5">
-            <Label className="mb-3 block text-sm font-medium text-muted-foreground">
+            <Label id="loa-format-label" className="mb-3 block text-sm font-medium text-muted-foreground">
               Select LOA Format
             </Label>
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <div role="group" aria-labelledby="loa-format-label" className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {loaTemplates.map((tmpl) => (
                 <button
                   key={tmpl.value}
@@ -396,6 +391,7 @@ export function LOAProcessor() {
             </div>
             <div className="flex gap-2">
               <Input
+                aria-label="Quick fill LOA fields"
                 value={quickFill}
                 onChange={(e) => {
                   const value = e.target.value;
@@ -445,10 +441,11 @@ export function LOAProcessor() {
 
             <div className="space-y-4">
               <div>
-                <Label className="mb-1.5 block text-xs text-muted-foreground">
+                <Label htmlFor="loa-personnel-name" className="mb-1.5 block text-xs text-muted-foreground">
                   Personnel Name
                 </Label>
                 <Input
+                  id="loa-personnel-name"
                   value={personnelName}
                   onChange={(e) => setPersonnelName(e.target.value)}
                   placeholder="Enter full name (e.g., John Smith)"
@@ -457,10 +454,10 @@ export function LOAProcessor() {
               </div>
 
               <div>
-                <Label className="mb-2 block text-xs text-muted-foreground">
+                <Label id="loa-title-label" className="mb-2 block text-xs text-muted-foreground">
                   Title
                 </Label>
-                <div className="flex gap-2">
+                <div role="group" aria-labelledby="loa-title-label" className="flex gap-2">
                   <button
                     onClick={() => setTitle("Mr.")}
                     className={`flex-1 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
@@ -496,10 +493,11 @@ export function LOAProcessor() {
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <Label className="mb-1.5 block text-xs text-muted-foreground">
+                  <Label htmlFor="loa-start-date" className="mb-1.5 block text-xs text-muted-foreground">
                     Start Date
                   </Label>
                   <Input
+                    id="loa-start-date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value.toUpperCase())}
                     placeholder="DD/MMM/YYYY (e.g. 20/JUL/2026)"
@@ -507,10 +505,11 @@ export function LOAProcessor() {
                   />
                 </div>
                 <div>
-                  <Label className="mb-1.5 block text-xs text-muted-foreground">
+                  <Label htmlFor="loa-end-date" className="mb-1.5 block text-xs text-muted-foreground">
                     End Date
                   </Label>
                   <Input
+                    id="loa-end-date"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value.toUpperCase())}
                     placeholder="DD/MMM/YYYY (e.g. 20/AUG/2026)"
@@ -558,10 +557,11 @@ export function LOAProcessor() {
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <Label className="mb-1.5 block text-xs text-muted-foreground">
+                  <Label htmlFor="loa-extended-start-date" className="mb-1.5 block text-xs text-muted-foreground">
                     Start Date
                   </Label>
                   <Input
+                    id="loa-extended-start-date"
                     value={extendedStartDate}
                     onChange={(e) => setExtendedStartDate(e.target.value.toUpperCase())}
                     placeholder="DD/MMM/YYYY (e.g. 20/JUL/2026)"
@@ -569,10 +569,11 @@ export function LOAProcessor() {
                   />
                 </div>
                 <div>
-                  <Label className="mb-1.5 block text-xs text-muted-foreground">
+                  <Label htmlFor="loa-extended-end-date" className="mb-1.5 block text-xs text-muted-foreground">
                     End Date
                   </Label>
                   <Input
+                    id="loa-extended-end-date"
                     value={extendedEndDate}
                     onChange={(e) => setExtendedEndDate(e.target.value.toUpperCase())}
                     placeholder="DD/MMM/YYYY (e.g. 20/AUG/2026)"
@@ -617,10 +618,11 @@ export function LOAProcessor() {
                 <CalendarDays className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                 <h3 className="text-sm font-semibold text-foreground">Work Schedule</h3>
               </div>
-              <Label className="mb-1.5 block text-xs text-muted-foreground">
+              <Label htmlFor="loa-start-work-at" className="mb-1.5 block text-xs text-muted-foreground">
                 Start Work At
               </Label>
               <Input
+                id="loa-start-work-at"
                 value={startWorkAt}
                 onChange={(e) => setStartWorkAt(e.target.value.toUpperCase())}
                 placeholder="DD/MMM/YYYY (e.g. 21/JUL/2026)"
@@ -646,6 +648,7 @@ export function LOAProcessor() {
                 {denialReasons.map((reason, index) => (
                   <div key={index} className="flex items-center gap-2">
                     <Input
+                      aria-label={`Denial reason ${index + 1}`}
                       value={reason}
                       onChange={(e) => {
                         const next = [...denialReasons];
@@ -658,6 +661,7 @@ export function LOAProcessor() {
                     {denialReasons.length > 1 && (
                       <Button
                         type="button"
+                        aria-label={`Remove denial reason ${index + 1}`}
                         onClick={() =>
                           setDenialReasons((prev) =>
                             prev.filter((_, i) => i !== index),
@@ -679,7 +683,7 @@ export function LOAProcessor() {
                 onClick={() => setDenialReasons((prev) => [...prev, ""])}
                 variant="outline"
                 size="sm"
-                className="mt-3 border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-red-500/40 hover:bg-red-50/20 dark:hover:bg-red-950/20 hover:text-red-200"
+                className="mt-3 border-border text-muted-foreground transition-all duration-200 hover:scale-[1.02] hover:border-red-500/40 hover:bg-red-50/20 dark:hover:bg-red-950/20 hover:text-red-800 dark:hover:text-red-200"
               >
                 <Plus className="mr-1.5 h-3.5 w-3.5" />
                 Add reason
@@ -721,10 +725,10 @@ export function LOAProcessor() {
 
               {/* Leave Type checkboxes */}
               <div>
-                <Label className="mb-2 block text-xs text-muted-foreground">
+                <Label id="loa-leave-type-label" className="mb-2 block text-xs text-muted-foreground">
                   Leave Type
                 </Label>
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <div role="group" aria-labelledby="loa-leave-type-label" className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {(["LOA", "ROH"] as const).map((type) => {
                     const isSelected = loaType === type;
                     return (
@@ -760,10 +764,11 @@ export function LOAProcessor() {
 
               {/* Request Form Link */}
               <div className="mt-4">
-                <Label className="mb-1.5 block text-xs text-muted-foreground">
+                <Label htmlFor="loa-request-form-link" className="mb-1.5 block text-xs text-muted-foreground">
                   Request Form Link
                 </Label>
                 <Input
+                  id="loa-request-form-link"
                   value={loaLink}
                   onChange={(e) => setLoaLink(e.target.value)}
                   placeholder="Paste the request form URL (e.g. https://gov.eclipse-rp.net/viewtopic.php?t=12345)"

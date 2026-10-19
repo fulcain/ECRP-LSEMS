@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -45,19 +45,18 @@ export function RemoveFtoDialog({
       const result = await res.json();
 
       if (result.success) {
-        toast.success(`Removed "${name}" to Ex FTOs.`, { theme: "dark" });
+        toast.success(`Moved "${name}" to Ex FTOs.`);
         onOpenChange(false);
         onRemoved?.(name);
       } else {
         toast.error(
           `Something went wrong: ${
             result.error ?? result.raw ?? JSON.stringify(result)
-          }`,
-          { theme: "dark" },
+          }`
         );
       }
     } catch (err) {
-      toast.error("Network error or Apps Script blocked", { theme: "dark" });
+      toast.error("Network error or Apps Script blocked");
       console.error(err);
     } finally {
       setSubmitting(false);
@@ -66,7 +65,6 @@ export function RemoveFtoDialog({
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -102,9 +100,10 @@ export function RemoveFtoDialog({
               type="button"
               variant="destructive"
               onClick={handleConfirm}
-              disabled={submitting || !name}
+              loading={submitting}
+              disabled={!name}
             >
-              {submitting ? "Removing…" : "Remove"}
+              Remove
             </Button>
           </DialogFooter>
         </DialogContent>

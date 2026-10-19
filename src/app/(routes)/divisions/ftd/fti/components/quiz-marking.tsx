@@ -338,7 +338,7 @@ export function QuizMarking() {
       manualEmail: "",
       emailEdited: false,
     });
-    toast.success("Quiz marking cleared", { theme: "dark" });
+    toast.success("Quiz marking cleared");
   };
 
   /* ---- Totals and result ---- */
@@ -553,13 +553,11 @@ export function QuizMarking() {
         forumPostToast(
           handedOff,
           `${QUIZ_EMAIL_SUBJECT} email copied to clipboard`,
-        ),
-        { theme: "dark" },
+        )
       );
     } catch {
       toast.error("Couldn't copy to clipboard - check browser permissions.", {
-        theme: "dark",
-      });
+        });
     }
   };
 
@@ -587,13 +585,11 @@ export function QuizMarking() {
     try {
       await navigator.clipboard.writeText(profilePost);
       toast.success(
-        forumPostToast(handedOff, "EMR profile post copied to clipboard"),
-        { theme: "dark" },
+        forumPostToast(handedOff, "EMR profile post copied to clipboard")
       );
     } catch {
       toast.error("Couldn't copy to clipboard - check browser permissions.", {
-        theme: "dark",
-      });
+        });
     }
   };
 
@@ -905,10 +901,11 @@ export function QuizMarking() {
             )}
           </p>
           <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">
+            <Label htmlFor="quiz-emr-name" className="text-xs text-muted-foreground">
               EMR&apos;s forum name (email recipient, optional)
             </Label>
             <Input
+              id="quiz-emr-name"
               value={form.emrName}
               onChange={(e) => setEmrName(e.target.value)}
               placeholder="Fname_Lname - filled on the email page by the extension"
@@ -916,10 +913,11 @@ export function QuizMarking() {
             />
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">
+            <Label htmlFor="quiz-comments" className="text-xs text-muted-foreground">
               Instructor comments (optional, printed on the marked quiz)
             </Label>
             <Textarea
+              id="quiz-comments"
               value={form.comments}
               onChange={(e) => setComments(e.target.value)}
               placeholder="Anything you want on the Results section under Instructor Comments..."

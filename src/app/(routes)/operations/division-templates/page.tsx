@@ -22,7 +22,7 @@ import TemplateOptions from "@/app/(routes)/operations/division-templates/compon
 import { PageContainer } from "@/components/ui/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { useMemo, useEffect, useRef, useCallback } from "react";
-import { Bounce, ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 // The compose session is persisted so an accidental refresh cannot throw away
 // the selected division or the typed preview.
@@ -292,11 +292,6 @@ export default function Home() {
       <PageHeader
         title="Division Email Templates"
         subtitle="Select a division and create email templates, signatures, or BBCode posts"
-      />
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        transition={Bounce}
       />
 
       <div className="panel relative overflow-hidden">

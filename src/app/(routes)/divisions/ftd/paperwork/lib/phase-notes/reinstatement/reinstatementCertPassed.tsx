@@ -3,7 +3,6 @@ import {
   Bold,
   BulletList,
   Category,
-  Divider,
   EyebrowLabel,
   OathLine,
   Item,
@@ -33,8 +32,6 @@ export function ReinstatementCertPassedNotes() {
       <WarningCallout>
         <Bold>THE REINSTATEE SHOULD HANDLE EVERYTHING</Bold>
       </WarningCallout>
-      <Divider />
-      <Divider />
       <ParagraphList>
         <ParaItem><Bold>Beginning</Bold></ParaItem>
       </ParagraphList>
