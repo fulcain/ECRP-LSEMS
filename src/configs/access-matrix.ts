@@ -5,11 +5,14 @@ import {
   ADMIN_PAGES,
   ADMIN_PAGE_ROLES,
   COMMAND_ACCESS,
+  COMMAND_TOOL_PAGES,
+  COMMAND_TOOL_ROLES,
   DEFAULT_PAGE_ROLES,
   DIVISION_ENTRIES,
   EVERY_PAGE_ROLES,
   ROLES,
   isAdminOnlyPath,
+  isCommandToolPath,
   isHiddenFromMatrix,
   type RoleName,
 } from "@/configs/roles";
@@ -83,6 +86,7 @@ const ROUTE_META: Record<string, { label: string; group: AccessMatrixGroup }> = 
     label: "Access Manager",
     group: "Management",
   },
+  [ROUTES.management.command]: { label: "Command", group: "Management" },
 
   [ROUTES.system.changelog]: { label: "Change Log", group: "System" },
 };
@@ -116,7 +120,9 @@ export const MANAGED_ENTRIES: readonly ManagedEntry[] = MANAGED_ROUTES.map(
       route,
       label: meta?.label ?? route,
       group: meta?.group ?? "Other",
-      locked: ADMIN_PAGES.includes(route),
+      // Command tools are locked for a different reason than the Access
+      // Manager, but neither may be handed out by a stored row.
+      locked: ADMIN_PAGES.includes(route) || COMMAND_TOOL_PAGES.includes(route),
     };
   },
 );
@@ -149,9 +155,9 @@ export type AccessMatrix = Record<string, RoleName[]>;
  * - the one entry a stored row may never touch - to `ADMIN_PAGE_ROLES`.
  */
 export function fallbackRolesForRoute(route: string): RoleName[] {
-  return [
-    ...(isAdminOnlyPath(route) ? ADMIN_PAGE_ROLES : DEFAULT_PAGE_ROLES),
-  ];
+  if (isAdminOnlyPath(route)) return [...ADMIN_PAGE_ROLES];
+  if (isCommandToolPath(route)) return [...COMMAND_TOOL_ROLES];
+  return [...DEFAULT_PAGE_ROLES];
 }
 
 /** The matrix as it stands with an empty store: every row at its fallback. */

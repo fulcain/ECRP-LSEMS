@@ -28,6 +28,7 @@ import { ROUTES } from "@/configs/routes";
 import {
   ADMIN_USER_IDS,
   ADMIN_PAGE_ROLES,
+  COMMAND_TOOL_ROLES,
   EVERY_PAGE_ROLES,
   ROLES,
   isHiddenFromMatrix,
@@ -96,9 +97,14 @@ line(
   `  never locked out   ${EVERY_PAGE_ROLES.map((alias) => ROLES[alias].name).join(", ")}`,
 );
 line(
-  `  always in the code   ${[...LOCKED_ROUTES].join(", ")} - ${ADMIN_PAGE_ROLES.map(
-    (alias) => ROLES[alias].name,
-  ).join(" and ")}, never stored`,
+  `  always in the code   ${[...LOCKED_ROUTES]
+    .map(
+      (route) =>
+        `${route} - ${fallbackRolesForRoute(route)
+          .map((alias) => ROLES[alias].name)
+          .join(" and ")}`,
+    )
+    .join("; ")}, never stored`,
 );
 line(
   `  pages   ${EDITABLE_ENTRIES.length} editable, ${MANAGED_ENTRIES.length - EDITABLE_ENTRIES.length} locked`,
@@ -227,23 +233,38 @@ for (const alias of hiddenRoles) {
   );
 }
 
-// ── The permission editor, decided in the code and nowhere else ────────────
+// ── The tools decided in the code and nowhere else ─────────────────────────
 
-const [adminRoute] = [...LOCKED_ROUTES];
-expect("there is exactly one locked page", LOCKED_ROUTES.size, 1);
-expect("the locked page is the access manager", adminRoute, ROUTES.management.access);
+const adminRoute = ROUTES.management.access;
+const commandRoute = ROUTES.management.command;
+expect("there are exactly two locked pages", LOCKED_ROUTES.size, 2);
+expect("the access manager is locked", LOCKED_ROUTES.has(adminRoute), true);
+expect("the Command page is locked", LOCKED_ROUTES.has(commandRoute), true);
+
 for (const alias of ["Employee", "Command", "Lieutenant", "Consultant", "HighCommand"] as const) {
   expect(
     `${alias} cannot open the access manager`,
     userHasAccess(adminRoute, member(alias)),
     false,
   );
+  expect(
+    `${alias} cannot open the Command page`,
+    userHasAccess(commandRoute, member(alias)),
+    false,
+  );
 }
-expect(
-  "CommandPlusTeam opens the access manager",
-  userHasAccess(adminRoute, member("CommandPlusTeam")),
-  true,
-);
+for (const alias of ["CommandPlusTeam", "LegalFactionManagement"] as const) {
+  expect(
+    `${alias} opens the access manager`,
+    userHasAccess(adminRoute, member(alias)),
+    true,
+  );
+  expect(
+    `${alias} opens the Command page`,
+    userHasAccess(commandRoute, member(alias)),
+    true,
+  );
+}
 expect(
   "a stored row cannot open the access manager to a Command rank",
   userHasAccess(adminRoute, member("Command"), undefined, {
@@ -259,8 +280,24 @@ expect(
   true,
 );
 expect(
-  "an admin id opens the access manager",
-  userHasAccess(adminRoute, NOBODY, ADMIN_ID),
+  "a stored row cannot open the Command page to a Command rank",
+  userHasAccess(commandRoute, member("Command"), undefined, {
+    [commandRoute]: ["Command"],
+  }),
+  false,
+);
+expect(
+  "a stored row cannot close the Command page to CommandPlusTeam",
+  userHasAccess(commandRoute, member("CommandPlusTeam"), undefined, {
+    [commandRoute]: [],
+  }),
+  true,
+);
+expect(
+  "an admin id opens both locked pages",
+  [adminRoute, commandRoute].every((route) =>
+    userHasAccess(route, NOBODY, ADMIN_ID),
+  ),
   true,
 );
 
@@ -310,14 +347,20 @@ const navLabels = (roles: readonly string[] | null): string =>
     .join(", ");
 
 const allLabels = headerLinks.map((link) => link.label);
+const LOCKED_LABELS = ["Access Manager", "Command"];
 expect(
-  "with no rows, an employee's sidebar is every item but the access manager",
+  "with no rows, an employee's sidebar is every item but the locked tools",
   navLabels(member("Employee")),
-  allLabels.filter((label) => label !== "Access Manager").join(", "),
+  allLabels.filter((label) => !LOCKED_LABELS.includes(label)).join(", "),
 );
 expect(
   "an employee is never offered the access manager",
   navLabels(member("Employee")).includes("Access Manager"),
+  false,
+);
+expect(
+  "an employee is never offered the Command page",
+  navLabels(member("Employee")).includes("Command"),
   false,
 );
 expect(

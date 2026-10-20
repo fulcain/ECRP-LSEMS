@@ -376,8 +376,8 @@ export function AccessMatrixEditor({
         Each row decides who may open that page. Command+ always keeps every
         page, whatever a row says - the Command ranks and the Command+ Team role
         alike - so an edit can narrow access but never lock HQ out, and never
-        lock the team editing it out either. The Access Manager is the only page
-        the Command ranks cannot open.
+        lock the team editing it out either. The Access Manager and the Command
+        reminders page are the two pages the Command ranks cannot open.
       </p>
 
       {inertOverrides.length > 0 && (

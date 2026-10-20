@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint src",
     "routes:report": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file-if-exists=.env --import ./scripts/lib/ts-config-loader.mjs scripts/routes-report.ts",
+    "reminders:dispatch": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file-if-exists=.env --import ./scripts/lib/ts-config-loader.mjs scripts/reminder-dispatch.ts",
+    "reminders:watch": "npm run reminders:dispatch -- --watch",
     "routes:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/access-check.ts",
     "matrix:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/access-matrix-check.ts",
     "ftp:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/ftp-check.ts",

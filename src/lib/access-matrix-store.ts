@@ -20,26 +20,29 @@
  * stale roles, never a closed door, the same rule the session refresh follows.
  */
 
-import { createClient, type GlobalConfigClient } from "@vercel/global-config";
 import {
   ACCESS_MATRIX_KEY,
   sanitizeMatrix,
   type AccessMatrix,
 } from "@/configs/access-matrix";
-
-/** The connection string env var the SDK reads, newest name first. */
-function connectionString(): string | undefined {
-  return process.env.GLOBAL_CONFIG ?? process.env.EDGE_CONFIG;
-}
+import {
+  isGlobalConfigConfigured,
+  isGlobalConfigWritable,
+  probeGlobalConfigWriteAccess,
+  readGlobalConfigItem,
+  writeGlobalConfigItem,
+  type GlobalConfigWriteAccess,
+  type GlobalConfigWriteFailure,
+} from "@/lib/global-config-store";
 
 /** Whether a matrix can be read at all (the editor shows a setup hint if not). */
 export function isMatrixStoreConfigured(): boolean {
-  return Boolean(connectionString());
+  return isGlobalConfigConfigured();
 }
 
 /** Whether a matrix can be *written* - the editor needs this too. */
 export function isMatrixStoreWritable(): boolean {
-  return Boolean(process.env.VERCEL_API_TOKEN && process.env.GLOBAL_CONFIG_ID);
+  return isGlobalConfigWritable();
 }
 
 function warnOnce(message: string): void {
@@ -49,29 +52,6 @@ function warnOnce(message: string): void {
 }
 
 const warned = new Set<string>();
-
-/**
- * The `teamId` query parameter to send, if any.
- *
- * Vercel only wants this for a **Full Account** token reaching a team: team-
- * and project-scoped tokens already imply their team, and the docs say to omit
- * it for them. Sending it when it isn't wanted is not harmless - a wrong value
- * turns every write into `403 forbidden`, and a project id pasted into this
- * variable is an easy mistake to make. So the value is only used when it really
- * is a team id, and otherwise ignored out loud rather than silently breaking
- * saving.
- */
-function teamIdForRequests(): string | undefined {
-  const raw = process.env.VERCEL_TEAM_ID?.trim();
-  if (!raw) return undefined;
-  if (raw.startsWith("team_")) return raw;
-
-  warnOnce(
-    `VERCEL_TEAM_ID="${raw}" is not a team id (it should start with \`team_\`), so it is being ignored. ` +
-      "A team- or project-scoped token already implies its team; remove the variable unless you are using a Full Account token.",
-  );
-  return undefined;
-}
 
 /**
  * The outcome of a read, keeping "there is nothing stored" apart from "the read
@@ -87,35 +67,35 @@ export type MatrixRead =
   | { ok: false; reason: "not-configured" | "unreadable"; detail?: string };
 
 export async function readAccessMatrixDetailed(): Promise<MatrixRead> {
-  const connection = connectionString();
-  if (!connection) return { ok: false, reason: "not-configured" };
-
-  try {
-    const client: GlobalConfigClient = createClient(connection);
-    const raw = await client.get(ACCESS_MATRIX_KEY);
-    if (!raw) return { ok: true, matrix: null };
-
-    const parsed = sanitizeMatrix(raw);
-    if (!parsed) {
+  const read = await readGlobalConfigItem(ACCESS_MATRIX_KEY);
+  if (!read.ok) {
+    if (read.reason === "unreadable") {
       warnOnce(
-        `the "${ACCESS_MATRIX_KEY}" item is not a matrix - ignoring it and using the registry.`,
-      );
-      return {
-        ok: false,
-        reason: "unreadable",
-        detail: "the stored item is not a matrix",
-      };
-    }
-    if (parsed.dropped.length > 0) {
-      warnOnce(
-        `ignored stale entries in "${ACCESS_MATRIX_KEY}": ${parsed.dropped.join(", ")}`,
+        `could not read the matrix (${read.detail ?? "unknown"}) - using the registry.`,
       );
     }
-    return { ok: true, matrix: parsed.matrix };
-  } catch (err) {
-    warnOnce(`could not read the matrix (${String(err)}) - using the registry.`);
-    return { ok: false, reason: "unreadable", detail: String(err) };
+    return read;
   }
+
+  if (!read.value) return { ok: true, matrix: null };
+
+  const parsed = sanitizeMatrix(read.value);
+  if (!parsed) {
+    warnOnce(
+      `the "${ACCESS_MATRIX_KEY}" item is not a matrix - ignoring it and using the registry.`,
+    );
+    return {
+      ok: false,
+      reason: "unreadable",
+      detail: "the stored item is not a matrix",
+    };
+  }
+  if (parsed.dropped.length > 0) {
+    warnOnce(
+      `ignored stale entries in "${ACCESS_MATRIX_KEY}": ${parsed.dropped.join(", ")}`,
+    );
+  }
+  return { ok: true, matrix: parsed.matrix };
 }
 
 /**
@@ -141,36 +121,14 @@ export async function readAccessMatrix(): Promise<AccessMatrix | null> {
  * asks Vercel for the config's metadata instead: no state is touched, and a
  * correct scope is confirmed before anything is edited.
  */
-export type WriteAccess = "ok" | "unauthorized" | "unknown" | "not-configured";
+export type WriteAccess = GlobalConfigWriteAccess;
 
 export async function probeWriteAccess(): Promise<WriteAccess> {
-  const token = process.env.VERCEL_API_TOKEN;
-  const configId = process.env.GLOBAL_CONFIG_ID;
-  if (!token || !configId) return "not-configured";
-
-  const teamId = teamIdForRequests();
-  const url =
-    `https://api.vercel.com/v1/global-config/${configId}` +
-    (teamId ? `?teamId=${encodeURIComponent(teamId)}` : "");
-
-  try {
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: "no-store",
-    });
-    if (res.ok) return "ok";
-    if (res.status === 401 || res.status === 403) return "unauthorized";
-    return "unknown";
-  } catch {
-    return "unknown";
-  }
+  return probeGlobalConfigWriteAccess();
 }
 
 /** Why a save could not happen, so the editor can say something useful. */
-export type MatrixWriteFailure =
-  | "not-configured"
-  | "rejected"
-  | "network";
+export type MatrixWriteFailure = GlobalConfigWriteFailure;
 
 export type MatrixWriteResult =
   | { ok: true }
@@ -192,43 +150,5 @@ export type MatrixWriteResult =
 export async function writeAccessMatrix(
   matrix: AccessMatrix,
 ): Promise<MatrixWriteResult> {
-  const token = process.env.VERCEL_API_TOKEN;
-  const configId = process.env.GLOBAL_CONFIG_ID;
-  if (!token || !configId) {
-    return {
-      ok: false,
-      reason: "not-configured",
-      detail:
-        "Set VERCEL_API_TOKEN and GLOBAL_CONFIG_ID to save changes from the app.",
-    };
-  }
-
-  const teamId = teamIdForRequests();
-  const url =
-    `https://api.vercel.com/v1/global-config/${configId}/items` +
-    (teamId ? `?teamId=${encodeURIComponent(teamId)}` : "");
-
-  try {
-    const res = await fetch(url, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        items: [
-          { operation: "upsert", key: ACCESS_MATRIX_KEY, value: matrix },
-        ],
-      }),
-      cache: "no-store",
-    });
-
-    const text = await res.text();
-    if (!res.ok) {
-      return { ok: false, reason: "rejected", detail: text.slice(0, 500) };
-    }
-    return { ok: true };
-  } catch (err) {
-    return { ok: false, reason: "network", detail: String(err) };
-  }
+  return writeGlobalConfigItem(ACCESS_MATRIX_KEY, matrix);
 }

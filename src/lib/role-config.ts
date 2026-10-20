@@ -10,12 +10,14 @@
 
 import {
   ADMIN_PAGE_ROLES,
+  COMMAND_TOOL_ROLES,
   DEFAULT_PAGE_ROLES,
   EVERY_PAGE_ROLES,
   ROLES,
   ADMIN_USER_IDS,
   divisionForRoute,
   isAdminOnlyPath,
+  isCommandToolPath,
   type DivisionKey,
   type DivisionRoute,
   type RoleName,
@@ -76,9 +78,10 @@ for (const id of ADMIN_USER_IDS) {
  *      row opens to `DEFAULT_PAGE_ROLES` (every employee), never to a rule in
  *      the repository - so a missing row is a wide default, not a closed door.
  *   3. `EVERY_PAGE_ROLES` is merged back in on every managed page, so a row can
- *      narrow access but never lock HQ out of the app. The Access Manager is the
- *      exception: it is gated on `ADMIN_PAGE_ROLES` in the code and ignores a
- *      stored row entirely.
+ *      narrow access but never lock HQ out of the app. Two kinds of page are
+ *      decided in the code instead and ignore a stored row entirely: the Access
+ *      Manager (`ADMIN_PAGE_ROLES`) and the Command tools
+ *      (`COMMAND_TOOL_ROLES`).
  *   4. A rule whose role ids are all blank denies (fail closed). An explicit
  *      empty row lands here too, which is the intended reading of "nobody".
  */
@@ -109,27 +112,33 @@ export function userHasAccess(
     return true;
   }
 
-  // The CommandPlusTeam tools are decided here and nowhere else. `sanitizeMatrix`
+  // The code-decided tools are decided here and nowhere else. `sanitizeMatrix`
   // already refuses to store an entry for them, and this refuses to honour one
   // even if it exists: the gate must not depend on the store having been
   // sanitized. So for these paths the code's own rule is the only rule.
   const adminOnly = isAdminOnlyPath(pathname);
+  const commandTool = isCommandToolPath(pathname);
+  const codeDecided = adminOnly || commandTool;
 
   // A stored row *is* the rule - that is what "these ranks and no others"
   // means. Without one the page opens to every employee, which is the same
   // answer an unreadable store gives: a matrix problem must never be what
   // closes a page.
-  const stored = adminOnly ? undefined : overrideForPathname(pathname, overrides);
+  const stored = codeDecided
+    ? undefined
+    : overrideForPathname(pathname, overrides);
   const allowed: readonly RoleName[] = adminOnly
     ? ADMIN_PAGE_ROLES
-    : (stored ?? DEFAULT_PAGE_ROLES);
+    : commandTool
+      ? COMMAND_TOOL_ROLES
+      : (stored ?? DEFAULT_PAGE_ROLES);
 
   // Command+ keeps every page, so editing a row can only ever decide who *else*
   // gets in and can never lock HQ out of a page - and "Command+" is both the
   // Command ranks and the team that runs this matrix, neither of which should be
-  // able to lock itself out of the app by its own edit. The CommandPlusTeam
-  // tools are the one exception, being deliberately closed to the Command ranks.
-  const commandPlus = adminOnly ? [] : EVERY_PAGE_ROLES;
+  // able to lock itself out of the app by its own edit. The code-decided tools
+  // are the exception: their own lists already say exactly who gets in.
+  const commandPlus = codeDecided ? [] : EVERY_PAGE_ROLES;
 
   // Resolve the friendly aliases to snowflakes, then intersect, dropping the
   // entries that have no id at all.
@@ -180,6 +189,25 @@ export function canManageAccess(
   if (discordId && ADMIN_USER_IDS.has(discordId)) return true;
   return userRoleIds.some((id) =>
     ADMIN_PAGE_ROLES.some((alias) => ROLES[alias].id === id),
+  );
+}
+
+/**
+ * Whether the member may create and edit Command meeting reminders.
+ *
+ * This is the Command page's gate, read forwards: `COMMAND_TOOL_ROLES` (the
+ * Command+ Team and Legal Faction Management) or a developer id in
+ * `DISCORD_ADMIN_IDS`. The page middleware enforces the same list, and
+ * `/api/reminders` re-checks it here so the endpoints cannot be reached by an
+ * employee who never saw the page.
+ */
+export function canManageReminders(
+  userRoleIds: readonly string[],
+  discordId?: string,
+): boolean {
+  if (discordId && ADMIN_USER_IDS.has(discordId)) return true;
+  return userRoleIds.some((id) =>
+    COMMAND_TOOL_ROLES.some((alias) => ROLES[alias].id === id),
   );
 }
 

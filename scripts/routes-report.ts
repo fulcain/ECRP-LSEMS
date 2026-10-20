@@ -27,7 +27,6 @@ import {
   type AccessMatrix,
 } from "@/configs/access-matrix";
 import {
-  ADMIN_PAGES,
   ADMIN_USER_IDS,
   COMMAND_ACCESS,
   DEFAULT_PAGE_ROLES,
@@ -70,9 +69,9 @@ line();
 line("Every managed page also opens to - a row cannot take this away:");
 line(`  ${aliases(EVERY_PAGE_ROLES)}`);
 line();
-line("Locked in the code, and never stored - the permission editor itself:");
-for (const path of ADMIN_PAGES) {
-  line(`  ${path}  ->  ${aliases(["CommandPlusTeam"])}`);
+line("Locked in the code, and never stored - decided by the code, not a row:");
+for (const path of LOCKED_ROUTES) {
+  line(`  ${path}  ->  ${aliases(fallbackRolesForRoute(path))}`);
 }
 line(`  plus ${ADMIN_USER_IDS.size} DISCORD_ADMIN_IDS entr(ies), which bypass every rule`);
 line();
@@ -82,7 +81,7 @@ for (const entry of MANAGED_ENTRIES) {
   const rows = stored[entry.route];
   const locked = LOCKED_ROUTES.has(entry.route);
   const roles = locked
-    ? (["CommandPlusTeam"] as RoleName[])
+    ? fallbackRolesForRoute(entry.route)
     : (rows ?? fallbackRolesForRoute(entry.route));
   const ids = effectiveRoleIds(entry.route, roles).length;
 

@@ -768,6 +768,37 @@ export function isAdminOnlyPath(pathname: string): boolean {
   );
 }
 
+/**
+ * The Command tools: pages that act on the department's behalf outside the app,
+ * so their access is fixed in the code rather than handed out by a stored row.
+ *
+ * The Command page posts to a Discord channel, which is not a decision the
+ * permission editor should be able to give to the whole department. It opens to
+ * the Command+ Team and Legal Faction Management; `DISCORD_ADMIN_IDS` still
+ * bypasses every rule without being named here. A row is never stored for it,
+ * and `npm run matrix:check` keeps that lock honest.
+ */
+export const COMMAND_TOOL_PAGES: readonly string[] = [
+  ROUTES.management.command,
+];
+
+/** The roles a page in `COMMAND_TOOL_PAGES` opens to. */
+export const COMMAND_TOOL_ROLES: readonly RoleName[] = [
+  "CommandPlusTeam",
+  "LegalFactionManagement",
+];
+
+/**
+ * Whether `pathname` is one of `COMMAND_TOOL_PAGES` - prefix-matched with the
+ * trailing `/` so a sibling page cannot be caught by accident.
+ */
+export function isCommandToolPath(pathname: string): boolean {
+  const path = pathname.split("?")[0];
+  return COMMAND_TOOL_PAGES.some(
+    (toolPath) => path === toolPath || path.startsWith(`${toolPath}/`),
+  );
+}
+
 /** A division whose page `pathname` is (or is inside), for the denial hint. */
 export type DivisionRoute = {
   key: DivisionKey;

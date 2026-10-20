@@ -38,10 +38,13 @@ import {
   ADMIN_PAGES,
   ADMIN_PAGE_ROLES,
   COMMAND_ACCESS,
+  COMMAND_TOOL_PAGES,
+  COMMAND_TOOL_ROLES,
   DEFAULT_PAGE_ROLES,
   EVERY_PAGE_ROLES,
   ROLES,
   isAdminOnlyPath,
+  isCommandToolPath,
   isHiddenFromMatrix,
   type RoleName,
 } from "@/configs/roles";
@@ -164,7 +167,7 @@ for (const entry of MANAGED_ENTRIES) {
   }
 }
 
-// ── The fallback is one role, and the locked page is never in it ───────────
+// ── The fallback is one role, and locked pages are never in it ─────────────
 // A page with no stored row opens to every employee. That is the whole safety
 // story for a missing row and for an unreachable store, so it is pinned here:
 // a fallback that quietly narrowed would turn a store outage into an outage of
@@ -198,13 +201,13 @@ for (const route of LOCKED_ROUTES) {
     false,
   );
   same(
-    `${route} falls back to the permission team, not the department`,
+    `${route} falls back to its own code-decided roles, not the department`,
     fallbackRolesForRoute(route),
-    ADMIN_PAGE_ROLES,
+    isCommandToolPath(route) ? COMMAND_TOOL_ROLES : ADMIN_PAGE_ROLES,
   );
   expect(
     `${route} is a page the store may not rule on`,
-    isAdminOnlyPath(route),
+    isAdminOnlyPath(route) || isCommandToolPath(route),
     true,
   );
 }
@@ -344,6 +347,20 @@ for (const path of ADMIN_PAGES) {
   expect(
     `a page beneath ${path} reads as admin-only`,
     isAdminOnlyPath(`${path}/nested`),
+    true,
+  );
+}
+
+for (const path of COMMAND_TOOL_PAGES) {
+  same(
+    `${path} is gated on the Command tools' own roles`,
+    fallbackRolesForRoute(path),
+    COMMAND_TOOL_ROLES,
+  );
+  expect(`${path} reads as a Command tool`, isCommandToolPath(path), true);
+  expect(
+    `a page beneath ${path} reads as a Command tool`,
+    isCommandToolPath(`${path}/nested`),
     true,
   );
 }

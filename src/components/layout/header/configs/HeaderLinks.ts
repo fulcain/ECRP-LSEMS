@@ -8,6 +8,7 @@ import {
   FileText,
   GraduationCap,
   Link2,
+  Megaphone,
   MessageSquare,
   Plane,
   Puzzle,
@@ -128,6 +129,14 @@ export const headerLinks: HeaderLink[] = [
     label: "Supervisor",
     href: `${ROUTES.management.supervisor}?tab=loa`,
     icon: ClipboardList,
+    group: "Management",
+  },
+  {
+    // Command tools are decided in the code, so the sidebar is filtered with
+    // the same list the route gate enforces and nobody else ever sees this.
+    label: "Command",
+    href: ROUTES.management.command,
+    icon: Megaphone,
     group: "Management",
   },
   {

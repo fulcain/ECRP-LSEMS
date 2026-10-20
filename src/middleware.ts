@@ -36,6 +36,10 @@ const STATIC_EXTENSION = /\.(?:svg|png|jpe?g|gif|webp|avif|ico|bmp|woff2?|ttf|cs
  * download manager carries no session cookie, so guarding it turned every
  * signed-out download into an HTML login page under a `.zip` name.
  *
+ * `/api/reminders/dispatch` is the scheduler's own door: it is called with no
+ * session cookie and authenticates with `CRON_SECRET` itself. It is exact-
+ * matched so the rest of `/api/reminders` stays behind the member's session.
+ *
  * We deliberately use exact-match (`===`) rather than prefix-match here
  * so that any future `/login/<something>` or `/unauthorized/<something>`
  * page stays protected by default.
@@ -45,6 +49,7 @@ function isPublicPath(pathname: string): boolean {
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api/auth") ||
     pathname === "/api/extension" ||
+    pathname === "/api/reminders/dispatch" ||
     pathname === "/favicon.ico" ||
     pathname === "/login" ||
     pathname === "/unauthorized"
