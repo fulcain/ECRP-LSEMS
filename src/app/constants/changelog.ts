@@ -13,12 +13,21 @@ export type ChangeLogEntry = {
 
 export const changeLog: ChangeLogEntry[] = [
   {
+    date: "Oct 20, 2026",
+    changes: [
+      {
+        type: "feature",
+        description: "Added a new Command page that created meeting reminders and posts it. ((Posts it in a specific discord channel.))",
+      },
+    ],
+  },
+
+  {
     date: "Oct 18, 2026",
     changes: [
       {
         type: "feature",
-        description:
-          "Feat add a new Quiz section for FTIs",
+        description: "Feat add a new Quiz section for FTIs.",
       },
     ],
   },
