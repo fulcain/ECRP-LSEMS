@@ -21,18 +21,16 @@ export const REMINDERS_KEY = "command-reminders";
 export const REMINDER_TIME_ZONE = "UTC";
 
 export const REMINDER_TITLE_MAX = 120;
+/** The one title every reminder this page schedules carries. */
+export const REMINDER_TITLE = "Supervisor Meeting";
 /** After this many failed posts the cron stops retrying and the page shows it. */
 export const REMINDER_MAX_ATTEMPTS = 10;
 
 /**
- * The roles a reminder may ping. Deliberately a short list: the Command page
- * announces meetings to the department, not to arbitrary guild roles.
+ * The roles a reminder may ping. Only the Supervisor meeting is scheduled for
+ * now; the Divisional Head and Employee roles return when those meetings do.
  */
-export const REMINDER_ROLE_ALIASES = [
-  "Supervisor",
-  "DivisionalHead",
-  "Employee",
-] as const;
+export const REMINDER_ROLE_ALIASES = ["Supervisor"] as const;
 
 export type ReminderRoleAlias = (typeof REMINDER_ROLE_ALIASES)[number];
 

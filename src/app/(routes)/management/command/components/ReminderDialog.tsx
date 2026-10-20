@@ -33,12 +33,16 @@ import {
   REMINDER_LEAD_UNIT_MINUTES,
   REMINDER_ROLE_ALIASES,
   REMINDER_TIME_ZONE,
-  REMINDER_TITLE_MAX,
+  REMINDER_TITLE,
   type CommandReminder,
   type ReminderLeadUnit,
   type ReminderRoleAlias,
 } from "@/configs/command-reminders";
 import { ROLES } from "@/configs/roles";
+
+const REMINDER_ROLE_NAMES = REMINDER_ROLE_ALIASES.map(
+  (alias) => ROLES[alias].name,
+);
 
 export type ReminderDialogMode =
   | { kind: "create" }
@@ -95,9 +99,8 @@ export function ReminderDialog({
 }: ReminderDialogProps) {
   const editing = mode.kind === "edit" ? mode.reminder : null;
 
-  const [title, setTitle] = useState(editing?.title ?? "");
   const [roleAlias, setRoleAlias] = useState<ReminderRoleAlias | "">(
-    editing?.roleAlias ?? "",
+    editing?.roleAlias ?? REMINDER_ROLE_ALIASES[0],
   );
   const [localTimeZone, setLocalTimeZone] = useState<string | null>(null);
   const [eventDate, setEventDate] = useState("");
@@ -196,7 +199,6 @@ export function ReminderDialog({
 
   const ready =
     enabled &&
-    title.trim().length > 0 &&
     roleAlias !== "" &&
     preview !== null &&
     !preview.passed &&
@@ -216,7 +218,6 @@ export function ReminderDialog({
           action: editing ? "update" : "create",
           id: editing?.id,
           expectedUpdatedAt: editing?.updatedAt,
-          title,
           roleAlias,
           eventDate,
           eventTime,
@@ -260,8 +261,8 @@ export function ReminderDialog({
           </DialogTitle>
           <DialogDescription>
             Choose when the meeting is and how long before it to remind. The
-            reminder is posted to the reminders channel, pinging the role you
-            pick.
+            reminder is posted to the supervisor reminders channel, pinging the
+            Supervisor role.
           </DialogDescription>
         </DialogHeader>
 
@@ -269,28 +270,19 @@ export function ReminderDialog({
           <BuilderSection
             icon={CalendarClock}
             title="What is the meeting?"
-            hint="The title is the line people read first, and the role is who gets pinged."
+            hint="The title is fixed for supervisor meetings; the role is who gets pinged."
           >
-            <BuilderField
-              label="Title"
-              htmlFor="reminder-title"
-              hint={`${title.length}/${REMINDER_TITLE_MAX} characters`}
-            >
-              <Input
-                id="reminder-title"
-                value={title}
-                onChange={(event) =>
-                  setTitle(event.target.value.slice(0, REMINDER_TITLE_MAX))
-                }
-                maxLength={REMINDER_TITLE_MAX}
-                placeholder="Command meeting"
-                required
-              />
+            <BuilderField label="Title">
+              <p className="rounded-md border border-border bg-surface/40 px-3 py-2 text-sm font-medium text-foreground">
+                {REMINDER_TITLE}
+              </p>
             </BuilderField>
 
             <BuilderField
               label="Role to ping"
-              hint="Only the Supervisor, Divisional Head and Employee roles can be pinged."
+              hint={`Only the ${REMINDER_ROLE_NAMES.join(", ")} role${
+                REMINDER_ROLE_NAMES.length === 1 ? "" : "s"
+              } can be pinged.`}
             >
               <Select
                 value={roleAlias || undefined}

@@ -419,7 +419,7 @@ export function ReminderDashboard({
             <EmptyState
               icon={Megaphone}
               title="No reminders yet"
-              description="Schedule the next meeting and the role you pick will be pinged when the time comes."
+              description="Schedule the next supervisor meeting and the Supervisor role will be pinged when the time comes."
               action={
                 <Button type="button" size="sm" onClick={openCreate} disabled={!enabled}>
                   <CalendarPlus />

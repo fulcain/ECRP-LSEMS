@@ -46,7 +46,7 @@ export default async function CommandPage() {
       <PageHeader
         eyebrow="LSEMS Management"
         title="Command"
-        subtitle="Schedule the department's meeting reminders. Meetings are entered in UTC, and the page shows your own local time beside them; the reminder is posted to the reminders channel and pings the role you pick. Discord shows every reader the meeting in their own timezone."
+        subtitle="Schedule the supervisor meeting reminders. Meetings are entered in UTC, and the page shows your own local time beside them; the reminder is posted to the supervisor reminders channel and pings the Supervisor role. Discord shows every reader the meeting in their own timezone."
       />
       <ReminderDashboard
         initialReminders={read.ok ? read.reminders : []}

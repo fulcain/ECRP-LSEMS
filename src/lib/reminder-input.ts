@@ -14,7 +14,7 @@ import {
   REMINDER_LEAD_MAX_MINUTES,
   REMINDER_LEAD_UNIT_MINUTES,
   REMINDER_TIME_ZONE,
-  REMINDER_TITLE_MAX,
+  REMINDER_TITLE,
   isReminderLeadUnit,
   isReminderRoleAlias,
   type ReminderLeadUnit,
@@ -45,22 +45,12 @@ export function parseReminderInput(
   }
   const raw = body as Record<string, unknown>;
 
-  const title =
-    typeof raw.title === "string" ? raw.title.replace(/\s+/g, " ").trim() : "";
-  if (!title) return { ok: false, error: "Give the reminder a title." };
-  if (title.length > REMINDER_TITLE_MAX) {
-    return {
-      ok: false,
-      error: `Keep the title under ${REMINDER_TITLE_MAX} characters.`,
-    };
-  }
+  // The page schedules one meeting, so the title is fixed here rather than
+  // read from the request - a caller cannot rename what is posted.
+  const title = REMINDER_TITLE;
 
   if (!isReminderRoleAlias(raw.roleAlias)) {
-    return {
-      ok: false,
-      error:
-        "Choose a role to ping: Supervisor, Divisional Head or Employee.",
-    };
+    return { ok: false, error: "Choose a role to ping." };
   }
   const roleAlias = raw.roleAlias;
 
