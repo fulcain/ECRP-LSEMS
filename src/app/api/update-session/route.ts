@@ -4,6 +4,16 @@ import { cookies } from "next/headers";
 import { AUTH_COOKIE_NAME } from "@/lib/cookies";
 import { verifySessionToken } from "@/lib/jwt";
 import { fetchWithRetry } from "@/lib/fetch-with-retry";
+import { hasSessionEditAccess } from "@/lib/role-config";
+import {
+  combineValidation,
+  inputText,
+  validateDateString,
+  validateName,
+  validateRowNumber,
+  validateText,
+  validateTimeString,
+} from "@/lib/validation";
 
 /**
  * POST /api/update-session
@@ -17,12 +27,9 @@ import { fetchWithRetry } from "@/lib/fetch-with-retry";
  *
  * Expected body shape (everything is a string):
  *   {
- *     originalDate,        // ← composite key (B/C/D/E/F hold these)
- *     originalYourName,
- *     originalTimeStart,
- *     originalTimeFinish,
- *     originalEmrName,
- *     yourName,            // ← new values for B-G
+ *     originalRowNumber,   // 1-based sheet row
+ *     originalTimestamp,   // optional sanity check
+ *     yourName,
  *     date,
  *     timeStart,
  *     timeFinish,
@@ -53,13 +60,45 @@ export async function POST(req: Request) {
     );
   }
 
+  if (!hasSessionEditAccess(payload.roles, payload.discordId)) {
+    return NextResponse.json(
+      {
+        success: false,
+        error:
+          "Forbidden: updating FT sessions requires FTHead, FTAssHead, or Command.",
+      },
+      { status: 403 },
+    );
+  }
 
   let data: Record<string, unknown>;
   try {
-    data = await req.json();
+    data = (await req.json()) as Record<string, unknown>;
   } catch {
     return NextResponse.json(
       { success: false, error: "Invalid JSON body" },
+      { status: 400 },
+    );
+  }
+
+  const validation = combineValidation(
+    validateRowNumber(data.originalRowNumber),
+    validateText(data.originalTimestamp, "Original timestamp", {
+      required: false,
+      max: 100,
+      allowMarkup: true,
+    }),
+    validateName(data.yourName, "Instructor's name"),
+    validateDateString(data.date, "Session date"),
+    validateTimeString(data.timeStart, "Start time"),
+    validateTimeString(data.timeFinish, "Finish time"),
+    validateName(data.emrName, "EMR's name"),
+    validateText(data.sessionConducted, "Session conducted", { max: 500 }),
+  );
+
+  if (!validation.ok) {
+    return NextResponse.json(
+      { success: false, error: validation.error },
       { status: 400 },
     );
   }
@@ -72,7 +111,14 @@ export async function POST(req: Request) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "update-ft-session",
-          ...data,
+          originalRowNumber: String(data.originalRowNumber).trim(),
+          originalTimestamp: inputText(data.originalTimestamp).trim(),
+          yourName: inputText(data.yourName).trim(),
+          date: inputText(data.date).trim(),
+          timeStart: inputText(data.timeStart).trim(),
+          timeFinish: inputText(data.timeFinish).trim(),
+          emrName: inputText(data.emrName).trim(),
+          sessionConducted: inputText(data.sessionConducted).trim(),
         }),
         redirect: "follow",
       },

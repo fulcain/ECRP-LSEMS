@@ -148,6 +148,7 @@ export function DocumentPicker<T extends string>({
             <Input
               type="search"
               value={query}
+              maxLength={100}
               onChange={(event) => setQuery(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === "Escape" && query) {

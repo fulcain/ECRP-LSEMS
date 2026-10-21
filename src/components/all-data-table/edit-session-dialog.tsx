@@ -27,6 +27,15 @@ import {
   formatDateForSheet,
   formatDisplayDate,
 } from "@/lib/format-date";
+import { FieldError } from "@/components/ui/field-error";
+import {
+  INPUT_LIMITS,
+  validateDateString,
+  validateName,
+  validateText,
+  validateTimeString,
+  validationMessage,
+} from "@/lib/validation";
 
 interface EditSessionDialogProps {
   row: TableDataType | null;
@@ -54,6 +63,7 @@ export function EditSessionDialog({
   setData,
 }: EditSessionDialogProps) {
   const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [dateOpen, setDateOpen] = useState(false);
 
   // Selected date as a proper Date object (from the calendar picker).
@@ -81,6 +91,7 @@ export function EditSessionDialog({
       emrName: String(row["EMR's Name"] ?? ""),
       sessionConducted: String(row["Session Conducted"] ?? ""),
     });
+    setErrors({});
   }, [row]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -88,15 +99,37 @@ export function EditSessionDialog({
 
     if (!row) return;
 
-    if (
-      !form.yourName ||
-      !selectedDate ||
-      !form.timeStart ||
-      !form.timeFinish ||
-      !form.emrName ||
-      !form.sessionConducted
-    ) {
-      toast.error("Fill all required fields");
+    const nextErrors: Record<string, string> = {};
+    const nameError = validationMessage(
+      validateName(form.yourName, "Instructor's name"),
+    );
+    if (nameError) nextErrors.yourName = nameError;
+    if (!selectedDate) {
+      nextErrors.date = "Session date is required.";
+    } else {
+      const dateError = validationMessage(
+        validateDateString(formatDateForSheet(selectedDate), "Session date"),
+      );
+      if (dateError) nextErrors.date = dateError;
+    }
+    const startError = validationMessage(
+      validateTimeString(form.timeStart, "Start time"),
+    );
+    if (startError) nextErrors.timeStart = startError;
+    const finishError = validationMessage(
+      validateTimeString(form.timeFinish, "Finish time"),
+    );
+    if (finishError) nextErrors.timeFinish = finishError;
+    const emrError = validationMessage(validateName(form.emrName, "EMR's name"));
+    if (emrError) nextErrors.emrName = emrError;
+    const conductedError = validationMessage(
+      validateText(form.sessionConducted, "Session conducted", { max: 500 }),
+    );
+    if (conductedError) nextErrors.sessionConducted = conductedError;
+
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) {
+      toast.error(Object.values(nextErrors)[0]);
       return;
     }
 
@@ -106,6 +139,8 @@ export function EditSessionDialog({
       );
       return;
     }
+
+    if (!selectedDate) return;
 
     setSubmitting(true);
 
@@ -195,10 +230,13 @@ export function EditSessionDialog({
                 id="session-instructor-name"
                 placeholder="Enter instructor&apos;s name"
                 value={form.yourName}
+                maxLength={INPUT_LIMITS.name}
+                aria-invalid={Boolean(errors.yourName) || undefined}
                 onChange={(e) =>
                   setForm({ ...form, yourName: e.target.value })
                 }
               />
+              <FieldError message={errors.yourName} />
             </div>
 
             <div className="flex flex-col gap-2">
@@ -227,6 +265,7 @@ export function EditSessionDialog({
                   />
                 </PopoverContent>
               </Popover>
+              <FieldError message={errors.date} />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
@@ -237,6 +276,8 @@ export function EditSessionDialog({
                     id="session-time-start"
                     placeholder="Enter start time"
                     value={form.timeStart}
+                    maxLength={INPUT_LIMITS.short}
+                    aria-invalid={Boolean(errors.timeStart) || undefined}
                     onChange={(e) =>
                       setForm({ ...form, timeStart: e.target.value })
                     }
@@ -245,6 +286,7 @@ export function EditSessionDialog({
                     onFill={(timeStart) => setForm({ ...form, timeStart })}
                   />
                 </div>
+                <FieldError message={errors.timeStart} />
               </div>
               <div className="flex flex-col gap-2">
                 <Label htmlFor="session-time-finish">Time Finish (UTC)</Label>
@@ -253,6 +295,8 @@ export function EditSessionDialog({
                     id="session-time-finish"
                     placeholder="Enter finish time"
                     value={form.timeFinish}
+                    maxLength={INPUT_LIMITS.short}
+                    aria-invalid={Boolean(errors.timeFinish) || undefined}
                     onChange={(e) =>
                       setForm({ ...form, timeFinish: e.target.value })
                     }
@@ -261,6 +305,7 @@ export function EditSessionDialog({
                     onFill={(timeFinish) => setForm({ ...form, timeFinish })}
                   />
                 </div>
+                <FieldError message={errors.timeFinish} />
               </div>
             </div>
 
@@ -270,10 +315,13 @@ export function EditSessionDialog({
                 id="session-emr-name"
                 placeholder="Enter EMR&apos;s name"
                 value={form.emrName}
+                maxLength={INPUT_LIMITS.name}
+                aria-invalid={Boolean(errors.emrName) || undefined}
                 onChange={(e) =>
                   setForm({ ...form, emrName: e.target.value })
                 }
               />
+              <FieldError message={errors.emrName} />
             </div>
 
             <div className="flex flex-col gap-2">
@@ -282,10 +330,13 @@ export function EditSessionDialog({
                 id="session-conducted"
                 placeholder="What was conducted in this session?"
                 value={form.sessionConducted}
+                maxLength={500}
+                aria-invalid={Boolean(errors.sessionConducted) || undefined}
                 onChange={(e) =>
                   setForm({ ...form, sessionConducted: e.target.value })
                 }
               />
+              <FieldError message={errors.sessionConducted} />
             </div>
 
             <DialogFooter>

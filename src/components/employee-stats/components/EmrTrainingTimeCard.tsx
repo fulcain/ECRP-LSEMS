@@ -17,6 +17,12 @@ import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
 import { pickPostTarget } from "@/app/helpers/forumHandoff";
 import { GOV_PM_COMPOSE_URL } from "@/app/helpers/govLinks";
+import {
+  INPUT_LIMITS,
+  validateInteger,
+  validateName,
+  validationMessage,
+} from "@/lib/validation";
 
 import {
   generateEmrTrainingTimeEmailBBCode,
@@ -76,7 +82,19 @@ export function EmrTrainingTimeCard() {
 
   const profileBB = useMemo(() => generateEmrTrainingTimeProfileBBCode(values), [values]);
 
+  const validationError = () => {
+    const message = [
+      validationMessage(validateName(resolvedEmr, "EMR name")),
+      validationMessage(
+        validateInteger(daysLeft, "Days left", { min: 0, max: 3650 }),
+      ),
+    ].find(Boolean);
+    if (message) toast.error(message);
+    return message;
+  };
+
   const handleCopy = async (label: string, content: string) => {
+    if (validationError()) return;
     try {
       await navigator.clipboard.writeText(content);
       toast.success(`${label} copied to clipboard`);
@@ -88,6 +106,7 @@ export function EmrTrainingTimeCard() {
   // The email is sent as a GOV private message, so the title travels with the
   // body and the composer opens with both ready to fill.
   const copyAndOpenPm = () => {
+    if (validationError()) return;
     copyBBCodeAndOpen({
       bbCodeText: emailBB,
       url: GOV_PM_COMPOSE_URL,
@@ -103,7 +122,7 @@ export function EmrTrainingTimeCard() {
   // both: the post is copied (and handed to the extension) and that profile
   // opens with it ready to fill.
   const copyAndOpenProfile = () => {
-    if (!profileBB || !selectedProfileLink) return;
+    if (!profileBB || !selectedProfileLink || validationError()) return;
     copyBBCodeAndOpen({
       bbCodeText: profileBB,
       url: selectedProfileLink,
@@ -165,6 +184,7 @@ export function EmrTrainingTimeCard() {
             <Input
               id="emr-days-left"
               value={daysLeft}
+              maxLength={INPUT_LIMITS.short}
               onChange={(e) => setDaysLeft(e.target.value)}
               placeholder="14"
             />

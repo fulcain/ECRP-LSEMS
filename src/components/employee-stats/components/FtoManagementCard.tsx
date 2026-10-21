@@ -181,6 +181,7 @@ export function FtoManagementCard() {
               <Input
                 placeholder="Filter active FTOs…"
                 value={filter}
+                maxLength={100}
                 onChange={(e) => setFilter(e.target.value)}
                 className="max-w-full sm:max-w-sm"
                 disabled={loading}
@@ -396,6 +397,7 @@ export function FtoManagementCard() {
                       type="number"
                       min={1}
                       value={pageSize}
+                      maxLength={3}
                       aria-label="Rows per page"
                       onChange={(e) => {
                         const next = Number(e.target.value);

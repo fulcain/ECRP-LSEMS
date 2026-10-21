@@ -123,6 +123,7 @@ export function SidebarNav({
             ref={searchRef}
             type="search"
             value={query}
+            maxLength={100}
             onChange={(event) => setQuery(event.target.value)}
             onKeyDown={(event) => {
               if (event.key === "Escape") {

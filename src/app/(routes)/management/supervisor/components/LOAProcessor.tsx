@@ -1,6 +1,7 @@
 "use client";
 
 import { useMedic } from "@/app/context/MedicContext";
+import { toast } from "react-toastify";
 import { loaTemplates } from "@/app/templates/loa";
 import { rankOptions } from "@/app/constants/general/ranks";
 import { DASHBOARD_URL } from "./contract/constants";
@@ -12,6 +13,15 @@ import { pickPostTarget } from "@/app/helpers/forumHandoff";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { FieldError } from "@/components/ui/field-error";
+import {
+  INPUT_LIMITS,
+  validateDateString,
+  validateName,
+  validateText,
+  validateUrl,
+  validationMessage,
+} from "@/lib/validation";
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -166,6 +176,7 @@ export function LOAProcessor() {
   );
   const [quickFill, setQuickFill] = useState("");
   const [quickFillStatus, setQuickFillStatus] = useState<"idle" | "success" | "error">("idle");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   // An expired LOA needs a return-to-work date, so default it to tomorrow - but
   // never over a date that was already picked, which storage now restores.
@@ -313,7 +324,69 @@ export function LOAProcessor() {
   // it, so this is both the page to open and the page the extension fills.
   const requestTopicUrl = loaLink.trim();
 
+  const validateLoa = () => {
+    const nextErrors: Record<string, string> = {};
+    const nameError = validationMessage(
+      validateName(personnelName, "Personnel name"),
+    );
+    if (nameError) nextErrors.personnelName = nameError;
+
+    const linkError = validationMessage(
+      validateUrl(loaLink, "Request form link"),
+    );
+    if (linkError) nextErrors.loaLink = linkError;
+
+    if (isCredentialsEmpty) {
+      nextErrors.credentials =
+        "Set your name, rank and signature on the Staff Page first.";
+    }
+
+    if (selectedTemplate === "approved" || selectedTemplate === "extended") {
+      const isExtended = selectedTemplate === "extended";
+      const start = isExtended ? extendedStartDate : startDate;
+      const end = isExtended ? extendedEndDate : endDate;
+      const startError = validationMessage(
+        validateDateString(start, "Start date"),
+      );
+      if (startError) nextErrors.startDate = startError;
+      const endError = validationMessage(validateDateString(end, "End date"));
+      if (endError) nextErrors.endDate = endError;
+    }
+
+    if (selectedTemplate === "expired") {
+      const returnError = validationMessage(
+        validateDateString(startWorkAt, "Start work at"),
+      );
+      if (returnError) nextErrors.startWorkAt = returnError;
+    }
+
+    if (selectedTemplate === "denied") {
+      const reasons = denialReasons.map((reason) => reason.trim()).filter(Boolean);
+      if (reasons.length === 0) {
+        nextErrors.denialReasons = "At least one denial reason is required.";
+      } else {
+        for (const [index, reason] of reasons.entries()) {
+          const reasonError = validationMessage(
+            validateText(reason, `Denial reason ${index + 1}`, { max: 500 }),
+          );
+          if (reasonError) {
+            nextErrors.denialReasons = reasonError;
+            break;
+          }
+        }
+      }
+    }
+
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) {
+      toast.error(Object.values(nextErrors)[0]);
+      return false;
+    }
+    return true;
+  };
+
   const handleCopy = () => {
+    if (!validateLoa()) return;
     copyBBCode({
       bbCodeText: generatedBBCode,
       post: {
@@ -328,6 +401,7 @@ export function LOAProcessor() {
   // member has scrolled to it.
   const handleCopyAndOpenRequest = () => {
     if (!generatedBBCode || !requestTopicUrl) return;
+    if (!validateLoa()) return;
     copyBBCodeAndOpen({
       bbCodeText: generatedBBCode,
       url: requestTopicUrl,
@@ -343,6 +417,14 @@ export function LOAProcessor() {
   // id to open it with, so anything the extension did there could only replace
   // the member's file. Plain clipboard copy, pasted into the spoiler.
   const handleCopySnippet = () => {
+    const linkError = validationMessage(validateUrl(loaLink, "Request form link"));
+    const startError = validationMessage(validateDateString(startDate, "Start date"));
+    const endError = validationMessage(validateDateString(endDate, "End date"));
+    const firstError = linkError ?? startError ?? endError;
+    if (firstError) {
+      toast.error(firstError);
+      return;
+    }
     copyBBCode({ bbCodeText: personnelSnippet });
   };
 
@@ -447,10 +529,13 @@ export function LOAProcessor() {
                 <Input
                   id="loa-personnel-name"
                   value={personnelName}
+                  maxLength={INPUT_LIMITS.name}
+                  aria-invalid={Boolean(errors.personnelName) || undefined}
                   onChange={(e) => setPersonnelName(e.target.value)}
                   placeholder="Enter full name (e.g., John Smith)"
                   className="border-border bg-surface-hover/50 text-foreground placeholder:text-muted-foreground focus:border-blue-500/50"
                 />
+                <FieldError message={errors.personnelName} />
               </div>
 
               <div>
@@ -770,6 +855,8 @@ export function LOAProcessor() {
                 <Input
                   id="loa-request-form-link"
                   value={loaLink}
+                  maxLength={INPUT_LIMITS.url}
+                  aria-invalid={Boolean(errors.loaLink) || undefined}
                   onChange={(e) => setLoaLink(e.target.value)}
                   placeholder="Paste the request form URL (e.g. https://gov.eclipse-rp.net/viewtopic.php?t=12345)"
                   className="border-border bg-surface-hover/50 text-foreground placeholder:text-muted-foreground focus:border-blue-500/50"
@@ -864,6 +951,8 @@ export function LOAProcessor() {
                 <Input
                   id="loa-request-link"
                   value={loaLink}
+                  maxLength={INPUT_LIMITS.url}
+                  aria-invalid={Boolean(errors.loaLink) || undefined}
                   onChange={(e) => setLoaLink(e.target.value)}
                   placeholder="Paste the request form URL (e.g. https://gov.eclipse-rp.net/viewtopic.php?t=12345)"
                   className="border-border bg-surface-hover/50 text-foreground placeholder:text-muted-foreground focus:border-blue-500/50"

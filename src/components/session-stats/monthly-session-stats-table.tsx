@@ -206,6 +206,7 @@ export function MonthlySessionStatsTable() {
 
             <Input
               placeholder="Filter Your Name..."
+              maxLength={100}
               value={nameFilter}
               onChange={(e) => setNameFilter(e.target.value)}
               className="max-w-sm"

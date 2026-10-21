@@ -118,6 +118,7 @@ function AddRole({ disabled, excluded, onPick }: AddRoleProps) {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search roles..."
+            maxLength={100}
             className="h-8 pl-7 text-xs"
           />
         </div>

@@ -60,6 +60,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { toast } from "react-toastify";
+import {
+  INPUT_LIMITS,
+  validateDateString,
+  validateInteger,
+  validateName,
+  validateText,
+  validateTimeString,
+  validateUrl,
+  validationMessage,
+} from "@/lib/validation";
 
 import { AR_PAPERWORK, isARDocument, type ARDocument } from "./components/paperwork-documents";
 
@@ -470,7 +481,77 @@ export default function ARFormatsPage() {
     url: pickPostTarget(govLink.trim()),
   };
 
+  const validationError = () => {
+    const answers = activeAnswers;
+    const message = [
+      isCertificate || documentKind === "certification"
+        ? validationMessage(validateName(studentName, "Student name"))
+        : undefined,
+      isCertificate || selectedDocument === "mr-certification"
+        ? validationMessage(
+            validateDateString(completionDate, "Completion date"),
+          )
+        : undefined,
+      isIrregularity
+        ? validationMessage(validateDateString(answers.date, "Date"))
+        : undefined,
+      isIrregularity
+        ? validationMessage(validateTimeString(answers.time, "Time"))
+        : undefined,
+      documentKind === "certification"
+        ? activeFields
+            .map((field) => {
+              const value = answers[field.key] ?? "";
+              if (field.type === "passfail") {
+                return ["PASS", "FAIL"].includes(value)
+                  ? undefined
+                  : `${field.label} is required.`;
+              }
+              if (field.label.includes("1-5")) {
+                return validationMessage(
+                  validateInteger(value, field.label, { min: 1, max: 5 }),
+                );
+              }
+              return validationMessage(
+                validateText(value, field.label, {
+                  max: INPUT_LIMITS.notes,
+                  multiline: true,
+                  allowMarkup: field.type === "textarea",
+                }),
+              );
+            })
+            .find(Boolean)
+        : undefined,
+      isIrregularity
+        ? validationMessage(
+            validateText(answers.information, "Information", {
+              max: INPUT_LIMITS.notes,
+              multiline: true,
+            }),
+          )
+        : undefined,
+      isIrregularity
+        ? validationMessage(
+            validateText(
+              answers.nextStep,
+              "What the student was instructed to do next",
+              { max: INPUT_LIMITS.notes, multiline: true },
+            ),
+          )
+        : undefined,
+      validationMessage(validateName(medicCredentials.name, "Your name")),
+      validationMessage(validateName(instructorRank ?? "", "Your rank")),
+      validationMessage(
+        validateUrl(medicCredentials.signature, "Your signature"),
+      ),
+      validationMessage(validateUrl(govLink, "GOV link", { required: false })),
+    ].find(Boolean);
+    if (message) toast.error(message);
+    return message;
+  };
+
   const handleCopy = async () => {
+    if (validationError()) return;
     handOffForumPost(formatPost, bbcodeOutput);
     await navigator.clipboard.writeText(bbcodeOutput);
     flashCopied(setCopied);
@@ -487,6 +568,7 @@ export default function ARFormatsPage() {
   // extension fills that page as it loads, so it is written before the member
   // has scrolled to it.
   const handleCopyAndOpen = () => {
+    if (validationError()) return;
     const url = govLink.trim();
     if (!url) return;
     copyBBCodeAndOpen({
@@ -532,6 +614,7 @@ export default function ARFormatsPage() {
                     <Input
                       id="student-name"
                       value={studentName}
+                      maxLength={INPUT_LIMITS.name}
                       onChange={(event) => setStudentName(event.target.value)}
                       placeholder="Enter the member's name"
                       className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
@@ -546,6 +629,7 @@ export default function ARFormatsPage() {
                   <Input
                     id="gov-link"
                     value={govLink}
+                    maxLength={INPUT_LIMITS.url}
                     onChange={(event) => setGovLink(event.target.value)}
                     placeholder={
                       isCertificate
@@ -576,6 +660,7 @@ export default function ARFormatsPage() {
                       <Input
                         id="completion-date"
                         value={completionDate}
+                        maxLength={INPUT_LIMITS.short}
                         onChange={(event) => setCompletionDate(event.target.value)}
                         placeholder="e.g. 01/OCT/2026"
                         className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
@@ -631,6 +716,7 @@ export default function ARFormatsPage() {
                           <textarea
                             id={`answer-${field.key}`}
                             value={activeAnswers[field.key] ?? ""}
+                            maxLength={INPUT_LIMITS.notes}
                             onChange={(event) =>
                               updateAnswer(field.key, event.target.value)
                             }
@@ -642,6 +728,7 @@ export default function ARFormatsPage() {
                             <Input
                               id={`answer-${field.key}`}
                               value={activeAnswers[field.key] ?? ""}
+                              maxLength={INPUT_LIMITS.notes}
                               onChange={(event) =>
                                 updateAnswer(field.key, event.target.value)
                               }
@@ -664,6 +751,7 @@ export default function ARFormatsPage() {
                           <Input
                             id={`answer-${field.key}`}
                             value={activeAnswers[field.key] ?? ""}
+                            maxLength={INPUT_LIMITS.notes}
                             onChange={(event) =>
                               updateAnswer(field.key, event.target.value)
                             }

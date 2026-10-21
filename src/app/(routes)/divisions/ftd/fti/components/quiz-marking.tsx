@@ -48,6 +48,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { FieldError } from "@/components/ui/field-error";
+import {
+  INPUT_LIMITS,
+  validateName,
+  validateText,
+  validationMessage,
+} from "@/lib/validation";
 
 /* ------------------------------------------------------------------ */
 /*  Form persistence                                                    */
@@ -288,6 +295,7 @@ function LongAnswerSheet() {
 
 export function QuizMarking() {
   const [form, setForm] = useLocalStorage<QuizForm>(FORM_KEY, EMPTY_QUIZ_FORM);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   /* ---- The marker's own details, straight from the Staff Page ---- */
   const { medicCredentials, divisionRanks } = useMedic();
@@ -507,6 +515,32 @@ export function QuizMarking() {
 
   const generateEmail = () => {
     if (!allScored) return;
+    const nextErrors: Record<string, string> = {};
+    const quizError = validationMessage(
+      validateText(form.quizPasted, "Submitted quiz", {
+        max: 50_000,
+        multiline: true,
+        allowMarkup: true,
+      }),
+    );
+    if (quizError) nextErrors.quizPasted = quizError;
+    const nameError = validationMessage(
+      validateName(form.emrName, "EMR's forum name", { required: false }),
+    );
+    if (nameError) nextErrors.emrName = nameError;
+    const commentsError = validationMessage(
+      validateText(form.comments, "Instructor comments", {
+        required: false,
+        max: INPUT_LIMITS.notes,
+        multiline: true,
+      }),
+    );
+    if (commentsError) nextErrors.comments = commentsError;
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) {
+      toast.error(Object.values(nextErrors)[0]);
+      return;
+    }
     let email: string;
     if (passed && fullMarks) {
       email = generatePassedAllCorrectQuizEmail({ markedQuiz });
@@ -748,6 +782,7 @@ export function QuizMarking() {
                       <Input
                         className="w-full sm:w-64"
                         value={form.correctionNotes?.[key] ?? ""}
+                        maxLength={500}
                         onChange={(event) => setCorrectionNote(key, event.target.value)}
                         placeholder="Optional note for the email"
                         aria-label={`Correction note for question ${question.id}`}
@@ -796,6 +831,7 @@ export function QuizMarking() {
                       <Input
                         className="w-full sm:w-64"
                         value={form.correctionNotes?.[key] ?? ""}
+                        maxLength={500}
                         onChange={(event) => setCorrectionNote(key, event.target.value)}
                         placeholder="Optional note for the email"
                         aria-label={`Correction note for longer question ${longQuestionNumber(question.id)}`}
@@ -907,10 +943,13 @@ export function QuizMarking() {
             <Input
               id="quiz-emr-name"
               value={form.emrName}
+              maxLength={INPUT_LIMITS.name}
+              aria-invalid={Boolean(errors.emrName) || undefined}
               onChange={(e) => setEmrName(e.target.value)}
               placeholder="Fname_Lname - filled on the email page by the extension"
               className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground"
             />
+            <FieldError message={errors.emrName} />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="quiz-comments" className="text-xs text-muted-foreground">
@@ -919,10 +958,13 @@ export function QuizMarking() {
             <Textarea
               id="quiz-comments"
               value={form.comments}
+              maxLength={INPUT_LIMITS.notes}
+              aria-invalid={Boolean(errors.comments) || undefined}
               onChange={(e) => setComments(e.target.value)}
               placeholder="Anything you want on the Results section under Instructor Comments..."
               rows={2}
             />
+            <FieldError message={errors.comments} />
           </div>
           <Button size="sm" disabled={!allScored} onClick={generateEmail}>
             <ClipboardCheck className="mr-2 h-4 w-4" />

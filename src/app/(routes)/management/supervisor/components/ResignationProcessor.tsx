@@ -16,6 +16,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
+import {
+  INPUT_LIMITS,
+  validateDateString,
+  validateName,
+  validateText,
+  validateUrl,
+  validationMessage,
+} from "@/lib/validation";
 
 import React, { useMemo } from "react";
 import Link from "next/link";
@@ -137,6 +145,28 @@ export function ResignationProcessor() {
 
   const isCredentialsEmpty =
     !medicCredentials.name || !medicCredentials.signature || !medicCredentials.rank;
+
+  const detailsError = () => {
+    const message = [
+      validationMessage(validateName(personnelName, "Full name")),
+      validationMessage(validateDateString(dischargeDate, "Discharge date")),
+      validationMessage(
+        validateText(dischargeReason, "Discharge reason", {
+          max: INPUT_LIMITS.text,
+        }),
+      ),
+      validationMessage(
+        validateUrl(resignationPostUrl, "Resignation post URL", {
+          required: false,
+        }),
+      ),
+      validationMessage(
+        validateUrl(dischargeRpLink, "Discharge RP link", { required: false }),
+      ),
+    ].find(Boolean);
+    if (message) toast.error(message);
+    return message;
+  };
 
   const reachOutTag = medicCredentials.name
     ? `[Reached out to, ${medicCredentials.name}]`
@@ -496,6 +526,7 @@ export function ResignationProcessor() {
             <Input
               id="resignation-full-name"
               value={personnelName}
+              maxLength={INPUT_LIMITS.name}
               onChange={(e) => setPersonnelName(e.target.value)}
               placeholder="John Smith"
               className="border-border bg-surface-raised text-foreground placeholder:text-muted-foreground"
@@ -532,6 +563,7 @@ export function ResignationProcessor() {
               <Input
                 id="resignation-discharge-date"
                 value={dischargeDate}
+                maxLength={INPUT_LIMITS.short}
                 onChange={(e) => setDischargeDate(e.target.value.toUpperCase())}
                 placeholder="DD/MMM/YYYY"
                 className="flex-1 border-border bg-surface-raised font-mono text-foreground placeholder:text-muted-foreground"
@@ -555,6 +587,7 @@ export function ResignationProcessor() {
             <Input
               id="resignation-discharge-reason"
               value={dischargeReason}
+              maxLength={INPUT_LIMITS.text}
               onChange={(e) => setDischargeReason(e.target.value)}
               placeholder="Reason for discharge"
               className="border-border bg-surface-raised text-foreground placeholder:text-muted-foreground"
@@ -567,6 +600,7 @@ export function ResignationProcessor() {
             <Input
               id="resignation-post-url"
               value={resignationPostUrl}
+              maxLength={INPUT_LIMITS.url}
               onChange={(e) => setResignationPostUrl(e.target.value)}
               placeholder="https://gov.eclipse-rp.net/viewtopic.php?t=..."
               className="border-border bg-surface-raised text-foreground placeholder:text-muted-foreground"
@@ -583,6 +617,7 @@ export function ResignationProcessor() {
             <Input
               id="resignation-rp-link"
               value={dischargeRpLink}
+              maxLength={INPUT_LIMITS.url}
               onChange={(e) => setDischargeRpLink(e.target.value)}
               placeholder="https://..."
               className="border-border bg-surface-raised text-foreground placeholder:text-muted-foreground"
@@ -669,15 +704,16 @@ export function ResignationProcessor() {
                             {sub.label}
                             {sub.copyText && (
                               <button
-                                onClick={() =>
+                                onClick={() => {
+                                  if (detailsError()) return;
                                   copyBBCode({
                                     bbCodeText: sub.copyText!,
                                     post: {
                                       feature: "the resignation processor",
                                       url: pickPostTarget(null, resignationPostUrl),
                                     },
-                                  })
-                                }
+                                  });
+                                }}
                                 className="ml-2 inline-flex items-center gap-1 rounded-md border border-border bg-surface-raised px-2 py-0.5 text-[10px] text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
                               >
                                 <Copy className="h-3 w-3" />
@@ -701,8 +737,10 @@ export function ResignationProcessor() {
                         <div className="mt-2 flex flex-wrap gap-2">
                           {step.copyText && (
                             <button
-                              onClick={() =>                                  copyBBCode({
-                                    bbCodeText: step.copyText!,
+                              onClick={() => {
+                                if (detailsError()) return;
+                                copyBBCode({
+                                  bbCodeText: step.copyText!,
                                     post: {
                                       subject: step.titleText,
                                       feature: "the resignation processor",
@@ -714,8 +752,8 @@ export function ResignationProcessor() {
                                         resignationPostUrl,
                                       ),
                                     },
-                                  })
-                              }
+                                  });
+                              }}
                               className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
                             >
                               <Copy className="h-3 w-3" />
@@ -725,6 +763,7 @@ export function ResignationProcessor() {
                           {step.titleText && (
                             <button
                               onClick={() => {
+                                if (detailsError()) return;
                                 // The whole step goes over, not just the title: the
                                 // member pastes this half by hand, and the extension
                                 // fills a posting page's subject and body together.
@@ -758,6 +797,7 @@ export function ResignationProcessor() {
                               onClick={(event) => {
                                 if (!step.copyText) return;
                                 event.preventDefault();
+                                if (detailsError()) return;
                                 copyBBCodeAndOpen({
                                   bbCodeText: step.copyText,
                                   url: step.action!.url,
@@ -850,8 +890,10 @@ export function ResignationProcessor() {
                       <div className="mt-2 flex flex-wrap gap-2">
                         {item.copyText && (
                           <button
-                            onClick={() =>                                copyBBCode({
-                                  bbCodeText: item.copyText!,
+                            onClick={() => {
+                              if (detailsError()) return;
+                              copyBBCode({
+                                bbCodeText: item.copyText!,
                                   post: {
                                     feature: "the resignation processor",
                                     url: pickPostTarget(
@@ -859,8 +901,8 @@ export function ResignationProcessor() {
                                       resignationPostUrl,
                                     ),
                                   },
-                                })
-                            }
+                                });
+                            }}
                             className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
                           >
                             <Copy className="h-3 w-3" />

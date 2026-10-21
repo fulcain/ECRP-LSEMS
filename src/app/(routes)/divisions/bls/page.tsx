@@ -52,6 +52,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "react-toastify";
+import {
+  INPUT_LIMITS,
+  validateDateString,
+  validateInteger,
+  validateName,
+  validateText,
+  validateTimeString,
+  validateUrl,
+  validationMessage,
+} from "@/lib/validation";
 
 const COPIED_FLASH_MS = 1800;
 
@@ -314,7 +325,46 @@ export default function BLSFormatsPage() {
     url: pickPostTarget(govLink.trim()),
   };
 
+  const validationError = () => {
+    const message = [
+      validationMessage(validateName(applicantName, "Applicant name")),
+      ...(supportsReasons || supportsDenialDetails
+        ? reasons.map((reason, index) =>
+            validationMessage(
+              validateText(reason, `Reason ${index + 1}`, {
+                max: INPUT_LIMITS.notes,
+                multiline: true,
+              }),
+            ),
+          )
+        : []),
+      supportsDenialDetails
+        ? validationMessage(
+            validateInteger(cooldownDays, "Cooldown days", { min: 0, max: 3650 }),
+          )
+        : undefined,
+      supportsDenialDetails
+        ? validationMessage(validateDateString(reapplyDate, "Reapply date"))
+        : undefined,
+      supportsCourseDetails
+        ? validationMessage(validateDateString(courseDate, "Course date"))
+        : undefined,
+      supportsCourseDetails
+        ? validationMessage(validateTimeString(courseTime, "Course time"))
+        : undefined,
+      validationMessage(validateName(medicCredentials.name, "Your name")),
+      validationMessage(validateName(medicCredentials.rank, "Your rank")),
+      validationMessage(
+        validateUrl(medicCredentials.signature, "Your signature"),
+      ),
+      validationMessage(validateUrl(govLink, "GOV link", { required: false })),
+    ].find(Boolean);
+    if (message) toast.error(message);
+    return message;
+  };
+
   const handleCopy = async () => {
+    if (validationError()) return;
     handOffForumPost(formatPost, bbcodeOutput);
     await navigator.clipboard.writeText(bbcodeOutput);
     setCopiedTitleTag(false);
@@ -322,7 +372,7 @@ export default function BLSFormatsPage() {
   };
 
   const handleCopyTitleTag = async () => {
-    if (!fullTitle) return;
+    if (!fullTitle || validationError()) return;
     // The body travels with it: the title is what reaches the clipboard, but a
     // posting page this opens should get both fields filled.
     handOffForumPost(formatPost, bbcodeOutput);
@@ -335,6 +385,7 @@ export default function BLSFormatsPage() {
   // extension fills that page as it loads, so it is written before the member
   // has scrolled to it.
   const handleCopyAndOpen = () => {
+    if (validationError()) return;
     const url = govLink.trim();
     if (!url) return;
     copyBBCodeAndOpen({
@@ -413,6 +464,7 @@ export default function BLSFormatsPage() {
                       <Input
                         id="applicant-name"
                         value={applicantName}
+                        maxLength={INPUT_LIMITS.name}
                         onChange={(event) => setApplicantName(event.target.value)}
                         placeholder="Enter the applicant's name"
                         className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
@@ -427,6 +479,7 @@ export default function BLSFormatsPage() {
                     <Input
                       id="gov-link"
                       value={govLink}
+                      maxLength={INPUT_LIMITS.url}
                       onChange={(event) => setGovLink(event.target.value)}
                       placeholder="Paste the GOV application post URL"
                       className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
@@ -475,6 +528,7 @@ export default function BLSFormatsPage() {
                         <Input
                           id="reapply-date"
                           value={reapplyDate}
+                          maxLength={INPUT_LIMITS.short}
                           onChange={(event) =>
                             setReapplyDate(event.target.value)
                           }
@@ -502,6 +556,7 @@ export default function BLSFormatsPage() {
                         <Input
                           id="course-date"
                           value={courseDate}
+                          maxLength={INPUT_LIMITS.short}
                           onChange={(event) =>
                             setCourseDate(event.target.value)
                           }
@@ -519,6 +574,7 @@ export default function BLSFormatsPage() {
                           <Input
                             id="course-time"
                             value={courseTime}
+                            maxLength={INPUT_LIMITS.short}
                             onChange={(event) =>
                               setCourseTime(event.target.value)
                             }
@@ -554,6 +610,7 @@ export default function BLSFormatsPage() {
                             <Input
                               aria-label={`Reason ${index + 1}`}
                               value={reason}
+                              maxLength={INPUT_LIMITS.notes}
                               onChange={(e) =>
                                 updateReason(index, e.target.value)
                               }

@@ -5,6 +5,7 @@ import { NowTimeButton } from "@/components/now-time-button";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
+import { INPUT_LIMITS, validateName, validationMessage } from "@/lib/validation";
 import {
   Popover,
   PopoverContent,
@@ -238,6 +239,14 @@ export function UpcomingCourseProcessor({
       return;
     }
 
+    const instructorError = validationMessage(
+      validateName(instructor, "Instructor name"),
+    );
+    if (instructorError) {
+      toast.error(instructorError);
+      return;
+    }
+
     const newDateInfo = formatDate(newDatetimeStr);
     if (!newDateInfo) {
       toast.error("Invalid new date/time.");
@@ -466,6 +475,7 @@ export function UpcomingCourseProcessor({
                   id="instructor"
                   type="text"
                   value={instructor}
+                  maxLength={INPUT_LIMITS.name}
                   onChange={(e) => setInstructor(e.target.value)}
                   placeholder="First Last"
                   required

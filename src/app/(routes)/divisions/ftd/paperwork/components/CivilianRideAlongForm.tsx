@@ -30,6 +30,13 @@ import {
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { useHighestRank } from "@/app/hooks/useHighestRank";
 import { rankOptions } from "@/app/constants/general/ranks";
+import {
+  INPUT_LIMITS,
+  validateName,
+  validateText,
+  validateUrl,
+  validationMessage,
+} from "@/lib/validation";
 import { useSession } from "@/app/(routes)/divisions/ftd/paperwork/components/SessionContext";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
 import {
@@ -167,6 +174,31 @@ export default function CivilianRideAlongForm() {
     : null;
 
   const generate = () => {
+    const message = [
+      validationMessage(validateName(form.applicantName, "Applicant name")),
+      validationMessage(validateUrl(details.signature, "Signature image link")),
+      validationMessage(validateName(form.rank, "Rank")),
+      validationMessage(
+        validateText(form.notes, "Notes", {
+          max: INPUT_LIMITS.notes,
+          multiline: true,
+          allowMarkup: true,
+        }),
+      ),
+      ...form.rejectionReasons.map((entry, index) =>
+        validationMessage(
+          validateText(entry.reason, `Rejection reason ${index + 1}`, {
+            max: INPUT_LIMITS.text,
+            multiline: true,
+          }),
+        ),
+      ),
+    ].find(Boolean);
+    if (message) {
+      toast.error(message);
+      return;
+    }
+
     const values: CivilianRideAlongValues = {
       applicantName: form.applicantName,
       signature: details.signature,
@@ -226,6 +258,7 @@ export default function CivilianRideAlongForm() {
               <Input
                 id="ridealong-applicant-name"
                 value={form.applicantName}
+                maxLength={INPUT_LIMITS.name}
                 onChange={(e) => update("applicantName", e.target.value)}
                 placeholder="Firstname Lastname"
                 className="bg-background"
@@ -248,6 +281,7 @@ export default function CivilianRideAlongForm() {
               <Input
                 id="ridealong-gov-link"
                 value={govLink}
+                maxLength={INPUT_LIMITS.url}
                 onChange={(e) => setGovLink(e.target.value)}
                 placeholder="Paste the applicant's application post URL"
                 className="bg-background"
@@ -267,6 +301,7 @@ export default function CivilianRideAlongForm() {
                 <Input
                   id="ridealong-signature"
                   value={details.signature}
+                  maxLength={INPUT_LIMITS.url}
                   onChange={(e) =>
                     setDetails((prev) => ({
                       ...prev,
@@ -388,6 +423,7 @@ export default function CivilianRideAlongForm() {
                       <Input
                         aria-label={`Rejection reason ${index + 1}`}
                         value={r.reason}
+                        maxLength={INPUT_LIMITS.text}
                         onChange={(e) =>
                           updateRejectionReason(index, e.target.value)
                         }
@@ -433,6 +469,7 @@ export default function CivilianRideAlongForm() {
                 <Textarea
                   id="ridealong-notes"
                   value={form.notes}
+                  maxLength={INPUT_LIMITS.notes}
                   onChange={(e) => update("notes", e.target.value)}
                   placeholder="Anything noteworthy about how the session went."
                   className="min-h-[100px] bg-background"

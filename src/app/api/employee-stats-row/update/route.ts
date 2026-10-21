@@ -4,6 +4,14 @@ import { cookies } from "next/headers";
 import { AUTH_COOKIE_NAME } from "@/lib/cookies";
 import { verifySessionToken } from "@/lib/jwt";
 import { fetchWithRetry } from "@/lib/fetch-with-retry";
+import {
+  combineValidation,
+  inputText,
+  validateName,
+  validateOptionalBoolean,
+  validateRowNumber,
+  validateText,
+} from "@/lib/validation";
 
 /**
  * POST /api/employee-stats-row/update
@@ -61,24 +69,27 @@ export async function POST(req: Request) {
     );
   }
 
-  if (
-    data.originalRowNumber === undefined ||
-    data.originalRowNumber === null ||
-    String(data.originalRowNumber) === ""
-  ) {
+  const validation = combineValidation(
+    validateRowNumber(data.originalRowNumber),
+    validateText(data.originalName, "Original name", {
+      required: false,
+      max: 64,
+    }),
+    validateName(data.name, "Name"),
+    validateOptionalBoolean(data.r15, "15 session ribbon"),
+    validateOptionalBoolean(data.r40, "40 session ribbon"),
+    validateOptionalBoolean(data.r100, "100 session ribbon"),
+    validateOptionalBoolean(data.r165, "165 session ribbon"),
+  );
+
+  if (!validation.ok) {
     return NextResponse.json(
-      { success: false, error: "Missing originalRowNumber." },
+      { success: false, error: validation.error },
       { status: 400 },
     );
   }
 
-  const newName = String(data.name ?? "").trim();
-  if (!newName) {
-    return NextResponse.json(
-      { success: false, error: "Missing or empty 'name'." },
-      { status: 400 },
-    );
-  }
+  const newName = inputText(data.name).trim();
 
   // Optional ribbon booleans - when the client supplies any of these,
   // the Apps Script writes them to columns E (5), F (6), G (7), H (8)
@@ -86,14 +97,9 @@ export async function POST(req: Request) {
   // Apps Script can distinguish "not supplied" (skip the cell) from
   // "supplied as false".
   const toBool = (v: unknown): boolean | null => {
-    if (v === undefined) return null;
+    if (v === undefined || v === null) return null;
     if (typeof v === "boolean") return v;
-    if (typeof v === "string") {
-      const t = v.trim().toLowerCase();
-      if (t === "true") return true;
-      if (t === "false") return false;
-    }
-    return null;
+    return inputText(v).trim().toLowerCase() === "true";
   };
   const r15 = toBool(data.r15);
   const r40 = toBool(data.r40);
@@ -108,11 +114,8 @@ export async function POST(req: Request) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "update-employee-stats-row",
-          originalRowNumber: String(data.originalRowNumber),
-          originalName:
-            data.originalName !== undefined
-              ? String(data.originalName).trim()
-              : "",
+          originalRowNumber: String(data.originalRowNumber).trim(),
+          originalName: inputText(data.originalName).trim(),
           name: newName,
           // Only forward the keys the client actually supplied so the
           // Apps Script handler can skip a cell when the boolean is

@@ -1,8 +1,25 @@
 import { NextResponse } from "next/server";
 import { fetchWithRetry } from "@/lib/fetch-with-retry";
+import { inputText, validateName } from "@/lib/validation";
 
 export async function POST(req: Request) {
-  const data = await req.json();
+  let data: Record<string, unknown>;
+  try {
+    data = (await req.json()) as Record<string, unknown>;
+  } catch {
+    return NextResponse.json(
+      { success: false, error: "Invalid JSON body" },
+      { status: 400 },
+    );
+  }
+
+  const validation = validateName(data.emr, "EMR name");
+  if (!validation.ok) {
+    return NextResponse.json(
+      { success: false, error: validation.error },
+      { status: 400 },
+    );
+  }
 
   try {
     const res = await fetchWithRetry(
@@ -14,7 +31,7 @@ export async function POST(req: Request) {
         },
         body: JSON.stringify({
           action: "delete-emr",
-          ...data,
+          emr: inputText(data.emr).trim(),
         }),
         redirect: "follow",
       },

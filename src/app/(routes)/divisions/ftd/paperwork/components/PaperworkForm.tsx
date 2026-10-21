@@ -43,6 +43,14 @@ import { useSession } from "@/app/(routes)/divisions/ftd/paperwork/components/Se
 import { formatTime24h } from "@/app/(routes)/divisions/ftd/paperwork/lib/formatTime";
 import { useHighestRank } from "@/app/hooks/useHighestRank";
 import { rankOptions } from "@/app/constants/general/ranks";
+import {
+  INPUT_LIMITS,
+  validateInteger,
+  validateName,
+  validateTimeString,
+  validateUrl,
+  validationMessage,
+} from "@/lib/validation";
 
 /** Normal (non-reinstatement) Field Training paperwork form. */
 export default function PaperworkForm() {
@@ -186,6 +194,25 @@ export default function PaperworkForm() {
   const config = paperworkConfig[phase];
 
   const generate = () => {
+    const config = paperworkConfig[phase];
+    const message = [
+      validationMessage(validateUrl(details.signature, "Signature image link")),
+      validationMessage(validateName(form.rank, "Rank")),
+      validationMessage(validateName(details.ftoName, "FTO name")),
+      validationMessage(validateName(resolvedEMR, "EMR name")),
+      validationMessage(validateTimeString(details.timeStart, "Start time")),
+      validationMessage(validateTimeString(details.timeFinish, "Finish time")),
+      phase === "certPassed"
+        ? validationMessage(
+            validateInteger(form.callsign, "Callsign", { min: 1, max: 9999 }),
+          )
+        : undefined,
+    ].find(Boolean);
+    if (message) {
+      toast.error(message);
+      return;
+    }
+
     const valuesWithSession = {
       ...form,
       additionalMandatories,
@@ -240,6 +267,7 @@ export default function PaperworkForm() {
                 <Input
                   id="paperwork-signature"
                   value={details.signature}
+                  maxLength={INPUT_LIMITS.url}
                   onChange={(e) =>
                     setDetails((prev) => ({
                       ...prev,
@@ -714,6 +742,7 @@ export default function PaperworkForm() {
                         className="w-24 h-8"
                         placeholder="Number"
                         value={form.callsign}
+                        maxLength={INPUT_LIMITS.short}
                         onChange={(e) => update("callsign", e.target.value)}
                       />
                     </div>

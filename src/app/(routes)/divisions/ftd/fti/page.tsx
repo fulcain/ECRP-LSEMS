@@ -30,6 +30,15 @@ import {
   type PickerGroup,
 } from "@/components/division/document-picker";
 import { Textarea } from "@/components/ui/textarea";
+import { FieldError } from "@/components/ui/field-error";
+import {
+  INPUT_LIMITS,
+  validateDateString,
+  validateName,
+  validateText,
+  validateUrl,
+  validationMessage,
+} from "@/lib/validation";
 import {
   handOffAndOpenForumPost,
   handOffForumPost,
@@ -296,6 +305,7 @@ export default function FtiPage() {
     "fti-fto-profile-link",
     "",
   );
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [savedForm, setSavedForm] = useLocalStorage(FORM_KEY, {
     studentName: "",
     studentRank: "",
@@ -403,6 +413,73 @@ export default function FtiPage() {
   const lastCopyRef = useRef<{ post: { feature: string }; text: string } | null>(
     null,
   );
+
+  const validateTrainerInfo = () => {
+    const nextErrors: Record<string, string> = {};
+    const certifiedError = validationMessage(
+      validateName(certifiedBy, "Certified by"),
+    );
+    if (certifiedError) nextErrors.certifiedBy = certifiedError;
+    const dateError = validationMessage(
+      validateDateString(completionDate, "Date of completion"),
+    );
+    if (dateError) nextErrors.completionDate = dateError;
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) {
+      toast.error(Object.values(nextErrors)[0]);
+      return false;
+    }
+    return true;
+  };
+
+  const validateCertification = () => {
+    const nextErrors: Record<string, string> = {};
+    const studentError = validationMessage(
+      validateName(studentName, "Student name"),
+    );
+    if (studentError) nextErrors.studentName = studentError;
+    const rankError = validationMessage(
+      validateName(studentRank, "Student rank"),
+    );
+    if (rankError) nextErrors.studentRank = rankError;
+    const certifiedError = validationMessage(
+      validateName(certifiedBy, "Certified by"),
+    );
+    if (certifiedError) nextErrors.certifiedBy = certifiedError;
+    const dateError = validationMessage(
+      validateDateString(completionDate, "Date of completion"),
+    );
+    if (dateError) nextErrors.completionDate = dateError;
+    const signatureError = validationMessage(
+      validateText(signature, "Your saved signature", {
+        required: false,
+        max: 500,
+      }),
+    );
+    if (signatureError) nextErrors.signature = signatureError;
+    for (const [key, answer] of [
+      ["answer1", answer1],
+      ["answer2", answer2],
+      ["answer3", answer3],
+      ["answer4", answer4],
+      ["answer5", answer5],
+    ] as const) {
+      const answerError = validationMessage(
+        validateText(answer, `Answer ${key.slice(-1)}`, {
+          max: INPUT_LIMITS.notes,
+          multiline: true,
+        }),
+      );
+      if (answerError) nextErrors[key] = answerError;
+    }
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) {
+      toast.error(Object.values(nextErrors)[0]);
+      return false;
+    }
+    return true;
+  };
+
   const copyToClipboard = async (text: string, label: string) => {
     const post = { feature: `the FTI ${label.toLowerCase()} card` };
     const handedOff = handOffForumPost(post, text);
@@ -423,8 +500,16 @@ export default function FtiPage() {
   // body Copy was pressed for last, marked, so the profile pastes it in once.
   // Nothing copied yet means there is nothing to paste, so it only opens.
   const openFtoProfile = () => {
+    const linkError = validationMessage(
+      validateUrl(ftoProfileLink, "FTO profile link"),
+    );
+    if (linkError) {
+      setErrors((prev) => ({ ...prev, ftoProfileLink: linkError }));
+      toast.error(linkError);
+      return;
+    }
+    setErrors((prev) => ({ ...prev, ftoProfileLink: "" }));
     const url = ftoProfileLink.trim();
-    if (!url) return;
     const last = lastCopyRef.current;
     if (last) handOffAndOpenForumPost({ ...last.post, url }, last.text);
     window.open(url, "_blank", "noopener,noreferrer");
@@ -477,9 +562,12 @@ export default function FtiPage() {
                 <Input
                   id="fti-certified-by"
                   value={certifiedBy}
+                  maxLength={INPUT_LIMITS.name}
+                  aria-invalid={Boolean(errors.certifiedBy) || undefined}
                   onChange={(e) => setCertifiedBy(e.target.value)}
                   placeholder="Rank Fname Lname"
                 />
+                <FieldError message={errors.certifiedBy} />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="fti-completion-date" className="text-xs text-muted-foreground">
@@ -488,15 +576,22 @@ export default function FtiPage() {
                 <Input
                   id="fti-completion-date"
                   value={completionDate}
+                  maxLength={INPUT_LIMITS.short}
+                  aria-invalid={Boolean(errors.completionDate) || undefined}
                   onChange={(e) => setCompletionDate(e.target.value)}
                   placeholder="DD/MMM/YYYY"
                 />
+                <FieldError message={errors.completionDate} />
               </div>
             </div>
 
             <Button
               size="sm"
-              onClick={() => copyToClipboard(trainerInfoBBCode, "Trainer info")}
+              onClick={() => {
+                if (validateTrainerInfo()) {
+                  copyToClipboard(trainerInfoBBCode, "Trainer info");
+                }
+              }}
               className="px-4 mt-3"
             >
               <Copy className="h-4 w-4 mr-2" />
@@ -527,18 +622,24 @@ export default function FtiPage() {
                   <Input
                     id="fti-student-name"
                     value={studentName}
+                    maxLength={INPUT_LIMITS.name}
+                    aria-invalid={Boolean(errors.studentName) || undefined}
                     onChange={(e) => setStudentName(e.target.value)}
                     placeholder="Fname Lname"
                   />
+                  <FieldError message={errors.studentName} />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="fti-student-rank" className="text-xs text-muted-foreground">Student Rank</Label>
                   <Input
                     id="fti-student-rank"
                     value={studentRank}
+                    maxLength={INPUT_LIMITS.short}
+                    aria-invalid={Boolean(errors.studentRank) || undefined}
                     onChange={(e) => setStudentRank(e.target.value)}
                     placeholder="EMR"
                   />
+                  <FieldError message={errors.studentRank} />
                 </div>
               </div>
 
@@ -555,10 +656,13 @@ export default function FtiPage() {
                   <Textarea
                     id="fti-answer-1"
                     value={answer1}
+                    maxLength={INPUT_LIMITS.notes}
+                    aria-invalid={Boolean(errors.answer1) || undefined}
                     onChange={(e) => setAnswer1(e.target.value)}
                     placeholder="Your answer..."
                     rows={2}
                   />
+                  <FieldError message={errors.answer1} />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="fti-answer-2" className="text-xs text-muted-foreground">
@@ -567,10 +671,13 @@ export default function FtiPage() {
                   <Textarea
                     id="fti-answer-2"
                     value={answer2}
+                    maxLength={INPUT_LIMITS.notes}
+                    aria-invalid={Boolean(errors.answer2) || undefined}
                     onChange={(e) => setAnswer2(e.target.value)}
                     placeholder="Your answer..."
                     rows={2}
                   />
+                  <FieldError message={errors.answer2} />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="fti-answer-3" className="text-xs text-muted-foreground">
@@ -580,10 +687,13 @@ export default function FtiPage() {
                   <Textarea
                     id="fti-answer-3"
                     value={answer3}
+                    maxLength={INPUT_LIMITS.notes}
+                    aria-invalid={Boolean(errors.answer3) || undefined}
                     onChange={(e) => setAnswer3(e.target.value)}
                     placeholder="Your answer..."
                     rows={2}
                   />
+                  <FieldError message={errors.answer3} />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="fti-answer-4" className="text-xs text-muted-foreground">
@@ -593,10 +703,13 @@ export default function FtiPage() {
                   <Textarea
                     id="fti-answer-4"
                     value={answer4}
+                    maxLength={INPUT_LIMITS.notes}
+                    aria-invalid={Boolean(errors.answer4) || undefined}
                     onChange={(e) => setAnswer4(e.target.value)}
                     placeholder="Your answer..."
                     rows={2}
                   />
+                  <FieldError message={errors.answer4} />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="fti-answer-5" className="text-xs text-muted-foreground">
@@ -605,10 +718,13 @@ export default function FtiPage() {
                   <Textarea
                     id="fti-answer-5"
                     value={answer5}
+                    maxLength={INPUT_LIMITS.notes}
+                    aria-invalid={Boolean(errors.answer5) || undefined}
                     onChange={(e) => setAnswer5(e.target.value)}
                     placeholder="Your answer..."
                     rows={2}
                   />
+                  <FieldError message={errors.answer5} />
                 </div>
               </div>
 
@@ -619,10 +735,13 @@ export default function FtiPage() {
                 <Input
                   id="fti-profile-link"
                   value={ftoProfileLink}
+                  maxLength={INPUT_LIMITS.url}
+                  aria-invalid={Boolean(errors.ftoProfileLink) || undefined}
                   onChange={(e) => setFtoProfileLink(e.target.value)}
                   placeholder="Paste the FTO's student profile post URL"
                   className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground"
                 />
+                <FieldError message={errors.ftoProfileLink} />
                 <p className="text-xs text-muted-foreground">
                   The profile this certification paperwork belongs in - Open FTO
                   Profile opens it.
@@ -632,7 +751,11 @@ export default function FtiPage() {
               <div className="flex flex-wrap gap-2">
                 <Button
                   size="sm"
-                  onClick={() => copyToClipboard(certBBCode, "Certification paperwork")}
+                  onClick={() => {
+                    if (validateCertification()) {
+                      copyToClipboard(certBBCode, "Certification paperwork");
+                    }
+                  }}
                   className="px-6"
                 >
                   <Copy className="h-4 w-4 mr-2" />
@@ -686,7 +809,11 @@ export default function FtiPage() {
               <div className="flex flex-wrap gap-2">
                 <Button
                   size="sm"
-                  onClick={() => copyToClipboard(divisionalBBCode, "Divisional file")}
+                  onClick={() => {
+                    if (validateCertification()) {
+                      copyToClipboard(divisionalBBCode, "Divisional file");
+                    }
+                  }}
                   className="px-6"
                 >
                   <Copy className="h-4 w-4 mr-2" />

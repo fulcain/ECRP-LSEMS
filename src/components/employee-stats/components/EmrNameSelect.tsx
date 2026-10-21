@@ -3,6 +3,7 @@
 import { useId, useState } from "react";
 
 import { Input } from "@/components/ui/input";
+import { INPUT_LIMITS } from "@/lib/validation";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -80,6 +81,7 @@ export function EmrNameSelect({
                   aria-label="Search EMR"
                   placeholder="Search EMR..."
                   value={search}
+                  maxLength={INPUT_LIMITS.name}
                   onChange={(e) => setSearch(e.target.value)}
                   className="mb-2"
                   autoFocus
@@ -101,6 +103,7 @@ export function EmrNameSelect({
       <Input
         aria-label={`${label} (manual entry)`}
         value={manualValue}
+        maxLength={INPUT_LIMITS.name}
         onChange={(e) => {
           onManualChange(e.target.value);
           if (e.target.value) onValueChange("");

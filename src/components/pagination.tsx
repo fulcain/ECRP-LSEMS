@@ -61,6 +61,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         <Input
           type="number"
           min={1}
+          max={200}
           value={pageSize}
           aria-label="Rows per page"
           onChange={(e) => {

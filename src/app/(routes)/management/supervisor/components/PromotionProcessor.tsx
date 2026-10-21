@@ -12,6 +12,13 @@ import {
   GOV_STAFF_ROSTER_EDIT_URL,
 } from "@/app/helpers/govLinks";
 import { userGroupsHref } from "@/lib/user-groups";
+import {
+  INPUT_LIMITS,
+  validateDateString,
+  validateName,
+  validateUrl,
+  validationMessage,
+} from "@/lib/validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -110,6 +117,21 @@ export function PromotionProcessor() {
     !medicCredentials.name || !medicCredentials.signature || !medicCredentials.rank;
 
   const currentRankInfo = rankInfo[newRank];
+
+  const detailsError = () => {
+    const message = [
+      validationMessage(validateName(personnelName, "Full name")),
+      validationMessage(validateName(previousRank, "Previous rank")),
+      validationMessage(validateDateString(promotionDate, "Promotion date")),
+      validationMessage(
+        validateUrl(personnelFileUrl, "Personnel file URL", {
+          required: false,
+        }),
+      ),
+    ].find(Boolean);
+    if (message) toast.error(message);
+    return message;
+  };
 
   const emailTemplate = useMemo(
     () => promotionEmailTemplates.find((t) => t.value === newRank),
@@ -280,6 +302,7 @@ export function PromotionProcessor() {
             <Input
               id="promotion-full-name"
               value={personnelName}
+              maxLength={INPUT_LIMITS.name}
               onChange={(e) => setPersonnelName(e.target.value)}
               placeholder="John Smith"
               className="border-border bg-surface-raised text-foreground placeholder:text-muted-foreground"
@@ -308,6 +331,7 @@ export function PromotionProcessor() {
             <Input
               id="promotion-previous-rank"
               value={previousRank}
+              maxLength={INPUT_LIMITS.name}
               onChange={(e) => setPreviousRank(e.target.value)}
               placeholder="e.g. EMT-B, EMT-I"
               className="border-border bg-surface-raised text-foreground placeholder:text-muted-foreground"
@@ -318,6 +342,7 @@ export function PromotionProcessor() {
             <Input
               id="promotion-date"
               value={promotionDate}
+              maxLength={INPUT_LIMITS.short}
               onChange={(e) => setPromotionDate(e.target.value.toUpperCase())}
               placeholder="DD/MMM/YYYY"
               className="border-border bg-surface-raised font-mono text-foreground placeholder:text-muted-foreground"
@@ -377,6 +402,7 @@ export function PromotionProcessor() {
                           <>
                             <Input
                               value={personnelFileUrl}
+                              maxLength={INPUT_LIMITS.url}
                               onChange={(e) => setPersonnelFileUrl(e.target.value)}
                               placeholder="Personnel File Topic URL"
                               className="h-7 w-full border-border bg-surface-raised text-xs text-foreground placeholder:text-muted-foreground sm:w-64"
@@ -391,7 +417,8 @@ export function PromotionProcessor() {
                         )}
                         {step.copyText.length > 0 && (
                           <button
-                            onClick={() =>
+                            onClick={() => {
+                              if (detailsError()) return;
                               copyBBCode({
                                 bbCodeText: step.copyText,
                                 post: {
@@ -401,8 +428,8 @@ export function PromotionProcessor() {
                                   // and that topic is where most steps post.
                                   url: pickPostTarget(step.action?.url, personnelFileUrl),
                                 },
-                              })
-                            }
+                              });
+                            }}
                             className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
                           >
                             <Copy className="h-3 w-3" />
@@ -412,6 +439,7 @@ export function PromotionProcessor() {
                         {step.titleText && (
                           <button
                             onClick={() => {
+                              if (detailsError()) return;
                               // The whole step goes over, not just the title: the
                               // member pastes this half by hand, and the extension
                               // fills a posting page's subject and body together.
@@ -433,15 +461,16 @@ export function PromotionProcessor() {
                         )}
                         {step.secondaryCopyText && (
                           <button
-                            onClick={() =>
+                            onClick={() => {
+                              if (detailsError()) return;
                               copyBBCode({
                                 bbCodeText: step.secondaryCopyText!,
                                 post: {
                                   feature: "the promotion processor",
                                   url: pickPostTarget(null, personnelFileUrl),
                                 },
-                              })
-                            }
+                              });
+                            }}
                             className="inline-flex items-center gap-1.5 rounded-md border border-amber-300/30 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-2.5 py-1 text-xs text-amber-700 dark:text-amber-300 transition-colors hover:bg-amber-500/20 hover:text-amber-800 dark:hover:text-amber-200"
                           >
                             <Copy className="h-3 w-3" />
@@ -468,6 +497,7 @@ export function PromotionProcessor() {
                             onClick={(event) => {
                               if (!step.copyText) return;
                               event.preventDefault();
+                              if (detailsError()) return;
                               copyBBCodeAndOpen({
                                 bbCodeText: step.copyText,
                                 url: step.action!.url,

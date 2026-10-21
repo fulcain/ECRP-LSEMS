@@ -22,10 +22,16 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { TableDataType } from "@/lib/types";
+import { parseDate, formatDisplayDate } from "@/lib/format-date";
+import { FieldError } from "@/components/ui/field-error";
 import {
-  parseDate,
-  formatDisplayDate,
-} from "@/lib/format-date";
+  INPUT_LIMITS,
+  validateDateString,
+  validateName,
+  validateText,
+  validateUrl,
+  validationMessage,
+} from "@/lib/validation";
 
 interface EditEMRDialogProps {
   row: TableDataType | null;
@@ -50,6 +56,7 @@ export function EditEMRDialog({
   setData,
 }: EditEMRDialogProps) {
   const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Popover open states
   const [startOpen, setStartOpen] = useState(false);
@@ -84,6 +91,7 @@ export function EditEMRDialog({
     setStartDate(parseDate(String(row["Start Date"] ?? "")) ?? undefined);
     setTrainingReminderDate(parseDate(String(row["Training Reminder Date"] ?? "")) ?? undefined);
     setFourWeeksDate(parseDate(String(row["4 Weeks"] ?? "")) ?? undefined);
+    setErrors({});
   }, [row]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -91,16 +99,39 @@ export function EditEMRDialog({
 
     if (!row) return;
 
-    if (
-      !form.EMR ||
-      !form.profileLink ||
-      !trainingReminderDate ||
-      !startDate ||
-      !fourWeeksDate
-    ) {
-      toast.error("Fill all required fields");
+    const nextErrors: Record<string, string> = {};
+    const nameError = validationMessage(validateName(form.EMR, "EMR name"));
+    if (nameError) nextErrors.EMR = nameError;
+    const linkError = validationMessage(
+      validateUrl(form.profileLink, "EMR profile link"),
+    );
+    if (linkError) nextErrors.profileLink = linkError;
+    const notesError = validationMessage(
+      validateText(form.notes, "Notes", { required: false, max: INPUT_LIMITS.notes }),
+    );
+    if (notesError) nextErrors.notes = notesError;
+    if (!startDate) {
+      nextErrors.startDate = "Start date is required.";
+    } else {
+      const startError = validationMessage(
+        validateDateString(formatDisplayDate(startDate), "Start date"),
+      );
+      if (startError) nextErrors.startDate = startError;
+    }
+    if (!trainingReminderDate) {
+      nextErrors.trainingReminder = "Training reminder date is required.";
+    }
+    if (!fourWeeksDate) {
+      nextErrors.fourWeeks = "Four weeks date is required.";
+    }
+
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) {
+      toast.error(Object.values(nextErrors)[0]);
       return;
     }
+
+    if (!startDate || !trainingReminderDate || !fourWeeksDate) return;
 
     setSubmitting(true);
 
@@ -180,8 +211,11 @@ export function EditEMRDialog({
                 id="edit-emr-name"
                 placeholder="Enter EMR's Name"
                 value={form.EMR}
+                maxLength={INPUT_LIMITS.name}
+                aria-invalid={Boolean(errors.EMR) || undefined}
                 onChange={(e) => setForm({ ...form, EMR: e.target.value })}
               />
+              <FieldError message={errors.EMR} />
             </div>
 
             <div className="flex flex-col gap-2">
@@ -190,10 +224,13 @@ export function EditEMRDialog({
                 id="edit-emr-profile-link"
                 placeholder="Enter EMR profile URL"
                 value={form.profileLink}
+                maxLength={INPUT_LIMITS.url}
+                aria-invalid={Boolean(errors.profileLink) || undefined}
                 onChange={(e) =>
                   setForm({ ...form, profileLink: e.target.value })
                 }
               />
+              <FieldError message={errors.profileLink} />
             </div>
 
             <div className="flex flex-col gap-2">
@@ -229,6 +266,7 @@ export function EditEMRDialog({
                   />
                 </PopoverContent>
               </Popover>
+              <FieldError message={errors.startDate} />
             </div>
 
             <div className="flex flex-col gap-2">
@@ -259,6 +297,7 @@ export function EditEMRDialog({
                   />
                 </PopoverContent>
               </Popover>
+              <FieldError message={errors.trainingReminder} />
             </div>
 
             <div className="flex flex-col gap-2">
@@ -287,6 +326,7 @@ export function EditEMRDialog({
                   />
                 </PopoverContent>
               </Popover>
+              <FieldError message={errors.fourWeeks} />
             </div>
 
             <div className="flex items-center gap-2">
@@ -328,8 +368,11 @@ export function EditEMRDialog({
                 id="edit-emr-notes"
                 placeholder="Notes"
                 value={form.notes}
+                maxLength={INPUT_LIMITS.notes}
+                aria-invalid={Boolean(errors.notes) || undefined}
                 onChange={(e) => setForm({ ...form, notes: e.target.value })}
               />
+              <FieldError message={errors.notes} />
             </div>
 
             <DialogFooter>

@@ -24,6 +24,13 @@ import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
 import { pickPostTarget } from "@/app/helpers/forumHandoff";
 import { GOV_PM_COMPOSE_URL } from "@/app/helpers/govLinks";
+import {
+  INPUT_LIMITS,
+  validateDateString,
+  validateName,
+  validateText,
+  validationMessage,
+} from "@/lib/validation";
 
 import {
   generateDischargeEmailBBCode,
@@ -92,7 +99,21 @@ export function EmrDischargeCard() {
     [letterName, dischargeDate, reason, salutation, medicCredentials],
   );
 
+  const validationError = () => {
+    const message = [
+      validationMessage(validateName(resolvedName, "Name")),
+      validationMessage(validateText(salutation, "Salutation")),
+      validationMessage(validateDateString(dischargeDate, "Discharge date")),
+      validationMessage(
+        validateText(reason, "Reason", { max: INPUT_LIMITS.text }),
+      ),
+    ].find(Boolean);
+    if (message) toast.error(message);
+    return message;
+  };
+
   const handleCopy = async () => {
+    if (validationError()) return;
     try {
       await navigator.clipboard.writeText(bbcode);
       toast.success("Discharge email copied to clipboard");
@@ -104,6 +125,7 @@ export function EmrDischargeCard() {
   // The email is sent as a GOV private message, so the title travels with the
   // body and the composer opens with both ready to fill.
   const copyAndOpenPm = () => {
+    if (validationError()) return;
     copyBBCodeAndOpen({
       bbCodeText: bbcode,
       url: GOV_PM_COMPOSE_URL,
@@ -187,6 +209,7 @@ export function EmrDischargeCard() {
               <Input
                 id="discharge-date"
                 value={dischargeDate}
+                maxLength={INPUT_LIMITS.short}
                 onChange={(e) => setDischargeDate(e.target.value)}
                 placeholder="23/AUG/2026"
                 className="flex-1"
@@ -207,6 +230,7 @@ export function EmrDischargeCard() {
             <Input
               id="discharge-reason"
               value={reason}
+              maxLength={INPUT_LIMITS.text}
               onChange={(e) => setReason(e.target.value)}
               placeholder="Failure to complete training within the designated timeframe"
             />

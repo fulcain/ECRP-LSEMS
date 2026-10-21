@@ -26,6 +26,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { FieldError } from "@/components/ui/field-error";
+import { toast } from "react-toastify";
+import {
+  INPUT_LIMITS,
+  validateDateString,
+  validateName,
+  validateText,
+  validateTimeString,
+  validateUrl,
+  validationMessage,
+} from "@/lib/validation";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import {
@@ -138,6 +149,7 @@ export function CourseReportsProcessor({
     [{ name: "", company: "" }],
   );
   const [copied, setCopied] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const copyTimerRef = useRef<number | undefined>(undefined);
 
   // Clear any in-flight "Copied!" flash if the component unmounts mid-flash.
@@ -294,7 +306,126 @@ export function CourseReportsProcessor({
     feature: "the BLS course report generator",
   };
 
+  const validateReport = () => {
+    const nextErrors: Record<string, string> = {};
+
+    if (!date) {
+      nextErrors.date = "Course date is required.";
+    } else {
+      const dateError = validationMessage(
+        validateDateString(format(date, "dd/MMM/yyyy"), "Course date"),
+      );
+      if (dateError) nextErrors.date = dateError;
+    }
+
+    const timeError = validationMessage(
+      validateTimeString(time, "Course time"),
+    );
+    if (timeError) nextErrors.time = timeError;
+
+    const locationError = validationMessage(
+      validateText(location, "Location", { max: 100 }),
+    );
+    if (locationError) nextErrors.location = locationError;
+
+    const typedInstructors = instructorsInput
+      .split("&")
+      .map((entry) => entry.trim())
+      .filter(Boolean);
+    const effectiveInstructors = isMe
+      ? meInstructor
+        ? [meInstructor]
+        : []
+      : typedInstructors;
+    if (effectiveInstructors.length === 0) {
+      nextErrors.instructors = isMe
+        ? "Save your name and rank on the Staff Page first."
+        : "At least one instructor is required.";
+    } else {
+      for (const [index, instructor] of effectiveInstructors.entries()) {
+        const instructorError = validationMessage(
+          validateName(instructor, `Instructor ${index + 1}`),
+        );
+        if (instructorError) {
+          nextErrors.instructors = instructorError;
+          break;
+        }
+      }
+    }
+
+    const graduateNames = graduates
+      .map((graduate) => graduate.name.trim())
+      .filter(Boolean);
+    if (graduateNames.length === 0) {
+      nextErrors.graduates = "At least one graduate is required.";
+    } else {
+      for (const [index, name] of graduateNames.entries()) {
+        const nameError = validationMessage(
+          validateName(name, `Graduate ${index + 1}`),
+        );
+        if (nameError) {
+          nextErrors.graduates = nameError;
+          break;
+        }
+      }
+    }
+
+    if (reportType === "ots") {
+      const studentNames = students
+        .map((student) => student.name.trim())
+        .filter(Boolean);
+      if (studentNames.length === 0) {
+        nextErrors.students = "At least one student is required.";
+      } else {
+        for (const [index, name] of studentNames.entries()) {
+          const nameError = validationMessage(
+            validateName(name, `Student ${index + 1}`),
+          );
+          if (nameError) {
+            nextErrors.students = nameError;
+            break;
+          }
+        }
+      }
+
+      const officerNames = officersInput
+        .split("&")
+        .map((entry) => entry.trim())
+        .filter(Boolean);
+      if (officerNames.length === 0) {
+        nextErrors.officers = "At least one officer is required.";
+      } else {
+        for (const [index, name] of officerNames.entries()) {
+          const nameError = validationMessage(
+            validateName(name, `Officer ${index + 1}`),
+          );
+          if (nameError) {
+            nextErrors.officers = nameError;
+            break;
+          }
+        }
+      }
+    }
+
+    const receiptError = validationMessage(
+      validateUrl(receiptUrl, "Receipt URL", { required: false }),
+    );
+    if (receiptError) nextErrors.receiptUrl = receiptError;
+    const weazelReceiptError = validationMessage(
+      validateUrl(receiptWeazelUrl, "Weazel receipt URL", { required: false }),
+    );
+    if (weazelReceiptError) nextErrors.receiptWeazelUrl = weazelReceiptError;
+
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) {
+      toast.error(Object.values(nextErrors)[0]);
+      return false;
+    }
+    return true;
+  };
+
   const handleCopy = async () => {
+    if (!validateReport()) return;
     handOffForumPost(reportPost, bbcodeOutput);
     await navigator.clipboard.writeText(bbcodeOutput);
     flashCopied();
@@ -304,6 +435,7 @@ export function CourseReportsProcessor({
   // user-activation window, then copy. The post is marked as this button's, so
   // the page that just opened pastes it in once.
   const handleCopyAndOpen = () => {
+    if (!validateReport()) return;
     window.open(REPORT_TOPIC_URLS[reportType], "_blank", "noopener,noreferrer");
     handOffAndOpenForumPost(reportPost, bbcodeOutput);
     void navigator.clipboard.writeText(bbcodeOutput).then(flashCopied);
@@ -472,6 +604,8 @@ export function CourseReportsProcessor({
                       <span className="font-mono">DD/MMM/YYYY</span>. Time is
                       24-hour <span className="font-mono">HH:MM</span>.
                     </p>
+                    <FieldError message={errors.date} />
+                    <FieldError message={errors.time} />
                   </div>
                 </div>
 
@@ -510,6 +644,8 @@ export function CourseReportsProcessor({
 
                   <Input
                     value={isMe ? meInstructor : instructorsInput}
+                    maxLength={INPUT_LIMITS.name}
+                    aria-invalid={Boolean(errors.instructors) || undefined}
                     onChange={(e) => setInstructorsInput(e.target.value)}
                     disabled={isMe}
                     placeholder="RANK NAME"
@@ -532,6 +668,7 @@ export function CourseReportsProcessor({
                       </>
                     )}
                   </p>
+                  <FieldError message={errors.instructors} />
                 </div>
 
                 {/* ── Officer(s) name (OTS only) ── */}
@@ -545,6 +682,8 @@ export function CourseReportsProcessor({
                     </p>
                     <Input
                       value={officersInput}
+                    maxLength={INPUT_LIMITS.name}
+                    aria-invalid={Boolean(errors.officers) || undefined}
                       onChange={(e) => setOfficersInput(e.target.value)}
                       placeholder="Officer Name"
                       className="w-full border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-violet-500/50 focus-visible:ring-2 focus-visible:ring-violet-400/30 dark:focus-visible:ring-violet-500/30"
@@ -584,6 +723,8 @@ export function CourseReportsProcessor({
                             <Input
                               aria-label={`Student ${index + 1} name`}
                               value={student.name}
+                    maxLength={INPUT_LIMITS.name}
+                    aria-invalid={Boolean(errors.students) || undefined}
                               onChange={(e) =>
                                 updateStudent(index, "name", e.target.value)
                               }
@@ -694,6 +835,8 @@ export function CourseReportsProcessor({
                             <Input
                               aria-label={`Graduate ${index + 1} name`}
                               value={graduate.name}
+                    maxLength={INPUT_LIMITS.name}
+                    aria-invalid={Boolean(errors.graduates) || undefined}
                               onChange={(e) =>
                                 updateGraduate(index, "name", e.target.value)
                               }
@@ -887,10 +1030,13 @@ export function CourseReportsProcessor({
                         id="course-report-receipt"
                         type="url"
                         value={receiptUrl}
+                        maxLength={INPUT_LIMITS.url}
+                        aria-invalid={Boolean(errors.receiptUrl) || undefined}
                         onChange={(e) => setReceiptUrl(e.target.value)}
-                        placeholder="https://i.ibb.co/…"
+                        placeholder="https://i.ibb.co/."
                         className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-400/30 dark:focus-visible:ring-emerald-500/30"
                       />
+                      <FieldError message={errors.receiptUrl} />
                       <p className="text-xs text-muted-foreground">
                         Goes inside the BBCode link:{" "}
                         <span className="font-mono">
@@ -911,10 +1057,13 @@ export function CourseReportsProcessor({
                         id="course-report-receipt-weazel"
                         type="url"
                         value={receiptWeazelUrl}
+                        maxLength={INPUT_LIMITS.url}
+                        aria-invalid={Boolean(errors.receiptWeazelUrl) || undefined}
                         onChange={(e) => setReceiptWeazelUrl(e.target.value)}
-                        placeholder="https://i.ibb.co/…"
+                        placeholder="https://i.ibb.co/."
                         className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-400/30 dark:focus-visible:ring-emerald-500/30"
                       />
+                      <FieldError message={errors.receiptWeazelUrl} />
                       <p className="text-xs text-muted-foreground">
                         Goes inside the BBCode link:{" "}
                         <span className="font-mono">

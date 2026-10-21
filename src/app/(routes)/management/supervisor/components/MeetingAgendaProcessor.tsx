@@ -20,6 +20,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import {
+  INPUT_LIMITS,
+  validateName,
+  validateText,
+  validationMessage,
+} from "@/lib/validation";
 import { format } from "date-fns";
 import {
   Calendar as CalendarIcon,
@@ -163,6 +169,22 @@ export function MeetingAgendaProcessor() {
 
     if (!date || !time) {
       toast.error("Please select both a date and time.");
+      return;
+    }
+
+    const credentialError = [
+      validationMessage(validateName(medicCredentials.name, "Your name")),
+      validationMessage(validateName(medicCredentials.rank, "Your rank")),
+      validationMessage(
+        validateText(medicCredentials.signature, "Your signature", {
+          max: INPUT_LIMITS.notes,
+          multiline: true,
+          allowMarkup: true,
+        }),
+      ),
+    ].find(Boolean);
+    if (credentialError) {
+      toast.error(`${credentialError} Update it on the Staff Page.`);
       return;
     }
 

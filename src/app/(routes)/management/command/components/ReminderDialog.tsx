@@ -339,6 +339,7 @@ export function ReminderDialog({
                   id="reminder-lead"
                   type="number"
                   min={0}
+                  max={100000}
                   step={1}
                   inputMode="numeric"
                   value={remindBefore}

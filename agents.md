@@ -98,6 +98,11 @@
 - `id: null` means "the guild has no such role" (or none worth gating on), not "not collected yet". Never invent an id to make a gate appear to work, and never hand-copy one into a component: the registry entry is the id's only home.
 - **A role can be granted every page by name instead of by a row, and then the matrix leaves it alone.** `EVERY_PAGE_ROLES` (plus `ADMIN_PAGE_ROLES` for the manager) is that grant, and a registry entry marked `hiddenFromMatrix` is what keeps it out of the editor: the role is not offered in a row's picker, `MATRIX_ROLE_TIERS` never lists it, and `sanitizeMatrix` refuses a stored row naming it, because a row could only ever agree with the code. Legal Faction Management is the one such role - it looks after the faction from outside the department, so it reaches every page including the permission editor, and nobody browsing that editor is told it exists. Hiding a role *without* granting it by name would make it unreachable, which `npm run routes:check` and `npm run matrix:check` both fail on.
 
+### Validation
+
+- **Every user input is validated on both sides.** A mutating API route validates its own payload with `src/lib/validation.ts` and never trusts the form; the form mirrors the same rules with `validate*`/`validationMessage`, shows a `FieldError` (`components/ui/field-error.tsx`) or a toast, and sets `maxLength` from `INPUT_LIMITS`. A local builder that only produces text (a template, a generated post or document) validates before copy/generate - an output with a placeholder or a broken date is not an output.
+- Use the shared validators (`validateName`, `validateText`, `validateUrl`, `validateDateString`, `validateTimeString`, `validateInteger`, `validateRowNumber`, `validateOptionalBoolean`, `combineValidation`); do not add another validation library or a route-local regex for the same question. A new input needs its limit in `INPUT_LIMITS` and its rule covered by an existing validator before it ships.
+
 ### Comments
 
 - Keep comments short and explain *why*, not *what*. Don't write long comments narrating what the code does or what happened - the code should speak for itself. Reserve comments for non-obvious decisions, invariants, and gotchas.

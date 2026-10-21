@@ -15,6 +15,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { TableDataType } from "@/lib/types";
+import { FieldError } from "@/components/ui/field-error";
+import {
+  INPUT_LIMITS,
+  validateName,
+  validationMessage,
+} from "@/lib/validation";
 
 export interface EditEmployeeStatsRowDialogProps {
   row: TableDataType | null;
@@ -45,6 +51,7 @@ export function EditEmployeeStatsRowDialog({
 }: EditEmployeeStatsRowDialogProps) {
   const [submitting, setSubmitting] = useState(false);
   const [name, setName] = useState("");
+  const [error, setError] = useState<string | undefined>();
   const [r15, setR15] = useState(false);
   const [r40, setR40] = useState(false);
   const [r100, setR100] = useState(false);
@@ -54,6 +61,7 @@ export function EditEmployeeStatsRowDialog({
   useEffect(() => {
     if (!open || !row) return;
     setName(String(row["Names"] ?? ""));
+    setError(undefined);
     setR15(String(row["_3"] ?? "") === "TRUE");
     setR40(String(row["_4"] ?? "") === "TRUE");
     setR100(String(row["_5"] ?? "") === "TRUE");
@@ -64,11 +72,14 @@ export function EditEmployeeStatsRowDialog({
     e.preventDefault();
     if (!row) return;
 
-    const trimmed = name.trim();
-    if (!trimmed) {
-      toast.error("Name can't be empty");
+    const nameError = validationMessage(validateName(name, "Name"));
+    if (nameError) {
+      setError(nameError);
+      toast.error(nameError);
       return;
     }
+    setError(undefined);
+    const trimmed = name.trim();
 
     if (originalSheetRow == null) {
       toast.error(
@@ -132,10 +143,16 @@ export function EditEmployeeStatsRowDialog({
               <Input
                 id="edit-row-name"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                maxLength={INPUT_LIMITS.name}
+                aria-invalid={Boolean(error) || undefined}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (error) setError(undefined);
+                }}
                 placeholder="Fname Lname"
                 autoFocus
               />
+              <FieldError message={error} />
             </div>
 
             {/* Ribbon checkboxes - 15 / 40 / 100 / 165. The four

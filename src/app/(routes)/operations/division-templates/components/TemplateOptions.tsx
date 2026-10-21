@@ -4,6 +4,7 @@ import { BBCodeEditor } from "@/components/ui/bbcode-editor";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { INPUT_LIMITS } from "@/lib/validation";
 import { Ambulance, RotateCcw } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -107,6 +108,7 @@ export default function TemplateOptions({
               <Input
                 placeholder="Enter recipient (optional)"
                 value={recipient}
+                maxLength={64}
                 onChange={(e) => setRecipient(e.target.value)}
                 className="w-full border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
               />
@@ -119,6 +121,7 @@ export default function TemplateOptions({
               <Input
                 placeholder="Enter email subject (optional)"
                 value={subject}
+                maxLength={150}
                 onChange={(e) => setSubject(e.target.value)}
                 className="w-full border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"
               />
@@ -136,6 +139,7 @@ export default function TemplateOptions({
                   <Input
                     placeholder="Be well,"
                     value={bodySignOffText}
+                    maxLength={INPUT_LIMITS.text}
                     onChange={(e) => setBodySignOffText(e.target.value)}
                     disabled={omitBodySignature}
                     className="w-full border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-border focus-visible:ring-2"

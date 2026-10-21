@@ -13,6 +13,12 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { FieldError } from "@/components/ui/field-error";
+import {
+  INPUT_LIMITS,
+  validateName,
+  validationMessage,
+} from "@/lib/validation";
 
 export interface AddFtoDialogProps {
   open: boolean;
@@ -24,16 +30,20 @@ export interface AddFtoDialogProps {
 export function AddFtoDialog({ open, onOpenChange, onAdded }: AddFtoDialogProps) {
   const [submitting, setSubmitting] = useState(false);
   const [name, setName] = useState("");
+  const [error, setError] = useState<string | undefined>();
 
-  const canSubmit = name.trim().length > 0;
+  const canSubmit = !validationMessage(validateName(name, "FTO name"));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const trimmed = name.trim();
-    if (!trimmed) {
-      toast.error("Enter a name");
+    const nameError = validationMessage(validateName(name, "FTO name"));
+    if (nameError) {
+      setError(nameError);
+      toast.error(nameError);
       return;
     }
+    setError(undefined);
+    const trimmed = name.trim();
 
     setSubmitting(true);
     try {
@@ -82,9 +92,15 @@ export function AddFtoDialog({ open, onOpenChange, onAdded }: AddFtoDialogProps)
                 id="add-fto-name"
                 placeholder="Fname Lname"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                maxLength={INPUT_LIMITS.name}
+                aria-invalid={Boolean(error) || undefined}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (error) setError(undefined);
+                }}
                 autoFocus
               />
+              <FieldError message={error} />
             </div>
 
             <DialogFooter>

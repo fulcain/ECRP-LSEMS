@@ -14,6 +14,12 @@ import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
 import { pickPostTarget } from "@/app/helpers/forumHandoff";
 import { GOV_PM_COMPOSE_URL } from "@/app/helpers/govLinks";
 import { userGroupsHref } from "@/lib/user-groups";
+import {
+  INPUT_LIMITS,
+  validateName,
+  validateText,
+  validationMessage,
+} from "@/lib/validation";
 
 import {
   generateFtiPromotionEmailBBCode,
@@ -35,7 +41,30 @@ export function FtiPromotionCard() {
     [medicCredentials, divisionRanks],
   );
 
+  const validationError = () => {
+    const message = [
+      validationMessage(validateName(medicCredentials.name, "Your name")),
+      validationMessage(validateName(medicCredentials.rank, "Your rank")),
+      validationMessage(
+        validateName(
+          divisionRanks[DIVISIONS.ftd.label] || "",
+          "Your FTD rank",
+        ),
+      ),
+      validationMessage(
+        validateText(medicCredentials.signature, "Your signature", {
+          max: INPUT_LIMITS.notes,
+          multiline: true,
+          allowMarkup: true,
+        }),
+      ),
+    ].find(Boolean);
+    if (message) toast.error(`${message} Update it on the Staff Page.`);
+    return message;
+  };
+
   const copyToClipboard = async () => {
+    if (validationError()) return;
     try {
       await navigator.clipboard.writeText(bbcode);
       toast.success("FTI Promotion email copied to clipboard");
@@ -47,6 +76,7 @@ export function FtiPromotionCard() {
   // The email is sent as a GOV private message, so the title travels with the
   // body and the composer opens with both ready to fill.
   const copyAndOpenPm = () => {
+    if (validationError()) return;
     copyBBCodeAndOpen({
       bbCodeText: bbcode,
       url: GOV_PM_COMPOSE_URL,

@@ -198,6 +198,7 @@ export function AllDataTable({ canEditFT = false }: { canEditFT?: boolean }) {
           <>
             <Input
               placeholder="Filter Your Name..."
+              maxLength={100}
               value={
                 (table.getColumn("Your Name")?.getFilterValue() as string) ?? ""
               }

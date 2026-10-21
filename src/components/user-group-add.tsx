@@ -180,6 +180,7 @@ export function UserGroupAdd({
           <Input
             id="user-group-member"
             value={name}
+            maxLength={64}
             onChange={(event) => setName(event.target.value)}
             placeholder="Firstname Lastname"
             autoComplete="off"
@@ -233,6 +234,7 @@ export function UserGroupAdd({
             <Input
               type="search"
               value={query}
+              maxLength={100}
               onChange={(event) => setQuery(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === "Escape" && query) {

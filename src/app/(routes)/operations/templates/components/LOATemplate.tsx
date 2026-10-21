@@ -37,6 +37,13 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import {
+  INPUT_LIMITS,
+  validateDateString,
+  validateName,
+  validateText,
+  validationMessage,
+} from "@/lib/validation";
 
 const splitName = (name: string): { firstName: string; lastName: string } => {
   const parts = name.trim().split(/\s+/);
@@ -136,8 +143,42 @@ export function LOATemplate() {
   const title = generateLOATitle(context);
   const body = generateLOARequestBody(context);
 
-  // Both reasons are required before anything can be copied.
-  const reasonsComplete = Boolean(context.icReason && context.oocReason);
+  // Every field is checked before anything can be copied.
+  const formErrors: Record<string, string> = {};
+  const rankError = validationMessage(validateName(context.rank, "Rank"));
+  if (rankError) formErrors.rank = rankError;
+  const firstNameError = validationMessage(
+    validateName(context.firstName, "First name"),
+  );
+  if (firstNameError) formErrors.firstName = firstNameError;
+  const lastNameError = validationMessage(
+    validateName(context.lastName, "Last name"),
+  );
+  if (lastNameError) formErrors.lastName = lastNameError;
+  const startError = validationMessage(
+    validateDateString(context.startDate, "Beginning date"),
+  );
+  if (startError) formErrors.startDate = startError;
+  const endError = validationMessage(
+    validateDateString(context.endDate, "Return date"),
+  );
+  if (endError) formErrors.endDate = endError;
+  const icError = validationMessage(
+    validateText(context.icReason, "IC reason", {
+      max: INPUT_LIMITS.notes,
+      multiline: true,
+    }),
+  );
+  if (icError) formErrors.icReason = icError;
+  const oocError = validationMessage(
+    validateText(context.oocReason, "OOC reason", {
+      max: INPUT_LIMITS.notes,
+      multiline: true,
+    }),
+  );
+  if (oocError) formErrors.oocReason = oocError;
+  const formComplete = Object.keys(formErrors).length === 0;
+  const reasonsComplete = formComplete;
 
   // Both copies are a GOV post in the making, so the browser extension gets the
   // title and the section with them.
@@ -188,6 +229,7 @@ export function LOATemplate() {
           <BuilderField label="Rank">
             <Input
               value={rank}
+              maxLength={INPUT_LIMITS.name}
               onChange={(e) => {
                 setRank(e.target.value);
                 setRankTouched(true);
@@ -200,6 +242,7 @@ export function LOATemplate() {
             <BuilderField label="First Name">
               <Input
                 value={firstName}
+                maxLength={INPUT_LIMITS.name}
                 onChange={(e) => {
                   setFirstName(e.target.value);
                   setFirstNameTouched(true);
@@ -210,6 +253,7 @@ export function LOATemplate() {
             <BuilderField label="Last Name">
               <Input
                 value={lastName}
+                maxLength={INPUT_LIMITS.name}
                 onChange={(e) => {
                   setLastName(e.target.value);
                   setLastNameTouched(true);
@@ -236,6 +280,7 @@ export function LOATemplate() {
               <BuilderField label="Beginning Date">
                 <Input
                   value={startDate}
+                  maxLength={INPUT_LIMITS.short}
                   onChange={(e) => setStartDate(e.target.value.toUpperCase())}
                   placeholder="DD/MMM/YYYY (e.g. 20/JUL/2026)"
                   className="font-mono"
@@ -244,6 +289,7 @@ export function LOATemplate() {
               <BuilderField label="Return Date">
                 <Input
                   value={endDate}
+                  maxLength={INPUT_LIMITS.short}
                   onChange={(e) => setEndDate(e.target.value.toUpperCase())}
                   placeholder="DD/MMM/YYYY (e.g. 20/AUG/2026)"
                   className="font-mono"
@@ -261,6 +307,7 @@ export function LOATemplate() {
             <BuilderField label="IC Reason">
               <Textarea
                 value={icReason}
+                maxLength={INPUT_LIMITS.notes}
                 onChange={(e) => setIcReason(e.target.value)}
                 placeholder="In-character reason for the leave of absence"
                 rows={3}
@@ -278,6 +325,7 @@ export function LOATemplate() {
             >
               <Textarea
                 value={oocReason}
+                maxLength={INPUT_LIMITS.notes}
                 onChange={(e) => setOocReason(e.target.value)}
                 placeholder="Out-of-character reason - wrapped in (( ... )) with [ooc][/ooc]"
                 rows={3}
@@ -321,7 +369,7 @@ export function LOATemplate() {
                 size="lg"
                 variant="outline"
                 onClick={handleCopyTemplate}
-                disabled={!reasonsComplete}
+                disabled={!formComplete}
                 className="w-full"
               >
                 <Copy className="h-4 w-4" />
@@ -338,7 +386,7 @@ export function LOATemplate() {
                   type="button"
                   size="lg"
                   onClick={handleCopyToGov}
-                  disabled={!reasonsComplete}
+                  disabled={!formComplete}
                   className="w-full"
                 >
                   <ExternalLink className="h-4 w-4" />
@@ -354,14 +402,14 @@ export function LOATemplate() {
             value={title}
             onCopy={handleCopyTitle}
             copyLabel="Copy Title"
-            disabled={!title || !reasonsComplete}
+            disabled={!title || !formComplete}
           />
 
           <BuilderOutput label="Template Body" value={body} />
 
           {!reasonsComplete && (
             <BuilderRequirement>
-              Fill in both the IC and OOC reasons to enable the copy buttons.
+              {Object.values(formErrors)[0] ?? "Fill in every field to enable the copy buttons."}
             </BuilderRequirement>
           )}
         </BuilderPreview>

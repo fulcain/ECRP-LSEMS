@@ -1,6 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
+import { INPUT_LIMITS } from "@/lib/validation";
 import { Label } from "@/components/ui/label";
 import {
   Popover,
@@ -74,6 +75,7 @@ export function ApplicantInfoCard({
         <Input
           aria-label="Applicant's full name"
           value={personnelName}
+          maxLength={INPUT_LIMITS.name}
           onChange={(e) => onNameChange(e.target.value)}
           placeholder="Applicant's full name"
           className="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-border"
@@ -99,6 +101,7 @@ export function ApplicantInfoCard({
             id="contract-phone-number"
             type="tel"
             value={phoneNumber}
+            maxLength={32}
             onChange={(e) => onPhoneNumberChange(e.target.value)}
             placeholder="e.g. 555-1234"
             className="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-border"
@@ -120,6 +123,7 @@ export function ApplicantInfoCard({
               id="contract-date-hired"
               type="text"
               value={manualDate}
+              maxLength={INPUT_LIMITS.short}
               onChange={(e) => onManualDateChange(e.target.value)}
               placeholder="dd/MMM/YYYY"
               className="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-border"
@@ -163,6 +167,7 @@ export function ApplicantInfoCard({
             id="contract-employee-profile-link"
             type="url"
             value={employeeProfileLink}
+            maxLength={INPUT_LIMITS.url}
             onChange={(e) => onEmployeeProfileLinkChange(e.target.value)}
             placeholder="https://gov.eclipse-rp.net/..."
             className="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-border"
@@ -174,6 +179,7 @@ export function ApplicantInfoCard({
             id="contract-personnel-file-link"
             type="url"
             value={personnelFileLink}
+            maxLength={INPUT_LIMITS.url}
             onChange={(e) => onPersonnelFileLinkChange(e.target.value)}
             placeholder="https://gov.eclipse-rp.net/..."
             className="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-border"

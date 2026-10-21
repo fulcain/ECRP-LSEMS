@@ -22,6 +22,7 @@ import { BBCodeEditor } from "@/components/ui/bbcode-editor";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { validateText, validationMessage } from "@/lib/validation";
 
 /** The draft, as it is kept in this browser. */
 type StoredDraft = {
@@ -128,6 +129,21 @@ export function DiscussionBoardComposer({
     }
   }, [restored, boardKey, subject, body, edited]);
 
+  const validationError = () => {
+    const message = [
+      validationMessage(validateText(subject, "Subject", { max: 150 })),
+      validationMessage(
+        validateText(body, "Post", {
+          max: 50_000,
+          multiline: true,
+          allowMarkup: true,
+        }),
+      ),
+    ].find(Boolean);
+    if (message) toast.error(message);
+    return message;
+  };
+
   const post = {
     subject: subject.trim() || undefined,
     url: board.url,
@@ -148,6 +164,7 @@ export function DiscussionBoardComposer({
             value={subject}
             onChange={(event) => setSubject(event.target.value)}
             placeholder="What the topic is about"
+            maxLength={150}
           />
         </div>
 
@@ -172,9 +189,10 @@ export function DiscussionBoardComposer({
 
         <div className="flex flex-wrap gap-2">
           <Button
-            onClick={() =>
-              copyBBCodeAndOpen({ bbCodeText: body, url: board.url, post })
-            }
+            onClick={() => {
+              if (validationError()) return;
+              copyBBCodeAndOpen({ bbCodeText: body, url: board.url, post });
+            }}
             disabled={!body.trim()}
           >
             <ExternalLink className="h-4 w-4" />
@@ -182,7 +200,10 @@ export function DiscussionBoardComposer({
           </Button>
           <Button
             variant="outline"
-            onClick={() => copyBBCode({ bbCodeText: body, post })}
+            onClick={() => {
+              if (validationError()) return;
+              copyBBCode({ bbCodeText: body, post });
+            }}
             disabled={!body.trim()}
           >
             <Copy className="h-4 w-4" />

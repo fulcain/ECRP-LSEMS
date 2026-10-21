@@ -170,6 +170,7 @@ export function CurrentEMRsTable() {
         ) : (
           <Input
             placeholder="Filter EMR..."
+            maxLength={100}
             value={nameFilter}
             onChange={(e) => setNameFilter(e.target.value)}
             className="max-w-full sm:max-w-sm"

@@ -5,6 +5,12 @@ import { AUTH_COOKIE_NAME } from "@/lib/cookies";
 import { verifySessionToken } from "@/lib/jwt";
 import { fetchWithRetry } from "@/lib/fetch-with-retry";
 import { hasSessionEditAccess } from "@/lib/role-config";
+import {
+  combineValidation,
+  inputText,
+  validateRowNumber,
+  validateText,
+} from "@/lib/validation";
 
 /**
  * POST /api/delete-session
@@ -56,10 +62,26 @@ export async function POST(req: Request) {
 
   let data: Record<string, unknown>;
   try {
-    data = await req.json();
+    data = (await req.json()) as Record<string, unknown>;
   } catch {
     return NextResponse.json(
       { success: false, error: "Invalid JSON body" },
+      { status: 400 },
+    );
+  }
+
+  const validation = combineValidation(
+    validateRowNumber(data.originalRowNumber),
+    validateText(data.originalTimestamp, "Original timestamp", {
+      required: false,
+      max: 100,
+      allowMarkup: true,
+    }),
+  );
+
+  if (!validation.ok) {
+    return NextResponse.json(
+      { success: false, error: validation.error },
       { status: 400 },
     );
   }
@@ -72,7 +94,8 @@ export async function POST(req: Request) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "delete-ft-session",
-          ...data,
+          originalRowNumber: String(data.originalRowNumber).trim(),
+          originalTimestamp: inputText(data.originalTimestamp).trim(),
         }),
         redirect: "follow",
       },

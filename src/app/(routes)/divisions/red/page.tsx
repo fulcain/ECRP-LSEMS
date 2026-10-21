@@ -41,6 +41,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "react-toastify";
+import {
+  INPUT_LIMITS,
+  validateDateString,
+  validateInteger,
+  validateName,
+  validateText,
+  validateTimeString,
+  validateUrl,
+  validationMessage,
+} from "@/lib/validation";
 import {
   Select,
   SelectContent,
@@ -320,7 +331,52 @@ export default function REDFormatsPage() {
     url: pickPostTarget(formatUrl, formatPostTarget),
   };
 
+  const validationError = () => {
+    const message = [
+      validationMessage(validateName(applicantName, "Applicant name")),
+      isFeedbackRequest
+        ? validationMessage(validateText(recipient, "Recipient", { max: 64 }))
+        : undefined,
+      ...(supportsReasons
+        ? reasons.map((reason, index) =>
+            validationMessage(
+              validateText(reason, `${reasonSectionLabel} ${index + 1}`, {
+                max: INPUT_LIMITS.notes,
+                multiline: true,
+              }),
+            ),
+          )
+        : []),
+      supportsReasons
+        ? validationMessage(
+            validateInteger(weeks, "Cool-down weeks", { min: 1, max: 52 }),
+          )
+        : undefined,
+      supportsEmploymentRank
+        ? validationMessage(validateName(employmentRank, "Employment rank"))
+        : undefined,
+      supportsEmploymentRank
+        ? validationMessage(validateText(offerTier, "Offer tier", { max: 64 }))
+        : undefined,
+      selectedDocument === "interview-scheduled"
+        ? validationMessage(validateDateString(interviewDate, "Interview date"))
+        : undefined,
+      selectedDocument === "interview-scheduled"
+        ? validationMessage(validateTimeString(interviewTime, "Interview time"))
+        : undefined,
+      validationMessage(validateName(medicCredentials.name, "Your name")),
+      validationMessage(validateName(medicCredentials.rank, "Your rank")),
+      validationMessage(
+        validateUrl(medicCredentials.signature, "Your signature"),
+      ),
+      validationMessage(validateUrl(govLink, "GOV link", { required: false })),
+    ].find(Boolean);
+    if (message) toast.error(message);
+    return message;
+  };
+
   const handleCopy = async () => {
+    if (validationError()) return;
     handOffForumPost(formatPost, bbcodeOutput);
     await navigator.clipboard.writeText(bbcodeOutput);
     setCopiedTitleTag(false);
@@ -328,7 +384,7 @@ export default function REDFormatsPage() {
   };
 
   const handleCopyTitleTag = async () => {
-    if (!fullTitle) return;
+    if (!fullTitle || validationError()) return;
     // The body travels with it: the title is what reaches the clipboard, but a
     // posting page this opens should get both fields filled.
     handOffForumPost(formatPost, bbcodeOutput);
@@ -342,6 +398,7 @@ export default function REDFormatsPage() {
   // has scrolled to it. The format's own target is the fallback when the pasted
   // link is a listing rather than a page a post can land on.
   const handleCopyAndOpen = () => {
+    if (validationError()) return;
     // A format can name its own posting page, so its Copy & Open works without
     // the member pasting a link first - the button would otherwise be the only
     // way to reach that page, and a plain link copies nothing.
@@ -463,6 +520,7 @@ export default function REDFormatsPage() {
                       <Input
                         id="applicant-name"
                         value={applicantName}
+                        maxLength={INPUT_LIMITS.name}
                         onChange={(event) =>
                           setApplicantName(event.target.value)
                         }
@@ -481,6 +539,7 @@ export default function REDFormatsPage() {
                         <Input
                           id="feedback-recipient"
                           value={recipient}
+                          maxLength={64}
                           onChange={(event) =>
                             setRecipient(event.target.value)
                           }
@@ -504,6 +563,7 @@ export default function REDFormatsPage() {
                       <Input
                         id="gov-link"
                         value={govLink}
+                        maxLength={INPUT_LIMITS.url}
                         onChange={(event) => setGovLink(event.target.value)}
                         placeholder="Paste the GOV application post URL"
                         className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
@@ -532,6 +592,7 @@ export default function REDFormatsPage() {
                         <Input
                           id="interview-date"
                           value={interviewDate}
+                          maxLength={INPUT_LIMITS.short}
                           onChange={(event) =>
                             setInterviewDate(event.target.value)
                           }
@@ -547,6 +608,7 @@ export default function REDFormatsPage() {
                           <Input
                             id="interview-time"
                             value={interviewTime}
+                            maxLength={INPUT_LIMITS.short}
                             onChange={(event) =>
                               setInterviewTime(event.target.value)
                             }
@@ -572,6 +634,7 @@ export default function REDFormatsPage() {
                         <Input
                           id="employment-rank"
                           value={employmentRank}
+                          maxLength={INPUT_LIMITS.name}
                           onChange={(event) => setEmploymentRank(event.target.value)}
                           placeholder="Decided Rank"
                           className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
@@ -633,6 +696,7 @@ export default function REDFormatsPage() {
                             <Input
                               aria-label={`Reason ${index + 1}`}
                               value={reason}
+                              maxLength={INPUT_LIMITS.notes}
                               onChange={(e) =>
                                 updateReason(index, e.target.value)
                               }

@@ -35,6 +35,15 @@ import {
 import Link from "next/link";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
+import {
+  INPUT_LIMITS,
+  validateDateString,
+  validateName,
+  validateText,
+  validateTimeString,
+  validateUrl,
+  validationMessage,
+} from "@/lib/validation";
 
 const COPIED_FLASH_MS = 1800;
 
@@ -101,9 +110,34 @@ export function FirearmDischargeTemplate() {
     signature: medicCredentials.signature ?? "",
   });
 
-  // The situation is the one thing the app cannot know, so the copy buttons
-  // wait for it; everything else has a placeholder or a saved value.
-  const complete = Boolean(details.trim());
+  // Every field the notice prints is checked before anything can be copied.
+  const formErrors: Record<string, string> = {};
+  const nameError = validationMessage(
+    validateName(employeeName, "Employee name"),
+  );
+  if (nameError) formErrors.employeeName = nameError;
+  const rankError = validationMessage(validateName(rank, "Employee rank"));
+  if (rankError) formErrors.rank = rankError;
+  const dateError = validationMessage(validateDateString(date, "Date"));
+  if (dateError) formErrors.date = dateError;
+  const timeError = validationMessage(validateTimeString(time, "Time"));
+  if (timeError) formErrors.time = timeError;
+  const detailsError = validationMessage(
+    validateText(details, "Details of the situation", {
+      max: INPUT_LIMITS.notes,
+      multiline: true,
+    }),
+  );
+  if (detailsError) formErrors.details = detailsError;
+  const footageError = validationMessage(
+    validateUrl(footageUrl, "Footage link", { required: false }),
+  );
+  if (footageError) formErrors.footageUrl = footageError;
+  const proofError = validationMessage(
+    validateUrl(proofUrl, "Proof link", { required: false }),
+  );
+  if (proofError) formErrors.proofUrl = proofError;
+  const complete = Object.keys(formErrors).length === 0;
 
   const post = {
     subject: `${employeeName.trim() || "Fname Lname"} - Service Firearms Discharge Notice`,
@@ -149,6 +183,7 @@ export function FirearmDischargeTemplate() {
             <BuilderField label="Employee name">
               <Input
                 value={employeeName}
+                maxLength={INPUT_LIMITS.name}
                 onChange={(e) => {
                   setEmployeeName(e.target.value);
                   setIdentityTouched(true);
@@ -159,6 +194,7 @@ export function FirearmDischargeTemplate() {
             <BuilderField label="Employee rank">
               <Input
                 value={rank}
+                maxLength={INPUT_LIMITS.name}
                 onChange={(e) => {
                   setRank(e.target.value);
                   setIdentityTouched(true);
@@ -173,6 +209,7 @@ export function FirearmDischargeTemplate() {
               <BuilderField label="Date">
                 <Input
                   value={date}
+                  maxLength={INPUT_LIMITS.short}
                   onChange={(e) => setDate(e.target.value.toUpperCase())}
                   placeholder="DD/MMM/YYYY (e.g. 20/JUL/2026)"
                   className="font-mono"
@@ -182,6 +219,7 @@ export function FirearmDischargeTemplate() {
                 <div className="flex gap-2">
                   <Input
                     value={time}
+                    maxLength={INPUT_LIMITS.short}
                     onChange={(e) => setTime(e.target.value)}
                     placeholder="00:00 am/pm"
                   />
@@ -220,6 +258,7 @@ export function FirearmDischargeTemplate() {
             <BuilderField label="Details of the situation">
               <Textarea
                 value={details}
+                maxLength={INPUT_LIMITS.notes}
                 onChange={(e) => setDetails(e.target.value)}
                 placeholder="What happened, in order"
                 rows={4}
@@ -233,6 +272,7 @@ export function FirearmDischargeTemplate() {
             >
               <Input
                 value={footageUrl}
+                maxLength={INPUT_LIMITS.url}
                 onChange={(e) => setFootageUrl(e.target.value)}
                 placeholder="https://... (clip, streamable, forum attachment)"
               />
@@ -248,6 +288,7 @@ export function FirearmDischargeTemplate() {
             >
               <Input
                 value={proofUrl}
+                maxLength={INPUT_LIMITS.url}
                 onChange={(e) => setProofUrl(e.target.value)}
                 placeholder="https://... (screenshot or post)"
               />
@@ -341,7 +382,7 @@ export function FirearmDischargeTemplate() {
 
           {!complete && (
             <BuilderRequirement>
-              Fill in the details of the situation to enable the copy buttons.
+              {Object.values(formErrors)[0] ?? "Fill in every field to enable the copy buttons."}
             </BuilderRequirement>
           )}
         </BuilderPreview>

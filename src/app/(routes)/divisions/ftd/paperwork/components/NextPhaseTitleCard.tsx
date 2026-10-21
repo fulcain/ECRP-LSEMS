@@ -267,6 +267,7 @@ export function NextPhaseTitleCard() {
                         aria-label="Search EMR"
                         placeholder="Search EMR…"
                         value={emrSearch}
+                        maxLength={64}
                         onChange={(e) => setEmrSearch(e.target.value)}
                         className="mb-2"
                         autoFocus
@@ -313,6 +314,7 @@ export function NextPhaseTitleCard() {
               <Input
                 placeholder="Or type EMR name manually…"
                 value={details.emrNameManual}
+                maxLength={64}
                 onChange={(e) =>
                   setDetails((prev) => ({
                     ...prev,

@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { AUTH_COOKIE_NAME } from "@/lib/cookies";
 import { verifySessionToken } from "@/lib/jwt";
 import { fetchWithRetry } from "@/lib/fetch-with-retry";
+import { inputText, validateName } from "@/lib/validation";
 
 /**
  * POST /api/employee-stats-row/add
@@ -52,13 +53,15 @@ export async function POST(req: Request) {
     );
   }
 
-  const name = String(data.name ?? "").trim();
-  if (!name) {
+  const validation = validateName(data.name, "Name");
+  if (!validation.ok) {
     return NextResponse.json(
-      { success: false, error: "Missing or empty 'name'." },
+      { success: false, error: validation.error },
       { status: 400 },
     );
   }
+
+  const name = inputText(data.name).trim();
 
   try {
     const res = await fetchWithRetry(

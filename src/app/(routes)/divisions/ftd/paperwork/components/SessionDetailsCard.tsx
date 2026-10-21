@@ -29,6 +29,15 @@ import { Calendar } from "@/components/ui/calendar";
 import { useSession } from "@/app/(routes)/divisions/ftd/paperwork/components/SessionContext";
 import { formatTime12h } from "@/app/(routes)/divisions/ftd/paperwork/lib/formatTime";
 import { sessions } from "@/constants/sessions";
+import { FieldError } from "@/components/ui/field-error";
+import {
+  INPUT_LIMITS,
+  validateDateString,
+  validateName,
+  validateText,
+  validateTimeString,
+  validationMessage,
+} from "@/lib/validation";
 
 /** Trainer/date/times/EMR/session inputs shared by both paperwork forms.
  *  (Civilian Ride-Along hides this card entirely at the parent level.) */
@@ -42,6 +51,7 @@ export function SessionDetailsCard() {
   } = useSession();
 
   const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [nameSearch, setNameSearch] = useState("");
   const [emrSearch, setEmrSearch] = useState("");
   const [dateOpen, setDateOpen] = useState(false);
@@ -104,6 +114,7 @@ export function SessionDetailsCard() {
       emrNameManual: "",
       sessionConducted: "",
     }));
+    setErrors({});
     setNameSearch("");
     setEmrSearch("");
   };
@@ -116,15 +127,35 @@ export function SessionDetailsCard() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (
-      !details.ftoName ||
-      !details.date ||
-      !details.timeStart ||
-      !details.timeFinish ||
-      !resolvedEMR ||
-      !details.sessionConducted
-    ) {
-      toast.error("Fill all the fields");
+    const nextErrors: Record<string, string> = {};
+    const nameError = validationMessage(validateName(details.ftoName, "Your name"));
+    if (nameError) nextErrors.ftoName = nameError;
+    if (!details.date) {
+      nextErrors.date = "Session date is required.";
+    } else {
+      const dateError = validationMessage(
+        validateDateString(formatDateForSheet(details.date), "Session date"),
+      );
+      if (dateError) nextErrors.date = dateError;
+    }
+    const startError = validationMessage(
+      validateTimeString(details.timeStart, "Start time"),
+    );
+    if (startError) nextErrors.timeStart = startError;
+    const finishError = validationMessage(
+      validateTimeString(details.timeFinish, "Finish time"),
+    );
+    if (finishError) nextErrors.timeFinish = finishError;
+    const emrError = validationMessage(validateName(resolvedEMR, "EMR's name"));
+    if (emrError) nextErrors.emrName = emrError;
+    const conductedError = validationMessage(
+      validateText(details.sessionConducted, "Session conducted", { max: 500 }),
+    );
+    if (conductedError) nextErrors.sessionConducted = conductedError;
+
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) {
+      toast.error(Object.values(nextErrors)[0]);
       return;
     }
 
@@ -132,7 +163,7 @@ export function SessionDetailsCard() {
     try {
       const payload = {
         yourName: details.ftoName,
-        date: formatDateForSheet(details.date),
+        date: formatDateForSheet(details.date!),
         timeStart: formatTime12h(details.timeStart),
         timeFinish: formatTime12h(details.timeFinish),
         emrName: resolvedEMR,
@@ -231,6 +262,7 @@ export function SessionDetailsCard() {
                 )}
               </SelectContent>
             </Select>
+            <FieldError message={errors.ftoName} />
           </div>
 
           {/* === Date & Time === */}
@@ -257,6 +289,7 @@ export function SessionDetailsCard() {
                 />
               </PopoverContent>
             </Popover>
+            <FieldError message={errors.date} />
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -275,6 +308,7 @@ export function SessionDetailsCard() {
                 />
                 <NowTimeButton onFill={(t) => update({ timeStart: t })} />
               </div>
+              <FieldError message={errors.timeStart} />
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="session-time-finish" className="text-xs text-muted-foreground">
@@ -291,6 +325,7 @@ export function SessionDetailsCard() {
                 />
                 <NowTimeButton onFill={(t) => update({ timeFinish: t })} />
               </div>
+              <FieldError message={errors.timeFinish} />
             </div>
           </div>
 
@@ -360,6 +395,8 @@ export function SessionDetailsCard() {
               <Input
                 placeholder="Type EMR name manually"
                 value={details.emrNameManual}
+                maxLength={INPUT_LIMITS.name}
+                aria-invalid={Boolean(errors.emrName) || undefined}
                 onChange={(e) =>
                   update({ emrNameManual: e.target.value, emrName: "" })
                 }
@@ -376,6 +413,7 @@ export function SessionDetailsCard() {
               )}
             </div>
 
+            <FieldError message={errors.emrName} />
             {isEmrSelected && (
               <p className="text-xs text-muted-foreground">
                 Selected: {resolvedEMR}
@@ -403,6 +441,7 @@ export function SessionDetailsCard() {
                 ))}
               </SelectContent>
             </Select>
+            <FieldError message={errors.sessionConducted} />
           </div>
 
           {/* === Actions === */}

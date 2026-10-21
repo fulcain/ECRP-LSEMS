@@ -173,6 +173,7 @@ export function QuickLinksBrowser({
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           onKeyDown={handleSearchKeyDown}
+          maxLength={200}
           aria-label={
             scoped
               ? `Search ${only?.label ?? "this division"} links`

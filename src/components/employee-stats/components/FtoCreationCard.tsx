@@ -15,6 +15,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {
+  INPUT_LIMITS,
+  validateDateString,
+  validateName,
+  validationMessage,
+} from "@/lib/validation";
 import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import {
@@ -72,7 +78,19 @@ export function FtoCreationCard({ onRefresh }: { onRefresh?: () => void }) {
   // One button, two behaviours: when it opens the GOV post too, the post is
   // marked so that page pastes it in once; a plain Copy leaves it for the
   // shortcut.
+  const validationError = () => {
+    const message = [
+      validationMessage(validateName(ftoTraineeName, "FTO trainee name")),
+      validationMessage(
+        validateDateString(applicationDate, "Application date"),
+      ),
+    ].find(Boolean);
+    if (message) toast.error(message);
+    return message;
+  };
+
   const copyToClipboard = async (alsoOpenGov: boolean) => {
+    if (validationError()) return;
     const post = {
       subject: ftoTraineeName.trim()
         ? `FTO Student Profile | ${ftoTraineeName.trim()}`
@@ -103,6 +121,7 @@ export function FtoCreationCard({ onRefresh }: { onRefresh?: () => void }) {
   };
 
   const copyNameAndOpenRoster = async () => {
+    if (validationError()) return;
     try {
       await navigator.clipboard.writeText(ftoTraineeName);
       toast.success("Application name copied to clipboard");
@@ -160,6 +179,7 @@ export function FtoCreationCard({ onRefresh }: { onRefresh?: () => void }) {
             <Input
               id="fto-creation-application-name"
               value={ftoTraineeName}
+              maxLength={INPUT_LIMITS.name}
               onChange={(e) => setFtoTraineeName(e.target.value)}
               placeholder="Fname Lname"
             />
@@ -172,6 +192,7 @@ export function FtoCreationCard({ onRefresh }: { onRefresh?: () => void }) {
             <Input
               id="fto-creation-application-date"
               value={applicationDate}
+              maxLength={INPUT_LIMITS.short}
               onChange={(e) => setApplicationDate(e.target.value)}
               placeholder="DD/MMM/YYYY (e.g. 13/Jul/2026)"
             />

@@ -49,6 +49,7 @@ export function WeekdayRow({ day, analysis, onChange }: WeekdayRowProps) {
           value={analysis.raw}
           onChange={(event) => onChange(event.target.value)}
           placeholder="08:00 - 12:00 and 14:00 - 22:00"
+          maxLength={200}
           aria-invalid={isUnreadable || undefined}
           aria-describedby={`availability-${day}-utc`}
         />
