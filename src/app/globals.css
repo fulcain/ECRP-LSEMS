@@ -447,28 +447,26 @@ html {
   opacity: 0.9;
 }
 
-.dark .motion-scene::after {
+.motion-scene::after {
   content: "";
   position: fixed;
   z-index: -1;
   inset: 0;
   pointer-events: none;
-  opacity: 0.1;
-  background-image:
-    linear-gradient(to right, var(--border) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--border) 1px, transparent 1px);
-  background-size: 72px 72px;
-  mask-image: linear-gradient(to bottom, black, transparent 76%);
+  opacity: 0.15;
+  background-image: radial-gradient(
+    circle,
+    color-mix(in oklch, var(--foreground) 20%, transparent) 1px,
+    transparent 1.4px
+  );
+  background-size: 24px 24px;
+  mask-image: linear-gradient(to bottom, black 0%, black 68%, transparent 100%);
 }
 
 @media (max-width: 1023px),
   (pointer: coarse),
   (prefers-reduced-motion: reduce) {
   .motion-scene::before {
-    display: none;
-  }
-
-  .motion-scene::after {
     display: none;
   }
 
