@@ -106,7 +106,16 @@ Rank
 /**
  * The signature block a generated post ends with: the profile's own block, with
  * the member's details in it, rather than a second spelling of the same thing.
+ *
+ * A member with no saved signature image signs with their name in plain text:
+ * the image line and the name under it become one name line, so the post is
+ * signed instead of carrying an empty image tag.
  */
 export function signatureBlock(medic: MedicSignature): string {
-  return fillMedicSignature(SIGNATURE_BLOCK, medic).trim();
+  const name = medic.name.trim();
+  const block =
+    !medic.signature.trim() && name
+      ? SIGNATURE_BLOCK.replace("[img]SIGNATURE[/img]\n[i]Medic Name[/i]", name)
+      : SIGNATURE_BLOCK;
+  return fillMedicSignature(block, medic).trim();
 }

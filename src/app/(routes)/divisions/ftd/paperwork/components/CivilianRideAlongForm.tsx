@@ -176,7 +176,13 @@ export default function CivilianRideAlongForm() {
   const generate = () => {
     const message = [
       validationMessage(validateName(form.applicantName, "Applicant name")),
-      validationMessage(validateUrl(details.signature, "Signature image link")),
+      // No signature image is not a blocker: the generator signs with the
+      // trainer's name instead. A typed one still has to be a URL.
+      details.signature.trim()
+        ? validationMessage(
+            validateUrl(details.signature, "Signature image link"),
+          )
+        : undefined,
       validationMessage(validateName(form.rank, "Rank")),
       validationMessage(
         validateText(form.notes, "Notes", {
@@ -202,6 +208,7 @@ export default function CivilianRideAlongForm() {
     const values: CivilianRideAlongValues = {
       applicantName: form.applicantName,
       signature: details.signature,
+      ftoName: details.ftoName,
       rank: form.rank,
       notes: form.notes,
       rejectionReasons: form.rejectionReasons,
@@ -311,6 +318,9 @@ export default function CivilianRideAlongForm() {
                   placeholder="insert link here"
                   className="bg-background"
                 />
+                <p className="text-xs text-muted-foreground">
+                  Leave blank to sign with your name.
+                </p>
               </div>
               <div className="flex-1 min-w-[160px] space-y-1.5">
                 <Label htmlFor="ridealong-rank" className="text-xs text-muted-foreground flex items-center gap-1.5">

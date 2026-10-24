@@ -186,7 +186,13 @@ export default function ReinstatementForm() {
 
   const generate = () => {
     const message = [
-      validationMessage(validateUrl(details.signature, "Signature image link")),
+      // No signature image is not a blocker: the generator signs with the
+      // trainer's name instead. A typed one still has to be a URL.
+      details.signature.trim()
+        ? validationMessage(
+            validateUrl(details.signature, "Signature image link"),
+          )
+        : undefined,
       validationMessage(validateName(form.rank, "Rank")),
       validationMessage(validateName(details.ftoName, "FTO name")),
       validationMessage(validateName(resolvedEMR, "EMR name")),
@@ -265,6 +271,9 @@ export default function ReinstatementForm() {
                   placeholder="insert link here"
                   className="bg-background"
                 />
+                <p className="text-xs text-muted-foreground">
+                  Leave blank to sign with your name.
+                </p>
               </div>
               <div className="flex-1 min-w-[160px] space-y-1.5">
                 <Label htmlFor="reinstatement-rank" className="text-xs text-muted-foreground flex items-center gap-1.5">

@@ -101,8 +101,7 @@ export function SessionDetailsCard() {
   };
 
   /** Clears every field that describes one session. The signature is the
-   *  member's own, not the session's, so it survives both this and the reset
-   *  that follows a successful save. */
+   *  member's own, not the session's, so it survives. */
   const resetSessionFields = () => {
     setDetails((prev) => ({
       ...prev,
@@ -178,12 +177,10 @@ export function SessionDetailsCard() {
 
       const result = await res.json();
       if (result.success) {
-        // The session is saved, so the form is done with: clear it for the
-        // next one. The toast is the only confirmation the user gets, so it
-        // must not be the thing that vanishes.
-        resetSessionFields();
-        toast.success("Session created - details reset for the next one", {
-          });
+        // The details stay: the paperwork generator reads the same EMR name,
+        // trainer name and times, and the paperwork follows the session row.
+        // Reset is the member's call for starting the next session.
+        toast.success("Session created");
       } else {
         toast.error("Something went wrong");
       }
