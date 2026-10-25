@@ -37,6 +37,7 @@ import {
   MessageSquare,
   Headphones,
   FileText,
+  FolderArchive,
   ClipboardCheck,
   RotateCcw,
   Star,
@@ -49,6 +50,8 @@ import {
   personnelFilePostDefs,
   rankAdjustmentTemplate,
   rankInfo,
+  rankOrderHighToLow,
+  divisionalPersonnelFileTemplate,
 } from "@/app/templates/promotions";
 import type { PromotionRank } from "@/app/templates/promotions";
 import { PromotionRankSelect } from "./PromotionRankSelect";
@@ -68,6 +71,8 @@ type IcStep = {
   secondaryCopyText?: string;
   secondaryCopyLabel?: string;
   icon: React.ComponentType<{ className?: string }>;
+  /** A rule this step needs that the shared personnel details do not. */
+  validate?: () => string | undefined;
   action?: {
     label: string;
     url: string;
@@ -97,8 +102,12 @@ export function PromotionProcessor() {
     "Mr.",
   );
   const [newRank, setNewRank] = useLocalStorage<PromotionRank>("promo-new-rank", "emt-b");
-  const [previousRank, setPreviousRank] = useLocalStorage("promo-previous-rank", "");
+  const [previousRank, setPreviousRank] = useLocalStorage<PromotionRank>(
+    "promo-previous-rank",
+    "emr",
+  );
   const [promotionDate, setPromotionDate] = useLocalStorage("promo-date", "");
+  const [dateHired, setDateHired] = useLocalStorage("promo-date-hired", "");
 
   const [completedSteps, setCompletedSteps] = useLocalStorage<string[]>(
     "promo-completed-steps",
@@ -117,11 +126,16 @@ export function PromotionProcessor() {
     !medicCredentials.name || !medicCredentials.signature || !medicCredentials.rank;
 
   const currentRankInfo = rankInfo[newRank];
+  const previousRankLabel = rankInfo[previousRank]?.label ?? "";
+
+  // The first promotion out of EMR needs a divisional file, and the date they
+  // were hired is the one detail that file holds which no other step does.
+  const isPreviousRankEmr = previousRank === "emr";
 
   const detailsError = () => {
     const message = [
       validationMessage(validateName(personnelName, "Full name")),
-      validationMessage(validateName(previousRank, "Previous rank")),
+      validationMessage(validateName(previousRankLabel, "Previous rank")),
       validationMessage(validateDateString(promotionDate, "Promotion date")),
       validationMessage(
         validateUrl(personnelFileUrl, "Personnel file URL", {
@@ -131,6 +145,16 @@ export function PromotionProcessor() {
     ].find(Boolean);
     if (message) toast.error(message);
     return message;
+  };
+
+  const stepBlocked = (step: IcStep) => {
+    if (detailsError()) return true;
+    const message = step.validate?.();
+    if (message) {
+      toast.error(message);
+      return true;
+    }
+    return false;
   };
 
   const emailTemplate = useMemo(
@@ -164,17 +188,23 @@ export function PromotionProcessor() {
     });
   }, [personnelPost, personnelName, promotionDate, medicCredentials]);
 
+  const divisionalPersonnelFileBBCode = useMemo(
+    () =>
+      divisionalPersonnelFileTemplate.renderBody({ personnelName, dateHired }),
+    [personnelName, dateHired],
+  );
+
   const rankAdjustmentBBCode = useMemo(() => {
     return rankAdjustmentTemplate.renderBody({
       personnelName,
-      previousRank,
+      previousRank: previousRankLabel,
       newRank: currentRankInfo?.label || "",
       date: promotionDate,
       signature: medicCredentials.signature,
       medicName: medicCredentials.name,
       medicRank: medicCredentials.rank,
     });
-  }, [personnelName, previousRank, currentRankInfo, promotionDate, medicCredentials]);
+  }, [personnelName, previousRankLabel, currentRankInfo, promotionDate, medicCredentials]);
 
   const operationalAdjustmentBBCode = useMemo(() => {
     const rankLabel = currentRankInfo?.label || "";
@@ -238,6 +268,23 @@ export function PromotionProcessor() {
         url: "https://gov.eclipse-rp.net/viewforum.php?f=605",
       },
     });
+    // Only the promotion out of EMR opens a divisional file - every later rung
+    // already has one to update.
+    if (isPreviousRankEmr) {
+      steps.push({
+        id: "divisional-file",
+        label: "Create their Divisional Personnel File",
+        copyText: divisionalPersonnelFileBBCode,
+        titleText: `${personnelName} - Divisional`,
+        icon: FolderArchive,
+        validate: () =>
+          validationMessage(validateDateString(dateHired, "Date hired")),
+        action: {
+          label: "Copy & Open Divisional Personnel File",
+          url: "https://gov.eclipse-rp.net/posting.php?mode=post&f=4155",
+        },
+      });
+    }
     steps.push({ id: "operationalAdjustments", label: "Update Operational Adjustments in Personnel File", copyText: operationalAdjustmentCopyText, icon: FileText, action: { label: "Open Personnel Files", url: "https://gov.eclipse-rp.net/viewforum.php?f=605" } });
     steps.push({ id: "employeeAdjustments", label: "Post Employee Adjustment under Employee Adjustments", copyText: rankAdjustmentBBCode, titleText: `Rank Adjustment | ${personnelName}`, icon: ClipboardCheck, action: { label: "Copy & Open Employee Adjustment", url: "https://gov.eclipse-rp.net/posting.php?mode=post&f=573" } });
     // The roster entry is one edited post, so this opens that post's editor.
@@ -265,7 +312,7 @@ export function PromotionProcessor() {
       steps.push({ id: "oneToOneList", label: "Update their listing on the 1:1 list, moving it to the DELTA callsign section", copyText: "", icon: Users });
     }
     return steps;
-  }, [emailTemplate, emailBBCode, personnelBBCode, rankAdjustmentBBCode, operationalAdjustmentCopyText, personnelName, newRank, currentRankInfo]);
+  }, [emailTemplate, emailBBCode, personnelBBCode, divisionalPersonnelFileBBCode, rankAdjustmentBBCode, operationalAdjustmentCopyText, personnelName, newRank, currentRankInfo, isPreviousRankEmr, dateHired]);
 
   return (
     <div className="space-y-4">
@@ -289,6 +336,13 @@ export function PromotionProcessor() {
 
       {/* Rank Selector */}
       <PromotionRankSelect value={newRank} onChange={setNewRank} />
+      <PromotionRankSelect
+        value={previousRank}
+        onChange={setPreviousRank}
+        ranks={rankOrderHighToLow}
+        order="high-to-low"
+        label="Previous rank"
+      />
 
       {/* Personnel Info */}
       <div className="panel-inner p-5">
@@ -326,17 +380,19 @@ export function PromotionProcessor() {
               ))}
             </div>
           </div>
-          <div>
-            <Label htmlFor="promotion-previous-rank" className="mb-1 block text-xs text-muted-foreground">Previous rank</Label>
-            <Input
-              id="promotion-previous-rank"
-              value={previousRank}
-              maxLength={INPUT_LIMITS.name}
-              onChange={(e) => setPreviousRank(e.target.value)}
-              placeholder="e.g. EMT-B, EMT-I"
-              className="border-border bg-surface-raised text-foreground placeholder:text-muted-foreground"
-            />
-          </div>
+          {isPreviousRankEmr && (
+            <div>
+              <Label htmlFor="promotion-date-hired" className="mb-1 block text-xs text-muted-foreground">Date hired</Label>
+              <Input
+                id="promotion-date-hired"
+                value={dateHired}
+                maxLength={INPUT_LIMITS.short}
+                onChange={(e) => setDateHired(e.target.value.toUpperCase())}
+                placeholder="DD/MON/YYYY"
+                className="border-border bg-surface-raised font-mono text-foreground placeholder:text-muted-foreground"
+              />
+            </div>
+          )}
           <div>
             <Label htmlFor="promotion-date" className="mb-1 block text-xs text-muted-foreground">Promotion date</Label>
             <Input
@@ -418,7 +474,7 @@ export function PromotionProcessor() {
                         {step.copyText.length > 0 && (
                           <button
                             onClick={() => {
-                              if (detailsError()) return;
+                              if (stepBlocked(step)) return;
                               copyBBCode({
                                 bbCodeText: step.copyText,
                                 post: {
@@ -439,7 +495,7 @@ export function PromotionProcessor() {
                         {step.titleText && (
                           <button
                             onClick={() => {
-                              if (detailsError()) return;
+                              if (stepBlocked(step)) return;
                               // The whole step goes over, not just the title: the
                               // member pastes this half by hand, and the extension
                               // fills a posting page's subject and body together.
@@ -462,7 +518,7 @@ export function PromotionProcessor() {
                         {step.secondaryCopyText && (
                           <button
                             onClick={() => {
-                              if (detailsError()) return;
+                              if (stepBlocked(step)) return;
                               copyBBCode({
                                 bbCodeText: step.secondaryCopyText!,
                                 post: {
@@ -497,7 +553,7 @@ export function PromotionProcessor() {
                             onClick={(event) => {
                               if (!step.copyText) return;
                               event.preventDefault();
-                              if (detailsError()) return;
+                              if (stepBlocked(step)) return;
                               copyBBCodeAndOpen({
                                 bbCodeText: step.copyText,
                                 url: step.action!.url,

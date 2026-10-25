@@ -47,3 +47,12 @@ export type RankAdjustmentContext = {
 export type RankAdjustmentDefinition = {
   renderBody: (context: RankAdjustmentContext) => string;
 };
+
+export type DivisionalPersonnelFileContext = {
+  personnelName: string;
+  dateHired: string;
+};
+
+export type DivisionalPersonnelFileDefinition = {
+  renderBody: (context: DivisionalPersonnelFileContext) => string;
+};
