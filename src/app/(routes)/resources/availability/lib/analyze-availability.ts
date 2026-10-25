@@ -11,7 +11,9 @@ const TIME_PATTERN = /([01]\d|2[0-3]):([0-5]\d)/g;
 export type DayState = "blank" | "set" | "unreadable";
 
 export type DayAnalysis = {
-  /** What the member typed, trimmed. */
+  /** What the member typed, exactly as typed - the input's own value. */
+  value: string;
+  /** The same value without surrounding whitespace. */
   raw: string;
   /** The line's value inside the brackets in the copyable block. */
   utc: string;
@@ -23,13 +25,15 @@ export function analyzeDay(
   value: string,
   timezone: string,
 ): DayAnalysis {
-  const raw = (value ?? "").trim();
+  const typed = value ?? "";
+  const raw = typed.trim();
 
   if (!raw) {
-    return { raw, utc: "", state: "blank" };
+    return { value: typed, raw, utc: "", state: "blank" };
   }
 
   return {
+    value: typed,
     raw,
     // Same conversion the tool has always applied, so the copied block stays
     // byte-identical to what members and rosters already expect.

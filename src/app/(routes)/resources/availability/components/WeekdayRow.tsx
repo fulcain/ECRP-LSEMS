@@ -46,7 +46,7 @@ export function WeekdayRow({ day, analysis, onChange }: WeekdayRowProps) {
       <div className="min-w-0">
         <Input
           id={`availability-${day}`}
-          value={analysis.raw}
+          value={analysis.value}
           onChange={(event) => onChange(event.target.value)}
           placeholder="08:00 - 12:00 and 14:00 - 22:00"
           maxLength={200}
