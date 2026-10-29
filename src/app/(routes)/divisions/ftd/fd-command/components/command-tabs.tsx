@@ -10,6 +10,7 @@ import { FtpManager } from "@/components/ftp/ftp-manager";
 import { UpdateProfiles } from "./update-profiles";
 
 import { TabBar, type Tab } from "@/components/ui/tab-bar";
+import { FTD_COMMAND_TABS, type FtdCommandTab } from "@/configs/ftd-command-tabs";
 
 import { CurrentEMRsTable } from "@/components/current-emrs/current-emrs-table";
 import { FtoManagementCard } from "@/components/employee-stats/components/FtoManagementCard";
@@ -17,42 +18,35 @@ import { FtiPromotionCard } from "@/components/employee-stats/components/FtiProm
 import { EmrTrainingTimeCard } from "@/components/employee-stats/components/EmrTrainingTimeCard";
 import { EmrDischargeCard } from "@/components/employee-stats/components/EmrDischargeCard";
 
-type CommandTab = "emrs" | "ftos" | "emails" | "ftp" | "profiles";
+type CommandTab = FtdCommandTab;
 
-const ALL_TABS: Tab<CommandTab>[] = [
-  {
-    value: "emrs",
-    label: "EMRs",
+const TAB_PRESENTATION = {
+  emrs: {
     icon: Users,
     accent: "border-indigo-300/40 dark:border-indigo-400/40 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300",
   },
-  {
-    value: "ftos",
-    label: "FTOs",
+  ftos: {
     icon: UserPlus,
     accent: "border-sky-300/40 dark:border-sky-400/40 bg-sky-100 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300",
   },
-  {
-    value: "emails",
-    // The value stays "emails": it is what the stored tab and any bookmarked
-    // `?tab=` say, and only the label moved.
-    label: "Emails & Boards",
+  emails: {
     icon: Mail,
     accent: "border-amber-300/40 dark:border-amber-400/40 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300",
   },
-  {
-    value: "ftp",
-    label: "FTP",
+  ftp: {
     icon: BookOpen,
     accent: "border-emerald-300/40 dark:border-emerald-400/40 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300",
   },
-  {
-    value: "profiles",
-    label: "Update Profiles",
+  profiles: {
     icon: RefreshCw,
     accent: "border-rose-300/40 dark:border-rose-400/40 bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300",
   },
-];
+} satisfies Record<CommandTab, { icon: Tab<CommandTab>["icon"]; accent: string }>;
+
+const ALL_TABS: Tab<CommandTab>[] = FTD_COMMAND_TABS.map((tab) => ({
+  ...tab,
+  ...TAB_PRESENTATION[tab.value],
+}));
 
 const COMMAND_TAB_LS_KEY = "ftd-command-tab";
 

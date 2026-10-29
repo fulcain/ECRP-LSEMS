@@ -47,8 +47,8 @@ import {
 import { CourseReportsProcessor } from "./components/CourseReportsProcessor";
 import {
   UpcomingCourseProcessor,
-  type UpcomingCourseType,
 } from "./components/UpcomingCourseProcessor";
+import type { UpcomingCourseType } from "@/configs/bls-upcoming-courses";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

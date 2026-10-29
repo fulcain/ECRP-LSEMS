@@ -13,6 +13,16 @@ export type ChangeLogEntry = {
 
 export const changeLog: ChangeLogEntry[] = [
   {
+    date: "Oct 29, 2026",
+    changes: [
+      {
+        type: "feature",
+        description:
+          "Added app-wide search for pages, tabs, quick links, and formats.",
+      },
+    ],
+  },
+  {
     date: "Oct 20, 2026",
     changes: [
       {

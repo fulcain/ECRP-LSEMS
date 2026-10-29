@@ -18,7 +18,7 @@ import {
   UPCOMING_COURSES,
   UPCOMING_COURSES_LISTING,
   type UpcomingCourseType,
-} from "./UpcomingCourseProcessor";
+} from "@/configs/bls-upcoming-courses";
 
 import { DISCUSSION_BOARDS } from "@/app/constants/divisions/discussion-boards";
 import { blsTemplates } from "@/app/templates/bls-formats";

@@ -4,6 +4,8 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { useMedic } from "@/app/context/MedicContext";
 import { fetchEMRProfileLinks, EMRProfileLink } from "@/components/current-emrs/fetchCurrentEMRs";
+import type { FormType } from "@/configs/ftd-paperwork-documents";
+export type { FormType } from "@/configs/ftd-paperwork-documents";
 
 export interface SessionDetails {
   ftoName: string;
@@ -34,12 +36,6 @@ const defaultDetails: SessionDetails = {
  * fields the actual paperwork does. The instructors' own board is not a form at
  * all - it lives on the FTI page, where its readers already are.
  */
-export type FormType =
-  | "normal"
-  | "reinstatement"
-  | "civilianRideAlong"
-  | "ftdDiscussionBoard";
-
 /** The persisted session blob. This key and shape are shared with older
  *  builds, so stored sessions survive a deploy. */
 interface StoredSession {

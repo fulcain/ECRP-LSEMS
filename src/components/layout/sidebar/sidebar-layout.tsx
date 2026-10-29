@@ -8,6 +8,8 @@ import { SidebarProvider } from "./sidebar-context";
 import { ContentWrapper } from "./content-wrapper";
 import { CommandPalette } from "../command-palette";
 import React from "react";
+import type { SearchDestination } from "../command-palette";
+import { Search } from "lucide-react";
 
 /**
  * The shell around every page.
@@ -19,16 +21,17 @@ import React from "react";
  * only renders the subset it was handed.
  *
  * A signed-out visitor gets no navigation at all: the login, access-denied and
- * 404 pages render on their own instead of inside an empty sidebar whose
- * search box said "No page matches """.
+ * 404 pages render on their own instead of inside an empty navigation shell.
  */
 export function SidebarLayout({
   allowedHrefs,
+  searchItems,
   signedIn,
   initialCollapsed = false,
   children,
 }: {
   allowedHrefs: readonly string[];
+  searchItems: readonly SearchDestination[];
   signedIn: boolean;
   initialCollapsed?: boolean;
   children: React.ReactNode;
@@ -70,8 +73,24 @@ export function SidebarLayout({
       </a>
       <SidebarDesktop headerLinks={links} />
       <SidebarMobile headerLinks={links} />
-      <CommandPalette links={links} />
-      <ContentWrapper>{children}</ContentWrapper>
+      <CommandPalette links={links} destinations={searchItems} />
+      <ContentWrapper>
+        <header className="sticky top-0 z-40 flex h-14 items-center justify-end border-b border-border/40 bg-background/80 px-4 backdrop-blur-xl sm:px-6">
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event("open-command-palette"))}
+            className="inline-flex h-9 items-center gap-2 rounded-xl border border-border bg-surface-raised/80 px-3 text-sm text-muted-foreground shadow-sm transition-colors hover:bg-surface-hover hover:text-foreground"
+            aria-label="Search pages"
+          >
+            <Search className="h-4 w-4" />
+            <span>Search pages</span>
+            <kbd className="ml-2 rounded border border-border bg-background px-1.5 py-0.5 text-[10px] text-muted-foreground">
+              Ctrl K
+            </kbd>
+          </button>
+        </header>
+        {children}
+      </ContentWrapper>
     </SidebarProvider>
   );
 }

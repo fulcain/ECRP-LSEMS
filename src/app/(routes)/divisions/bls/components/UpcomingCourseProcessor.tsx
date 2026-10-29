@@ -40,8 +40,10 @@ import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
 import { pickPostTarget } from "@/app/helpers/forumHandoff";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { toast } from "react-toastify";
-
-export type UpcomingCourseType = "new" | "reschedule" | "cancelled";
+import {
+  UPCOMING_COURSES,
+  type UpcomingCourseType,
+} from "@/configs/bls-upcoming-courses";
 
 /** The single post the upcoming-courses listing is edited in. */
 const UPCOMING_COURSES_POST_URL =
@@ -52,39 +54,6 @@ const UPCOMING_COURSES_POST_URL =
  * once: this builder's dropdown is built from it and its badges name the entry
  * the member picked, so no name is written down a second time.
  */
-export const UPCOMING_COURSES: {
-  value: UpcomingCourseType;
-  label: string;
-  /** One plain line saying what the change does, under the dropdown. */
-  hint: string;
-}[] = [
-  {
-    value: "new",
-    label: "Add a class",
-    hint: "Puts a new class on the upcoming-courses post.",
-  },
-  {
-    value: "reschedule",
-    label: "Reschedule a class",
-    hint: "Moves a class that is already on the listing.",
-  },
-  {
-    value: "cancelled",
-    label: "Cancel a class",
-    hint: "Strikes a class off the listing.",
-  },
-];
-
-/**
- * The listing itself, as the paperwork picker offers it: one card, because the
- * listing is a single post that gets edited - which of the three changes above
- * it makes is the builder's own dropdown.
- */
-export const UPCOMING_COURSES_LISTING = {
-  label: "Edit the listing",
-  hint: "Add a class, move one, or strike one off - you pick which inside.",
-};
-
 export function UpcomingCourseProcessor({
   initialCourseType = "new",
 }: {

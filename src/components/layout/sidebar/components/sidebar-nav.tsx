@@ -8,36 +8,31 @@ import {
   isHeaderLinkActive,
   type HeaderLink,
 } from "@/components/layout/header/configs/HeaderLinks";
+import { SheetClose } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SheetClose } from "@/components/ui/sheet";
 import { ROUTES } from "@/configs/routes";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "../sidebar-context";
 
-/** Everything a nav item answers to: its label, its section and its route. */
 function searchText(item: HeaderLink): string {
   return `${item.label} ${item.group} ${item.href ?? ""}`.toLowerCase();
 }
 
 type SidebarNavProps = {
   links: readonly HeaderLink[];
-  /** The 76px rail hides the labels, so it hides the search with them. */
+  /** The 76px rail hides labels and section names. */
   collapsed?: boolean;
   /** The mobile sheet closes itself once a destination is chosen. */
   closeOnNavigate?: boolean;
 };
 
 /**
- * The navigation list, with the search that filters it.
+ * The navigation links the server decided this member can open, with a local
+ * filter for quickly narrowing that list.
  *
- * One component for both shells: the desktop rail and the mobile sheet used to
- * render this same list with their own markup, and a search written into both
- * would have to be kept in step by hand.
- *
- * The search only ever filters what it was handed, and the caller hands over the
- * hrefs the server already allowed - so it can neither reveal a page nor hide
- * one: typing "access" on a member without the Access Manager shows nothing.
+ * One component serves the desktop rail and the mobile sheet, so both navigation
+ * views stay consistent while app-wide search lives in the shell header.
  */
 export function SidebarNav({
   links,
@@ -56,7 +51,6 @@ export function SidebarNav({
     () => query.toLowerCase().split(/\s+/).filter(Boolean),
     [query],
   );
-
   const visible = useMemo(
     () =>
       terms.length === 0
@@ -68,25 +62,8 @@ export function SidebarNav({
     [links, terms],
   );
 
-  // The highlighted result follows the visible list, not the previous one.
-  useEffect(() => {
-    setActiveIndex(0);
-  }, [query]);
-
-  // A destination was reached, so the next look at the nav shows all of it
-  // again rather than the filter from last time.
-  useEffect(() => {
-    setQuery("");
-  }, [pathname]);
-
-  // Enter in the search field opens the highlighted result, so the field is
-  // usable without reaching for the mouse.
-  const openActive = () => {
-    const item = visible[activeIndex];
-    if (item?.href) router.push(item.href);
-  };
-
-  // The rail has no room for the field, so its icon expands it first.
+  useEffect(() => setActiveIndex(0), [query]);
+  useEffect(() => setQuery(""), [pathname]);
   useEffect(() => {
     if (!collapsed && focusOnExpand) {
       searchRef.current?.focus();
@@ -94,8 +71,11 @@ export function SidebarNav({
     }
   }, [collapsed, focusOnExpand]);
 
-  // The directory is the search that covers a division's documents, so a query
-  // the nav cannot answer is offered it - but only to a member who can open it.
+  const openActive = () => {
+    const item = visible[activeIndex];
+    if (item?.href) router.push(item.href);
+  };
+
   const quickLinksHref = links.find(
     (item) => item.href?.split("?")[0] === ROUTES.resources.quickLinks,
   )?.href;
@@ -124,6 +104,7 @@ export function SidebarNav({
             type="search"
             value={query}
             maxLength={100}
+            data-sidebar-search
             onChange={(event) => setQuery(event.target.value)}
             onKeyDown={(event) => {
               if (event.key === "Escape") {
@@ -131,9 +112,7 @@ export function SidebarNav({
                 searchRef.current?.blur();
               } else if (event.key === "ArrowDown") {
                 event.preventDefault();
-                setActiveIndex((value) =>
-                  Math.min(value + 1, visible.length - 1),
-                );
+                setActiveIndex((value) => Math.min(value + 1, visible.length - 1));
               } else if (event.key === "ArrowUp") {
                 event.preventDefault();
                 setActiveIndex((value) => Math.max(value - 1, 0));
@@ -159,17 +138,8 @@ export function SidebarNav({
               <X className="h-3.5 w-3.5" />
             </button>
           )}
-          {!query && (
-            <kbd
-              aria-hidden="true"
-              className="pointer-events-none absolute right-2.5 top-1/2 hidden -translate-y-1/2 rounded border border-border bg-surface-raised px-1.5 py-0.5 text-[10px] text-muted-foreground sm:block"
-            >
-              Ctrl K
-            </kbd>
-          )}
         </div>
       )}
-
       <nav
         aria-label="Primary navigation"
         className={cn(
@@ -178,13 +148,8 @@ export function SidebarNav({
         )}
       >
         {query && (
-          <p
-            role="status"
-            className="px-3 pb-1 text-[11px] text-muted-foreground"
-          >
-            {visible.length === 1
-              ? "1 page found"
-              : `${visible.length} pages found`}
+          <p role="status" className="px-3 pb-1 text-[11px] text-muted-foreground">
+            {visible.length === 1 ? "1 page found" : `${visible.length} pages found`}
           </p>
         )}
 
@@ -209,9 +174,9 @@ export function SidebarNav({
         {visible.map((item, index) => {
           const Icon = item.icon;
           const isActive = isHeaderLinkActive(item, pathname);
-          const isHighlighted = terms.length > 0 && index === activeIndex;
           const showGroup =
             index === 0 || item.group !== visible[index - 1].group;
+          const isHighlighted = terms.length > 0 && index === activeIndex;
           const link = (
             <Link
               href={item.href || "#"}

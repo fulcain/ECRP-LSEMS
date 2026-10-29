@@ -7,9 +7,11 @@ import "react-toastify/dist/ReactToastify.css";
 import { SidebarLayout } from "@/components/layout/sidebar/sidebar-layout";
 import { MedicProvider } from "@/app/context/MedicContext";
 import { headerLinks } from "@/components/layout/header/configs/HeaderLinks";
-import { filterAccessibleLinks } from "@/lib/role-config";
+import { canEditFtp, filterAccessibleLinks, userHasAccess } from "@/lib/role-config";
 import { getSession } from "@/lib/session";
 import { readAccessMatrix } from "@/lib/access-matrix-store";
+import { FTD_TABS } from "@/configs/ftd-tabs";
+import { QUICK_SEARCH_CATALOG } from "@/configs/quick-search-catalog";
 
 export const metadata: Metadata = {
   // The brand is written down once. Every route's layout declares only its own
@@ -61,6 +63,37 @@ export default async function RootLayout({
   // Only the hrefs travel to the sidebar: the icons are components and can't
   // cross into a client component, so the shell pairs them up on its side.
   const allowedHrefs = links.flatMap((item) => (item.href ? [item.href] : []));
+  const canSearchRoute = (route: string) =>
+    Boolean(
+      session &&
+        userHasAccess(route, session.roles, session.discordId, overrides),
+    );
+  const searchItems = [
+    ...links.flatMap((item) => [
+      ...(item.href ? [{ label: item.label, href: item.href, group: item.group }] : []),
+      ...(item.children ?? []).map((child) => ({
+        label: child.label,
+        href: child.href,
+        group: item.group,
+      })),
+    ]),
+    ...FTD_TABS.filter((tab) =>
+      canSearchRoute(tab.href),
+    ).map((tab) => ({ label: tab.label, href: tab.href, group: "FTD" })),
+    ...QUICK_SEARCH_CATALOG
+      .filter(
+        (item) =>
+          canSearchRoute(item.route) &&
+          (!item.privileged ||
+            (session && canEditFtp(session.roles, session.discordId))),
+      )
+      .map(({ label, href, group, keywords }) => ({
+        label,
+        href,
+        group,
+        keywords,
+      })),
+  ];
   // The rail's collapsed state is a cookie so the first paint matches the
   // member's last choice instead of hydrating expanded and snapping shut.
   const jar = await cookies();
@@ -81,6 +114,7 @@ export default async function RootLayout({
           <MedicProvider>
             <SidebarLayout
               allowedHrefs={allowedHrefs}
+              searchItems={searchItems}
               signedIn={session !== null}
               initialCollapsed={initialCollapsed}
             >

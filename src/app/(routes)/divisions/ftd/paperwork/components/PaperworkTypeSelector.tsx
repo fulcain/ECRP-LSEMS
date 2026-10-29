@@ -2,17 +2,13 @@
 
 import { Suspense, useEffect } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { FileText, MessagesSquare, RefreshCcw, UserRound } from "lucide-react";
-
 import {
-  FormType,
   SessionProvider,
   useSession,
 } from "@/app/(routes)/divisions/ftd/paperwork/components/SessionContext";
-import {
-  DocumentPicker,
-  type PickerGroup,
-} from "@/components/division/document-picker";
+import type { FormType } from "@/configs/ftd-paperwork-documents";
+import { DocumentPicker } from "@/components/division/document-picker";
+import { FTD_PAPERWORK_GROUPS } from "@/configs/ftd-paperwork-documents";
 import { SessionDetailsCard } from "@/app/(routes)/divisions/ftd/paperwork/components/SessionDetailsCard";
 import PaperworkForm from "@/app/(routes)/divisions/ftd/paperwork/components/PaperworkForm";
 import ReinstatementForm from "@/app/(routes)/divisions/ftd/paperwork/components/ReinstatementForm";
@@ -27,45 +23,7 @@ import { DiscussionBoardComposer } from "@/components/discussion-board-composer"
  * understands, so a new one needs a branch in `PaperworkTypeRouter` and nothing
  * else on this page changes.
  */
-const PAPERWORK_GROUPS: readonly PickerGroup<FormType>[] = [
-  {
-    label: "Write a session",
-    hint: "An EMR you trained or reviewed - the session details are saved under the form.",
-    documents: [
-      {
-        value: "normal",
-        label: "Normal FT Paperwork",
-        hint: "Field training phases for a new EMR.",
-        icon: FileText,
-      },
-      {
-        value: "reinstatement",
-        label: "Reinstatement Paperwork",
-        hint: "Phases for a previous Employee coming back.",
-        icon: RefreshCcw,
-      },
-      {
-        value: "civilianRideAlong",
-        label: "Civilian Ride-Along",
-        hint: "Accept, deny, hold or expire a request - or post the report.",
-        icon: UserRound,
-      },
-    ],
-  },
-  {
-    label: "Post on the board",        hint: "FTD discussion topic - open a thread on the FTD board.",
-    documents: [
-      {
-        value: "ftdDiscussionBoard",
-        label: "Discussion Board",
-        hint: "Open a topic in the FTD discussion board.",
-        icon: MessagesSquare,
-      },
-    ],
-  },
-];
-
-const FORM_TYPES: readonly FormType[] = PAPERWORK_GROUPS.flatMap((group) =>
+const FORM_TYPES: readonly FormType[] = FTD_PAPERWORK_GROUPS.flatMap((group) =>
   group.documents.map((doc) => doc.value),
 );
 
@@ -181,7 +139,7 @@ function PaperworkTypeTabs() {
 
   return (
     <DocumentPicker
-      groups={PAPERWORK_GROUPS}
+      groups={FTD_PAPERWORK_GROUPS}
       value={formType}
       // Change clears the choice: the grid unfolds and the builder - which
       // belongs to the document it was written for - comes down with it.

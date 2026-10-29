@@ -17,6 +17,14 @@ type PaletteItem = {
   href: string;
   group: string;
   icon: HeaderLink["icon"];
+  keywords?: string;
+};
+
+export type SearchDestination = {
+  label: string;
+  href: string;
+  group: string;
+  keywords?: string;
 };
 
 /**
@@ -55,18 +63,37 @@ function flatten(links: readonly HeaderLink[]): PaletteItem[] {
 }
 
 /**
- * Ctrl/Cmd+K opens every page this member can reach, filterable by typing.
- * It reads the same already-filtered links the sidebar renders, so it mirrors
- * the sidebar exactly instead of keeping a second list of destinations.
+ * Ctrl/Cmd+K opens every server-approved page and addressable tab for this
+ * member, including destinations that are not separate sidebar links.
  */
-export function CommandPalette({ links }: { links: readonly HeaderLink[] }) {
+export function CommandPalette({
+  links,
+  destinations,
+}: {
+  links: readonly HeaderLink[];
+  destinations: readonly SearchDestination[];
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [index, setIndex] = useState(0);
   const listRef = useRef<HTMLDivElement>(null);
 
-  const items = useMemo(() => flatten(links), [links]);
+  const items = useMemo(() => {
+    const items: PaletteItem[] = [];
+    const seen = new Set<string>();
+    for (const destination of destinations) {
+      if (seen.has(destination.href)) continue;
+      seen.add(destination.href);
+      items.push({ ...destination, icon: Search });
+    }
+    for (const item of flatten(links)) {
+      if (seen.has(item.href)) continue;
+      seen.add(item.href);
+      items.push(item);
+    }
+    return items;
+  }, [destinations, links]);
   const terms = useMemo(
     () => query.toLowerCase().split(/\s+/).filter(Boolean),
     [query],
@@ -77,7 +104,7 @@ export function CommandPalette({ links }: { links: readonly HeaderLink[] }) {
         ? items
         : items.filter((item) => {
             const text =
-              `${item.label} ${item.group} ${item.href}`.toLowerCase();
+              `${item.label} ${item.group} ${item.href} ${item.keywords ?? ""}`.toLowerCase();
             return terms.every((term) => text.includes(term));
           }),
     [items, terms],
@@ -86,12 +113,23 @@ export function CommandPalette({ links }: { links: readonly HeaderLink[] }) {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        if (
+          event.target instanceof Element &&
+          event.target.closest("[data-sidebar-search]")
+        ) {
+          return;
+        }
         event.preventDefault();
         setOpen((value) => !value);
       }
     };
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    const openPalette = () => setOpen(true);
+    window.addEventListener("open-command-palette", openPalette);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("open-command-palette", openPalette);
+    };
   }, []);
 
   useEffect(() => {
