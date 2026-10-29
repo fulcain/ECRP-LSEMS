@@ -52,6 +52,7 @@ import {
 import { DocumentPicker } from "@/components/division/document-picker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { EmployeeNameInput } from "@/components/employees/employee-name-input";
 import {
   Select,
   SelectContent,
@@ -612,11 +613,14 @@ export default function ARFormatsPage() {
                     <Label htmlFor="student-name">
                       {isCertificate ? "Member certified" : "Student name"}
                     </Label>
-                    <Input
+                    <EmployeeNameInput
                       id="student-name"
                       value={studentName}
                       maxLength={INPUT_LIMITS.name}
-                      onChange={(event) => setStudentName(event.target.value)}
+                      onChange={setStudentName}
+                      onEmployeeSelect={(employee) =>
+                        setGovLink(employee.personnelFileUrl)
+                      }
                       placeholder="Enter the member's name"
                       className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
                     />

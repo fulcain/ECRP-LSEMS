@@ -1,6 +1,8 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
+import { EmployeeNameInput } from "@/components/employees/employee-name-input";
+import type { EmployeeRecord } from "@/app/constants/employees";
 import { INPUT_LIMITS } from "@/lib/validation";
 import { Label } from "@/components/ui/label";
 import {
@@ -16,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { CalendarIcon, Users } from "lucide-react";
+import { CalendarIcon, UserPlus, Users } from "lucide-react";
 import { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
@@ -27,6 +29,8 @@ type ApplicantTitle = "Mr." | "Ms.";
 type ApplicantInfoCardProps = {
   personnelName: string;
   onNameChange: (value: string) => void;
+  onEmployeeSelect: (employee: EmployeeRecord) => void;
+  allowEmployeeSelect: boolean;
   title: ApplicantTitle;
   onTitleChange: (value: ApplicantTitle) => void;
   phoneNumber: string;
@@ -41,11 +45,15 @@ type ApplicantInfoCardProps = {
   onEmployeeProfileLinkChange: (value: string) => void;
   personnelFileLink: string;
   onPersonnelFileLinkChange: (value: string) => void;
+  onAddToEmployees: () => void;
+  showAddToEmployees: boolean;
 };
 
 export function ApplicantInfoCard({
   personnelName,
   onNameChange,
+  onEmployeeSelect,
+  allowEmployeeSelect,
   title,
   onTitleChange,
   phoneNumber,
@@ -60,6 +68,8 @@ export function ApplicantInfoCard({
   onEmployeeProfileLinkChange,
   personnelFileLink,
   onPersonnelFileLinkChange,
+  onAddToEmployees,
+  showAddToEmployees,
 }: ApplicantInfoCardProps) {
   const [calendarOpen, setCalendarOpen] = useState(false);
 
@@ -72,14 +82,28 @@ export function ApplicantInfoCard({
         </h3>
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto]">
-        <Input
-          aria-label="Applicant's full name"
-          value={personnelName}
-          maxLength={INPUT_LIMITS.name}
-          onChange={(e) => onNameChange(e.target.value)}
-          placeholder="Applicant's full name"
-          className="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-border"
-        />
+        {allowEmployeeSelect ? (
+          <EmployeeNameInput
+            id="contract-applicant-name"
+            aria-label="Applicant's full name"
+            value={personnelName}
+            maxLength={INPUT_LIMITS.name}
+            onChange={onNameChange}
+            onEmployeeSelect={onEmployeeSelect}
+            placeholder="Applicant's full name"
+            className="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-border"
+          />
+        ) : (
+          <Input
+            id="contract-applicant-name"
+            aria-label="Applicant's full name"
+            value={personnelName}
+            maxLength={INPUT_LIMITS.name}
+            onChange={(event) => onNameChange(event.target.value)}
+            placeholder="Applicant's full name"
+            className="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-border"
+          />
+        )}
         <Select
           value={title}
           onValueChange={(value) => onTitleChange(value as ApplicantTitle)}
@@ -186,6 +210,24 @@ export function ApplicantInfoCard({
           />
         </div>
       </div>
+
+      {showAddToEmployees && (
+        <div className="mt-4 flex flex-col gap-2 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs text-muted-foreground">
+            New applicant? Add them to the employee directory for future personnel workflows.
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            className="shrink-0"
+            disabled={!personnelName.trim()}
+            onClick={onAddToEmployees}
+          >
+            <UserPlus className="h-4 w-4" />
+            Add to Employees
+          </Button>
+        </div>
+      )}
 
       <p className="mt-3 flex items-start gap-1.5 text-xs text-muted-foreground">
       </p>

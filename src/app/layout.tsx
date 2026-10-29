@@ -13,6 +13,7 @@ import { readAccessMatrix } from "@/lib/access-matrix-store";
 import { FTD_TABS } from "@/configs/ftd-tabs";
 import { QUICK_SEARCH_CATALOG } from "@/configs/quick-search-catalog";
 import { resolveMemberIdentity } from "@/lib/member-identity";
+import { EmployeeRosterProvider } from "@/components/employees/employee-roster-provider";
 
 export const metadata: Metadata = {
   // The brand is written down once. Every route's layout declares only its own
@@ -116,15 +117,17 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <MedicProvider>
-            <SidebarLayout
-              allowedHrefs={allowedHrefs}
-              searchItems={searchItems}
-              signedIn={session !== null}
-              memberRank={memberRank}
-              initialCollapsed={initialCollapsed}
-            >
-              {children}
-            </SidebarLayout>
+            <EmployeeRosterProvider>
+              <SidebarLayout
+                allowedHrefs={allowedHrefs}
+                searchItems={searchItems}
+                signedIn={session !== null}
+                memberRank={memberRank}
+                initialCollapsed={initialCollapsed}
+              >
+                {children}
+              </SidebarLayout>
+            </EmployeeRosterProvider>
             {/* One toast container for the whole app, themed with it. */}
             <ToastHost />
           </MedicProvider>

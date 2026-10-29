@@ -15,14 +15,17 @@ import {
   FileSignature,
   FileText,
   LogOut,
+  Users,
 } from "lucide-react";
+import { EmployeeDirectory } from "./components/EmployeeDirectory";
 
 type SupervisorTab =
   | "loa"
   | "meetings"
   | "contract"
   | "promotions"
-  | "resignations";
+  | "resignations"
+  | "employees";
 
 const tabs: Tab<SupervisorTab>[] = [
   {
@@ -55,6 +58,12 @@ const tabs: Tab<SupervisorTab>[] = [
     icon: <LogOut className="h-4 w-4" />,
     accent: "border-rose-300/40 dark:border-rose-400/40 bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300",
   },
+  {
+    value: "employees",
+    label: "Employees",
+    icon: <Users className="h-4 w-4" />,
+    accent: "border-cyan-300/40 dark:border-cyan-400/40 bg-cyan-100 dark:bg-cyan-500/20 text-cyan-700 dark:text-cyan-300",
+  },
 ];
 
 const tabValues = tabs.map((tab) => tab.value);
@@ -82,6 +91,7 @@ export default function SupervisorPage() {
         {activeTab === "contract" && <ContractSigningProcessor />}
         {activeTab === "promotions" && <PromotionProcessor />}
         {activeTab === "resignations" && <ResignationProcessor />}
+        {activeTab === "employees" && <EmployeeDirectory />}
       </div>
     </PageContainer>
   );

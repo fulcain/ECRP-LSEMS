@@ -51,6 +51,7 @@ import {
 import type { UpcomingCourseType } from "@/configs/bls-upcoming-courses";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { EmployeeNameInput } from "@/components/employees/employee-name-input";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
 import {
@@ -461,11 +462,11 @@ export default function BLSFormatsPage() {
                   >
                     <div className="space-y-2">
                       <Label htmlFor="applicant-name">Applicant name</Label>
-                      <Input
+                      <EmployeeNameInput
                         id="applicant-name"
                         value={applicantName}
                         maxLength={INPUT_LIMITS.name}
-                        onChange={(event) => setApplicantName(event.target.value)}
+                        onChange={setApplicantName}
                         placeholder="Enter the applicant's name"
                         className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
                       />

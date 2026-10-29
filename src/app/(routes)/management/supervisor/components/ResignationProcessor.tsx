@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import { EmployeeNameInput } from "@/components/employees/employee-name-input";
 import { useMedic } from "@/app/context/MedicContext";
 import { copyBBCode } from "@/app/helpers/copyBBCode";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
@@ -129,6 +130,10 @@ export function ResignationProcessor() {
     "resig-post-url",
     "",
   );
+  const [personnelFileUrl, setPersonnelFileUrl] = useLocalStorage(
+    "resig-personnel-file-url",
+    "",
+  );
   const [dischargeRpLink, setDischargeRpLink] = useLocalStorage(
     "resig-discharge-rp-link",
     "",
@@ -157,6 +162,11 @@ export function ResignationProcessor() {
       ),
       validationMessage(
         validateUrl(resignationPostUrl, "Resignation post URL", {
+          required: false,
+        }),
+      ),
+      validationMessage(
+        validateUrl(personnelFileUrl, "Personnel file URL", {
           required: false,
         }),
       ),
@@ -295,8 +305,8 @@ export function ResignationProcessor() {
         copyText: personnelFileBBCode,
         icon: FileText,
         action: {
-          label: "Open Personnel Files",
-          url: "https://gov.eclipse-rp.net/viewforum.php?f=605",
+          label: personnelFileUrl ? "Open Employee File" : "Open Personnel Files",
+          url: personnelFileUrl || "https://gov.eclipse-rp.net/viewforum.php?f=605",
         },
       },
       {
@@ -439,6 +449,7 @@ export function ResignationProcessor() {
       resignationRemarksBBCode,
       dischargeTitle,
       resignationPostUrl,
+      personnelFileUrl,
     ],
   );
 
@@ -523,11 +534,14 @@ export function ResignationProcessor() {
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <Label htmlFor="resignation-full-name" className="mb-1 block text-xs text-muted-foreground">Full name</Label>
-            <Input
+            <EmployeeNameInput
               id="resignation-full-name"
               value={personnelName}
               maxLength={INPUT_LIMITS.name}
-              onChange={(e) => setPersonnelName(e.target.value)}
+              onChange={setPersonnelName}
+              onEmployeeSelect={(employee) =>
+                setPersonnelFileUrl(employee.personnelFileUrl)
+              }
               placeholder="John Smith"
               className="border-border bg-surface-raised text-foreground placeholder:text-muted-foreground"
             />
@@ -590,6 +604,20 @@ export function ResignationProcessor() {
               maxLength={INPUT_LIMITS.text}
               onChange={(e) => setDischargeReason(e.target.value)}
               placeholder="Reason for discharge"
+              className="border-border bg-surface-raised text-foreground placeholder:text-muted-foreground"
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <Label htmlFor="resignation-personnel-file-url" className="mb-1 block text-xs text-muted-foreground">
+              Personnel file URL
+            </Label>
+            <Input
+              id="resignation-personnel-file-url"
+              type="url"
+              value={personnelFileUrl}
+              maxLength={INPUT_LIMITS.url}
+              onChange={(e) => setPersonnelFileUrl(e.target.value)}
+              placeholder="https://gov.eclipse-rp.net/viewtopic.php?..."
               className="border-border bg-surface-raised text-foreground placeholder:text-muted-foreground"
             />
           </div>
@@ -795,6 +823,9 @@ export function ResignationProcessor() {
                               // title, when the step has one) is copied and the
                               // page opens with the extension ready to fill both.
                               onClick={(event) => {
+                                // The discharge details belong in the file's
+                                // first-post editor, so keep this as a direct open.
+                                if (step.id === "personnel-file") return;
                                 if (!step.copyText) return;
                                 event.preventDefault();
                                 if (detailsError()) return;
@@ -951,13 +982,13 @@ export function ResignationProcessor() {
         <h3 className="mb-3 text-sm font-medium text-muted-foreground">Quick links</h3>
         <div className="flex flex-wrap gap-2">
           <a
-            href="https://gov.eclipse-rp.net/viewforum.php?f=605"
+            href={personnelFileUrl || "https://gov.eclipse-rp.net/viewforum.php?f=605"}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
           >
             <ExternalLink className="h-3 w-3" />
-            Personnel Files
+            {personnelFileUrl ? "Employee File" : "Personnel Files"}
           </a>
           <a
             href="https://gov.eclipse-rp.net/viewforum.php?f=573"

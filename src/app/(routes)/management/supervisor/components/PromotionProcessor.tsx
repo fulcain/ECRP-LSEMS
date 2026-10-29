@@ -2,6 +2,7 @@
 
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { useMedic } from "@/app/context/MedicContext";
+import { EmployeeNameInput } from "@/components/employees/employee-name-input";
 import { DASHBOARD_URL } from "./contract/constants";
 import { govGroupForRank } from "@/app/constants/gov-groups";
 import { copyBBCode } from "@/app/helpers/copyBBCode";
@@ -353,11 +354,14 @@ export function PromotionProcessor() {
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <Label htmlFor="promotion-full-name" className="mb-1 block text-xs text-muted-foreground">Full name</Label>
-            <Input
+            <EmployeeNameInput
               id="promotion-full-name"
               value={personnelName}
               maxLength={INPUT_LIMITS.name}
-              onChange={(e) => setPersonnelName(e.target.value)}
+              onChange={setPersonnelName}
+              onEmployeeSelect={(employee) =>
+                setPersonnelFileUrl(employee.personnelFileUrl)
+              }
               placeholder="John Smith"
               className="border-border bg-surface-raised text-foreground placeholder:text-muted-foreground"
             />
@@ -429,6 +433,23 @@ export function PromotionProcessor() {
           {icSteps.map((step) => {
             const isDone = completedSteps.includes(step.id);
             const Icon = step.icon;
+            const isPersonnelFileStep =
+              step.id === "personnel-post" ||
+              step.id === "operationalAdjustments";
+            const employeeFileUrl =
+              isPersonnelFileStep &&
+              personnelFileUrl.trim() &&
+              validateUrl(personnelFileUrl, "Personnel file URL", {
+                required: false,
+              }).ok
+                ? personnelFileUrl.trim()
+                : "";
+            const actionUrl = employeeFileUrl
+              ? employeeFileUrl
+              : step.action?.url;
+            const actionLabel = employeeFileUrl
+              ? "Open Employee File"
+              : step.action?.label;
             return (
               <li
                 key={step.id}
@@ -482,7 +503,7 @@ export function PromotionProcessor() {
                                   feature: "the promotion processor",
                                   // The personnel file link is on the same card,
                                   // and that topic is where most steps post.
-                                  url: pickPostTarget(step.action?.url, personnelFileUrl),
+                                    url: pickPostTarget(actionUrl, personnelFileUrl),
                                 },
                               });
                             }}
@@ -502,7 +523,7 @@ export function PromotionProcessor() {
                               handOffForumPost(
                                 {
                                   subject: step.titleText,
-                                  url: pickPostTarget(step.action?.url, personnelFileUrl),
+                                  url: pickPostTarget(actionUrl, personnelFileUrl),
                                   feature: "the promotion processor",
                                 },
                                 step.copyText ?? step.titleText!,
@@ -544,23 +565,26 @@ export function PromotionProcessor() {
                         )}
                         {step.action && !step.action.internal && (
                           <a
-                            href={step.action.url}
+                            href={actionUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             // One click does the whole step: the body (and its
                             // title, when the step has one) is copied and the page
                             // opens with the extension ready to fill both.
                             onClick={(event) => {
+                              // Editing the employee's file is a manual step;
+                              // open its topic without filling a reply into it.
+                              if (employeeFileUrl) return;
                               if (!step.copyText) return;
                               event.preventDefault();
                               if (stepBlocked(step)) return;
                               copyBBCodeAndOpen({
                                 bbCodeText: step.copyText,
-                                url: step.action!.url,
+                                url: actionUrl!,
                                 post: {
                                   subject: step.titleText,
                                   url: pickPostTarget(
-                                    step.action!.url,
+                                    actionUrl,
                                     personnelFileUrl,
                                   ),
                                   feature: "the promotion processor",
@@ -570,7 +594,7 @@ export function PromotionProcessor() {
                             className="inline-flex items-center gap-1.5 rounded-md border border-indigo-300/30 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 text-xs text-indigo-700 dark:text-indigo-300 transition-colors hover:bg-indigo-500/20 hover:text-indigo-800 dark:hover:text-indigo-200"
                           >
                             <ExternalLink className="h-3 w-3" />
-                            {step.action.label}
+                            {actionLabel}
                           </a>
                         )}
                       </div>

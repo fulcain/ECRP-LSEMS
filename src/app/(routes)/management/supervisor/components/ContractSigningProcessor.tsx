@@ -10,6 +10,9 @@ import type { ContractTab } from "./contract/types";
 import { workflowByValue } from "./contract/workflows";
 import { useMemo, useEffect, useRef } from "react";
 import { format } from "date-fns";
+import { validateUrl } from "@/lib/validation";
+import { ROUTES } from "@/configs/routes";
+import { EMPLOYEE_DIRECTORY_HANDOFF_KEY } from "@/lib/employee-directory-handoff";
 
 
 type ApplicantTitle = "Mr." | "Ms.";
@@ -135,6 +138,25 @@ export function ContractSigningProcessor() {
     );
 
   const workflow = workflowByValue[activeTab];
+  const employeeFileUrl =
+    personnelFileLink.trim() &&
+    validateUrl(personnelFileLink, "Personnel file link", { required: false }).ok
+      ? personnelFileLink.trim()
+      : "";
+  const quickLinks = useMemo(
+    () =>
+      workflow.quickLinks.map((link) =>
+        employeeFileUrl && link.url?.includes("viewforum.php?f=605")
+          ? {
+              ...link,
+              label: "Employee Personnel File",
+              url: employeeFileUrl,
+              description: "Open this employee's personnel file.",
+            }
+          : link,
+      ),
+    [employeeFileUrl, workflow.quickLinks],
+  );
   const completedSteps = completionByTab[activeTab] ?? [];
   const completedOocSteps = oocCompletionByTab[activeTab] ?? [];
 
@@ -196,6 +218,11 @@ export function ContractSigningProcessor() {
       <ApplicantInfoCard
         personnelName={personnelName}
         onNameChange={setPersonnelName}
+        onEmployeeSelect={(employee) => {
+          setEmployeeProfileLink(employee.govProfileUrl);
+          setPersonnelFileLink(employee.personnelFileUrl);
+        }}
+        allowEmployeeSelect={activeTab === "emt-p"}
         title={title}
         onTitleChange={setTitle}
         phoneNumber={phoneNumber}
@@ -210,6 +237,27 @@ export function ContractSigningProcessor() {
         onManualDateChange={setManualDate}
         isManualDate={isManualDate}
         onManualDateToggle={setIsManualDate}
+        showAddToEmployees={activeTab === "recruitment" || activeTab === "reinstatement"}
+        onAddToEmployees={() => {
+          try {
+            window.sessionStorage.setItem(
+              EMPLOYEE_DIRECTORY_HANDOFF_KEY,
+              JSON.stringify({
+                name: personnelName.trim(),
+                govProfileUrl: employeeProfileLink.trim(),
+                personnelFileUrl: personnelFileLink.trim(),
+              }),
+            );
+            const destination = new URL(ROUTES.management.supervisor, window.location.origin);
+            destination.searchParams.set("tab", "employees");
+            destination.searchParams.set("addEmployee", "1");
+            window.location.assign(destination.toString());
+          } catch {
+            window.location.assign(
+              `${ROUTES.management.supervisor}?tab=employees&addEmployee=1`,
+            );
+          }
+        }}
       />
 
       <WorkflowStepsList
@@ -230,7 +278,7 @@ export function ContractSigningProcessor() {
 
       <QuickLinksPanel
         title={`Quick Links - ${workflow.shortLabel}`}
-        links={workflow.quickLinks}
+        links={quickLinks}
       />
     </div>
   );

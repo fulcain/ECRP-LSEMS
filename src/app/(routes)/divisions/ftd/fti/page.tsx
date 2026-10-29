@@ -48,6 +48,7 @@ import { useMedic } from "@/app/context/MedicContext";
 import { DIVISIONS } from "@/configs/roles";
 import { DiscussionBoardComposer } from "@/components/discussion-board-composer";
 import { userGroupsHref } from "@/lib/user-groups";
+import { EmployeeNameInput } from "@/components/employees/employee-name-input";
 
 import {
   generateCertificationPaperwork,
@@ -303,6 +304,10 @@ export default function FtiPage() {
   // knows where the certification belongs.
   const [ftoProfileLink, setFtoProfileLink] = useLocalStorage<string>(
     "fti-fto-profile-link",
+    "",
+  );
+  const [ftoLookupName, setFtoLookupName] = useLocalStorage<string>(
+    "fti-fto-lookup-name",
     "",
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -619,12 +624,12 @@ export default function FtiPage() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
                   <Label htmlFor="fti-student-name" className="text-xs text-muted-foreground">Student Name</Label>
-                  <Input
+                  <EmployeeNameInput
                     id="fti-student-name"
                     value={studentName}
                     maxLength={INPUT_LIMITS.name}
                     aria-invalid={Boolean(errors.studentName) || undefined}
-                    onChange={(e) => setStudentName(e.target.value)}
+                    onChange={setStudentName}
                     placeholder="Fname Lname"
                   />
                   <FieldError message={errors.studentName} />
@@ -728,6 +733,21 @@ export default function FtiPage() {
                 </div>
               </div>
 
+              <div className="space-y-1.5">
+                <Label htmlFor="fti-employee-lookup" className="text-xs text-muted-foreground">
+                  Find employee
+                </Label>
+                <EmployeeNameInput
+                  id="fti-employee-lookup"
+                  value={ftoLookupName}
+                  maxLength={INPUT_LIMITS.name}
+                  onChange={setFtoLookupName}
+                  onEmployeeSelect={(employee) =>
+                    setFtoProfileLink(employee.personnelFileUrl)
+                  }
+                  placeholder="Search employee to fill their personnel file link"
+                />
+              </div>
               <div className="space-y-1.5">
                 <Label htmlFor="fti-profile-link" className="text-xs text-muted-foreground">
                   FTO Profile Link

@@ -40,6 +40,7 @@ import {
 } from "./components/paperwork-documents";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { EmployeeNameInput } from "@/components/employees/employee-name-input";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
 import {
@@ -517,13 +518,11 @@ export default function REDFormatsPage() {
                       <Label htmlFor="applicant-name">
                         {isWelcomeEmail ? "Applicant full name" : "Applicant name"}
                       </Label>
-                      <Input
+                      <EmployeeNameInput
                         id="applicant-name"
                         value={applicantName}
                         maxLength={INPUT_LIMITS.name}
-                        onChange={(event) =>
-                          setApplicantName(event.target.value)
-                        }
+                        onChange={setApplicantName}
                         placeholder={isWelcomeEmail ? "Enter the applicant's full name" : "Enter the applicant's name"}
                         disabled={selectedDocument === "discord-invite"}
                         className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"

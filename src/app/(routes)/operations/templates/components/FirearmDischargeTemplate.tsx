@@ -12,6 +12,7 @@ import {
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { EmployeeNameInput } from "@/components/employees/employee-name-input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   BuilderField,
@@ -181,13 +182,14 @@ export function FirearmDischargeTemplate() {
         <BuilderForm>
           <BuilderSection icon={Users} title="Employee">
             <BuilderField label="Employee name">
-              <Input
+              <EmployeeNameInput
                 value={employeeName}
                 maxLength={INPUT_LIMITS.name}
-                onChange={(e) => {
-                  setEmployeeName(e.target.value);
+                onChange={(value) => {
+                  setEmployeeName(value);
                   setIdentityTouched(true);
                 }}
+                onEmployeeSelect={() => setIdentityTouched(true)}
                 placeholder="Fname Lname"
               />
             </BuilderField>

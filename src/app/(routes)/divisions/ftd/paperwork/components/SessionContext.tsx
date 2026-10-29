@@ -3,7 +3,8 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { useMedic } from "@/app/context/MedicContext";
-import { fetchEMRProfileLinks, EMRProfileLink } from "@/components/current-emrs/fetchCurrentEMRs";
+import type { EMRProfileLink } from "@/components/current-emrs/fetchCurrentEMRs";
+import { useEmployeeRoster } from "@/components/employees/employee-roster-provider";
 import type { FormType } from "@/configs/ftd-paperwork-documents";
 export type { FormType } from "@/configs/ftd-paperwork-documents";
 
@@ -172,6 +173,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   // Staff Page so it only ever has to be saved once. A signature the session
   // already carries - typed here, or restored above - is left alone.
   const { medicCredentials } = useMedic();
+  const { employees } = useEmployeeRoster();
   const signatureSeeded = useRef(false);
   useEffect(() => {
     if (signatureSeeded.current) return;
@@ -230,10 +232,12 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     load();
   }, []);
 
-  const [emrList, setEmrList] = useState<EMRProfileLink[]>([]);
-  useEffect(() => {
-    fetchEMRProfileLinks().then(setEmrList);
-  }, []);
+  const emrList: EMRProfileLink[] = employees.filter(
+    (employee) => employee.group === "EMRs",
+  ).map((employee) => ({
+    EMR: employee.name,
+    profileLink: employee.personnelFileUrl,
+  }));
 
   // Not persisted on purpose: the page opens on the picker, the way BLS and
   // RED do, and a deep link carries its choice in ?tab=.

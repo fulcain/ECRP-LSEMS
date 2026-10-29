@@ -24,6 +24,9 @@ import {
 } from "@/lib/validation";
 
 import { useEffect, useMemo, useState } from "react";
+import { EmployeeNameInput } from "@/components/employees/employee-name-input";
+import { findEmployeeByName } from "@/app/constants/employees";
+import { useEmployeeRoster } from "@/components/employees/employee-roster-provider";
 import Link from "next/link";
 import {
   CalendarDays,
@@ -125,6 +128,7 @@ function calculateDays(start: string, end: string): number {
 
 export function LOAProcessor() {
   const { medicCredentials } = useMedic();
+  const { employees } = useEmployeeRoster();
   // Everything typed here survives a reload or a browser restart: an LOA is
   // filled in over a shift, and losing half of it to a refresh is the worst
   // thing this page can do to someone.
@@ -434,6 +438,7 @@ export function LOAProcessor() {
     extended: <Clock className="h-4 w-4" />,
     expired: <Archive className="h-4 w-4" />,
   };
+  const employeePersonnelFileUrl = findEmployeeByName(personnelName, employees)?.personnelFileUrl;
 
   return (
     <div className="space-y-6">
@@ -526,12 +531,12 @@ export function LOAProcessor() {
                 <Label htmlFor="loa-personnel-name" className="mb-1.5 block text-xs text-muted-foreground">
                   Personnel Name
                 </Label>
-                <Input
+                <EmployeeNameInput
                   id="loa-personnel-name"
                   value={personnelName}
                   maxLength={INPUT_LIMITS.name}
                   aria-invalid={Boolean(errors.personnelName) || undefined}
-                  onChange={(e) => setPersonnelName(e.target.value)}
+                  onChange={setPersonnelName}
                   placeholder="Enter full name (e.g., John Smith)"
                   className="border-border bg-surface-hover/50 text-foreground placeholder:text-muted-foreground focus:border-blue-500/50"
                 />
@@ -910,12 +915,12 @@ export function LOAProcessor() {
                 </Button>
                 <Button asChild variant="outline" size="sm">
                   <a
-                    href="https://gov.eclipse-rp.net/viewforum.php?f=605"
+                    href={employeePersonnelFileUrl || "https://gov.eclipse-rp.net/viewforum.php?f=605"}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     <ExternalLink className="h-4 w-4" />
-                    Personnel Files
+                    {employeePersonnelFileUrl ? "Open Employee File" : "Personnel Files"}
                   </a>
                 </Button>
               </div>
@@ -967,12 +972,12 @@ export function LOAProcessor() {
               <div className="mt-3 flex flex-wrap gap-2">
                 <Button asChild variant="outline" size="sm">
                   <a
-                    href="https://gov.eclipse-rp.net/viewforum.php?f=605"
+                    href={employeePersonnelFileUrl || "https://gov.eclipse-rp.net/viewforum.php?f=605"}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     <ExternalLink className="h-4 w-4" />
-                    Open Personnel Files
+                    {employeePersonnelFileUrl ? "Open Employee File" : "Open Personnel Files"}
                   </a>
                 </Button>
               </div>

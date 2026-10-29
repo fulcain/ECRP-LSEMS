@@ -17,6 +17,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { EmployeeNameInput } from "@/components/employees/employee-name-input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -262,11 +263,11 @@ export default function CivilianRideAlongForm() {
                 <User className="h-3.5 w-3.5" />
                 Applicant&apos;s Name
               </Label>
-              <Input
+              <EmployeeNameInput
                 id="ridealong-applicant-name"
                 value={form.applicantName}
                 maxLength={INPUT_LIMITS.name}
-                onChange={(e) => update("applicantName", e.target.value)}
+                onChange={(value) => update("applicantName", value)}
                 placeholder="Firstname Lastname"
                 className="bg-background"
               />

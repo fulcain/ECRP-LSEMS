@@ -18,6 +18,7 @@ import type {
   ContractWorkflow,
   OOCStep,
 } from "./types";
+import { validateUrl } from "@/lib/validation";
 
 type WorkflowStepsListProps = {
   workflow: ContractWorkflow;
@@ -153,6 +154,24 @@ function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, empl
     badgeNumber: employeeProfileNumber(employeeProfileLink) ?? badgeNumber ?? null,
     personnelFileNumber: employeeProfileNumber(employeeProfileLink),
   };
+  const employeeFileUrl =
+    personnelFileLink.trim() &&
+    validateUrl(personnelFileLink, "Personnel file link", { required: false }).ok
+      ? personnelFileLink.trim()
+      : "";
+  const refersToPersonnelFile = /personnel file/i.test(
+    `${step.title} ${step.description}`,
+  );
+  const createsPersonnelFile = /\b(create|generate|new)\b/i.test(step.title);
+  const hasPersonnelFileIndexAction = step.actions.some(
+    (action) =>
+      action.url?.includes("viewforum.php?f=605") && !action.copyText,
+  );
+  const showEmployeeFileShortcut =
+    Boolean(employeeFileUrl) &&
+    refersToPersonnelFile &&
+    !createsPersonnelFile &&
+    !hasPersonnelFileIndexAction;
 
   return (
     <li className="rounded-lg border border-border bg-background/50 p-4 transition-colors hover:border-border">
@@ -189,7 +208,7 @@ function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, empl
             {step.description}
           </p>
 
-          {step.actions.length > 0 && (
+          {(step.actions.length > 0 || showEmployeeFileShortcut) && (
             <div className="mt-2 flex flex-wrap gap-2">
               {step.actions.map((action, idx) => {
                 if (action.internal) {
@@ -206,6 +225,13 @@ function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, empl
                     </Link>
                   );
                 }
+                const opensPersonnelFilesIndex =
+                  action.url?.includes("viewforum.php?f=605") &&
+                  !action.copyText;
+                const resolvedAction =
+                  opensPersonnelFilesIndex && employeeFileUrl
+                    ? { ...action, label: "Open Employee File", url: employeeFileUrl }
+                    : action;
                 const requiredMissing = (action.requiresMetadata ?? []).filter(
                   (key) => !metadata[key],
                 );
@@ -222,7 +248,7 @@ function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, empl
                     disabled={disabled}
                     onClick={() => {
                       if (disabled) return;
-                      handleContractAction(action, passedName, metadata, {
+                      handleContractAction(resolvedAction, passedName, metadata, {
                         name: medicCredentials.name,
                         rank: medicCredentials.rank,
                         signature: medicCredentials.signature,
@@ -236,18 +262,29 @@ function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, empl
                     title={
                       disabled
                         ? `${missingLabels.join(", ")} required to enable`
-                        : action.description
+                    : resolvedAction.description
                     }
                   >
-                    {action.copyText ? (
+                    {resolvedAction.copyText ? (
                       <Copy className="h-3 w-3" />
                     ) : (
                       <ExternalLink className="h-3 w-3" />
                     )}
-                    {action.label}
+                    {resolvedAction.label}
                   </button>
                 );
               })}
+              {showEmployeeFileShortcut && (
+                <a
+                  href={employeeFileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
+                >
+                  <ExternalLink className="h-3 w-3" />
+                  Open Employee File
+                </a>
+              )}
             </div>
           )}
           {(() => {
