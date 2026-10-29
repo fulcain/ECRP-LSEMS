@@ -176,6 +176,7 @@ export function Phase3Notes() {
         <Item>Tell the EMR that the JTAC frequencies are <Bold>910.1</Bold> to <Bold>910.5</Bold>, giving us a total of 5 JTAC channels.</Item>
       </Category>
       <Category title="Ending the Phase - Ride-Along" ordered>
+        <Item><Bold>If you have time left in your session, feel free to do a ride-along for the remaining time so the EMR can get a better understanding of the items covered in this phase. If you&apos;ve reached the time limit, conclude the phase!</Bold></Item>
         <Item><Bold>Request Call Priority over radio. Either you, or the EMR may do this request.</Bold></Item>
         <Item>Make sure the EMR can do everything alone, let the EMR take over treatment, radio calls, and driving.</Item>
         <Item>If the EMR seems overwhelmed, allow them to focus on their driving for rest of the session.</Item>
