@@ -4,7 +4,7 @@ import type { GuildIdentityRead } from "@/app/hooks/useGuildIdentity";
 import { AlertTriangle, CheckCircle2 } from "lucide-react";
 
 /**
- * What a press of "Sync from Discord" / "Re-read from Discord" actually did.
+ * What a press of "Reload Ranks" actually did.
  *
  * A refresh that *can't* happen is the one thing these panels must not hide.
  * The session cookie lives for a hundred years, so a member whose sign-in
@@ -47,9 +47,8 @@ function ReconnectNotice({
         href={`/api/auth/discord/login?returnTo=${encodeURIComponent(returnTo)}`}
         className="font-semibold underline underline-offset-2 hover:text-amber-950 dark:hover:text-amber-100"
       >
-        Reconnect
+        Reconnect {action}
       </a>
-      <span>{action}</span>
     </p>
   );
 }

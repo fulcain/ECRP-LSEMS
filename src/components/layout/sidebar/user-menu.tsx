@@ -16,7 +16,13 @@ interface MeResponseUser {
   roles: string[];
 }
 
-export function UserMenu({ collapsed = false }: { collapsed?: boolean }) {
+export function UserMenu({
+  collapsed = false,
+  rankLabel,
+}: {
+  collapsed?: boolean;
+  rankLabel?: string | null;
+}) {
   const [user, setUser] = useState<MeResponseUser | null | undefined>(
     undefined,
   );
@@ -68,7 +74,10 @@ export function UserMenu({ collapsed = false }: { collapsed?: boolean }) {
 
   if (collapsed) {
     return (
-      <div className="flex w-full justify-center" title={displayName}>
+      <div
+        className="flex w-full justify-center"
+        title={`${displayName}${rankLabel ? ` · ${rankLabel}` : ""}`}
+      >
         {defaultAvatarFailed ? (
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-hover">
             <UserIcon className="h-4 w-4 text-muted-foreground" />
@@ -113,11 +122,16 @@ export function UserMenu({ collapsed = false }: { collapsed?: boolean }) {
             }}
           />
         )}
-        <span
-          className="min-w-0 flex-1 truncate text-sm font-semibold leading-tight text-foreground"
-          title={displayName}
-        >
-          {displayName}
+        <span className="min-w-0 flex-1">
+          <span
+            className="block truncate text-sm font-semibold leading-tight text-foreground"
+            title={displayName}
+          >
+            {displayName}
+          </span>
+          <span className="mt-1 block truncate text-[11px] font-medium text-primary/80">
+            {rankLabel ?? "Rank not detected"}
+          </span>
         </span>
       </div>
       <form action="/api/auth/logout" method="post" className="w-full">

@@ -14,9 +14,10 @@ import { SidebarNav } from "./sidebar-nav";
 
 type SidebarDesktopProps = {
   headerLinks: HeaderLink[];
+  memberRank: string | null;
 };
 
-export function SidebarDesktop({ headerLinks }: SidebarDesktopProps) {
+export function SidebarDesktop({ headerLinks, memberRank }: SidebarDesktopProps) {
   const { collapsed, toggleCollapsed } = useSidebar();
 
   return (
@@ -81,11 +82,11 @@ export function SidebarDesktop({ headerLinks }: SidebarDesktopProps) {
           </div>
         </div>
 
-        <div className="mb-2.5 h-px bg-gradient-to-r from-primary/40 via-border to-transparent" />
+        <div className="mb-2.5 h-px bg-gradient-to-r from-[#a43e38]/50 via-primary/30 to-transparent" />
         <SidebarNav links={headerLinks} collapsed={collapsed} />
 
         <div className={cn("mt-3 space-y-2.5 border-t border-border pt-3", collapsed && "flex flex-col items-center") }>
-          <UserMenu collapsed={collapsed} />
+          <UserMenu collapsed={collapsed} rankLabel={memberRank} />
           <DiscordContactIndicator
             variant={collapsed ? "icon" : "pill"}
             label="Developed by @fulcain"

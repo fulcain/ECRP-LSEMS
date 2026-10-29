@@ -27,12 +27,14 @@ export function SidebarLayout({
   allowedHrefs,
   searchItems,
   signedIn,
+  memberRank,
   initialCollapsed = false,
   children,
 }: {
   allowedHrefs: readonly string[];
   searchItems: readonly SearchDestination[];
   signedIn: boolean;
+  memberRank: string | null;
   initialCollapsed?: boolean;
   children: React.ReactNode;
 }) {
@@ -71,8 +73,8 @@ export function SidebarLayout({
       >
         Skip to content
       </a>
-      <SidebarDesktop headerLinks={links} />
-      <SidebarMobile headerLinks={links} />
+      <SidebarDesktop headerLinks={links} memberRank={memberRank} />
+      <SidebarMobile headerLinks={links} memberRank={memberRank} />
       <CommandPalette links={links} destinations={searchItems} />
       <ContentWrapper>
         <header className="sticky top-0 z-40 flex h-14 items-center justify-end border-b border-border/40 bg-background/80 px-4 backdrop-blur-xl sm:px-6">

@@ -11,8 +11,9 @@
  * override would be overwritten by the next read anyway.
  *
  * The division ranks are the member's editable picks, so they go through a
- * three-way merge (`autoFilledDivisionRanks`): Discord's answer lands only
- * where the saved value is still what the previous pass wrote.
+ * three-way merge (`autoFilledDivisionRanks`). Explicit dropdown choices are
+ * pinned separately; inferred manual values are preserved by comparison with
+ * the previous pass.
  *
  * No mode ever runs on a read that failed - when Discord answers nothing,
  * nothing is written, because clearing on no answer would wipe a member's own
@@ -70,11 +71,9 @@ export type AutoFilledDivisionRanks = {
 /**
  * The division ranks the automatic pass should leave saved.
  *
- * A plain "Discord wins" fill would rewrite the dropdown on every page load,
- * so a rank the member picked themselves never survived the next visit. This
- * three-way merge keeps the automatic selection and the manual choice:
- * Discord's answer lands only when the saved value is still exactly what the
- * previous pass wrote - anything else is a manual pick and wins.
+ * Explicit dropdown choices stay pinned even when they match Discord's last
+ * answer. Other values use the previous-pass comparison so an automatic rank
+ * can update while a changed value remains a manual pick.
  *
  * A `lastSynced` of `null` (first run, no record yet) adopts the saved values
  * as the baseline, so ranks earlier always-overwrite fills wrote keep
@@ -85,12 +84,15 @@ export function autoFilledDivisionRanks(
   lastSynced: Record<string, string> | null,
   identity: MemberIdentity,
   labels: readonly string[],
+  manualRanks: Readonly<Record<string, boolean>> = {},
 ): AutoFilledDivisionRanks {
   const ranks = { ...saved };
   const baseline = lastSynced ?? { ...saved };
   const nextSynced = { ...baseline };
 
   for (const label of labels) {
+    if (manualRanks[label]) continue;
+
     const discordRank = identity.divisionRanks[label];
     // Nothing Discord can name here - the fill pass never clears.
     if (!discordRank) continue;

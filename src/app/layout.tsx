@@ -12,6 +12,7 @@ import { getSession } from "@/lib/session";
 import { readAccessMatrix } from "@/lib/access-matrix-store";
 import { FTD_TABS } from "@/configs/ftd-tabs";
 import { QUICK_SEARCH_CATALOG } from "@/configs/quick-search-catalog";
+import { resolveMemberIdentity } from "@/lib/member-identity";
 
 export const metadata: Metadata = {
   // The brand is written down once. Every route's layout declares only its own
@@ -51,6 +52,9 @@ export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const session = await getSession();
+  const memberRank = session
+    ? resolveMemberIdentity(session.roles).rankLabel
+    : null;
   // The same matrix the middleware gates on, so a hidden page is never left in
   // the sidebar and a granted one is never left out of it.
   const overrides = await readAccessMatrix();
@@ -116,6 +120,7 @@ export default async function RootLayout({
               allowedHrefs={allowedHrefs}
               searchItems={searchItems}
               signedIn={session !== null}
+              memberRank={memberRank}
               initialCollapsed={initialCollapsed}
             >
               {children}

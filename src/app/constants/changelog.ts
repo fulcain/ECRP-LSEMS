@@ -20,6 +20,11 @@ export const changeLog: ChangeLogEntry[] = [
         description:
           "Added app-wide search for pages, tabs, quick links, and formats.",
       },
+      {
+        type: "change",
+        description:
+          "Refreshed the app UI and brought personnel records, signature editing, and saved division ranks together on the Staff Page.",
+      },
     ],
   },
   {

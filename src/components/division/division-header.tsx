@@ -48,17 +48,20 @@ export function DivisionHeader<T extends string>({
   return (
     <>
       <PageHeader
+        mark={
+          emblem ? (
+            <Image
+              src={emblem}
+              alt=""
+              width={40}
+              height={40}
+              className="h-9 w-9 object-contain"
+              priority
+            />
+          ) : undefined
+        }
         eyebrow={
           <span className="flex items-center gap-2">
-            {emblem && (
-              <Image
-                src={emblem}
-                alt=""
-                width={20}
-                height={20}
-                className="h-5 w-5 object-contain"
-              />
-            )}
             {label}
             <span className="text-muted-foreground/70">Division workspace</span>
           </span>

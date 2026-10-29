@@ -2,10 +2,10 @@ import { ranksForDivision } from "@/configs/roles";
 
 export const LIFEGUARD = {
   label: "Lifeguard",
-  image: "/Division/LG.png",
+  image: "/Division/A&R.png",
   data: {
-    imageSize: "150,150",
-    image: "https://i.vgy.me/x7lwCB.png",
+    imageSize: "235,150",
+    image: "https://i.vgy.me/2bdgwx.png",
     divisionName: "A&R - Lifeguard Branch",
     // Names and ids come from `DIVISIONS.lifeguard` in `src/configs/roles.ts`.
     ranks: ranksForDivision("lifeguard"),

@@ -108,7 +108,7 @@ export function MedicCredentials({
       )}
 
       <Button className="cursor-pointer" variant="outline" type="submit">
-        Submit
+        Save Signature
       </Button>
     </form>
   );

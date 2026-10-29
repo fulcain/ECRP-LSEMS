@@ -17,6 +17,7 @@ type MedicContextType = {
   setMedicCredentials: Dispatch<SetStateAction<MedicCredentials>>;
   divisionRanks: Record<string, string>;
   setDivisionRanks: Dispatch<SetStateAction<Record<string, string>>>;
+  divisionRanksHydrated: boolean;
 };
 
 const MedicContext = createContext<MedicContextType | undefined>(undefined);
@@ -44,7 +45,7 @@ export const MedicProvider: React.FC<{ children: React.ReactNode }> = ({
     MedicCredentials
   >("medic-credentials", defaultMedicCredentials);
 
-  const [divisionRanks, setDivisionRanks] = useLocalStorage<
+  const [divisionRanks, setDivisionRanks, divisionRanksHydrated] = useLocalStorage<
     Record<string, string>
   >("division-ranks", {});
 
@@ -62,6 +63,7 @@ export const MedicProvider: React.FC<{ children: React.ReactNode }> = ({
         setMedicCredentials,
         divisionRanks,
         setDivisionRanks,
+        divisionRanksHydrated,
       }}
     >
       {children}

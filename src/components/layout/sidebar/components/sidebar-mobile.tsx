@@ -10,9 +10,12 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import Image from "next/image";
 import { SidebarNav } from "./sidebar-nav";
 
-type SidebarMobileProps = { headerLinks: HeaderLink[] };
+type SidebarMobileProps = {
+  headerLinks: HeaderLink[];
+  memberRank: string | null;
+};
 
-export function SidebarMobile({ headerLinks }: SidebarMobileProps) {
+export function SidebarMobile({ headerLinks, memberRank }: SidebarMobileProps) {
   return (
     <div className="lg:hidden">
       <Sheet>
@@ -40,7 +43,7 @@ export function SidebarMobile({ headerLinks }: SidebarMobileProps) {
           </div>
           <div className="my-3 h-px shrink-0 bg-border" />
           <SidebarNav links={headerLinks} closeOnNavigate />
-          <div className="mt-3 shrink-0 space-y-2.5 border-t border-border pt-3"><UserMenu /><DiscordContactIndicator label="Developed by @fulcain" prefix="Developed by" /></div>
+          <div className="mt-3 shrink-0 space-y-2.5 border-t border-border pt-3"><UserMenu rankLabel={memberRank} /><DiscordContactIndicator label="Developed by @fulcain" prefix="Developed by" /></div>
         </SheetContent>
       </Sheet>
     </div>
