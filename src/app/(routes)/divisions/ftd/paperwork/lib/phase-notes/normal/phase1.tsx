@@ -246,6 +246,7 @@ export function Phase1Notes() {
         <Item>Finally, have them return the fire extinguisher.</Item>
       </Category>
       <Category title="Ending the Phase - Ride-Along" ordered>
+        <Item><Bold>If you have time left in your session, feel free to do a ride-along for the remaining time so the EMR can get a better understanding of the items covered in this phase. If you&apos;ve reached the time limit, conclude the phase!</Bold></Item>
         <Item><Bold>Request Call Priority over radio. Either you, or the EMR may do this request.</Bold></Item>
         <Item>Let the EMR take care of unit management, responding to calls, and closing calls.</Item>
         <Item>Ask the EMR if they want to try doing radio codes <OOC>You&apos;ll write them in chat and have them repeat them over the radio</OOC></Item>

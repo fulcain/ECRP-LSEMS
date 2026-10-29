@@ -135,6 +135,7 @@ export function Phase2Notes() {
         <Item>Inform the EMR that we must drop response to our previous call <OOC>/setcall -1</OOC>, radio call that we are dropping response from our current call, and ask another unit to take the call.</Item>
       </Category>
       <Category title="Ending the Phase - Ride-Along" ordered>
+        <Item><Bold>If you have time left in your session, feel free to do a ride-along for the remaining time so the EMR can get a better understanding of the items covered in this phase. If you&apos;ve reached the time limit, conclude the phase!</Bold></Item>
         <Item><Bold>Request Call Priority over radio. Either you, or the EMR may do this request.</Bold></Item>
         <Item>If the EMR can do radio calls, unit management, and treatment by themselves, then don&apos;t give them any extra additional mandatory ridealongs.</Item>
         <Item>If you will be 10-8 during your ride-along, take the EMR on a short roam and ask the EMR to do the radio and treatment.</Item>

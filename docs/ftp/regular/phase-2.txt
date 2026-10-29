@@ -108,6 +108,7 @@ Explain time management to the EMR which means choosing the closest hospital, tr
 [color=transparent]spacer[/color]
 [color=transparent]spacer[/color]
 [*][color=#800000][b]Ending the Phase - Ride-Along[/b][/color][list]
+[*][b]If you have time left in your session, feel free to do a ride-along for the remaining time so the EMR can get a better understanding of the items covered in this phase. If you've reached the time limit, conclude the phase![/b]
 [*][b]Request Call Priority over radio. Either you, or the EMR may do this request.[/b]
 [*]If the EMR can do radio calls, unit management, and treatment by themselves, then don't give them any extra additional mandatory ridealongs.
 [*]If you will be 10-8 during your ride-along, take the EMR on a short roam and ask the EMR to do the radio and treatment. 

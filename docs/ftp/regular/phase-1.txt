@@ -163,6 +163,7 @@ Additionally, let them know that they are more than welcome, and actually encour
 [color=transparent]spacer[/color]
 [color=transparent]spacer[/color]
 [*][color=#800000][b]Ending the Phase - Ride-Along[/b][/color][list]
+[*][b]If you have time left in your session, feel free to do a ride-along for the remaining time so the EMR can get a better understanding of the items covered in this phase. If you've reached the time limit, conclude the phase![/b]
 [*][b]Request Call Priority over radio. Either you, or the EMR may do this request.[/b]
 [*]Let the EMR take care of unit management, responding to calls, and closing calls.
 [*]Ask the EMR if they want to try doing radio codes [ooc]You'll write them in chat and have them repeat them over the radio[/ooc]
