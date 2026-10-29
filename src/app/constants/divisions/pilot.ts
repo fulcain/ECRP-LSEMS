@@ -6,7 +6,7 @@ export const PILOT = {
   data: {
     imageSize: "235,150",
     image: "https://i.vgy.me/2bdgwx.png",
-    divisionName: "Pilot Division",
+    divisionName: "A&R - Pilot Branch",
     // Names and ids come from `DIVISIONS.pilot` in `src/configs/roles.ts`,
     // where Air & Rescue leadership is shared with Mountain Rescue.
     ranks: ranksForDivision("pilot"),

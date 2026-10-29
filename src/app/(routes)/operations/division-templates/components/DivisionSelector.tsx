@@ -47,6 +47,9 @@ export default function DivisionSelector({
               <span className="text-center text-sm font-medium text-foreground">
                 {item.label}
               </span>
+              <span className="mt-1 text-center text-xs text-muted-foreground">
+                {item.data.divisionName}
+              </span>
             </div>
           ))}
         </div>

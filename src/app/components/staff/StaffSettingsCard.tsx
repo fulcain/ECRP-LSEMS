@@ -31,7 +31,7 @@ type StaffSettingsCardProps = {
 };
 
 const rankManagedDivisions = divisions.filter(
-  (division) => division.data.ranks.length > 0,
+  (division) => division.key !== "ar" && division.data.ranks.length > 0,
 );
 const NONE_DIVISION_RANK = "__none__";
 

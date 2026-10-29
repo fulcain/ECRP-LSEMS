@@ -7,7 +7,7 @@ import {
   handOffAndOpenForumPost,
 } from "@/app/helpers/forumHandoff";
 import {
-  divisions,
+  templateDivisions,
   Divisions,
 } from "@/app/constants/divisions";
 import { GOV_PM_COMPOSE_URL } from "@/app/helpers/govLinks";
@@ -182,7 +182,9 @@ export default function Home() {
       const raw = localStorage.getItem(SESSION_STORAGE_KEY);
       if (!raw) return;
       const saved = JSON.parse(raw) as PreviewSession;
-      const division = divisions.find((d) => d.label === saved.divisionLabel);
+      const division = templateDivisions.find(
+        (d) => d.label === saved.divisionLabel,
+      );
       if (division) {
         setSelectedDivision(division);
         previewDivisionRef.current = division.label;
@@ -301,7 +303,7 @@ export default function Home() {
             selectedDivision={selectedDivision}
             setSelectedDivision={setSelectedDivision}
             setSelectedRank={setSelectedRank}
-            ArrayToLoop={divisions}
+            ArrayToLoop={templateDivisions}
           />
 
           <TemplateOptions

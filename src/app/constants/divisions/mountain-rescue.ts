@@ -6,7 +6,7 @@ export const MOUNTAIN_RESCUE = {
   data: {
     imageSize: "235,150",
     image: "https://i.vgy.me/2bdgwx.png",
-    divisionName: "Mountain Rescue Division",
+    divisionName: "A&R - Mountain Rescue Branch",
     // Names and ids come from `DIVISIONS.mountainRescue` in
     // `src/configs/roles.ts`, where Air & Rescue leadership is shared with the
     // Pilot division.

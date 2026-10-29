@@ -326,6 +326,13 @@ export function ResignationProcessor() {
         },
       },
       {
+        id: "dashboard",
+        label:
+          "Open the LSEMS Dashboard, find their name, click 'REMOVE', and follow the on-screen prompts.",
+        icon: Globe,
+        action: { label: "Open Dashboard", url: DASHBOARD_URL },
+      },
+      {
         id: "points-of-contact",
         label:
           "If they were a divisional head/assistant head, remove them from the Points of Contact list",
@@ -469,15 +476,8 @@ export function ResignationProcessor() {
       {
         id: "discord-roles",
         label:
-          "Remove TS roles and Discord roles. Issue the Guest role for an Honorable discharge; kick from Discord for a Dishonorable discharge.",
+          "Remove Discord roles. Issue the Guest role for an Honorable discharge; kick from Discord for a Dishonorable discharge.",
         icon: Headphones,
-      },
-      {
-        id: "dashboard",
-        label:
-          "Open the LSEMS Dashboard, find their name, click 'REMOVE', and follow the on-screen prompts.",
-        icon: Globe,
-        action: { label: "Open Dashboard", url: DASHBOARD_URL },
       },
     ],
     [revokeAccessBBCode, playerLogBBCode],

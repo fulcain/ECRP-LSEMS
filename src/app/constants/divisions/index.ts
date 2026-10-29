@@ -118,3 +118,8 @@ export const divisions: Divisions[] = DIVISION_ENTRIES.filter(
     data: membership ? { ...page.data, membership } : page.data,
   };
 });
+
+/** Branches have their own ranks; A&R remains the parent workspace. */
+export const templateDivisions = divisions.filter(
+  (division) => division.key !== "ar",
+);

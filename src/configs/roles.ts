@@ -226,10 +226,10 @@ export const ROLES = {
   MountainRescueStudent: { id: null, name: "Mountain Rescue Student" },
 
   // ─── Lifeguard ──────────────────────────────────────────────────────────
-  HeadOfLifeguard: { id: null, name: "Head of Lifeguard" },
-  InterimHeadOfLifeguard: { id: "909116229959180318", name: "Interim Head of Lifeguard" },
-  AssistantHeadOfLifeguard: { id: "801644852780728390", name: "Assistant Head of Lifeguard" },
-  InterimAssistantHeadOfLifeguard: { id: null, name: "Interim Assistant Head of Lifeguard" },
+  HeadOfLifeguard: { id: null, name: "Head of A&R" },
+  InterimHeadOfLifeguard: { id: "909116229959180318", name: "Interim Head of A&R" },
+  AssistantHeadOfLifeguard: { id: "801644852780728390", name: "Assistant Head of A&R" },
+  InterimAssistantHeadOfLifeguard: { id: null, name: "Interim Assistant Head of A&R" },
   LifeguardInstructor: { id: "1278869812956758208", name: "Lifeguard Instructor" },
   Lifeguard: { id: "585836948376125478", name: "Lifeguard" },
   LifeguardStudent: { id: null, name: "Lifeguard Student" },

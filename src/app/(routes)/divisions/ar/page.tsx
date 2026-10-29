@@ -315,7 +315,8 @@ export default function ARFormatsPage() {
     }
   };
 
-  const arRank = divisionRanks["Air & Rescue"] ?? "";
+  const arRank =
+    divisionRanks[isMountain ? "Mountain Rescue" : "Pilot"] ?? "";
 
   const student = titleCase(studentName) || "Fname Lname";
 
