@@ -237,7 +237,7 @@ export function PersonnelCredentialCard({
                 <p className="mt-1 text-xs text-[#9eabba]">
                   {identityDivisions.length === 1
                     ? "1 division found on Discord"
-                    : `${identityDivisions.length} divisions found on Discord`}
+                    : `${identityDivisions.length} Assignments found in the personnel files.`}
                 </p>
                 <p className="mt-1 text-[10px] text-[#9eabba]">
                   Choose or clear a saved rank for each division below.
