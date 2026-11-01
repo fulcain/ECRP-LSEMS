@@ -500,7 +500,6 @@ export const DIVISIONS = {
       "FireSafetyInspector",
       "TraineeFireSafetyInspector",
     ],
-    directors: ["DirectorOfOperations"],
   },
   pr: {
     label: "Public Relations",
@@ -530,7 +529,6 @@ export const DIVISIONS = {
       "MountainAndRescueOperator",
       "MountainRescueStudent",
     ],
-    directors: ["DirectorOfOperations"],
   },
   pilot: {
     label: "Pilot",
@@ -546,7 +544,6 @@ export const DIVISIONS = {
       "Pilot",
       "StudentPilot",
     ],
-    directors: ["DirectorOfOperations"],
   },
   lifeguard: {
     label: "Lifeguard",

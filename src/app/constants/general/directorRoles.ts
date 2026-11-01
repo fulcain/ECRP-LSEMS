@@ -56,7 +56,9 @@ export function directorRoleId(title: DirectorRoleTitle): string | null {
 function coveredDivisions(title: DirectorRoleTitle): string[] {
   return DIVISION_ENTRIES.filter(([, division]) =>
     (division.directors ?? []).some((alias) => ROLES[alias].name === title),
-  ).map(([, division]) => division.label);
+  ).map(([key, division]) =>
+    key === "ar" ? "Air & Rescue" : division.label,
+  );
 }
 
 export const directorResponsibility: Record<DirectorRoleTitle, string[]> = {
