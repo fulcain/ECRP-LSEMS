@@ -27,6 +27,7 @@ import { useEffect, useMemo, useState } from "react";
 import { EmployeeNameInput } from "@/components/employees/employee-name-input";
 import { findEmployeeByName } from "@/app/constants/employees";
 import { useEmployeeRoster } from "@/components/employees/employee-roster-provider";
+import { toPersonnelFileEditUrl } from "@/lib/employee-links";
 import Link from "next/link";
 import {
   CalendarDays,
@@ -124,7 +125,6 @@ function calculateDays(start: string, end: string): number {
   const diff = e.getTime() - s.getTime();
   return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)) + 1);
 }
-
 
 export function LOAProcessor() {
   const { medicCredentials } = useMedic();
@@ -439,6 +439,7 @@ export function LOAProcessor() {
     expired: <Archive className="h-4 w-4" />,
   };
   const employeePersonnelFileUrl = findEmployeeByName(personnelName, employees)?.personnelFileUrl;
+  const employeePersonnelEditUrl = toPersonnelFileEditUrl(employeePersonnelFileUrl);
 
   return (
     <div className="space-y-6">
@@ -531,15 +532,28 @@ export function LOAProcessor() {
                 <Label htmlFor="loa-personnel-name" className="mb-1.5 block text-xs text-muted-foreground">
                   Personnel Name
                 </Label>
-                <EmployeeNameInput
-                  id="loa-personnel-name"
-                  value={personnelName}
-                  maxLength={INPUT_LIMITS.name}
-                  aria-invalid={Boolean(errors.personnelName) || undefined}
-                  onChange={setPersonnelName}
-                  placeholder="Enter full name (e.g., John Smith)"
-                  className="border-border bg-surface-hover/50 text-foreground placeholder:text-muted-foreground focus:border-blue-500/50"
-                />
+                {selectedTemplate === "approved" ? (
+                  <EmployeeNameInput
+                    id="loa-personnel-name"
+                    value={personnelName}
+                    maxLength={INPUT_LIMITS.name}
+                    aria-invalid={Boolean(errors.personnelName) || undefined}
+                    onChange={setPersonnelName}
+                    personnelFileLinkMode="edit"
+                    placeholder="Enter full name (e.g., John Smith)"
+                    className="border-border bg-surface-hover/50 text-foreground placeholder:text-muted-foreground focus:border-blue-500/50"
+                  />
+                ) : (
+                  <Input
+                    id="loa-personnel-name"
+                    value={personnelName}
+                    maxLength={INPUT_LIMITS.name}
+                    aria-invalid={Boolean(errors.personnelName) || undefined}
+                    onChange={(event) => setPersonnelName(event.target.value)}
+                    placeholder="Enter full name (e.g., John Smith)"
+                    className="border-border bg-surface-hover/50 text-foreground placeholder:text-muted-foreground focus:border-blue-500/50"
+                  />
+                )}
                 <FieldError message={errors.personnelName} />
               </div>
 
@@ -915,12 +929,16 @@ export function LOAProcessor() {
                 </Button>
                 <Button asChild variant="outline" size="sm">
                   <a
-                    href={employeePersonnelFileUrl || "https://gov.eclipse-rp.net/viewforum.php?f=605"}
+                    href={employeePersonnelEditUrl || employeePersonnelFileUrl || "https://gov.eclipse-rp.net/viewforum.php?f=605"}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     <ExternalLink className="h-4 w-4" />
-                    {employeePersonnelFileUrl ? "Open Employee File" : "Personnel Files"}
+                    {employeePersonnelEditUrl
+                      ? "Edit Employee File"
+                      : employeePersonnelFileUrl
+                        ? "Open Employee File"
+                        : "Personnel Files"}
                   </a>
                 </Button>
               </div>
@@ -969,18 +987,6 @@ export function LOAProcessor() {
                 </p>
               </div>
 
-              <div className="mt-3 flex flex-wrap gap-2">
-                <Button asChild variant="outline" size="sm">
-                  <a
-                    href={employeePersonnelFileUrl || "https://gov.eclipse-rp.net/viewforum.php?f=605"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                    {employeePersonnelFileUrl ? "Open Employee File" : "Open Personnel Files"}
-                  </a>
-                </Button>
-              </div>
             </div>
           )}
 

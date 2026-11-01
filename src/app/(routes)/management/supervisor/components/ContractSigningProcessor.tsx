@@ -11,6 +11,7 @@ import { workflowByValue } from "./contract/workflows";
 import { useMemo, useEffect, useRef } from "react";
 import { format } from "date-fns";
 import { validateUrl } from "@/lib/validation";
+import { toPersonnelFileEditUrl } from "@/lib/employee-links";
 import { ROUTES } from "@/configs/routes";
 import { EMPLOYEE_DIRECTORY_HANDOFF_KEY } from "@/lib/employee-directory-handoff";
 
@@ -143,19 +144,29 @@ export function ContractSigningProcessor() {
     validateUrl(personnelFileLink, "Personnel file link", { required: false }).ok
       ? personnelFileLink.trim()
       : "";
+  const employeeFileEditUrl =
+    activeTab === "emt-p" ? toPersonnelFileEditUrl(employeeFileUrl) : undefined;
+  const employeeFileActionUrl = employeeFileEditUrl ?? employeeFileUrl;
   const quickLinks = useMemo(
     () =>
       workflow.quickLinks.map((link) =>
         employeeFileUrl && link.url?.includes("viewforum.php?f=605")
           ? {
               ...link,
-              label: "Employee Personnel File",
-              url: employeeFileUrl,
+              label: employeeFileEditUrl
+                ? "Edit Employee File"
+                : "Employee Personnel File",
+              url: employeeFileActionUrl,
               description: "Open this employee's personnel file.",
             }
           : link,
       ),
-    [employeeFileUrl, workflow.quickLinks],
+    [
+      employeeFileActionUrl,
+      employeeFileEditUrl,
+      employeeFileUrl,
+      workflow.quickLinks,
+    ],
   );
   const completedSteps = completionByTab[activeTab] ?? [];
   const completedOocSteps = oocCompletionByTab[activeTab] ?? [];

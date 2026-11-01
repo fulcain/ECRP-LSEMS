@@ -19,6 +19,7 @@ import type {
   OOCStep,
 } from "./types";
 import { validateUrl } from "@/lib/validation";
+import { toPersonnelFileEditUrl } from "@/lib/employee-links";
 
 type WorkflowStepsListProps = {
   workflow: ContractWorkflow;
@@ -85,6 +86,7 @@ export function WorkflowStepsList({
             employeeNumber={employeeNumber}
             employeeProfileLink={employeeProfileLink}
             personnelFileLink={personnelFileLink}
+            employeeFileEditMode={workflow.value === "emt-p"}
             badgeNumber={badgeNumber}
           />
         ))}
@@ -121,6 +123,7 @@ type StepRowProps = {
   employeeNumber: string;
   employeeProfileLink: string;
   personnelFileLink: string;
+  employeeFileEditMode: boolean;
   badgeNumber: string;
 };
 
@@ -139,7 +142,19 @@ function employeeProfileNumber(link: string): string | null {
   }
 }
 
-function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, employeeNumber, employeeProfileLink, personnelFileLink, badgeNumber }: StepRowProps) {
+function StepRow({
+  step,
+  isDone,
+  onToggle,
+  personnelName,
+  dateHired,
+  phone,
+  employeeNumber,
+  employeeProfileLink,
+  personnelFileLink,
+  employeeFileEditMode,
+  badgeNumber,
+}: StepRowProps) {
   // The supervisor's own rank, name and signature fill the signature lines, so
   // they come from the Staff Page rather than being typed into the card again.
   const { medicCredentials } = useMedic();
@@ -159,13 +174,18 @@ function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, empl
     validateUrl(personnelFileLink, "Personnel file link", { required: false }).ok
       ? personnelFileLink.trim()
       : "";
+  const employeeFileEditUrl = employeeFileEditMode
+    ? toPersonnelFileEditUrl(employeeFileUrl)
+    : undefined;
+  const employeeFileActionUrl = employeeFileEditUrl ?? employeeFileUrl;
   const refersToPersonnelFile = /personnel file/i.test(
     `${step.title} ${step.description}`,
   );
   const createsPersonnelFile = /\b(create|generate|new)\b/i.test(step.title);
   const hasPersonnelFileIndexAction = step.actions.some(
     (action) =>
-      action.url?.includes("viewforum.php?f=605") && !action.copyText,
+      action.url?.includes("viewforum.php?f=605") &&
+      (employeeFileEditMode || !action.copyText),
   );
   const showEmployeeFileShortcut =
     Boolean(employeeFileUrl) &&
@@ -225,13 +245,24 @@ function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, empl
                     </Link>
                   );
                 }
-                const opensPersonnelFilesIndex =
-                  action.url?.includes("viewforum.php?f=605") &&
-                  !action.copyText;
-                const resolvedAction =
-                  opensPersonnelFilesIndex && employeeFileUrl
-                    ? { ...action, label: "Open Employee File", url: employeeFileUrl }
-                    : action;
+                const opensPersonnelFilesIndex = action.url?.includes(
+                  "viewforum.php?f=605",
+                );
+                const useEmployeeFileAction =
+                  opensPersonnelFilesIndex &&
+                  employeeFileUrl &&
+                  (employeeFileEditMode || !action.copyText);
+                const resolvedAction = useEmployeeFileAction
+                  ? {
+                      ...action,
+                      label: action.copyText
+                        ? action.label
+                        : employeeFileEditUrl
+                          ? "Edit Employee File"
+                          : "Open Employee File",
+                      url: employeeFileActionUrl,
+                    }
+                  : action;
                 const requiredMissing = (action.requiresMetadata ?? []).filter(
                   (key) => !metadata[key],
                 );
@@ -276,13 +307,15 @@ function StepRow({ step, isDone, onToggle, personnelName, dateHired, phone, empl
               })}
               {showEmployeeFileShortcut && (
                 <a
-                  href={employeeFileUrl}
+                  href={employeeFileActionUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
                 >
                   <ExternalLink className="h-3 w-3" />
-                  Open Employee File
+                  {employeeFileEditUrl
+                    ? "Edit Employee File"
+                    : "Open Employee File"}
                 </a>
               )}
             </div>

@@ -90,6 +90,7 @@ export function ApplicantInfoCard({
             maxLength={INPUT_LIMITS.name}
             onChange={onNameChange}
             onEmployeeSelect={onEmployeeSelect}
+            personnelFileLinkMode="edit"
             placeholder="Applicant's full name"
             className="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-border"
           />

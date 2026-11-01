@@ -8,6 +8,7 @@ import { govGroupForRank } from "@/app/constants/gov-groups";
 import { copyBBCode } from "@/app/helpers/copyBBCode";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
 import { handOffForumPost, pickPostTarget } from "@/app/helpers/forumHandoff";
+import { toPersonnelFileEditUrl } from "@/lib/employee-links";
 import {
   GOV_PM_COMPOSE_URL,
   GOV_STAFF_ROSTER_EDIT_URL,
@@ -359,6 +360,7 @@ export function PromotionProcessor() {
               value={personnelName}
               maxLength={INPUT_LIMITS.name}
               onChange={setPersonnelName}
+              personnelFileLinkMode="edit"
               onEmployeeSelect={(employee) =>
                 setPersonnelFileUrl(employee.personnelFileUrl)
               }
@@ -444,12 +446,14 @@ export function PromotionProcessor() {
               }).ok
                 ? personnelFileUrl.trim()
                 : "";
-            const actionUrl = employeeFileUrl
-              ? employeeFileUrl
-              : step.action?.url;
-            const actionLabel = employeeFileUrl
-              ? "Open Employee File"
-              : step.action?.label;
+            const employeeFileEditUrl = toPersonnelFileEditUrl(employeeFileUrl);
+            const actionUrl =
+              employeeFileEditUrl ?? (employeeFileUrl || step.action?.url);
+            const actionLabel = employeeFileEditUrl
+              ? "Edit Employee File"
+              : employeeFileUrl
+                ? "Open Employee File"
+                : step.action?.label;
             return (
               <li
                 key={step.id}
@@ -503,7 +507,7 @@ export function PromotionProcessor() {
                                   feature: "the promotion processor",
                                   // The personnel file link is on the same card,
                                   // and that topic is where most steps post.
-                                    url: pickPostTarget(actionUrl, personnelFileUrl),
+                                  url: pickPostTarget(actionUrl, personnelFileUrl),
                                 },
                               });
                             }}
@@ -544,7 +548,10 @@ export function PromotionProcessor() {
                                 bbCodeText: step.secondaryCopyText!,
                                 post: {
                                   feature: "the promotion processor",
-                                  url: pickPostTarget(null, personnelFileUrl),
+                                  url: pickPostTarget(
+                                    null,
+                                    employeeFileEditUrl ?? personnelFileUrl,
+                                  ),
                                 },
                               });
                             }}

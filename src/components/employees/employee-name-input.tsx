@@ -2,6 +2,7 @@
 
 import { useId, useRef, useState, type ComponentProps } from "react";
 import { Check, ChevronsUpDown, ExternalLink } from "lucide-react";
+import { toPersonnelFileEditUrl } from "@/lib/employee-links";
 
 import {
   employeeMatchesSearch,
@@ -25,6 +26,7 @@ type EmployeeNameInputProps = Omit<
   value: string;
   onChange: (value: string) => void;
   onEmployeeSelect?: (employee: EmployeeRecord) => void;
+  personnelFileLinkMode?: "view" | "edit";
 };
 
 export function EmployeeNameInput({
@@ -32,6 +34,7 @@ export function EmployeeNameInput({
   value,
   onChange,
   onEmployeeSelect,
+  personnelFileLinkMode = "view",
   placeholder = "Search roster or enter a name",
   className,
   "aria-label": ariaLabel,
@@ -42,6 +45,10 @@ export function EmployeeNameInput({
   const [customNameSelected, setCustomNameSelected] = useState(false);
   const { employees, loading } = useEmployeeRoster();
   const selectedEmployee = findEmployeeByName(value, employees);
+  const selectedEmployeeEditUrl =
+    personnelFileLinkMode === "edit"
+      ? toPersonnelFileEditUrl(selectedEmployee?.personnelFileUrl)
+      : undefined;
   const showCustomName = !selectedEmployee && (customNameSelected || Boolean(value));
   const listId = useId();
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -195,12 +202,13 @@ export function EmployeeNameInput({
           )}
           {selectedEmployee.personnelFileUrl && (
             <a
-              href={selectedEmployee.personnelFileUrl}
+              href={selectedEmployeeEditUrl ?? selectedEmployee.personnelFileUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 hover:text-foreground"
             >
-              Personnel file <ExternalLink className="h-3 w-3" />
+              {selectedEmployeeEditUrl ? "Edit personnel file" : "Personnel file"}{" "}
+              <ExternalLink className="h-3 w-3" />
             </a>
           )}
         </div>
