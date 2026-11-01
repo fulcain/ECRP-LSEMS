@@ -14,23 +14,23 @@ export type QuickLinkEntry = {
   url: string;
 };
 
-export type QuickLinkDivision = {
+export type QuickLinkGroup = {
   label: string;
   image: string;
-  divisionName: string;
+  description: string;
   links: QuickLinkEntry[];
 };
 
 export type QuickLinkHit = {
   entry: QuickLinkEntry;
-  division: QuickLinkDivision;
-  /** True when the division itself matched, so every link in it is a hit. */
-  divisionMatch: boolean;
+  group: QuickLinkGroup;
+  /** True when the group itself matched, so every link in it is a hit. */
+  groupMatch: boolean;
   score: number;
 };
 
-export function linkId(divisionLabel: string, url: string): string {
-  return `${divisionLabel}::${url}`;
+export function linkId(groupLabel: string, url: string): string {
+  return `${groupLabel}::${url}`;
 }
 
 /** Lower-cased, punctuation collapsed - so "f-r" and "F&R" compare equal. */
@@ -43,8 +43,8 @@ export function termsOf(query: string): string[] {
 }
 
 /** Acronyms people actually type: "Field Training" -> ft, "... Division" -> ftd. */
-export function acronymsOf(division: QuickLinkDivision): string[] {
-  return [division.label, division.divisionName]
+export function acronymsOf(group: QuickLinkGroup): string[] {
+  return [group.label, group.description]
     .map((value) =>
       normalize(value)
         .split(" ")
@@ -98,39 +98,39 @@ function scoreLink(name: string, terms: string[]): number {
 }
 
 /**
- * Ranked hits for a query, plus the divisions whose own name matched.
+ * Ranked hits for a query, plus the groups whose own name matched.
  *
- * A query naming a division returns that whole division's links, because
- * "BLS" almost always means "show me the BLS links".
+ * A query naming a group returns that whole group's links, because "BLS"
+ * almost always means "show me the BLS links".
  */
 export function searchQuickLinks(
-  divisions: QuickLinkDivision[],
+  groups: QuickLinkGroup[],
   query: string,
-): { hits: QuickLinkHit[]; divisions: QuickLinkDivision[] } {
+): { hits: QuickLinkHit[]; groups: QuickLinkGroup[] } {
   const terms = termsOf(query);
-  if (terms.length === 0) return { hits: [], divisions: [] };
+  if (terms.length === 0) return { hits: [], groups: [] };
 
   const compact = terms.join("");
-  const matchedDivisions: QuickLinkDivision[] = [];
+  const matchedGroups: QuickLinkGroup[] = [];
   const hits: QuickLinkHit[] = [];
 
-  for (const division of divisions) {
-    const haystack = normalize(`${division.label} ${division.divisionName}`);
-    const divisionMatch =
+  for (const group of groups) {
+    const haystack = normalize(`${group.label} ${group.description}`);
+    const groupMatch =
       terms.every((term) => haystack.includes(term)) ||
-      acronymsOf(division).includes(compact);
+      acronymsOf(group).includes(compact);
 
-    if (divisionMatch) matchedDivisions.push(division);
+    if (groupMatch) matchedGroups.push(group);
 
-    for (const entry of division.links) {
+    for (const entry of group.links) {
       const linkScore = scoreLink(entry.name, terms);
-      if (!divisionMatch && linkScore === 0) continue;
+      if (!groupMatch && linkScore === 0) continue;
 
       hits.push({
         entry,
-        division,
-        divisionMatch,
-        score: divisionMatch ? 100 + linkScore : linkScore,
+        group,
+        groupMatch,
+        score: groupMatch ? 100 + linkScore : linkScore,
       });
     }
   }
@@ -142,17 +142,17 @@ export function searchQuickLinks(
       a.entry.name.localeCompare(b.entry.name),
   );
 
-  return { hits, divisions: matchedDivisions };
+  return { hits, groups: matchedGroups };
 }
 
-/** Resolves stored ids (pins, recents) back to a link and the division it is in. */
+/** Resolves stored ids (pins, recents) back to a link and its group. */
 export function linkById(
-  divisions: QuickLinkDivision[],
-): Map<string, { division: QuickLinkDivision; entry: QuickLinkEntry }> {
-  const map = new Map<string, { division: QuickLinkDivision; entry: QuickLinkEntry }>();
-  for (const division of divisions) {
-    for (const entry of division.links) {
-      map.set(entry.id, { division, entry });
+  groups: QuickLinkGroup[],
+): Map<string, { group: QuickLinkGroup; entry: QuickLinkEntry }> {
+  const map = new Map<string, { group: QuickLinkGroup; entry: QuickLinkEntry }>();
+  for (const group of groups) {
+    for (const entry of group.links) {
+      map.set(entry.id, { group, entry });
     }
   }
   return map;

@@ -20,6 +20,15 @@ export const AR = {
         url: "https://gov.eclipse-rp.net/viewtopic.php?t=174011",
       },
       {
+        name: "Ground Branch Manual",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?t=160335",
+      },
+      {
+        name: "Lifeguard Handbook",
+        url: "https://gov.eclipse-rp.net/viewtopic.php?t=225803",
+      },
+
+      {
         name: "Pilot Student Profiles (Instructor+)",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=926",
       },
@@ -42,6 +51,10 @@ export const AR = {
       {
         name: "Discussion Board",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=1886",
+      },
+      {
+        name: "A&R - Command Area",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=1968",
       },
     ],
   },

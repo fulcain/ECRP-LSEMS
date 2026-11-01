@@ -17,7 +17,6 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { EmployeeNameInput } from "@/components/employees/employee-name-input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -185,13 +184,16 @@ export default function CivilianRideAlongForm() {
           )
         : undefined,
       validationMessage(validateName(form.rank, "Rank")),
-      validationMessage(
-        validateText(form.notes, "Notes", {
-          max: INPUT_LIMITS.notes,
-          multiline: true,
-          allowMarkup: true,
-        }),
-      ),
+      phase === "rideAlongReport"
+        ? validationMessage(
+            validateText(form.notes, "Notes", {
+              required: false,
+              max: INPUT_LIMITS.notes,
+              multiline: true,
+              allowMarkup: true,
+            }),
+          )
+        : undefined,
       ...form.rejectionReasons.map((entry, index) =>
         validationMessage(
           validateText(entry.reason, `Rejection reason ${index + 1}`, {
@@ -263,11 +265,11 @@ export default function CivilianRideAlongForm() {
                 <User className="h-3.5 w-3.5" />
                 Applicant&apos;s Name
               </Label>
-              <EmployeeNameInput
+              <Input
                 id="ridealong-applicant-name"
                 value={form.applicantName}
                 maxLength={INPUT_LIMITS.name}
-                onChange={(value) => update("applicantName", value)}
+                onChange={(event) => update("applicantName", event.target.value)}
                 placeholder="Firstname Lastname"
                 className="bg-background"
               />

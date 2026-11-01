@@ -50,7 +50,12 @@ export const RED = {
       {
         name: "Training Reports (Senior Handler+)",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=3723",
-      },
+	  },
+      {
+        name: "RED - Command Area",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=1969",
+	  },
+		
     ],
   },
 };

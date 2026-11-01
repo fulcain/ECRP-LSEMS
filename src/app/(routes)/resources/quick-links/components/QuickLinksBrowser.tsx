@@ -19,7 +19,7 @@ import {
   linkById,
   searchQuickLinks,
   termsOf,
-  type QuickLinkDivision,
+  type QuickLinkGroup,
 } from "../lib/quick-links-search";
 
 const PINNED_KEY = "quick-links:pinned";
@@ -28,11 +28,10 @@ const RECENT_KEY = "quick-links:recent";
 const RECENT_LIMIT = 8;
 
 type QuickLinksBrowserProps = {
-  divisions: QuickLinkDivision[];
+  groups: QuickLinkGroup[];
   /**
-   * True when the caller handed one division on purpose, because a division's
-   * own section asked for just its links: the list is then that division, so
-   * there is nothing to expand and a way back to the full directory to show.
+   * True when a division's own section asked for just its links, so there is
+   * nothing to expand and a way back to the full directory to show.
    */
   scoped?: boolean;
 };
@@ -48,21 +47,21 @@ type QuickLinksBrowserProps = {
  * member actually uses are pinned or remembered instead of hunted for again.
  */
 export function QuickLinksBrowser({
-  divisions,
+  groups,
   scoped = false,
 }: QuickLinksBrowserProps) {
-  const only = divisions[0];
+  const only = groups[0];
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const [pinned, setPinned] = useLocalStorage<string[]>(PINNED_KEY, []);
   const [recent, setRecent] = useLocalStorage<string[]>(RECENT_KEY, []);
   const searchRef = useRef<HTMLInputElement>(null);
 
-  const byId = useMemo(() => linkById(divisions), [divisions]);
+  const byId = useMemo(() => linkById(groups), [groups]);
   const terms = useMemo(() => termsOf(query), [query]);
   const { hits } = useMemo(
-    () => searchQuickLinks(divisions, query),
-    [divisions, query],
+    () => searchQuickLinks(groups, query),
+    [groups, query],
   );
 
   const resolve = useCallback(
@@ -72,7 +71,7 @@ export function QuickLinksBrowser({
         .filter(
           (
             hit,
-          ): hit is { division: QuickLinkDivision; entry: QuickLinkDivision["links"][number] } =>
+          ): hit is { group: QuickLinkGroup; entry: QuickLinkGroup["links"][number] } =>
             Boolean(hit),
         ),
     [byId],
@@ -177,13 +176,13 @@ export function QuickLinksBrowser({
           aria-label={
             scoped
               ? `Search ${only?.label ?? "this division"} links`
-              : "Search every division and link"
+              : "Search every section and link"
           }
           aria-controls="quick-links-results"
           placeholder={
             scoped
               ? `Search ${only?.label ?? "this division"} links...`
-              : "Search links, divisions or an acronym..."
+              : "Search links, sections or an acronym..."
           }
           className="h-11 pl-9 pr-24 text-base md:text-sm"
         />
@@ -246,7 +245,7 @@ export function QuickLinksBrowser({
                   <li key={hit.entry.id}>
                     <LinkRow
                       entry={hit.entry}
-                      divisionLabel={hit.division.label}
+                      groupLabel={hit.group.label}
                       terms={terms}
                       pinned={pinned.includes(hit.entry.id)}
                       onTogglePin={togglePin}
@@ -275,7 +274,7 @@ export function QuickLinksBrowser({
                   <li key={link.entry.id}>
                     <LinkRow
                       entry={link.entry}
-                      divisionLabel={link.division.label}
+                      groupLabel={link.group.label}
                       terms={[]}
                       pinned
                       onTogglePin={togglePin}
@@ -299,7 +298,7 @@ export function QuickLinksBrowser({
                   <li key={link.entry.id}>
                     <LinkRow
                       entry={link.entry}
-                      divisionLabel={link.division.label}
+                      groupLabel={link.group.label}
                       terms={[]}
                       pinned={false}
                       onTogglePin={togglePin}
@@ -318,7 +317,7 @@ export function QuickLinksBrowser({
               action={
                 <Button asChild variant="ghost" size="sm">
                   <Link href={ROUTES.resources.quickLinks}>
-                    Show every division
+                    Show all quick links
                   </Link>
                 </Button>
               }
@@ -340,15 +339,15 @@ export function QuickLinksBrowser({
             </PageSection>
           ) : (
             <PageSection
-              title="All divisions"
-              description="Open a division to see everything in it."
+              title="All sections"
+              description="Open a section to see its links."
               bodyClassName="p-0"
             >
               <Accordion type="multiple" className="w-full">
-                {divisions.map((division) => (
+                {groups.map((group) => (
                   <AccordionItem
-                    key={division.label}
-                    value={division.label}
+                    key={group.label}
+                    value={group.label}
                     className="border-b border-border last:border-b-0"
                   >
                     <AccordionTrigger className="px-5 py-3.5 text-sm font-medium text-foreground hover:no-underline">
@@ -356,20 +355,20 @@ export function QuickLinksBrowser({
                         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface-hover">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
-                            src={division.image}
+                            src={group.image}
                             alt=""
                             className="h-5 w-5 object-contain"
                           />
                         </span>
-                        <span className="truncate">{division.label}</span>
+                        <span className="truncate">{group.label}</span>
                         <span className="shrink-0 rounded-md bg-surface-hover px-1.5 py-0.5 text-[11px] text-muted-foreground">
-                          {division.links.length}
+                          {group.links.length}
                         </span>
                       </span>
                     </AccordionTrigger>
                     <AccordionContent className="px-2 pb-3 pt-0">
                       <ul className="space-y-0.5">
-                        {division.links.map((entry) => (
+                        {group.links.map((entry) => (
                           <li key={entry.id}>
                             <LinkRow
                               entry={entry}

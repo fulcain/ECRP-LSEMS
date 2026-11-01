@@ -20,7 +20,7 @@ export default async function QuickLinksPage({
   const params = await searchParams;
   const raw = params[QUICK_LINK_DIVISION_PARAM];
   const scope = divisionFromParam(Array.isArray(raw) ? raw[0] : raw);
-  const directory = quickLinksDirectory(scope ? [scope] : undefined);
+  const groups = quickLinksDirectory(scope ? [scope] : undefined);
 
   return (
     <PageContainer>
@@ -30,10 +30,10 @@ export default async function QuickLinksPage({
         subtitle={
           scope
             ? `${scope.data.divisionName} - search it, pin it, or open every division's links instead.`
-            : "Every division's links in one place, with search, pins and recents so the one you need is never more than a keystroke away."
+            : "Every section's links in one place, with search, pins and recents so the one you need is never more than a keystroke away."
         }
       />
-      <QuickLinksBrowser divisions={directory} scoped={scope !== null} />
+      <QuickLinksBrowser groups={groups} scoped={scope !== null} />
     </PageContainer>
   );
 }

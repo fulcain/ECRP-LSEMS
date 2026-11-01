@@ -42,7 +42,16 @@ export const FR = {
       {
         name: "Discussion Board",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=1884",
-      },
+	  },
+      {
+        name: "FRD - Command Area",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=1935",
+	  },
+      {
+        name: "Fire Safety (F&R Subdivision)",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=2591",
+	  },
+		
     ],
   },
 };

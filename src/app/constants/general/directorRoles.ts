@@ -17,6 +17,10 @@ export type DirectorEntry = {
   id: string | null;
 };
 
+function directorCoverageLabel(key: DivisionKey): string {
+  return key === "ar" ? "Air & Rescue" : DIVISIONS[key].label;
+}
+
 export const directors = [
   {
     title: ROLES.DirectorOfOperations.name,
@@ -56,9 +60,7 @@ export function directorRoleId(title: DirectorRoleTitle): string | null {
 function coveredDivisions(title: DirectorRoleTitle): string[] {
   return DIVISION_ENTRIES.filter(([, division]) =>
     (division.directors ?? []).some((alias) => ROLES[alias].name === title),
-  ).map(([key, division]) =>
-    key === "ar" ? "Air & Rescue" : division.label,
-  );
+  ).map(([key]) => directorCoverageLabel(key));
 }
 
 export const directorResponsibility: Record<DirectorRoleTitle, string[]> = {
@@ -120,6 +122,7 @@ export const getDirectorTitle = (directorRole: DirectorGuard): string | null => 
 export const getDirectorTitleForDivision = (
   directorRole: DirectorGuard,
   divisionLabel: string | null | undefined,
+  divisionKey?: DivisionKey,
 ): string | null => {
   if (!directorRole?.enabled || !divisionLabel) return null;
   const title = directorRole.title;
@@ -127,7 +130,17 @@ export const getDirectorTitleForDivision = (
   const responsibility = directorResponsibility[title as DirectorRoleTitle];
   if (!responsibility) return null;
 
-  const normalizedDivision = divisionLabel.trim().toLowerCase();
+  const division = divisionKey ? DIVISIONS[divisionKey] : null;
+  const templateScope =
+    division && "templateDirectorScope" in division
+      ? division.templateDirectorScope
+      : undefined;
+  const scopeLabel = divisionKey
+    ? directorCoverageLabel(templateScope ?? divisionKey)
+    : divisionLabel;
+  if (!scopeLabel) return null;
+
+  const normalizedDivision = scopeLabel.trim().toLowerCase();
   return responsibility.some((division) => {
     const normalizedResponsibility = division.toLowerCase();
     return (

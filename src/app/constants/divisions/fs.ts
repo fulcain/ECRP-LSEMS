@@ -6,7 +6,7 @@ export const FS = {
   data: {
     imageSize: "150,150",
     image: "https://i.vgy.me/rs0ORy.png",
-    divisionName: "Fire Safety",
+    divisionName: "F&R Subdivision - Fire Safety",
     // Names and ids come from `DIVISIONS.fs` in `src/configs/roles.ts`, where
     // the four leadership roles are shared with Fire & Rescue.
     ranks: ranksForDivision("fs"),

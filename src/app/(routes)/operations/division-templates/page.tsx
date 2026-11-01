@@ -121,6 +121,7 @@ export default function Home() {
       selectedRank: effectiveRank,
       division: selectedDivision.data,
       divisionLabel: selectedDivision.label,
+      divisionKey: selectedDivision.key,
       subject: subject.trim(),
       recipient: recipient.trim(),
       date: getCurrentDateFormatted(),

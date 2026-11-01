@@ -80,7 +80,10 @@ export const ROLES = {
   // The LSEMS ladder, highest first. Order here is documentation; the ladder
   // itself (`LSEMS_RANKS`) is ordered in `app/constants/general/ranks.ts`.
   ChiefOfEMS: { id: "459439793185488916", name: "Chief of EMS" },
-  AssistantChiefOfEMS: { id: "624916991421054976", name: "Assistant Chief of EMS" },
+  AssistantChiefOfEMS: {
+    id: "624916991421054976",
+    name: "Assistant Chief of EMS",
+  },
   DeputyChiefOfEMS: { id: "459439793307123713", name: "Deputy Chief of EMS" },
   /** A position people hold rather than a rung - also gates routes. */
   Consultant: { id: "1039228533651816590", name: "Consultant" },
@@ -106,9 +109,18 @@ export const ROLES = {
   Employee: { id: "463305002400743444", name: "Employee" },
 
   // ─── Directors ──────────────────────────────────────────────────────────
-  DirectorOfOperations: { id: "459439796805173256", name: "Director of Operations" },
-  DirectorOfAdministration: { id: "459439795412664340", name: "Director of Administration" },
-  DirectorOfSpecialOperations: { id: "459439797757280266", name: "Director of Special Operations" },
+  DirectorOfOperations: {
+    id: "459439796805173256",
+    name: "Director of Operations",
+  },
+  DirectorOfAdministration: {
+    id: "459439795412664340",
+    name: "Director of Administration",
+  },
+  DirectorOfSpecialOperations: {
+    id: "459439797757280266",
+    name: "Director of Special Operations",
+  },
 
   // ─── Division membership ────────────────────────────────────────────────
   // The role every member of a division holds, whether or not they also hold
@@ -140,7 +152,10 @@ export const ROLES = {
   FTHead: { id: "459439795635224589", name: "Head of FTD" },
   InterimHeadOfFTD: { id: null, name: "Interim Head of FTD" },
   FTAssHead: { id: "1030270859610423407", name: "Assistant Head of FTD" },
-  InterimAssistantHeadOfFTD: { id: null, name: "Interim Assistant Head of FTD" },
+  InterimAssistantHeadOfFTD: {
+    id: null,
+    name: "Interim Assistant Head of FTD",
+  },
   FTI: { id: "796493688649023518", name: "Field Training Instructor" },
   FTO: { id: "836248428971425823", name: "Field Training Officer" },
   FTOInTraining: { id: null, name: "Field Training Officer in Training" },
@@ -148,9 +163,18 @@ export const ROLES = {
   // ─── Basic Life Support ─────────────────────────────────────────────────
   HeadOfBLS: { id: "565645208436604930", name: "Head of BLS" },
   InterimHeadOfBLS: { id: null, name: "Interim Head of BLS" },
-  AssistantHeadOfBLS: { id: "1099082229411479614", name: "Assistant Head of BLS" },
-  InterimAssistantHeadOfBLS: { id: null, name: "Interim Assistant Head of BLS" },
-  SeniorBLSInstructor: { id: "1270398018885128233", name: "Senior BLS Instructor" },
+  AssistantHeadOfBLS: {
+    id: "1099082229411479614",
+    name: "Assistant Head of BLS",
+  },
+  InterimAssistantHeadOfBLS: {
+    id: null,
+    name: "Interim Assistant Head of BLS",
+  },
+  SeniorBLSInstructor: {
+    id: "1270398018885128233",
+    name: "Senior BLS Instructor",
+  },
   BLSInstructor: { id: null, name: "BLS Instructor" },
   BLSInstructorTrainee: { id: null, name: "BLS Instructor Trainee" },
 
@@ -158,9 +182,18 @@ export const ROLES = {
   HeadOfAMU: { id: "708843788700876851", name: "Head of AMU" },
   InterimHeadOfAMU: { id: null, name: "Interim Head of AMU" },
   AssistantHeadOfAMU: { id: null, name: "Assistant Head of AMU" },
-  InterimAssistantHeadOfAMU: { id: "1030888742128459897", name: "Interim Assistant Head of AMU" },
-  AttendingPhysicians: { id: "1268723092356858017", name: "Attending Physicians" },
-  ResidentPhysicians: { id: "1492952624641605812", name: "Resident Physicians" },
+  InterimAssistantHeadOfAMU: {
+    id: "1030888742128459897",
+    name: "Interim Assistant Head of AMU",
+  },
+  AttendingPhysicians: {
+    id: "1268723092356858017",
+    name: "Attending Physicians",
+  },
+  ResidentPhysicians: {
+    id: "1492952624641605812",
+    name: "Resident Physicians",
+  },
   AMUNurse: { id: "1436607667513720942", name: "AMU Nurse" },
   Surgeon: { id: null, name: "Surgeon" },
   MedicalStudent: { id: "1363588792807723089", name: "Medical Student" },
@@ -169,42 +202,81 @@ export const ROLES = {
   HeadOfRED: { id: "566996097667563535", name: "Head of RED" },
   InterimHeadOfRED: { id: null, name: "Interim Head of RED" },
   AssistantHeadOfRED: { id: null, name: "Assistant Head of RED" },
-  InterimAssistantHeadOfRED: { id: "1147266557060337724", name: "Interim Assistant Head of RED" },
+  InterimAssistantHeadOfRED: {
+    id: "1147266557060337724",
+    name: "Interim Assistant Head of RED",
+  },
   SeniorHandler: { id: "1268336808354119833", name: "Senior Handler" },
   ApplicationHandler: { id: null, name: "Application Handler" },
-  ProbationaryApplicationHandler: { id: null, name: "Probationary Application Handler" },
+  ProbationaryApplicationHandler: {
+    id: null,
+    name: "Probationary Application Handler",
+  },
 
   // ─── Public Relations ───────────────────────────────────────────────────
   HeadOfPR: { id: "1034485534015377459", name: "Head of PR" },
   InterimHeadOfPR: { id: null, name: "Interim Head of PR" },
-  AssistantHeadOfPR: { id: "1099775973894914128", name: "Assistant Head of PR" },
+  AssistantHeadOfPR: {
+    id: "1099775973894914128",
+    name: "Assistant Head of PR",
+  },
   InterimAssistantHeadOfPR: { id: null, name: "Interim Assistant Head of PR" },
-  SeniorPublicRelationsRepresentative: { id: "1240327660433969213", name: "Senior Public Relations Representative" },
-  PublicRelationsRepresentative: { id: null, name: "Public Relations Representative" },
+  SeniorPublicRelationsRepresentative: {
+    id: "1240327660433969213",
+    name: "Senior Public Relations Representative",
+  },
+  PublicRelationsRepresentative: {
+    id: null,
+    name: "Public Relations Representative",
+  },
   PublicRelationsTrainee: { id: null, name: "Public Relations Trainee" },
 
   // ─── Fire & Rescue / Fire Safety ────────────────────────────────────────
   // Both divisions are led by the same four roles, so they share these entries.
   HeadOfFR: { id: "588135936374734848", name: "Head of F&R" },
   InterimHeadOfFR: { id: null, name: "Interim Head of F&R" },
-  AssistantHeadOfFR: { id: "905201704830664735", name: "Assistant Head of F&R" },
+  AssistantHeadOfFR: {
+    id: "905201704830664735",
+    name: "Assistant Head of F&R",
+  },
   InterimAssistantHeadOfFR: { id: null, name: "Interim Assistant Head of F&R" },
-  SeniorFirefighterInstructor: { id: null, name: "Senior Firefighter Instructor" },
-  FirefighterInstructor: { id: "1278870071405576266", name: "Firefighter Instructor" },
+  SeniorFirefighterInstructor: {
+    id: null,
+    name: "Senior Firefighter Instructor",
+  },
+  FirefighterInstructor: {
+    id: "1278870071405576266",
+    name: "Firefighter Instructor",
+  },
   Firefighter: { id: null, name: "Firefighter" },
   ProbationaryFireFighter: { id: null, name: "Probationary Fire Fighter" },
   ProbationaryFirefighter: { id: null, name: "Probationary Firefighter" },
   TraineeFirefighter: { id: null, name: "Trainee Firefighter" },
   FireMarshall: { id: null, name: "Fire Marshall" },
-  FireSafetyInspector: { id: "1003034200242401280", name: "Fire Safety Inspector" },
-  TraineeFireSafetyInspector: { id: null, name: "Trainee Fire Safety Inspector" },
+  FireSafetyInspector: {
+    id: "1003034200242401280",
+    name: "Fire Safety Inspector",
+  },
+  TraineeFireSafetyInspector: {
+    id: null,
+    name: "Trainee Fire Safety Inspector",
+  },
 
   // ─── Forensics ──────────────────────────────────────────────────────────
   HeadOfFOR: { id: "684484521122726084", name: "Head of FOR" },
   InterimHeadOfFOR: { id: null, name: "Interim Head of FOR" },
-  AssistantHeadOfFOR: { id: "1067943717526323310", name: "Assistant Head of FOR" },
-  InterimAssistantHeadOfFOR: { id: null, name: "Interim Assistant Head of FOR" },
-  ForensicsInstructor: { id: "1268726880329142276", name: "Forensics Instructor" },
+  AssistantHeadOfFOR: {
+    id: "1067943717526323310",
+    name: "Assistant Head of FOR",
+  },
+  InterimAssistantHeadOfFOR: {
+    id: null,
+    name: "Interim Assistant Head of FOR",
+  },
+  ForensicsInstructor: {
+    id: "1268726880329142276",
+    name: "Forensics Instructor",
+  },
   Serologist: { id: null, name: "Serologist" },
   Pathologist: { id: null, name: "Pathologist" },
   ForensicsStudent: { id: null, name: "Forensics Student" },
@@ -213,24 +285,45 @@ export const ROLES = {
   // Shared leadership, so both divisions point at the same four entries.
   HeadOfAR: { id: "579588741950341132", name: "Head of A&R" },
   InterimHeadOfAR: { id: null, name: "Interim Head of A&R" },
-  AssistantHeadOfAR: { id: "1195192928306470912", name: "Assistant Head of A&R" },
+  AssistantHeadOfAR: {
+    id: "1195192928306470912",
+    name: "Assistant Head of A&R",
+  },
   InterimAssistantHeadOfAR: { id: null, name: "Interim Assistant Head of A&R" },
   SeniorFlightInstructor: { id: null, name: "Senior Flight Instructor" },
   FlightInstructor: { id: "1278870648772362240", name: "Flight Instructor" },
   SeniorPilot: { id: null, name: "Senior Pilot" },
   Pilot: { id: null, name: "Pilot" },
   StudentPilot: { id: null, name: "Student Pilot" },
-  SeniorMountainRescueInstructor: { id: null, name: "Senior Mountain Rescue Instructor" },
-  MountainRescueInstructor: { id: "1278870369935036570", name: "Mountain Rescue Instructor" },
+  SeniorMountainRescueInstructor: {
+    id: null,
+    name: "Senior Mountain Rescue Instructor",
+  },
+  MountainRescueInstructor: {
+    id: "1278870369935036570",
+    name: "Mountain Rescue Instructor",
+  },
   MountainAndRescueOperator: { id: null, name: "Mountain and Rescue Operator" },
   MountainRescueStudent: { id: null, name: "Mountain Rescue Student" },
 
   // ─── Lifeguard ──────────────────────────────────────────────────────────
   HeadOfLifeguard: { id: null, name: "Head of A&R" },
-  InterimHeadOfLifeguard: { id: "909116229959180318", name: "Interim Head of A&R" },
-  AssistantHeadOfLifeguard: { id: "801644852780728390", name: "Assistant Head of A&R" },
-  InterimAssistantHeadOfLifeguard: { id: null, name: "Interim Assistant Head of A&R" },
-  LifeguardInstructor: { id: "1278869812956758208", name: "Lifeguard Instructor" },
+  InterimHeadOfLifeguard: {
+    id: "909116229959180318",
+    name: "Interim Head of A&R",
+  },
+  AssistantHeadOfLifeguard: {
+    id: "801644852780728390",
+    name: "Assistant Head of A&R",
+  },
+  InterimAssistantHeadOfLifeguard: {
+    id: null,
+    name: "Interim Assistant Head of A&R",
+  },
+  LifeguardInstructor: {
+    id: "1278869812956758208",
+    name: "Lifeguard Instructor",
+  },
   Lifeguard: { id: "585836948376125478", name: "Lifeguard" },
   LifeguardStudent: { id: null, name: "Lifeguard Student" },
 
@@ -249,7 +342,10 @@ export const ROLES = {
   HeadOfCRU: { id: null, name: "Head of CRU" },
   InterimHeadOfCRU: { id: null, name: "Interim Head of CRU" },
   AssistantHeadOfCRU: { id: null, name: "Assistant Head of CRU" },
-  InterimAssistantHeadOfCRU: { id: null, name: "Interim Assistant Head of CRU" },
+  InterimAssistantHeadOfCRU: {
+    id: null,
+    name: "Interim Assistant Head of CRU",
+  },
   SeniorTherapist: { id: null, name: "Senior Therapist" },
   Therapist: { id: null, name: "Therapist" },
   TherapistInTraining: { id: null, name: "Therapist in Training" },
@@ -278,7 +374,10 @@ export const ROLES = {
     name: "Eexternal Contractor",
   },
   OnCallProgram: { id: "823265940451360809", name: "On Call Program" },
-  InTimeOutButFixed: { id: "1497431184857108480", name: "IN TIME OUT BUT FIXED" },
+  InTimeOutButFixed: {
+    id: "1497431184857108480",
+    name: "IN TIME OUT BUT FIXED",
+  },
   EmployeeOfTheMonth: {
     id: "1125863735618179112",
     name: "Employee of the month",
@@ -350,6 +449,8 @@ export type Division = {
    * page to its director.
    */
   directors?: readonly RoleName[];
+  /** Use another division's director coverage for this division's templates. */
+  templateDirectorScope?: "ar";
   /** Declared but not part of the app - no page, no sidebar entry. */
   dormant?: boolean;
 };
@@ -364,7 +465,6 @@ export type Division = {
 export const DIVISIONS = {
   /** Department-wide: no divisional ranks of its own. */
   general: { label: "General", ranks: [] },
-
   bls: {
     label: "Basic Life Support",
     route: ROUTES.divisions.bls,
@@ -518,6 +618,7 @@ export const DIVISIONS = {
   mountainRescue: {
     label: "Mountain Rescue",
     membership: "MountainRescueDivision",
+    templateDirectorScope: "ar",
     // Air & Rescue leadership is shared with the Pilot division.
     ranks: [
       "HeadOfAR",
@@ -533,6 +634,7 @@ export const DIVISIONS = {
   pilot: {
     label: "Pilot",
     membership: "ARDivision",
+    templateDirectorScope: "ar",
     ranks: [
       "HeadOfAR",
       "InterimHeadOfAR",
@@ -550,6 +652,7 @@ export const DIVISIONS = {
     // One role covers membership and the base rank here, so it is the same
     // entry in both places.
     membership: "Lifeguard",
+    templateDirectorScope: "ar",
     ranks: [
       "HeadOfLifeguard",
       "InterimHeadOfLifeguard",

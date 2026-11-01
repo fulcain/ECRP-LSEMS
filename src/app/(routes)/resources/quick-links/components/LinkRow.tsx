@@ -10,8 +10,8 @@ import {
 
 type LinkRowProps = {
   entry: QuickLinkEntry;
-  /** Division shown as context when the link appears outside its own section. */
-  divisionLabel?: string;
+  /** Group shown as context when the link appears outside its own section. */
+  groupLabel?: string;
   terms: string[];
   pinned: boolean;
   onTogglePin: (id: string) => void;
@@ -27,7 +27,7 @@ type LinkRowProps = {
  */
 export function LinkRow({
   entry,
-  divisionLabel,
+  groupLabel,
   terms,
   pinned,
   onTogglePin,
@@ -82,9 +82,9 @@ export function LinkRow({
             ),
           )}
         </span>
-        {divisionLabel && (
+        {groupLabel && (
           <span className="hidden shrink-0 rounded-md bg-surface-hover px-1.5 py-0.5 text-[11px] text-muted-foreground sm:inline">
-            {divisionLabel}
+            {groupLabel}
           </span>
         )}
       </a>

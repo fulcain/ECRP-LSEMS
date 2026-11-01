@@ -44,7 +44,7 @@ export function generateCivilianRideAlongBBCode(
   values: CivilianRideAlongValues,
   phase: CivilianRideAlongPhaseKey,
 ): string {
-  const applicant = values.applicantName || "Firstname Lastname";
+  const applicant = values.applicantName.trim() || "Firstname Lastname";
 
   switch (phase) {
     case "accepted":

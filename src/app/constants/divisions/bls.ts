@@ -6,7 +6,7 @@ export const BLS = {
   data: {
     imageSize: "150,150",
     image: "https://i.vgy.me/5Mkn7G.png",
-    divisionName: "LSEMS Basic Life Support Division",
+    divisionName: "Basic Life Support Division",
     // Names and ids come from `DIVISIONS.bls` in `src/configs/roles.ts`, which
     // also gates `/divisions/bls` on these ranks.
     ranks: ranksForDivision("bls"),

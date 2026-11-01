@@ -1,6 +1,7 @@
 import type { MedicCredentials } from "@/app/(routes)/operations/division-templates/components/MedicCredentials";
 import { getCurrentDateFormatted } from "@/app/helpers/getCurrentDateFormatted";
 import type { DivisionData } from "@/app/constants/divisions";
+import type { DivisionKey } from "@/configs/roles";
 import {
   getDirectorTitle,
   getDirectorTitleForDivision,
@@ -14,6 +15,7 @@ export const generateEmailTemplate = ({
   date,
   division,
   divisionLabel,
+  divisionKey,
   omitBodySignature = false,
   omitRecipientSection = false,
   bodySignOffText,
@@ -25,6 +27,7 @@ export const generateEmailTemplate = ({
   recipient: string;
   division?: DivisionData;
   divisionLabel?: string;
+  divisionKey?: DivisionKey;
   omitBodySignature?: boolean;
   omitRecipientSection?: boolean;
   bodySignOffText?: string;
@@ -35,7 +38,11 @@ export const generateEmailTemplate = ({
   // templates only show it when the director covers that division.
   const directorTitle = isGeneralDivision
     ? getDirectorTitle(medicCredentials.directorRole)
-    : getDirectorTitleForDivision(medicCredentials.directorRole, divisionLabel);
+    : getDirectorTitleForDivision(
+        medicCredentials.directorRole,
+        divisionLabel,
+        divisionKey,
+      );
   const roleLine = directorTitle
     ? `${directorTitle} / ${medicCredentials.rank}`
     : selectedRank
