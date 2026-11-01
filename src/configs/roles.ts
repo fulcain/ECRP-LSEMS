@@ -450,7 +450,7 @@ export type Division = {
    */
   directors?: readonly RoleName[];
   /** Use another division's director coverage for this division's templates. */
-  templateDirectorScope?: "ar";
+  templateDirectorScope?: "ar" | "fr";
   /** Declared but not part of the app - no page, no sidebar entry. */
   dormant?: boolean;
 };
@@ -591,6 +591,7 @@ export const DIVISIONS = {
   },
   fs: {
     label: "Fire Safety",
+    templateDirectorScope: "fr",
     ranks: [
       "HeadOfFR",
       "InterimHeadOfFR",
