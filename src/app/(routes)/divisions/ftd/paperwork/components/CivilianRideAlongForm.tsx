@@ -8,8 +8,6 @@ import {
   User,
   FileCheck,
   FileText,
-  Pencil,
-  Lock,
   Plus,
   X,
   ExternalLink,
@@ -20,21 +18,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
-import { useHighestRank } from "@/app/hooks/useHighestRank";
-import { rankOptions } from "@/app/constants/general/ranks";
 import {
   INPUT_LIMITS,
   validateName,
   validateText,
-  validateUrl,
   validationMessage,
 } from "@/lib/validation";
 import { useSession } from "@/app/(routes)/divisions/ftd/paperwork/components/SessionContext";
@@ -53,6 +41,7 @@ import {
   type CivilianRideAlongValues,
 } from "@/app/(routes)/divisions/ftd/paperwork/lib/generateCivilianRideAlongBBCode";
 import { CivilianRideAlongGuideline } from "@/app/(routes)/divisions/ftd/paperwork/components/CivilianRideAlongGuideline";
+import { useMedic } from "@/app/context/MedicContext";
 
 const RIDE_ALONG_PROGRAM_URL =
   "https://gov.eclipse-rp.net/viewforum.php?f=577";
@@ -71,7 +60,6 @@ const PHASE_TITLE_TAGS: Record<CivilianRideAlongPhaseKey, string | null> = {
 
 const defaultFormState = {
   applicantName: "",
-  rank: "",
   notes: "",
   rejectionReasons: [] as Array<{ reason: string }>,
 };
@@ -82,11 +70,8 @@ export default function CivilianRideAlongForm() {
   const [output, setOutput] = useState("");
   const [copied, setCopied] = useState(false);
 
-  const { details, setDetails, setCurrentPhase } = useSession();
-  const { rankLabel: autoRankLabel } = useHighestRank();
-
-  // Rank dropdown is locked by default, matching the other papers.
-  const [isRankEditing, setIsRankEditing] = useState(false);
+  const { setCurrentPhase } = useSession();
+  const { medicCredentials } = useMedic();
 
   // The hook *is* the form's state. Mirroring it into a second `useState` and
   // writing that back lost the stored data: the mirror's own mount write
@@ -103,17 +88,6 @@ export default function CivilianRideAlongForm() {
     "",
   );
 
-  // Auto-populate Rank from highest Discord role on hook resolve.
-  // Always overwrites on page reload so the rank reflects their current
-  // Discord roles even if it changed since the last visit.
-  useEffect(() => {
-    if (!autoRankLabel) return;
-    setForm((prev: typeof defaultFormState) => ({
-      ...prev,
-      rank: autoRankLabel,
-    }));
-  }, [autoRankLabel, setForm]);
-
   useEffect(() => {
     setCurrentPhase(phase);
   }, [phase, setCurrentPhase]);
@@ -125,10 +99,7 @@ export default function CivilianRideAlongForm() {
   }, [setCurrentPhase]);
 
   const clearAllFields = () => {
-    setForm({
-      ...defaultFormState,
-      rank: autoRankLabel ?? form.rank,
-    });
+    setForm({ ...defaultFormState });
     setOutput("");
     setCopied(false);
     toast.info("All fields cleared");
@@ -176,14 +147,8 @@ export default function CivilianRideAlongForm() {
   const generate = () => {
     const message = [
       validationMessage(validateName(form.applicantName, "Applicant name")),
-      // No signature image is not a blocker: the generator signs with the
-      // trainer's name instead. A typed one still has to be a URL.
-      details.signature.trim()
-        ? validationMessage(
-            validateUrl(details.signature, "Signature image link"),
-          )
-        : undefined,
-      validationMessage(validateName(form.rank, "Rank")),
+      validationMessage(validateName(medicCredentials.name, "Medic name")),
+      validationMessage(validateName(medicCredentials.rank, "Medic rank")),
       phase === "rideAlongReport"
         ? validationMessage(
             validateText(form.notes, "Notes", {
@@ -210,9 +175,8 @@ export default function CivilianRideAlongForm() {
 
     const values: CivilianRideAlongValues = {
       applicantName: form.applicantName,
-      signature: details.signature,
-      ftoName: details.ftoName,
-      rank: form.rank,
+      medicName: medicCredentials.name,
+      rank: medicCredentials.rank,
       notes: form.notes,
       rejectionReasons: form.rejectionReasons,
     };
@@ -257,7 +221,7 @@ export default function CivilianRideAlongForm() {
         {/* === Guideline (read this before filling anything) === */}
         <CivilianRideAlongGuideline />
 
-        {/* === Applicant / Signature / Rank === */}
+        {/* === Applicant === */}
         <Card className="border-0 shadow-none bg-muted/30">
           <CardContent className="p-4 space-y-4">
             <div className="space-y-1.5">
@@ -302,97 +266,6 @@ export default function CivilianRideAlongForm() {
               </p>
             </div>
 
-            <div className="flex items-start gap-4 flex-wrap">
-              <div className="flex-1 min-w-[200px] space-y-1.5">
-                <Label htmlFor="ridealong-signature" className="text-xs text-muted-foreground flex items-center gap-1.5">
-                  <User className="h-3.5 w-3.5" />
-                  Signature (image link)
-                </Label>
-                <Input
-                  id="ridealong-signature"
-                  value={details.signature}
-                  maxLength={INPUT_LIMITS.url}
-                  onChange={(e) =>
-                    setDetails((prev) => ({
-                      ...prev,
-                      signature: e.target.value,
-                    }))
-                  }
-                  placeholder="insert link here"
-                  className="bg-background"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Leave blank to sign with your name.
-                </p>
-              </div>
-              <div className="flex-1 min-w-[160px] space-y-1.5">
-                <Label htmlFor="ridealong-rank" className="text-xs text-muted-foreground flex items-center gap-1.5">
-                  Rank
-                  {autoRankLabel && form.rank === autoRankLabel && (
-                    <span
-                      aria-live="polite"
-                      className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wide text-primary/70"
-                      title={`Auto-detected: ${autoRankLabel}. Click the pencil to override.`}
-                    >
-                      <span className="h-1.5 w-1.5 rounded-full bg-primary/70" />
-                      auto
-                      <span className="sr-only">
-                        Auto-detected {autoRankLabel} from your Discord
-                        roles.
-                      </span>
-                    </span>
-                  )}
-                </Label>
-                <div className="flex items-center gap-1.5">
-                  <Select
-                    value={form.rank || undefined}
-                    onValueChange={(v) => update("rank", v)}
-                    disabled={!isRankEditing}
-                  >
-                    <SelectTrigger
-                      id="ridealong-rank"
-                      className="bg-background flex-1"
-                    >
-                      <SelectValue
-                        placeholder={
-                          autoRankLabel ?? "No rank detected - click edit"
-                        }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {rankOptions.map((label) => (
-                        <SelectItem key={label} value={label}>
-                          {label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setIsRankEditing((v) => !v)}
-                    aria-label={
-                      isRankEditing ? "Lock rank" : "Edit rank manually"
-                    }
-                    title={
-                      isRankEditing
-                        ? "Click to lock"
-                        : autoRankLabel
-                          ? `Auto-selected: ${autoRankLabel}. Click to edit.`
-                          : "Edit manually"
-                    }
-                    className="text-muted-foreground hover:text-foreground shrink-0"
-                  >
-                    {isRankEditing ? (
-                      <Lock className="h-4 w-4" />
-                    ) : (
-                      <Pencil className="h-4 w-4" />
-                    )}
-                  </Button>
-                </div>
-              </div>
-            </div>
           </CardContent>
         </Card>
 

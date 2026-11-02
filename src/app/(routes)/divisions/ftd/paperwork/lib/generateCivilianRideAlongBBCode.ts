@@ -3,11 +3,8 @@ import type { CivilianRideAlongPhaseKey } from "@/app/(routes)/divisions/ftd/pap
 export interface CivilianRideAlongValues {
   /** Applicant's full name as written on the ride-along request (e.g. "Firstname Lastname"). */
   applicantName: string;
-  /** FTO's signature image URL. Blank signs with `ftoName` as plain text. */
-  signature: string;
-  /** FTO's saved name, printed as the signature when no image is set. */
-  ftoName: string;
-  /** FTO's rank label (e.g. "Lead Paramedic"). */
+  /** Medic's saved name and rank from Staff Page credentials. */
+  medicName: string;
   rank: string;
   /** Ride-Along Report only: free-form session notes. */
   notes?: string;
@@ -19,17 +16,9 @@ const ACCEPTED_HEADER_URL = "https://i.ibb.co/GQ4G8VM4/oai-Unb-A.png";
 const REPORT_HEADER_URL = "https://i.ibb.co/WNrSTh8H/e-IVCOfs.png";
 const REPORT_BANNER_URL = "https://i.ibb.co/xKYgq6P0/7x0vy1x.png";
 
-/** The signature line: the saved image, or the trainer's name as plain text
- *  when the Staff Page holds no signature. */
-function signatureLine(values: CivilianRideAlongValues): string {
-  const signature = values.signature.trim();
-  if (signature) return `[img]${signature}[/img]`;
-  return values.ftoName.trim() || "[img]SIGNATURE[/img]";
-}
-
 function signatureBlock(values: CivilianRideAlongValues): string {
-  return `${signatureLine(values)}
-${values.rank || ""}`;
+  return `[i]${values.medicName.trim()}[/i]
+[b]${values.rank.trim()}[/b]`;
 }
 
 function genericSincerity(values: CivilianRideAlongValues): string {
@@ -116,9 +105,8 @@ ${genericSincerity(values)}
 [b]Name:[/b] [i]${applicant}[/i]
 [b]Notes (optional but preferred):[/b] [I]${values.notes || ""}[/i]
 
-${signatureLine(values)}
-[I]${applicant}[/i]
-[b]${values.rank || "Rank"}[/b]
+[i]${values.medicName.trim()}[/i]
+[b]${values.rank.trim()}[/b]
 [b]Los Santos Emergency Medical Services[/b]
 [/divbox]
 [LSEMSfooter][/LSEMSfooter]`;
