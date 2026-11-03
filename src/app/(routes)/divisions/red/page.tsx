@@ -40,7 +40,6 @@ import {
 } from "./components/paperwork-documents";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { EmployeeNameInput } from "@/components/employees/employee-name-input";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
 import {
@@ -518,7 +517,7 @@ export default function REDFormatsPage() {
                       <Label htmlFor="applicant-name">
                         {isWelcomeEmail ? "Applicant full name" : "Applicant name"}
                       </Label>
-                      <EmployeeNameInput
+                      <Input
                         id="applicant-name"
                         value={applicantName}
                         maxLength={INPUT_LIMITS.name}
