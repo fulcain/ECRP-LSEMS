@@ -465,7 +465,7 @@ export default function BLSFormatsPage() {
                         id="applicant-name"
                         value={applicantName}
                         maxLength={INPUT_LIMITS.name}
-                        onChange={setApplicantName}
+                        onChange={(event) => setApplicantName(event.target.value)}
                         placeholder="Enter the applicant's name"
                         className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2"
                       />

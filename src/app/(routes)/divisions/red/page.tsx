@@ -521,7 +521,7 @@ export default function REDFormatsPage() {
                         id="applicant-name"
                         value={applicantName}
                         maxLength={INPUT_LIMITS.name}
-                        onChange={setApplicantName}
+                        onChange={(event) => setApplicantName(event.target.value)}
                         placeholder={isWelcomeEmail ? "Enter the applicant's full name" : "Enter the applicant's name"}
                         disabled={selectedDocument === "discord-invite"}
                         className="border-border bg-surface-hover text-foreground placeholder:text-muted-foreground transition-colors focus-visible:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
