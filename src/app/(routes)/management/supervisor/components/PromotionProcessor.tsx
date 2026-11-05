@@ -46,6 +46,7 @@ import {
   Globe,
   ListChecks,
   Shield,
+  Award,
 } from "lucide-react";
 import {
   promotionEmailTemplates,
@@ -61,7 +62,6 @@ import { PromotionRankSelect } from "./PromotionRankSelect";
 const OOC_ITEMS = [
   { id: "f4Rank", label: "Update their rank in the F4 menu", icon: Shield },
   { id: "discordRank", label: "Update their Discord rank, replacing their old one with their new one", icon: MessageSquare },
-  { id: "teamspeakRank", label: "Update their Teamspeak rank, replacing their old one with their new one", icon: Headphones },
 ] as const;
 
 type OocItem = { id: string; label: string; icon: React.ComponentType<{ className?: string }> };
@@ -309,6 +309,18 @@ export function PromotionProcessor() {
     });
     steps.push({ id: "dashboardSheets", label: "Use the 'Promote Employee' section on the Dashboard to update the sheets", copyText: "", icon: Globe, action: { label: "Open Dashboard", url: DASHBOARD_URL } });
     steps.push({ id: "meetingAgenda", label: "Mark the promotion task as Done under the Supervisor Meeting Agenda", copyText: "", icon: CheckSquare });
+    if (newRank === "emt-b") {
+      steps.push({
+        id: "emtRibbon",
+        label: "Award the EMT ribbon to the certified employee",
+        copyText: "",
+        icon: Award,
+        action: {
+          label: "Open Medals & Ribbons",
+          url: "https://gov.eclipse-rp.net/mcp.php?i=221",
+        },
+      });
+    }
     if (newRank === "master-emt") {
       steps.push({ id: "deltaCallsign", label: "Let them pick one of the available DELTA callsigns", copyText: "", icon: Star });
       steps.push({ id: "oneToOneList", label: "Update their listing on the 1:1 list, moving it to the DELTA callsign section", copyText: "", icon: Users });
