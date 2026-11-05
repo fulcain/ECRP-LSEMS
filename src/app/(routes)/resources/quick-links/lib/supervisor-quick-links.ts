@@ -5,8 +5,8 @@ export const supervisorQuickLinks = {
   description: "Supervisor resources",
   links: [
     {
-      name: "Hours Sheet (Supervisors+)",
-      url: "https://docs.google.com/spreadsheets/d/1GxWLb11Txy39o7DKtaAL22hvfgLYi8aIj3rCgHL-WGs/edit?gid=762392556#gid=762392556",
+      name: "Supervisor Center",
+      url: "https://gov.eclipse-rp.net/viewforum.php?f=1554",
     },
     {
       name: "Personnel Files (Supervisors+)",
@@ -16,5 +16,44 @@ export const supervisorQuickLinks = {
       name: "Supervisor Handbook (Supervisors+)",
       url: "https://gov.eclipse-rp.net/viewtopic.php?t=216104",
     },
+    {
+      name: "Divisional Personnel Files",
+      url: "https://gov.eclipse-rp.net/viewforum.php?f=4155",
+	},
+    {
+      name: "Leadership Inbox",
+      url: "https://gov.eclipse-rp.net/viewforum.php?f=2424",
+	},
+    {
+      name: "Leadership Inbox - Archive",
+      url: "https://gov.eclipse-rp.net/viewforum.php?f=3146",
+	},
+
+    {
+      name: "Supervisor Discussion Board",
+      url: "https://gov.eclipse-rp.net/viewforum.php?f=1933",
+	},
+    {
+      name: "Weekly Missed Hours",
+      url: "https://gov.eclipse-rp.net/viewtopic.php?t=226630",
+	},
+    {
+      name: "Weekly Missed Hours",
+      url: "https://gov.eclipse-rp.net/viewtopic.php?t=226630",
+	},
+
+    {
+      name: "List of External Firearm Approvals Missed Hours",
+      url: "https://gov.eclipse-rp.net/viewtopic.php?t=147066",
+	},
+    {
+      name: "Supervisor Meeting Agenda",
+      url: "https://gov.eclipse-rp.net/viewforum.php?f=1932",
+	},
+    {
+      name: "Meeting Schedules",
+      url: "https://gov.eclipse-rp.net/viewtopic.php?t=227769",
+	},
+	  
   ],
 } as const;

@@ -46,7 +46,7 @@ export const General = {
       },
       {
         name: "Ride Along Program Formats",
-        url: "https://gov.eclipse-rp.net/viewtopic.php?t=99538",
+        url: "/divisions/ftd/paperwork?tab=civilianRideAlong",
       },
       {
         name: "General Handbook",
@@ -65,23 +65,13 @@ export const General = {
       {
         name: "Financial Requests",
         url: "https://gov.eclipse-rp.net/viewforum.php?f=2230",
-      },
+	  },
+
       {
-        name: "Hours Sheet (Supervisors+)",
-        url: "https://docs.google.com/spreadsheets/d/1GxWLb11Txy39o7DKtaAL22hvfgLYi8aIj3rCgHL-WGs/edit?gid=762392556#gid=762392556",
-      },
-      {
-        name: "Divisional Personnel Files",
-        url: "https://gov.eclipse-rp.net/viewforum.php?f=4155",
-      },
-      {
-        name: "Personnel Files (Supervisors+)",
-        url: "https://gov.eclipse-rp.net/viewforum.php?f=605",
-      },
-      {
-        name: "Supervisor Handbook (Supervisors+)",
-        url: "https://gov.eclipse-rp.net/viewtopic.php?t=216104",
-      },
+        name: "Divisional Command | Meeting Agenda (Divisional Command+)",
+        url: "https://gov.eclipse-rp.net/viewforum.php?f=1983",
+	  },
+		
     ],
   },
 };
