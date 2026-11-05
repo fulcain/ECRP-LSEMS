@@ -64,6 +64,8 @@ export type NoteBlock =
   | { kind: "image"; src: string }
   | { kind: "spacer" };
 
+export type PhaseNoteOutcome = "passed" | "failed";
+
 /* ---- BBCode -> blocks ---- */
 
 type Token =
@@ -710,9 +712,78 @@ export function listImbalance(source: string): ListImbalance | null {
   return { opens, closes, unclosed: open, stray, suspects };
 }
 
+/** Keep outcome-specific steps and hide the oath from a failed certification. */
+function blocksForOutcome(
+  blocks: readonly NoteBlock[],
+  outcome?: PhaseNoteOutcome,
+): NoteBlock[] {
+  if (!outcome) return [...blocks];
+
+  return blocks.flatMap((block): NoteBlock[] => {
+    if (
+      block.kind === "spoiler" &&
+      outcome === "failed" &&
+      block.title?.toLowerCase().includes("hippocratic")
+    ) {
+      return [];
+    }
+
+    if (block.kind === "spoiler") {
+      return [{ ...block, blocks: blocksForOutcome(block.blocks, outcome) }];
+    }
+    if (block.kind !== "list") return [block];
+
+    const failedProcessingGroup =
+      outcome === "failed" &&
+      block.items.some(
+        (item) =>
+          /^Processing a Failed Certification$/i.test(
+            collapse(runsToText(item.lead)),
+          ),
+      );
+    const sourceItems = failedProcessingGroup
+      ? block.items.filter((item) =>
+          /^Processing a Failed Certification$/i.test(
+            collapse(runsToText(item.lead)),
+          ),
+        )
+      : block.items;
+    const items = sourceItems.flatMap((item): NoteItem[] => {
+      const lead = collapse(runsToText(item.lead));
+      const processing = lead.match(/^Processing a (Passed|Failed) Certification$/i);
+      if (
+        processing &&
+        processing[1].toLowerCase() !== outcome
+      ) {
+        return [];
+      }
+      if (outcome === "failed" && /Hippocratic Oath/i.test(lead)) {
+        return [];
+      }
+      return [{ ...item, blocks: blocksForOutcome(item.blocks, outcome) }];
+    });
+
+    return [
+      {
+        ...block,
+        label: failedProcessingGroup ? null : block.label,
+        before: failedProcessingGroup
+          ? []
+          : blocksForOutcome(block.before, outcome),
+        items,
+      },
+    ];
+  });
+}
+
 /** Every step a section says, as plain text - what a Guide has to carry. */
-export function ftpSteps(source: string): string[] {
-  return blocksToText(parseFtpSection(source)).filter(
+export function ftpSteps(
+  source: string,
+  outcome?: PhaseNoteOutcome,
+): string[] {
+  return blocksToText(
+    blocksForOutcome(parseFtpSection(source), outcome),
+  ).filter(
     (step) => step.length >= 12,
   );
 }
@@ -722,30 +793,22 @@ export function ftpSteps(source: string): string[] {
 const PRIMITIVES =
   "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/primitives";
 
-/**
- * The oath is said a line at a time, so it is carried a line at a time: split at
- * the sentence ends, then wrap any sentence that runs past ~100 characters at a
- * natural pause, so every line is one breath of the covenant.
- */
+const MAX_OATH_LINE_LENGTH = 200;
+
+/** Fill each oath line up to the cap, breaking only between words. */
 function splitOathLines(text: string): string[] {
-  const sentences = text.match(/[^.?!]+[.?!]*\s*/g) ?? [text];
+  const words = text.trim().split(/\s+/).filter(Boolean);
   const lines: string[] = [];
-  for (const sentence of sentences.map((s) => s.trim()).filter(Boolean)) {
-    if (sentence.length <= 100) {
-      lines.push(sentence);
-      continue;
+  let current = "";
+  for (const word of words) {
+    if (current && `${current} ${word}`.length > MAX_OATH_LINE_LENGTH) {
+      lines.push(current);
+      current = word;
+    } else {
+      current = current ? `${current} ${word}` : word;
     }
-    let current = "";
-    for (const word of sentence.split(" ")) {
-      if (current && `${current} ${word}`.length > 100) {
-        lines.push(current);
-        current = word;
-      } else {
-        current = current ? `${current} ${word}` : word;
-      }
-    }
-    if (current) lines.push(current);
   }
+  if (current) lines.push(current);
   return lines;
 }
 
@@ -981,21 +1044,23 @@ function emitBlock(block: NoteBlock, emit: Emit, indent: string): string[] {
       // reinstatement profile nests the oath's sentences inside a second
       // spoiler, so the split descends into it rather than reading one block.
       const isOath = block.title?.toLowerCase().includes("hippocratic") ?? false;
-      const oathLines = (blocks: typeof block.blocks): void => {
+      const oathText: string[] = [];
+      const collectOathText = (blocks: typeof block.blocks): void => {
         for (const inner of blocks) {
           if (inner.kind === "spoiler") {
-            oathLines(inner.blocks);
+            collectOathText(inner.blocks);
             continue;
           }
           if (inner.kind !== "paragraph" && inner.kind !== "center") continue;
-          emit.used.add("OathLine");
-          for (const line of splitOathLines(runsToText(inner.runs))) {
-            body.push(`${indent}  <OathLine>${jsxText(line)}</OathLine>`);
-          }
+          oathText.push(runsToText(inner.runs));
         }
       };
       if (isOath) {
-        oathLines(block.blocks);
+        collectOathText(block.blocks);
+        emit.used.add("OathLine");
+        for (const line of splitOathLines(oathText.join(" "))) {
+          body.push(`${indent}  <OathLine>${jsxText(line)}</OathLine>`);
+        }
       } else {
         for (const inner of block.blocks) {
           body.push(...emitBlock(inner, emit, `${indent}  `));
@@ -1050,10 +1115,12 @@ export function renderPhaseGuide(input: {
   file: string;
   /** The component the registry imports. */
   component: string;
+  /** Which certification result this view belongs to, when applicable. */
+  outcome?: PhaseNoteOutcome;
   /** The section's BBCode, exactly as the FTP holds it. */
   ftp: string;
 }): string {
-  const parsed = parseFtpSection(input.ftp);
+  const parsed = blocksForOutcome(parseFtpSection(input.ftp), input.outcome);
   // Every section wraps its own body in one `[spoiler=Phase …]` - that is the
   // section, not a collapse inside it, so the Guide draws what is in it.
   const blocks =
@@ -1247,7 +1314,11 @@ function carries(candidate: string, needle: readonly string[]): number {
  * said: the profile saying panics do show in PD/SD dispatch while the Guide still
  * says they do not is exactly the drift this is for.
  */
-export function guideCoverage(ftp: string, guideSource: string): GuideCoverage {
+export function guideCoverage(
+  ftp: string,
+  guideSource: string,
+  outcome?: PhaseNoteOutcome,
+): GuideCoverage {
   const lines = guideLines(guideSource);
   // A step can be written across two lines of a component, so a step is looked
   // for in one line and in each pair of neighbours, and the best one wins.
@@ -1255,7 +1326,7 @@ export function guideCoverage(ftp: string, guideSource: string): GuideCoverage {
     index + 1 < lines.length ? [line, `${line} ${lines[index + 1]}`] : [line],
   );
 
-  const steps = ftpSteps(ftp).map((step): StepFinding => {
+  const steps = ftpSteps(ftp, outcome).map((step): StepFinding => {
     const needle = words(step);
     if (needle.length === 0) {
       return { step, state: "same", covered: 1, closest: null };

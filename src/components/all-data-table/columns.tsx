@@ -1,8 +1,13 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, Pencil, Trash2 } from "lucide-react";
+import { ArrowUpDown, ChevronDown, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +30,8 @@ export interface AllDataColumnOptions {
   onDelete?: (row: TableDataType) => void;
   /** When true, the Actions column is appended; otherwise hidden. */
   canEdit: boolean;
+  /** Complete All Data history grouped by instructor name. */
+  sessionsByInstructor: ReadonlyMap<string, TableDataType[]>;
 }
 
 /**
@@ -71,6 +78,73 @@ export function createAllDataColumns(
     {
       accessorKey: "Your Name",
       header: "Instructor's Name",
+      cell: ({ row }) => {
+        const instructorName = String(row.original["Your Name"] ?? "").trim();
+        if (!instructorName) return "—";
+
+        const sessions = options.sessionsByInstructor.get(
+          instructorName.toLowerCase(),
+        ) ?? [];
+        const visibleSessions = sessions.filter(
+          (session) =>
+            String(session["EMR's Name"] ?? "").trim() ||
+            String(session["Session Conducted"] ?? "").trim(),
+        );
+
+        return (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="link"
+                className="h-auto p-0 text-left font-normal"
+                aria-label={`View sessions conducted by ${instructorName}`}
+              >
+                {instructorName}
+                <ChevronDown aria-hidden="true" className="ml-1 size-3.5" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="start"
+              className="max-h-96 w-[min(24rem,calc(100vw-2rem))] overflow-y-auto p-0"
+            >
+              <div className="border-b border-border px-4 py-3">
+                <p className="text-sm font-semibold">{instructorName}</p>
+                <p className="text-xs text-muted-foreground">
+                  Sessions conducted
+                </p>
+              </div>
+              {visibleSessions.length > 0 ? (
+                <div className="divide-y divide-border">
+                  {visibleSessions.map((session, index) => (
+                    <div
+                      key={`${String(session["EMR's Name"] ?? "")}-${index}`}
+                      className="space-y-1 px-4 py-3"
+                    >
+                      <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                        EMR&apos;s Name
+                      </p>
+                      <p className="text-sm font-medium">
+                        {String(session["EMR's Name"] ?? "").trim() || "—"}
+                      </p>
+                      <p className="pt-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                        Session Conducted
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {String(session["Session Conducted"] ?? "").trim() ||
+                          "—"}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="px-4 py-3 text-sm text-muted-foreground">
+                  No session records found.
+                </p>
+              )}
+            </PopoverContent>
+          </Popover>
+        );
+      },
     },
     {
       accessorKey: "EMR's Name",

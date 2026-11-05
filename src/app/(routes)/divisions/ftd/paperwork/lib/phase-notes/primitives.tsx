@@ -338,26 +338,26 @@ export function WarningCallout({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** One line of the Hippocratic Oath: shown as written, copied on its own. */
+/** One chunk of the Hippocratic Oath: shown as written, copied on its own. */
 export function OathLine({ children }: { children: React.ReactNode }) {
   const handleCopy = async () => {
     await navigator.clipboard.writeText(getText(children));
     toast.success("Copied!");
   };
   return (
-    <div className="group flex items-start gap-2">
-      <p className="min-w-0 flex-1 text-sm italic leading-relaxed text-foreground/90">
+    <div className="group max-w-full">
+      <p className="max-w-[85ch] text-sm italic leading-relaxed text-foreground/90">
         {children}
+        <button
+          type="button"
+          onClick={handleCopy}
+          title="Copy line"
+          aria-label="Copy line"
+          className="ml-1 inline-flex shrink-0 align-middle rounded p-1 text-muted-foreground/50 transition-colors hover:bg-emerald-700/10 hover:text-emerald-700 dark:hover:bg-emerald-400/10 dark:hover:text-emerald-300"
+        >
+          <Copy className="h-3.5 w-3.5" />
+        </button>
       </p>
-      <button
-        type="button"
-        onClick={handleCopy}
-        title="Copy line"
-        aria-label="Copy line"
-        className="shrink-0 rounded p-1 text-muted-foreground/50 transition-colors hover:bg-emerald-700/10 hover:text-emerald-700 dark:hover:bg-emerald-400/10 dark:hover:text-emerald-300"
-      >
-        <Copy className="h-3.5 w-3.5" />
-      </button>
     </div>
   );
 }

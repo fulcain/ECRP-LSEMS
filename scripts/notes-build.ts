@@ -25,6 +25,7 @@ import path from "node:path";
 import { FTP_SECTIONS } from "@/app/constants/divisions/ftd/ftp";
 import { allPhaseNotePlacements } from "@/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/sections";
 import {
+  guidePlainText,
   guideCoverage,
   ftpSteps,
   listImbalance,
@@ -83,7 +84,7 @@ if (WRITE) {
       continue;
     }
     const FTP = read(section.file) ?? "";
-    if (ftpSteps(FTP).length === 0) {
+    if (ftpSteps(FTP, placement.outcome).length === 0) {
       inStep += 1;
       console.log(
         `• ${label} - ${section.file} carries no steps of its own, so this view is the trainers' own writing`,
@@ -93,11 +94,49 @@ if (WRITE) {
 
     // Read against the words, not the markup: a Guide is allowed its own layout
     // - it is not allowed to stop saying a step.
-    const coverage = guideCoverage(FTP, read(placement.guide) ?? "");
+    const guide = read(placement.guide) ?? "";
+    const guideText = guidePlainText(guide).toLowerCase();
+    const coverage = guideCoverage(FTP, guide, placement.outcome);
     const behind = coverage.missing.length;
     const imbalance = listImbalance(FTP);
+    const outcomeIssues: string[] = [];
+    if (placement.outcome) {
+      for (const result of ["Passed", "Failed"] as const) {
+        const heading = `Processing a ${result} Certification`;
+        const inSource = FTP.toLowerCase().includes(heading.toLowerCase());
+        const inGuide = guideText.includes(heading.toLowerCase());
+        const shouldAppear =
+          inSource && placement.outcome === result.toLowerCase();
+        if (inGuide !== shouldAppear) {
+          outcomeIssues.push(
+            `${heading} should ${shouldAppear ? "appear" : "be omitted"}`,
+          );
+        }
+      }
+      const sourceHasOath = /hippocratic/i.test(FTP);
+      const guideHasOath = /hippocratic/i.test(guideText);
+      if (guideHasOath !== (sourceHasOath && placement.outcome === "passed")) {
+        outcomeIssues.push(
+          `the Hippocratic Oath should ${sourceHasOath && placement.outcome === "passed" ? "appear" : "be omitted"}`,
+        );
+      }
+      if (
+        placement.outcome === "failed" &&
+        FTP.toLowerCase().includes("processing a failed certification")
+      ) {
+        for (const heading of [
+          "Beginning",
+          "During the Certification",
+          "Ending the Certification",
+        ]) {
+          if (guideText.includes(heading.toLowerCase())) {
+            outcomeIssues.push(`${heading} should be omitted from the failed view`);
+          }
+        }
+      }
+    }
 
-    if (behind === 0 && coverage.changed.length === 0) {
+    if (behind === 0 && coverage.changed.length === 0 && outcomeIssues.length === 0) {
       inStep += 1;
       console.log(
         `✓ ${label} - ${coverage.steps.length} steps, all of them as ${section.file} says`,
@@ -105,13 +144,16 @@ if (WRITE) {
       continue;
     }
 
-    unsaid += behind;
+    unsaid += behind + outcomeIssues.length;
     console.log(
       `${behind > 0 ? "✗" : "•"} ${label} - ${coverage.steps.length} steps in ${section.file}`,
     );
     console.log(
       `    guide   ${coverage.same} carried, ${coverage.changed.length} in its own words, ${coverage.missing.length} not said at all`,
     );
+    for (const issue of outcomeIssues) {
+      console.log(`    outcome ${issue}`);
+    }
     if (imbalance) {
       console.log(
         `    note   ${imbalance.opens} lists opened and ${imbalance.closes} closed - read as one category per name${

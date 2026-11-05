@@ -648,42 +648,98 @@ const pasted: string[] = notesViews
   .map((file) => `${file} carries FTP markup`);
 expect("and no Guide is the profile pasted in", pasted, []);
 
-/* ---- the Hippocratic Oath is handed over a line at a time, always ---- */
-// The oath is read out loud one sentence at a time, so each cert Guide carries
-// it as one copyable line per sentence - no banner or sign-off image in the way.
-// This is the builder's behaviour, not a one-off edit: if the builder ever stops
-// splitting the oath into `OathLine`s, or a Guide slips back to carrying it as
-// one wall of text with its images, these fail.
+/* ---- the Hippocratic Oath is handed over in copyable chunks capped at 200 characters ---- */
+// This is the builder's behaviour, not a one-off edit: no copied chunk exceeds
+// the cap, and its button follows the text instead of sitting at the far edge.
 const buildSource = readFileSync(
   path.join(ROOT, "src/lib/phase-notes-build.ts"),
   "utf8",
 );
 expect(
-  "the builder hands the oath over a line at a time",
+  "the builder caps each oath line at 200 characters",
   /hippocratic/i.test(buildSource) &&
     /OathLine/.test(buildSource) &&
-    /splitOathLines/.test(buildSource),
+    /splitOathLines/.test(buildSource) &&
+    /MAX_OATH_LINE_LENGTH\s*=\s*200/.test(buildSource),
   true,
 );
 const oathGuides = allPhaseNotePlacements()
   .map((placement) => placement.guide)
   .filter((file) => /hippocratic/i.test(read(file) ?? ""));
+const primitiveSource = readFileSync(
+  path.join(ROOT, "src/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/primitives.tsx"),
+  "utf8",
+);
+const oathPrimitiveStart = primitiveSource.indexOf("export function OathLine");
+const oathPrimitiveEnd = primitiveSource.indexOf("\nexport function CriticalCallout", oathPrimitiveStart);
+const oathPrimitive = primitiveSource.slice(oathPrimitiveStart, oathPrimitiveEnd);
 expect(
-  "and every oath Guide draws each line with its own copy",
+  "each oath chunk copies its text with a button beside it",
+  /navigator\.clipboard\.writeText\(getText\(children\)\)/.test(oathPrimitive) &&
+    /\{children\}[\s\S]*<button/.test(oathPrimitive) &&
+    /ml-1 inline-flex/.test(oathPrimitive),
+  true,
+);
+expect(
+  "and every oath Guide draws balanced, copyable chunks",
   oathGuides.length > 0 &&
     oathGuides.every((file) => {
       const source = read(file) ?? "";
-      const oathLines = (source.match(/<OathLine>/g) ?? []).length;
-      // The covenant is a dozen-odd sentences; anything fewer means the oath
-      // is being carried as one block again.
-      return oathLines >= 10 && !/i\.ibb\.co/.test(source);
+      const oathLines = [
+        ...source.matchAll(/<OathLine>([\s\S]*?)<\/OathLine>/g),
+      ].map((match) =>
+        match[1]
+          .replace(/&apos;/g, "'")
+          .replace(/&quot;/g, '"')
+          .replace(/&amp;/g, "&")
+          .replace(/&lt;/g, "<")
+          .replace(/&gt;/g, ">"),
+      );
+      return (
+        oathLines.length > 1 &&
+        oathLines.every((line) => line.length <= 200) &&
+        !/i\.ibb\.co/.test(source)
+      );
     }),
   true,
 );
 expect(
-  "and the oath is the only place a Guide needs line-splitting",
-  (read("src/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/normal/certPassed.tsx") ?? "")
-    .match(/<OathLine>/g)?.length === (read("src/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/normal/certFailed.tsx") ?? "").match(/<OathLine>/g)?.length,
+  "the passed guide keeps passed processing and the failed guide contains only failed processing",
+  (() => {
+    const passed = read("src/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/normal/certPassed.tsx") ?? "";
+    const failed = read("src/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/normal/certFailed.tsx") ?? "";
+    return (
+      passed.includes("Processing a Passed Certification") &&
+      !passed.includes("Processing a Failed Certification") &&
+      failed.includes("Processing a Failed Certification") &&
+      [
+        "Beginning",
+        "Request Call Priority",
+        "During the Certification",
+        "Ending the Certification",
+        "Processing a Passed Certification",
+        "Hippocratic Oath",
+      ].every((heading) => !failed.includes(heading))
+    );
+  })(),
+  true,
+);
+expect(
+  "failed certification guides omit the oath while passed guides keep it",
+  (() => {
+    const passedFiles = [
+      "src/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/normal/certPassed.tsx",
+      "src/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/reinstatement/reinstatementCertPassed.tsx",
+    ];
+    const failedFiles = [
+      "src/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/normal/certFailed.tsx",
+      "src/app/(routes)/divisions/ftd/paperwork/lib/phase-notes/reinstatement/reinstatementCertFailed.tsx",
+    ];
+    return (
+      passedFiles.every((file) => /<OathLine>/.test(read(file) ?? "")) &&
+      failedFiles.every((file) => !/OathLine|Hippocratic/i.test(read(file) ?? ""))
+    );
+  })(),
   true,
 );
 
@@ -1055,18 +1111,19 @@ expect(
   "and converting a section that is already in this format changes nothing",
   FTP_SECTIONS.filter((section) => {
     const content = read(section.file) ?? "";
-    const converted = convertFtpBbcode(content);
-    return converted.text !== content || converted.conversions.length > 0;
+    const normalized = content.replace(/\r\n|\r/g, "\n");
+    const converted = convertFtpBbcode(normalized);
+    return converted.text !== normalized || converted.conversions.length > 0;
   }).map((section) => section.id),
   [],
 );
 
 /** A profile as phpBB and a rendered page would hand it back, reversibly. */
 function asPasted(document: string): string {
-  return document
+  return document.replace(/\r\n|\r/g, "\n")
     .replace(/\[spoiler=([^\]]+)\]/g, '[spoiler="$1"]')
     .replace(/\[\/?b\]/g, (tag) => `${tag.slice(0, -1)}:1a2b3c4d]`)
-    .replace(/^\[\*\](.*)$/gm, "[*]$1[/*]")
+    .replace(/^\[\*\]([^\r\n]*)\r?$/gm, "[*]$1[/*]")
     .replace(/\n(\[lsemssubtitle\])/g, "<br>$1")
     .replace(/] /, "]&nbsp;")
     .replace(/\n/g, "\r\n");

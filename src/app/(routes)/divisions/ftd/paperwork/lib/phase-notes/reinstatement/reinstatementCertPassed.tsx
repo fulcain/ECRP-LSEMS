@@ -59,26 +59,14 @@ export function ReinstatementCertPassedNotes() {
         <Item><BbLink href="https://gov.eclipse-rp.net/viewtopic.php?t=74487">Promotion Checklist (Supervisor Handbook Section 5</BbLink></Item>
       </Category>
       <Spoiler title="Hippocratic Oath">
-        <OathLine>Before handing the EMR their EMT badge, have them swear the Hippocratic Oath found below.</OathLine>
-        <OathLine>I, FName LName, swear to fulfill, to the best of my ability and judgment, this covenant: I will</OathLine>
-        <OathLine>respect the hard-won scientific gains of those who walked the steps I walk now, and gladly share</OathLine>
-        <OathLine>such knowledge as is mine with those who are to follow.</OathLine>
-        <OathLine>I will apply, for the benefit of the sick, all measures which are required to better their</OathLine>
-        <OathLine>condition.</OathLine>
-        <OathLine>I will remember that there is art to medicine as well as science, and that warmth, sympathy, and</OathLine>
-        <OathLine>understanding may outweigh the surgeon&apos;s knife or the chemist&apos;s drug.</OathLine>
-        <OathLine>I will never be ashamed to say &quot;I know not,&quot; nor will I fail to call in my colleagues when the</OathLine>
-        <OathLine>skills of another are needed for a patient&apos;s recovery.</OathLine>
-        <OathLine>I will respect the privacy of my patients, for their problems are not disclosed to me that the world</OathLine>
-        <OathLine>may know.</OathLine>
-        <OathLine>I will remember that I do not treat a chart or simulation, but a sick or injured human being, whose</OathLine>
-        <OathLine>illness may affect the person&apos;s family and economic stability.</OathLine>
-        <OathLine>I will prevent disease whenever I can, for prevention is preferable to cure.</OathLine>
-        <OathLine>I will remember that I remain a member of society, with special obligations to all my fellow human</OathLine>
-        <OathLine>beings, those sound of mind and body as well as the infirm.</OathLine>
-        <OathLine>If I do not violate this oath, may I enjoy life, respected while I live and remembered with</OathLine>
-        <OathLine>affection thereafter.</OathLine>
-        <OathLine>If I do not violate this oath, may I long experience the joy of healing those who seek my help.</OathLine>
+        <OathLine>Before handing the EMR their EMT badge, have them swear the Hippocratic Oath found below. I, FName LName, swear to fulfill, to the best of my ability and judgment, this covenant: I will respect the</OathLine>
+        <OathLine>hard-won scientific gains of those who walked the steps I walk now, and gladly share such knowledge as is mine with those who are to follow. I will apply, for the benefit of the sick, all measures</OathLine>
+        <OathLine>which are required to better their condition. I will remember that there is art to medicine as well as science, and that warmth, sympathy, and understanding may outweigh the surgeon&apos;s knife or the</OathLine>
+        <OathLine>chemist&apos;s drug. I will never be ashamed to say &quot;I know not,&quot; nor will I fail to call in my colleagues when the skills of another are needed for a patient&apos;s recovery. I will respect the privacy of my</OathLine>
+        <OathLine>patients, for their problems are not disclosed to me that the world may know. I will remember that I do not treat a chart or simulation, but a sick or injured human being, whose illness may affect the</OathLine>
+        <OathLine>person&apos;s family and economic stability. I will prevent disease whenever I can, for prevention is preferable to cure. I will remember that I remain a member of society, with special obligations to all</OathLine>
+        <OathLine>my fellow human beings, those sound of mind and body as well as the infirm. If I do not violate this oath, may I enjoy life, respected while I live and remembered with affection thereafter. If I do</OathLine>
+        <OathLine>not violate this oath, may I long experience the joy of healing those who seek my help.</OathLine>
       </Spoiler>
       <Spoiler title="EMT E-mails">
         <ParagraphList>

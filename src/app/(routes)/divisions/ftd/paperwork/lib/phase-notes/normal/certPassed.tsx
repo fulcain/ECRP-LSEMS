@@ -93,42 +93,17 @@ export function CertPassedNotes() {
             <Item>Post your FT Session Report.</Item>
           </BulletList>
         </Item>
-        <Item>
-          <Bold>Processing a Failed Certification</Bold>
-          <BulletList>
-            <Item>
-              Minimum of <Bold>2 Mandatory Ride-alongs</Bold> must be assigned, in addition to:
-              <BulletList>
-                <Item>Additional ride-alongs if you deemed necessary</Item>
-              </BulletList>
-            </Item>
-            <Item>Update the EMR Profile title with the assigned ride-alongs</Item>
-            <Item>Post your FT Session Report</Item>
-            <Item>Reach out to the Head of Field Training about the failed certification, email preferably. <OOC>Tagging <Em>@Head of Field Training</Em> in <Bold>discord #notifications</Bold>, linking to the paperwork (once completed), is also acceptable!</OOC></Item>
-          </BulletList>
-        </Item>
       </NumberedList>
       <Divider />
       <Spoiler title="Hippocratic Oath">
-        <OathLine>I, FName LName, swear to fulfill, to the best of my ability and judgment, this covenant: I will</OathLine>
-        <OathLine>respect the hard-won scientific gains of those who walked the steps I walk now, and gladly share</OathLine>
-        <OathLine>such knowledge as is mine with those who are to follow.</OathLine>
-        <OathLine>I will apply, for the benefit of the sick, all measures which are required to better their</OathLine>
-        <OathLine>condition.</OathLine>
-        <OathLine>I will remember that there is an art to medicine as well as science, and that warmth, sympathy, and</OathLine>
-        <OathLine>understanding may outweigh the surgeon&apos;s knife or the chemist&apos;s drug.</OathLine>
-        <OathLine>I will never be ashamed to say &quot;I know not,&quot; nor will I fail to call in my colleagues when the</OathLine>
-        <OathLine>skills of another are needed for a patient&apos;s recovery.</OathLine>
-        <OathLine>I will respect the privacy of my patients, for their problems are not disclosed to me that the world</OathLine>
-        <OathLine>may know.</OathLine>
-        <OathLine>I will remember that I do not treat a chart or simulation, but a sick or injured human being, whose</OathLine>
-        <OathLine>illness may affect the person&apos;s family and economic stability.</OathLine>
-        <OathLine>I will prevent disease whenever I can, for prevention is preferable to cure.</OathLine>
-        <OathLine>I will remember that I remain a member of society, with special obligations to all my fellow human</OathLine>
-        <OathLine>beings, those sound of mind and body as well as the infirm.</OathLine>
-        <OathLine>If I do not violate this oath, may I enjoy life, respected while I live and remembered with</OathLine>
-        <OathLine>affection thereafter.</OathLine>
-        <OathLine>If I do not violate this oath, may I long experience the joy of healing those who seek my help.</OathLine>
+        <OathLine>I, FName LName, swear to fulfill, to the best of my ability and judgment, this covenant: I will respect the hard-won scientific gains of those who walked the steps I walk now, and gladly share such</OathLine>
+        <OathLine>knowledge as is mine with those who are to follow. I will apply, for the benefit of the sick, all measures which are required to better their condition. I will remember that there is an art to</OathLine>
+        <OathLine>medicine as well as science, and that warmth, sympathy, and understanding may outweigh the surgeon&apos;s knife or the chemist&apos;s drug. I will never be ashamed to say &quot;I know not,&quot; nor will I fail to call</OathLine>
+        <OathLine>in my colleagues when the skills of another are needed for a patient&apos;s recovery. I will respect the privacy of my patients, for their problems are not disclosed to me that the world may know. I will</OathLine>
+        <OathLine>remember that I do not treat a chart or simulation, but a sick or injured human being, whose illness may affect the person&apos;s family and economic stability. I will prevent disease whenever I can, for</OathLine>
+        <OathLine>prevention is preferable to cure. I will remember that I remain a member of society, with special obligations to all my fellow human beings, those sound of mind and body as well as the infirm. If I do</OathLine>
+        <OathLine>not violate this oath, may I enjoy life, respected while I live and remembered with affection thereafter. If I do not violate this oath, may I long experience the joy of healing those who seek my</OathLine>
+        <OathLine>help.</OathLine>
       </Spoiler>
     </div>
   );

@@ -1,6 +1,7 @@
 import type { FtpFormatKey } from "@/app/constants/divisions/ftd/ftp";
 import type { PhaseKey } from "@/app/(routes)/divisions/ftd/paperwork/lib/paperworkConfig";
 import type { ReinstatementPhaseKey } from "@/app/(routes)/divisions/ftd/paperwork/lib/reinstatementConfig";
+import type { PhaseNoteOutcome } from "@/lib/phase-notes-build";
 
 /**
  * Which FTP section each phase's notes are built from, and where they go.
@@ -17,6 +18,8 @@ export type PhaseNotePlacement = {
   guide: string;
   /** The component the registry renders. */
   component: string;
+  /** A certification result narrows shared notes to the relevant outcome. */
+  outcome?: PhaseNoteOutcome;
 };
 
 const NOTES_DIR =
@@ -51,12 +54,14 @@ export const NORMAL_NOTE_PLACEMENTS: Record<PhaseKey, PhaseNotePlacement> = {
   certPassed: {
     section: "certification",
     guide: `${NOTES_DIR}/normal/certPassed.tsx`,
-    component: "CertPassedNotes"
+    component: "CertPassedNotes",
+    outcome: "passed",
   },
   certFailed: {
     section: "certification",
     guide: `${NOTES_DIR}/normal/certFailed.tsx`,
-    component: "CertFailedNotes"
+    component: "CertFailedNotes",
+    outcome: "failed",
   },
   rideAlong: {
     section: "ride-along-paperwork",
@@ -82,12 +87,14 @@ export const REINSTATEMENT_NOTE_PLACEMENTS: Record<
   reinstatementCertPassed: {
     section: "reinstatement-certification",
     guide: `${NOTES_DIR}/reinstatement/reinstatementCertPassed.tsx`,
-    component: "ReinstatementCertPassedNotes"
+    component: "ReinstatementCertPassedNotes",
+    outcome: "passed",
   },
   reinstatementCertFailed: {
     section: "reinstatement-certification",
     guide: `${NOTES_DIR}/reinstatement/reinstatementCertFailed.tsx`,
-    component: "ReinstatementCertFailedNotes"
+    component: "ReinstatementCertFailedNotes",
+    outcome: "failed",
   },
   reinstatementRideAlong: {
     section: "ride-along-paperwork",

@@ -85,7 +85,7 @@ export async function planPhaseNotes(
     const ftp = await readFile(path.join(root, section.file), "utf8").catch(
       () => "",
     );
-    if (ftpSteps(ftp).length === 0) {
+    if (ftpSteps(ftp, placement.outcome).length === 0) {
       skipped.push({
         component: placement.component,
         section: section.id,
@@ -101,6 +101,7 @@ export async function planPhaseNotes(
         sectionId: section.id,
         file: section.file,
         component: placement.component,
+        outcome: placement.outcome,
         ftp,
       }),
     });
