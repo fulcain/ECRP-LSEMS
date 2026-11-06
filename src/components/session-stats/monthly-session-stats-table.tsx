@@ -31,7 +31,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { monthlySessionStatsColumns } from "@/components/session-stats/columns";
+import {
+  monthlySessionStatsColumns,
+  type MonthlySessionDetail,
+  type MonthlySessionStatsRow,
+} from "@/components/session-stats/columns";
 import { fetchAllData } from "@/components/all-data-table/fetchAllData";
 import { TableDataType } from "@/lib/types";
 
@@ -104,7 +108,10 @@ export function MonthlySessionStatsTable() {
   const monthData = useMemo(() => {
     if (!data?.length) return [];
 
-    const counts: Record<string, number> = {};
+    const sessionsByInstructor = new Map<
+      string,
+      { name: string; sessions: MonthlySessionDetail[] }
+    >();
 
     data.forEach((row) => {
       const dateStr = row["Timestamp"] || row["Date"] || row["date"];
@@ -117,16 +124,32 @@ export function MonthlySessionStatsTable() {
       const year = d.getFullYear().toString();
 
       if (month === selectedMonth && year === selectedYear && name) {
-        counts[name] = (counts[name] || 0) + 1;
+        const key = name.toLocaleLowerCase("en-US");
+        const instructor = sessionsByInstructor.get(key) ?? {
+          name,
+          sessions: [],
+        };
+        instructor.sessions.push({
+          emrName: String(row["EMR's Name"] ?? "").trim(),
+          sessionConducted: String(row["Session Conducted"] ?? "").trim(),
+        });
+        sessionsByInstructor.set(key, instructor);
       }
     });
 
-    const result = Object.entries(counts).map(([name, count]) => ({
-      "Your Name": name,
-      Sessions: count.toString(),
-    }));
+    const result: MonthlySessionStatsRow[] = Array.from(
+      sessionsByInstructor.values(),
+      ({ name, sessions }) => ({
+        "Your Name": name,
+        Sessions: sessions.length.toString(),
+        sessionDetails: sessions,
+      }),
+    );
 
-    const total = Object.values(counts).reduce((sum, n) => sum + n, 0);
+    const total = result.reduce(
+      (sum, instructor) => sum + instructor.sessionDetails.length,
+      0,
+    );
     setTotalMonthSessions(total);
 
     return result;
@@ -140,7 +163,7 @@ export function MonthlySessionStatsTable() {
 
   const table = useReactTable({
     data: tableRows,
-    columns: monthlySessionStatsColumns(),
+    columns: monthlySessionStatsColumns,
     state: { sorting },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),

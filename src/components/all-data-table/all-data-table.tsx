@@ -101,25 +101,10 @@ export function AllDataTable({ canEditFT = false }: { canEditFT?: boolean }) {
     }
   };
 
-  const sessionsByInstructor = useMemo(() => {
-    const grouped = new Map<string, TableDataType[]>();
-    for (const row of data) {
-      const instructor = String(row["Your Name"] ?? "").trim();
-      if (!instructor) continue;
-
-      const key = instructor.toLowerCase();
-      const sessions = grouped.get(key) ?? [];
-      sessions.push(row);
-      grouped.set(key, sessions);
-    }
-    return grouped;
-  }, [data]);
-
   const columns: ColumnDef<TableDataType>[] = createAllDataColumns({
     canEdit: canEditFT,
     onEdit: handleEdit,
     onDelete: handleDelete,
-    sessionsByInstructor,
   });
 
   const resync = useCallback(async () => {
