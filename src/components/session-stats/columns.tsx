@@ -70,7 +70,7 @@ export const monthlySessionStatsColumns: ColumnDef<MonthlySessionStatsRow>[] = [
             <div className="border-b border-border px-4 py-3">
               <p className="text-sm font-semibold">{instructorName}</p>
               <p className="text-xs text-muted-foreground">
-                {row.original.Sessions} sessions this month
+                {row.original.Sessions} sessions in the selected period
               </p>
             </div>
             {sessions.length > 0 ? (

@@ -4,7 +4,7 @@ import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { useMedic } from "@/app/context/MedicContext";
 import { EmployeeNameInput } from "@/components/employees/employee-name-input";
 import { DASHBOARD_URL } from "./contract/constants";
-import { govGroupForRank } from "@/app/constants/gov-groups";
+import { govGroupForRank, govGroupUrl } from "@/app/constants/gov-groups";
 import { copyBBCode } from "@/app/helpers/copyBBCode";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
 import { handOffForumPost, pickPostTarget } from "@/app/helpers/forumHandoff";
@@ -47,6 +47,7 @@ import {
   ListChecks,
   Shield,
   Award,
+  UserMinus,
 } from "lucide-react";
 import {
   promotionEmailTemplates,
@@ -291,6 +292,21 @@ export function PromotionProcessor() {
     steps.push({ id: "employeeAdjustments", label: "Post Employee Adjustment under Employee Adjustments", copyText: rankAdjustmentBBCode, titleText: `Rank Adjustment | ${personnelName}`, icon: ClipboardCheck, action: { label: "Copy & Open Employee Adjustment", url: "https://gov.eclipse-rp.net/posting.php?mode=post&f=573" } });
     // The roster entry is one edited post, so this opens that post's editor.
     steps.push({ id: "rosterUpdate", label: "Adjust their rank on the Staff Roster", copyText: "", icon: Users, action: { label: "Open Staff Roster", url: GOV_STAFF_ROSTER_EDIT_URL } });
+    // Leaving EMR is the one move that has to take the old rank group off: the
+    // member would otherwise hold EMR and their new rung at once.
+    const emrGroup = govGroupForRank("emr");
+    if (emrGroup && (isPreviousRankEmr || newRank === "emt-b")) {
+      steps.push({
+        id: "removeEmrGroup",
+        label: `Remove them from the ${emrGroup.label} user group on GOV`,
+        copyText: "",
+        icon: UserMinus,
+        action: {
+          label: "Open EMR Group",
+          url: govGroupUrl(emrGroup),
+        },
+      });
+    }
     // The forum's rank group changes with the promotion, and this page already
     // holds both the name and the rung - so it hands them over rather than
     // sending the supervisor to find the group page themselves.

@@ -124,7 +124,7 @@ export function MonthlySessionStatsTable() {
       const year = d.getFullYear().toString();
 
       if (month === selectedMonth && year === selectedYear && name) {
-        const key = name.toLocaleLowerCase("en-US");
+        const key = name;
         const instructor = sessionsByInstructor.get(key) ?? {
           name,
           sessions: [],
