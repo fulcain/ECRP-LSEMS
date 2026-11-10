@@ -47,6 +47,7 @@ export const ROUTES = {
   },
   management: {
     supervisor: "/management/supervisor",
+    supervisorStp: "/management/supervisor/stp",
     /** The live tab-permission editor - CommandPlusTeam and admins only. */
     access: "/management/access",
     /** Meeting reminders posted to Discord by Command and HQ. */

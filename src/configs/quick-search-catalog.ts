@@ -97,7 +97,7 @@ export const QUICK_SEARCH_CATALOG: readonly QuickSearchDestination[] = [
   ...SUPERVISOR_SEARCH_TABS.map((tab) => ({
     label: tab.label,
     href: supervisorSearchHref(tab.value),
-    route: ROUTES.management.supervisor,
+    route: tab.value === "stp" ? ROUTES.management.supervisorStp : ROUTES.management.supervisor,
     group: "Supervisor",
     keywords: "Management Supervisor Tools",
   })),

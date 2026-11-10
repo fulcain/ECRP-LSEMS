@@ -13,6 +13,15 @@ export type ChangeLogEntry = {
 
 export const changeLog: ChangeLogEntry[] = [
   {
+    date: "Nov 10, 2026",
+    changes: [
+      {
+        type: "feature",
+        description: "Added an STP tab to Supervisor Tools for phase, ride-along, and evaluation paperwork.",
+      },
+    ],
+  },
+  {
     date: "Oct 29, 2026",
     changes: [
       {

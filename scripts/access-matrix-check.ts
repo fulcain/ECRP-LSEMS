@@ -16,6 +16,7 @@
  */
 
 import { FTD_TABS } from "@/configs/ftd-tabs";
+import { SUPERVISOR_SEARCH_TABS, supervisorSearchHref } from "@/configs/supervisor-search-tabs";
 import { headerLinks } from "@/components/layout/header/configs/HeaderLinks";
 import { ROUTES } from "@/configs/routes";
 import {
@@ -103,6 +104,12 @@ const navLabels = new Map<string, string>(
 const tabLabels = new Map<string, string>(
   FTD_TABS.map((tab) => [tab.href, tab.label]),
 );
+for (const tab of SUPERVISOR_SEARCH_TABS) {
+  const href = supervisorSearchHref(tab.value);
+  if (href.startsWith(`${ROUTES.management.supervisor}/`)) {
+    tabLabels.set(href, tab.label);
+  }
+}
 
 // Every page a member can reach must have a row, so a page can't be added to
 // the sidebar or the FTD tab bar yet stay invisible to the editor. This is the

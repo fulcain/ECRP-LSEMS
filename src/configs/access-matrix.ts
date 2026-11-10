@@ -82,6 +82,7 @@ const ROUTE_META: Record<string, { label: string; group: AccessMatrixGroup }> = 
   [ROUTES.resources.report]: { label: "App Bugs and Features", group: "Resources" },
 
   [ROUTES.management.supervisor]: { label: "Supervisor", group: "Management" },
+  [ROUTES.management.supervisorStp]: { label: "STP", group: "Management" },
   [ROUTES.management.access]: {
     label: "Access Manager",
     group: "Management",

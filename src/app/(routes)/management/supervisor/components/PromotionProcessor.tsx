@@ -37,7 +37,6 @@ import {
   Square,
   ExternalLink,
   MessageSquare,
-  Headphones,
   FileText,
   FolderArchive,
   ClipboardCheck,

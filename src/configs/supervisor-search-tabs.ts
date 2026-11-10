@@ -7,8 +7,11 @@ export const SUPERVISOR_SEARCH_TABS = [
   { label: "Contract Signing", value: "contract" },
   { label: "Promotions", value: "promotions" },
   { label: "Resignations", value: "resignations" },
+  { label: "STP", value: "stp" },
+  { label: "Employees", value: "employees" },
 ] as const;
 
 export function supervisorSearchHref(value: (typeof SUPERVISOR_SEARCH_TABS)[number]["value"]): string {
+  if (value === "stp") return ROUTES.management.supervisorStp;
   return `${ROUTES.management.supervisor}?tab=${value}`;
 }

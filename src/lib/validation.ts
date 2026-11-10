@@ -110,7 +110,7 @@ export function validateText(
     required = true,
     max = INPUT_LIMITS.text,
     multiline = false,
-    allowMarkup = false,
+    allowMarkup = true,
   } = options;
   const raw = inputText(value);
   const trimmed = raw.trim();
@@ -147,20 +147,32 @@ export function validateUrl(
   if (trimmed.length > INPUT_LIMITS.url) {
     return fail(`${label} must be ${INPUT_LIMITS.url} characters or fewer.`);
   }
-  if (/\s/.test(trimmed)) {
-    return fail(`${label} must be a single URL with no spaces.`);
+  if (hasControlCharacters(trimmed, false)) {
+    return fail(`${label} contains characters that are not allowed.`);
   }
-
-  let parsed: URL;
-  try {
-    parsed = new URL(trimmed);
-  } catch {
-    return fail(`${label} must be a full URL starting with https://.`);
-  }
-  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
-    return fail(`${label} must start with http:// or https://.`);
-  }
+  // Link fields often feed BBCode templates, where members may enter a
+  // placeholder such as `YourLink` to complete after copying the generated post.
   return VALID;
+}
+
+/** A GOV destination for actions that hand generated content to the forum. */
+export function validateGovUrl(
+  value: unknown,
+  label = "GOV link",
+  options: { required?: boolean } = {},
+): ValidationResult {
+  const basic = validateUrl(value, label, options);
+  if (!basic.ok || isBlank(value)) return basic;
+
+  try {
+    const parsed = new URL(inputText(value).trim());
+    if (parsed.protocol === "https:" && parsed.hostname === "gov.eclipse-rp.net") {
+      return VALID;
+    }
+  } catch {
+    // Return the same clear destination error for malformed and non-GOV links.
+  }
+  return fail(`${label} must be an HTTPS link on gov.eclipse-rp.net.`);
 }
 
 /**
