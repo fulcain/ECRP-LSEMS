@@ -516,10 +516,5 @@ If you would like to resign from LSEMS, as sad as it'll be to see you go, please
       label:
         "Move the Admin log from the application into the #Player-Logs channel on Discord (crop out the username if visible).",
     },
-    {
-      id: "ooc-rec-4",
-      label:
-        "Use the 'Add Employee' section on the LSEMS Dashboard so the new EMR appears on the sheets.",
-    },
   ],
 };
