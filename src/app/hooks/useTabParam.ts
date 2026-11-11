@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import { useLocalStorage } from "./useLocalStorage";
 
 /**
@@ -19,14 +20,14 @@ export function useTabParam<T extends string>(
       own `?format=` - dropped when the tab changes so the URL can't lie. */
   dropParams: readonly string[] = [],
 ): [T, React.Dispatch<React.SetStateAction<T>>] {
+  const searchParams = useSearchParams();
   const [active, setActive] = useLocalStorage<T>(storageKey, defaultTab);
   const isFirstRender = useRef(true);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const fromUrl = params.get("tab") as T | null;
+    const fromUrl = searchParams.get("tab") as T | null;
     if (fromUrl && validTabs.includes(fromUrl)) setActive(fromUrl);
-  }, [setActive, validTabs]);
+  }, [searchParams, setActive, validTabs]);
 
   useEffect(() => {
     if (isFirstRender.current) {

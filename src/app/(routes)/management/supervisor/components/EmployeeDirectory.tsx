@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { Fragment, useEffect, useMemo, useState, type FormEvent } from "react";
 import {
   ExternalLink,
   Clock3,
@@ -141,11 +141,18 @@ export function EmployeeDirectory() {
   }, [setEmployees]);
 
   const filteredEmployees = useMemo(() => {
-    return employees.filter((employee) => {
-      const matchesGroup = group === "All" || employee.group === group;
-      const matchesQuery = employeeMatchesSearch(employee, query);
-      return matchesGroup && matchesQuery;
-    });
+    const groupOrder = new Map(EMPLOYEE_GROUPS.map((item, index) => [item, index]));
+    return employees
+      .filter((employee) => {
+        const matchesGroup = group === "All" || employee.group === group;
+        const matchesQuery = employeeMatchesSearch(employee, query);
+        return matchesGroup && matchesQuery;
+      })
+      .sort((a, b) =>
+        (groupOrder.get(a.group) ?? EMPLOYEE_GROUPS.length) -
+          (groupOrder.get(b.group) ?? EMPLOYEE_GROUPS.length) ||
+        a.name.localeCompare(b.name),
+      );
   }, [employees, group, query]);
 
   const canManage = canEdit && writable;
@@ -353,7 +360,15 @@ export function EmployeeDirectory() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border/80">
-              {filteredEmployees.map((employee) => (
+              {filteredEmployees.map((employee, index) => (
+                <Fragment key={`${employee.name}-${employee.callsign}`}>
+                {filteredEmployees[index - 1]?.group !== employee.group && (
+                  <tr key={`group-${employee.group}`} className="bg-background/70">
+                    <th colSpan={canManage ? 5 : 4} className="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:px-5">
+                      {employee.group}
+                    </th>
+                  </tr>
+                )}
                 <tr key={`${employee.name}-${employee.callsign}`} className="transition-colors hover:bg-background/45">
                   <th scope="row" className="px-4 py-3 text-left font-normal sm:px-5">
                     <div className="flex min-w-48 items-center gap-3">
@@ -398,6 +413,7 @@ export function EmployeeDirectory() {
                     </td>
                   )}
                 </tr>
+                </Fragment>
               ))}
               {filteredEmployees.length === 0 && (
                 <tr>

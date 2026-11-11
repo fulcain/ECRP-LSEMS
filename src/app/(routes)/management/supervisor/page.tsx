@@ -13,11 +13,20 @@ import { PromotionProcessor } from "./components/PromotionProcessor";
 import { ResignationProcessor } from "./components/ResignationProcessor";
 import { EmployeeDirectory } from "./components/EmployeeDirectory";
 
+const SUPERVISOR_TABS = [
+  "loa",
+  "meetings",
+  "contract",
+  "promotions",
+  "resignations",
+  "employees",
+] as const;
+
 export default function SupervisorPage() {
   const pathname = usePathname();
   const [requestedTab] = useTabParam(
     "supervisor-tab",
-    ["loa", "meetings", "contract", "promotions", "resignations", "employees"] as const,
+    SUPERVISOR_TABS,
     "loa",
   );
   const activeTab = pathname === ROUTES.management.supervisorStp ? "stp" : requestedTab;

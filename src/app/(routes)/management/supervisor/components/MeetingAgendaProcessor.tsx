@@ -34,6 +34,7 @@ import {
   Clock,
   FileText,
   AlertTriangle,
+  ExternalLink,
 } from "lucide-react";
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { toast } from "react-toastify";
@@ -276,6 +277,26 @@ export function MeetingAgendaProcessor() {
 
   return (
     <div className="space-y-5">
+      <div className="flex flex-wrap gap-3">
+        <Button asChild variant="outline">
+          <a
+            href="https://gov.eclipse-rp.net/viewtopic.php?t=227769"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Meeting Schedules (GOV) <ExternalLink aria-hidden="true" />
+          </a>
+        </Button>
+        <Button asChild variant="outline">
+          <a
+            href="https://ecrplsems.com/calendar"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            LSEMS Calendar <ExternalLink aria-hidden="true" />
+          </a>
+        </Button>
+      </div>
 
       {/* Credentials Warning */}
       {isCredentialsEmpty && (
