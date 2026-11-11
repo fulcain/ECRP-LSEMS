@@ -60,7 +60,6 @@ import type { PromotionRank } from "@/app/templates/promotions";
 import { PromotionRankSelect } from "./PromotionRankSelect";
 
 const OOC_ITEMS = [
-  { id: "f4Rank", label: "Update their rank in the F4 menu", icon: Shield },
   { id: "discordRank", label: "Update their Discord rank, replacing their old one with their new one", icon: MessageSquare },
 ] as const;
 
@@ -242,7 +241,22 @@ export function PromotionProcessor() {
   };
 
   const icSteps: IcStep[] = useMemo(() => {
-    const steps: IcStep[] = [];
+    const steps: IcStep[] = [
+      {
+        id: "badge",
+        label:
+          "Get their old badge and give them a new badge. (( Update their rank in the F4 menu ))",
+        copyText: "",
+        icon: Shield,
+      },
+      {
+        id: "application-ready",
+        label:
+          "The application is good to go from here. Let them go; the rest is you completing the paperwork.",
+        copyText: "",
+        icon: CheckSquare,
+      },
+    ];
     // The rung being promoted to, when the ladder carries a forum group of its
     // own - everything above EMT-P has none, and the step still offers the tool.
     const rankGroup = govGroupForRank(newRank);

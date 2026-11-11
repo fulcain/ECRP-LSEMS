@@ -313,6 +313,13 @@ If you would like to resign from LSEMS, as sad as it'll be to see you go, please
       ],
     },
     {
+      id: "rec-application-ready",
+      title: "Application is good to go",
+      description:
+        "The application is good to go from here. The rest is you completing the paperwork.",
+      actions: [],
+    },
+    {
       id: "rec-ftp",
       title: "Create a Field Training Profile",
       description:

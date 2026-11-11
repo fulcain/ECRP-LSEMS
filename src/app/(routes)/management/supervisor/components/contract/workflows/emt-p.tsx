@@ -30,6 +30,12 @@ export const emtpWorkflow: ContractWorkflow = {
       ],
     },
     {
+      id: "emtp-badge",
+      title: "Retrieve and give them their EMT-P badge",
+      description: "(( Update their rank in the F4 menu ))",
+      actions: [],
+    },
+    {
       id: "emtp-roles",
       title: "Update Forum Usergroups",
       description:
@@ -48,6 +54,13 @@ export const emtpWorkflow: ContractWorkflow = {
           },
         },
       ],
+    },
+    {
+      id: "emtp-application-ready",
+      title: "Application is good to go",
+      description:
+        "The application is good to go from here. The rest is you completing the paperwork.",
+      actions: [],
     },
     {
       id: "emtp-dashboard-promote",
