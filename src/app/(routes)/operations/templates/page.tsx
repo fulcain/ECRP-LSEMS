@@ -1,14 +1,15 @@
 "use client";
 
-import { Crosshair, FileText } from "lucide-react";
+import { Crosshair, FileText, Pill } from "lucide-react";
 import { useTabParam } from "@/app/hooks/useTabParam";
 import { PageContainer } from "@/components/ui/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { TabBar, type Tab } from "@/components/ui/tab-bar";
 import { LOATemplate } from "./components/LOATemplate";
 import { FirearmDischargeTemplate } from "./components/FirearmDischargeTemplate";
+import { PrescriptionsTab } from "./components/prescriptions/PrescriptionsTab";
 
-type TemplatesTab = "loa" | "firearm-discharge";
+type TemplatesTab = "loa" | "firearm-discharge" | "prescriptions";
 
 const templatesTabs: Tab<TemplatesTab>[] = [
   {
@@ -22,6 +23,12 @@ const templatesTabs: Tab<TemplatesTab>[] = [
     label: "Firearm Discharge",
     icon: <Crosshair className="h-4 w-4" />,
     accent: "border-red-300/40 dark:border-red-400/40 bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-300",
+  },
+  {
+    value: "prescriptions",
+    label: "Prescriptions",
+    icon: <Pill className="h-4 w-4" />,
+    accent: "border-violet-300/40 dark:border-violet-400/40 bg-violet-100 dark:bg-violet-500/20 text-violet-700 dark:text-violet-300",
   },
 ];
 
@@ -50,6 +57,7 @@ export default function TemplatesPage() {
 
         {activeTab === "loa" && <LOATemplate />}
         {activeTab === "firearm-discharge" && <FirearmDischargeTemplate />}
+        {activeTab === "prescriptions" && <PrescriptionsTab />}
       </div>
     </PageContainer>
   );
