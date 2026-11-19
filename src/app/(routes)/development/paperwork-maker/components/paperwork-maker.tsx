@@ -128,12 +128,6 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
   const [selectedKey, setSelectedKey] = useState<string>("");
   const [selectedSlot, setSelectedSlot] = useState<FormatSlot | null>(null);
   const [pageIndex, setPageIndex] = useState(0);
-  // "new" builds a division; any other value is a division the app already has.
-  const [divisionChoice, setDivisionChoice] = useState<string>(() =>
-    DIVISION_ENTRIES.some(([key]) => key === config.division.key)
-      ? config.division.key
-      : "new",
-  );
   const [plan, setPlan] = useState<PlanResponse | null>(null);
   const [busy, setBusy] = useState<"plan" | "generate" | null>(null);
   const [written, setWritten] = useState<string[] | null>(null);
@@ -161,9 +155,6 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
     const found = saved.find((entry) => entry.division.key === key);
     if (!found) return;
     setConfig(clone(found));
-    setDivisionChoice(
-      DIVISION_ENTRIES.some(([entryKey]) => entryKey === key) ? key : "new",
-    );
     setPageIndex(0);
     const first = found.division.pages[0]?.groups[0]?.formats[0];
     setSelectedKey(first?.key ?? "");
@@ -354,10 +345,16 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
     ...BUILTIN_PLACEHOLDERS,
   ];
 
-  const existingDivision =
-    divisionChoice === "new"
-      ? undefined
-      : DIVISION_ENTRIES.find(([key]) => key === divisionChoice);
+  /**
+   * The division the app already declares, if this config is one. It is read from
+   * the config rather than kept beside it: a remembered picker value that no
+   * longer matches the draft hid the Key and Name inputs while the config held an
+   * empty key, so the errors it showed could not be fixed from the screen.
+   */
+  const existingDivision = DIVISION_ENTRIES.find(
+    ([key]) => key === config.division.key,
+  );
+  const divisionChoice = existingDivision ? config.division.key : "new";
 
   const targetRoute = config.division.key
     ? existingDivision?.[1].route
@@ -366,7 +363,6 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
     : "";
 
   const chooseDivision = (value: string) => {
-    setDivisionChoice(value);
     if (value === "new") {
       update((draft) => {
         draft.division.key = "";
@@ -388,7 +384,7 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
         key: `page${draft.division.pages.length + 1}`,
         label: "New page",
         purpose: "",
-        groups: [{ label: "Documents", hint: "", formats: [] }],
+        groups: [],
       });
     });
     setPageIndex(pages.length);

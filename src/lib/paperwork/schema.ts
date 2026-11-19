@@ -204,15 +204,20 @@ export function validatePaperworkConfig(
     if (!page.purpose?.trim()) {
       problems.push(`Page “${page.key}” needs one sentence saying what it is for.`);
     }
-    if (!page.groups?.length) {
-      problems.push(`Page “${page.key}” has no group of formats.`);
+    // A page is one message, not one per empty group: an empty group is how a
+    // page starts, and nagging about it before anything else is written says
+    // nothing the page-level line does not already say.
+    const groups = page.groups ?? [];
+    const pageHasFormats = groups.some((group) => group.formats?.length > 0);
+    if (!pageHasFormats) {
+      problems.push(`Page “${page.key}” has no formats yet.`);
     }
 
-    for (const group of page.groups ?? []) {
+    for (const group of groups) {
       if (!group.label?.trim()) {
         problems.push(`A group on “${page.key}” is missing its heading.`);
       }
-      if (!group.formats?.length) {
+      if (!group.formats?.length && pageHasFormats) {
         problems.push(`Group “${group.label}” has no formats.`);
       }
 
