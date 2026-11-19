@@ -31,6 +31,7 @@ import {
   COMMAND_TOOL_ROLES,
   EVERY_PAGE_ROLES,
   ROLES,
+  isDeveloperOnlyPath,
   isHiddenFromMatrix,
   type RoleName,
 } from "@/configs/roles";
@@ -347,7 +348,12 @@ const navLabels = (roles: readonly string[] | null): string =>
     .join(", ");
 
 const allLabels = headerLinks.map((link) => link.label);
-const LOCKED_LABELS = ["Access Manager", "Command"];
+// Developer tools are the code's own decision too - they write the repository,
+// so no role and no stored row opens them.
+const developerLabels = headerLinks
+  .filter((link) => link.href && isDeveloperOnlyPath(link.href))
+  .map((link) => link.label);
+const LOCKED_LABELS = ["Access Manager", "Command", ...developerLabels];
 expect(
   "with no rows, an employee's sidebar is every item but the locked tools",
   navLabels(member("Employee")),
@@ -364,9 +370,15 @@ expect(
   false,
 );
 expect(
-  "CommandPlusTeam is offered everything",
+  "CommandPlusTeam is offered everything but the developer tools",
   navLabels(member("CommandPlusTeam")),
-  allLabels.join(", "),
+  allLabels.filter((label) => !developerLabels.includes(label)).join(", "),
+);
+expect(
+  `a developer id is offered ${developerLabels.length} developer tool(s)`,
+  filterAccessibleLinks(headerLinks, [], ADMIN_ID)
+    .filter((link) => link.href && isDeveloperOnlyPath(link.href)).length,
+  developerLabels.length,
 );
 expect("a signed-out visitor is offered nothing", navLabels(null), "");
 

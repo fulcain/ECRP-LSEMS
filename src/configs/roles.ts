@@ -30,6 +30,10 @@
  */
 
 import { ROUTES } from "@/configs/routes";
+import {
+  GENERATED_DIVISIONS,
+  GENERATED_ROLES,
+} from "@/configs/generated/divisions";
 
 export type GuildRoleEntry = {
   id: string | null;
@@ -43,7 +47,7 @@ export type GuildRoleEntry = {
   hiddenFromMatrix?: boolean;
 };
 
-export const ROLES = {
+const HAND_WRITTEN_ROLES = {
   // ─── Access-only roles ──────────────────────────────────────────────────
   // Roles that gate routes but are not a rank anyone is listed under.
   /** The LSEMS Command position - a Command+ rank, so it opens everything. */
@@ -386,6 +390,17 @@ export const ROLES = {
   Guest: { id: "981527764794503188", name: "Guest" },
 } as const satisfies Record<string, GuildRoleEntry>;
 
+/**
+ * The whole role registry: the hand-written entries above, plus the ones the
+ * Paperwork Maker generated for a new division. Generated entries are data in
+ * `configs/generated/divisions.ts`, so a new division never edits this file - it
+ * only spreads what the maker wrote.
+ */
+export const ROLES = {
+  ...HAND_WRITTEN_ROLES,
+  ...GENERATED_ROLES,
+} as const satisfies Record<string, GuildRoleEntry>;
+
 /** Union of every role alias in the registry. */
 export type RoleName = keyof typeof ROLES;
 
@@ -462,7 +477,7 @@ export type Division = {
  * Adding a division with a `route` gates that route automatically; adding one
  * without leaves it as a rank list that templates and paperwork can use.
  */
-export const DIVISIONS = {
+const HAND_WRITTEN_DIVISIONS = {
   /** Department-wide: no divisional ranks of its own. */
   general: { label: "General", ranks: [] },
   bls: {
@@ -695,6 +710,19 @@ export const DIVISIONS = {
   },
 } as const satisfies Record<string, Division>;
 
+/**
+ * The whole division list, in the order the app lists them: the hand-written
+ * declarations above, then the divisions the Paperwork Maker generated. Order is
+ * what the division selector, the quick-links page and the staff page follow.
+ */
+export const DIVISIONS = {
+  ...HAND_WRITTEN_DIVISIONS,
+  ...GENERATED_DIVISIONS,
+} as const satisfies Record<string, Division>;
+
+/** The divisions whose modules live in the repository, not in generated files. */
+export type HandWrittenDivisionKey = keyof typeof HAND_WRITTEN_DIVISIONS;
+
 /** Key of a division in `DIVISIONS`, e.g. `"bls"`. */
 export type DivisionKey = keyof typeof DIVISIONS;
 
@@ -842,6 +870,28 @@ export const DEFAULT_PAGE_ROLES: readonly RoleName[] = ["Employee"];
  * one.
  */
 export const ADMIN_PAGES: readonly string[] = [ROUTES.management.access];
+
+/**
+ * Developer tools: pages that write the repository rather than the store.
+ *
+ * The Paperwork Maker generates project files, so it is open to
+ * `DISCORD_ADMIN_IDS` alone - the one identity no stored row, no Discord role
+ * and no page in this app can hand out - and only on a development server,
+ * which the page and the API check separately. It is deliberately not a matrix
+ * row: the permission editor must never be able to give away the ability to
+ * write the codebase.
+ */
+export const DEVELOPER_PAGES: readonly string[] = [
+  ROUTES.development.paperworkMaker,
+];
+
+/** Prefix-matched, with the trailing `/` so a sibling page is not caught. */
+export function isDeveloperOnlyPath(pathname: string): boolean {
+  const path = pathname.split("?")[0];
+  return DEVELOPER_PAGES.some(
+    (route) => path === route || path.startsWith(`${route}/`),
+  );
+}
 
 /**
  * The roles a page in `ADMIN_PAGES` opens to. Never merged into, never stored.

@@ -17,6 +17,11 @@ import {
   type RoleName,
 } from "@/configs/roles";
 import { LSEMS_RANKS } from "@/app/constants/general/ranks";
+import {
+  GENERATED_DIVISIONS,
+  GENERATED_PAPERWORK_PAGES,
+} from "@/configs/generated/divisions";
+import type { Division } from "@/configs/roles";
 
 /**
  * The section an entry lives in, in the order the editor lists them.
@@ -50,6 +55,34 @@ export type ManagedEntry = {
  * if a gated route has no label here, and if a label disagrees with the sidebar
  * or the tab bar.
  */
+/**
+ * A row per generated division page, labelled with the division's own name. The
+ * route opens to every employee by fallback until its row is narrowed, which is
+ * the same answer a hand-written division page gives.
+ */
+function generatedDivisionRows(): Record<
+  string,
+  { label: string; group: AccessMatrixGroup }
+> {
+  return Object.fromEntries([
+    ...Object.values(GENERATED_DIVISIONS as Record<string, Division>).map(
+      (division) => [
+        division.route,
+        { label: division.label, group: "Divisions" as const },
+      ],
+    ),
+    ...Object.values(
+      GENERATED_PAPERWORK_PAGES as Record<
+        string,
+        { label: string; route: string }
+      >,
+    ).map((page) => [
+      page.route,
+      { label: `${page.label} Paperwork`, group: "Divisions" as const },
+    ]),
+  ]);
+}
+
 const ROUTE_META: Record<string, { label: string; group: AccessMatrixGroup }> = {
   [ROUTES.divisions.ftd.sessions]: { label: "Sessions", group: "FTD" },
   [ROUTES.divisions.ftd.paperwork]: { label: "Paperwork", group: "FTD" },
@@ -61,6 +94,7 @@ const ROUTE_META: Record<string, { label: string; group: AccessMatrixGroup }> = 
   [ROUTES.divisions.red]: { label: "RED", group: "Divisions" },
   [ROUTES.divisions.ar]: { label: "A&R", group: "Divisions" },
   [ROUTES.divisions.bls]: { label: "BLS", group: "Divisions" },
+  ...generatedDivisionRows(),
 
   [ROUTES.operations.divisionTemplates]: {
     label: "Division Templates",

@@ -2,6 +2,7 @@ import {
   DIVISION_ENTRIES,
   membershipForDivision,
   type DivisionKey,
+  type HandWrittenDivisionKey,
   type RoleRef,
 } from "@/configs/roles";
 import { AMU } from "./amu";
@@ -19,6 +20,7 @@ import { MOUNTAIN_RESCUE } from "./mountain-rescue";
 import { PILOT } from "./pilot";
 import { PR } from "./pr";
 import { RED } from "./red";
+import { GENERATED_DIVISION_PAGES } from "./generated";
 
 /**
  * What a division module declares: everything except the key, which the module
@@ -76,7 +78,7 @@ export type QuickLink = {
  * Typed as a full `Record`, so declaring a division in `DIVISIONS` without a
  * module here is a compile error rather than a page that silently goes missing.
  */
-const DIVISION_PAGES: Record<DivisionKey, DivisionPage> = {
+const DIVISION_PAGES: Record<HandWrittenDivisionKey, DivisionPage> = {
   general: General,
   ar: AR,
   bls: BLS,
@@ -95,6 +97,16 @@ const DIVISION_PAGES: Record<DivisionKey, DivisionPage> = {
 };
 
 /**
+ * Every division module: the ones written here and the ones the Paperwork Maker
+ * generated. `DIVISION_PAGES` stays typed as the hand-written keys, so adding a
+ * generated division cannot silently leave a hand-written module missing.
+ */
+const ALL_DIVISION_PAGES = {
+  ...DIVISION_PAGES,
+  ...GENERATED_DIVISION_PAGES,
+} as unknown as Record<DivisionKey, DivisionPage>;
+
+/**
  * Every live division, in `DIVISIONS` order - the division selector, the
  * quick-links page and the staff page all render this list, so a division is
  * added or reordered in one place.
@@ -110,7 +122,7 @@ const DIVISION_PAGES: Record<DivisionKey, DivisionPage> = {
 export const divisions: Divisions[] = DIVISION_ENTRIES.filter(
   ([, division]) => !division.dormant,
 ).map(([key]) => {
-  const page = DIVISION_PAGES[key];
+  const page = ALL_DIVISION_PAGES[key];
   const membership = membershipForDivision(key);
   return {
     ...page,

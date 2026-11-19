@@ -18,6 +18,7 @@ import {
   divisionForRoute,
   isAdminOnlyPath,
   isCommandToolPath,
+  isDeveloperOnlyPath,
   type DivisionKey,
   type DivisionRoute,
   type RoleName,
@@ -111,6 +112,10 @@ export function userHasAccess(
   if (discordId && ADMIN_USER_IDS.has(discordId)) {
     return true;
   }
+
+  // A developer tool writes the repository, so it is never store-decided and
+  // never granted by a Discord role - only the admin bypass above opens it.
+  if (isDeveloperOnlyPath(pathname)) return false;
 
   // The code-decided tools are decided here and nowhere else. `sanitizeMatrix`
   // already refuses to store an entry for them, and this refuses to honour one

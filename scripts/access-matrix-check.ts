@@ -46,6 +46,7 @@ import {
   ROLES,
   isAdminOnlyPath,
   isCommandToolPath,
+  isDeveloperOnlyPath,
   isHiddenFromMatrix,
   type RoleName,
 } from "@/configs/roles";
@@ -116,6 +117,9 @@ for (const tab of SUPERVISOR_SEARCH_TABS) {
 // guarantee `ROUTE_ACCESS` used to provide from the registry side, now that the
 // rows themselves are the declaration.
 for (const href of navLabels.keys()) {
+  // A developer tool writes the repository rather than reading the store, so it
+  // is deliberately outside the matrix - see `DEVELOPER_PAGES`.
+  if (isDeveloperOnlyPath(href)) continue;
   expect(
     `${href} (sidebar) has a matrix row`,
     MANAGED_ENTRIES.some((entry) => entry.route === href),

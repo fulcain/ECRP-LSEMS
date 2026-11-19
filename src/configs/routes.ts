@@ -56,6 +56,10 @@ export const ROUTES = {
   system: {
     changelog: "/system/changelog",
   },
+  /** Developer tools. They exist only on a development server. */
+  development: {
+    paperworkMaker: "/development/paperwork-maker",
+  },
 } as const;
 
 /**

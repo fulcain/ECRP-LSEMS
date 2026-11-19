@@ -1,4 +1,10 @@
 import { ROUTES } from "@/configs/routes";
+import {
+  GENERATED_DIVISIONS,
+  GENERATED_PAPERWORK_PAGES,
+} from "@/configs/generated/divisions";
+import type { Division } from "@/configs/roles";
+import { isPaperworkMakerAvailable } from "@/lib/paperwork/availability";
 import type { LucideIcon } from "lucide-react";
 import {
   Activity,
@@ -11,6 +17,7 @@ import {
   Megaphone,
   MessageSquare,
   Plane,
+  Wand2,
   Puzzle,
   Shield,
   ShieldCheck,
@@ -29,7 +36,8 @@ export type HeaderLink = {
     | "Operations"
     | "Resources"
     | "Management"
-    | "System";
+    | "System"
+    | "Development";
   /**
    * Extra route prefixes that should keep this item highlighted as the
    * active nav item. Used by section entries that own several routes - the
@@ -80,6 +88,43 @@ export const headerLinks: HeaderLink[] = [
     // Stays lit for the whole workspace, not just the Sessions page.
     match: [ROUTES.divisions.ftd.base],
   },
+  // Divisions the Paperwork Maker generated: one entry each, read from the same
+  // file that gives the division its page, so adding one is a run of the maker
+  // and no edit here.
+  ...Object.values(GENERATED_DIVISIONS as Record<string, Division>).flatMap(
+    (division) =>
+      division.route
+        ? [
+            {
+              label: division.label,
+              href: division.route,
+              icon: FileText,
+              group: "Divisions" as const,
+              match: [division.route],
+            },
+          ]
+        : [],
+  ),
+  // Paperwork generated for a division the app already has: its own entry, so
+  // the division's hand-written page stays where it is.
+  ...Object.values(
+    GENERATED_PAPERWORK_PAGES as Record<
+      string,
+      { label: string; route: string }
+    >,
+  ).flatMap((entry) =>
+    entry.route
+      ? [
+          {
+            label: `${entry.label} Paperwork`,
+            href: entry.route,
+            icon: FileText,
+            group: "Divisions" as const,
+            match: [entry.route],
+          },
+        ]
+      : [],
+  ),
   {
     label: "Division Templates",
     href: ROUTES.operations.divisionTemplates,
@@ -162,4 +207,18 @@ export const headerLinks: HeaderLink[] = [
       },
     ],
   },
+  // A development server is the only place it exists at all, and the page and
+  // its API refuse everyone but a DISCORD_ADMIN_IDS developer. The entry is
+  // added here rather than in the sidebar filter so the nav never advertises a
+  // tool a deployment cannot run.
+  ...(isPaperworkMakerAvailable()
+    ? [
+        {
+          label: "Paperwork Maker",
+          href: ROUTES.development.paperworkMaker,
+          icon: Wand2,
+          group: "Development" as const,
+        },
+      ]
+    : []),
 ];
