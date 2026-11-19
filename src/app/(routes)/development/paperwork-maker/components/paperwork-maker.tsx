@@ -174,9 +174,19 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
     setWritten(null);
   };
 
-  const placed =
-    locate(config, selectedKey) ??
-    (selectedSlot ? placedAt(config, selectedSlot) : null);
+  /**
+   * The format being edited. The slot is preferred over the key because a key can
+   * be half typed or momentarily shared with another format - but only while the
+   * slot still holds the selected key: once that format is gone, the format now
+   * sitting at its index is a different one, and nothing is selected.
+   */
+  const resolvePlaced = (target: PaperworkConfig): PlacedFormat | null => {
+    const atSlot = selectedSlot ? placedAt(target, selectedSlot) : null;
+    if (atSlot && atSlot.format.key === selectedKey) return atSlot;
+    return locate(target, selectedKey);
+  };
+
+  const placed = resolvePlaced(config);
   const validation = useMemo(() => validatePaperworkConfig(config), [config]);
 
   const update = (mutate: (draft: PaperworkConfig) => void) => {
@@ -191,9 +201,7 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
 
   const updateFormat = (mutate: (format: PaperworkFormat) => void) => {
     update((draft) => {
-      const target =
-        locate(draft, selectedKey) ??
-        (selectedSlot ? placedAt(draft, selectedSlot) : null);
+      const target = resolvePlaced(draft);
       if (target) mutate(target.format);
     });
   };
@@ -671,7 +679,7 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
               <h2 className="text-sm font-semibold text-foreground">Format</h2>
               <div className="w-64">
                 <Select
-                  value={selectedKey}
+                  value={placed ? placed.format.key : ""}
                   onValueChange={selectFormat}
                 >
                   <SelectTrigger size="sm" className="w-full">
