@@ -51,7 +51,11 @@ export type PaperworkActionKind =
   | "copy_subject"
   /** `content`, rendered as a template. */
   | "copy_text"
-  /** `content`, rendered as a URL, copied and opened with the post handed over. */
+  /**
+   * `content`, rendered as a URL, copied and opened with the post handed over.
+   * The page is either the format's own (`https://…`) or one the member pastes
+   * into an input (`{{govLink}}`).
+   */
   | "copy_open"
   /** Fills `target` with today's UTC date. */
   | "insert_utc_date"
@@ -300,21 +304,27 @@ export function validatePaperworkConfig(
               `${where}: “${action.label}” must target a field that exists.`,
             );
           }
-          if (
-            (action.kind === "copy_text" || action.kind === "copy_open") &&
-            !action.content?.trim()
-          ) {
+          if (action.kind === "copy_text" && !action.content?.trim()) {
             problems.push(`${where}: “${action.label}” has nothing to copy.`);
           }
-          if (
-            action.kind === "copy_open" &&
-            action.content &&
-            !/^https?:\/\//i.test(action.content) &&
-            !action.content.trim().startsWith("{{")
-          ) {
-            problems.push(
-              `${where}: “${action.label}” must open a URL or a placeholder holding one.`,
-            );
+          if (action.kind === "copy_open") {
+            const content = action.content?.trim() ?? "";
+            const field = copyOpenField(content);
+            if (!content) {
+              problems.push(`${where}: “${action.label}” has no page to open.`);
+            } else if (field) {
+              // The member supplies the link, so the input has to exist - a
+              // button bound to nothing is one that can never be pressed.
+              if (!fieldKeys.has(field)) {
+                problems.push(
+                  `${where}: “${action.label}” opens {{${field}}}, but no input provides it.`,
+                );
+              }
+            } else if (!/^https?:\/\//i.test(content)) {
+              problems.push(
+                `${where}: “${action.label}” must open a URL or the input holding one.`,
+              );
+            }
           }
           if (action.requiresField && !fieldKeys.has(action.requiresField)) {
             problems.push(
@@ -342,6 +352,19 @@ export function validatePaperworkConfig(
   return problems.length === 0
     ? { ok: true, problems: [] }
     : { ok: false, problems };
+}
+
+/**
+ * The input a Copy & Open button opens, when the member supplies the link.
+ *
+ * Copy & Open has two ways to name its page: a URL the format declares, and
+ * `{{govLink}}` - a link the member pastes, which is only a button at all if
+ * that input exists beside it.
+ */
+export function copyOpenField(content: string | undefined): string | null {
+  const text = content?.trim() ?? "";
+  if (!/^\{\{\s*[a-zA-Z0-9_.]+\s*\}\}$/.test(text)) return null;
+  return text.replace(/^\{\{\s*/, "").replace(/\s*\}\}$/, "");
 }
 
 /** Placeholder names in a template, deduped, in first-seen order. */

@@ -157,11 +157,17 @@ export function PaperworkWorkspace({
     : [];
   const complete = errors.length === 0 && output.missing.length === 0;
 
-  const openAction = format?.actions.find((action) => action.kind === "copy_open");
-  const openUrl =
-    format && openAction?.content
-      ? renderUrlTemplate(openAction.content, context)
+  // Each Copy & Open button names its own page: one the format declares, or the
+  // link the member pasted into an input. Two of them in one format are two
+  // different destinations, so the page is resolved per button.
+  const urlFor = (action: PaperworkAction): string | null =>
+    action.kind === "copy_open" && action.content
+      ? renderUrlTemplate(action.content, context)
       : null;
+  const openUrl =
+    (format?.actions ?? [])
+      .map(urlFor)
+      .find((url): url is string => Boolean(url)) ?? null;
 
   const requirement = errors[0]?.message
     ? errors[0].message
@@ -174,7 +180,7 @@ export function PaperworkWorkspace({
     if (action.kind === "insert_utc_date" || action.kind === "insert_utc_time") {
       return false;
     }
-    if (action.kind === "copy_open") return !complete || !openUrl;
+    if (action.kind === "copy_open") return !complete || !urlFor(action);
     if (action.requiresField) {
       const value = values[action.requiresField];
       if (value === undefined || !String(value).trim()) return true;
@@ -231,13 +237,14 @@ export function PaperworkWorkspace({
       setCopiedId(action.id);
       return;
     }
-    if (action.kind === "copy_open" && openUrl) {
+    const url = urlFor(action);
+    if (action.kind === "copy_open" && url) {
       copyBBCodeAndOpen({
         bbCodeText: output.text,
-        url: openUrl,
+        url,
         post: {
           subject: subject.text || undefined,
-          url: openUrl,
+          url,
           feature: `${division.label} paperwork`,
         },
       });
@@ -369,7 +376,7 @@ export function PaperworkWorkspace({
                 })}
               </>
             }
-            note="Copy & Open hands the post to the browser extension and opens its page with the body filled in."
+            note="Copy & Open hands the post to the browser extension and opens its page with the body filled in — either the page the format declares, or the link you paste into the format's own input."
           >
             {format.subject && (
               <BuilderTitleRow

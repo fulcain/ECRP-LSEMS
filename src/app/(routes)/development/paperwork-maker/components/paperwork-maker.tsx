@@ -29,6 +29,7 @@ import { DIVISION_ENTRIES } from "@/configs/roles";
 import { FIELD_TYPES } from "@/lib/paperwork/fields";
 import {
   BUILTIN_PLACEHOLDERS,
+  copyOpenField,
   divisionSlug,
   templatePlaceholders,
   validatePaperworkConfig,
@@ -338,27 +339,28 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
     });
   };
 
-  /** Copy & Open GOV: the post's own page is an input, so the extension gets it. */
-  const addGovAction = () => {
+  /**
+   * Copy & Open GOV, in either of its two shapes: a page the format declares, or
+   * a link the member pastes. The second is only a button if an input exists for
+   * it, so the input is made and bound here rather than left to be found as a
+   * validation error.
+   */
+  const addGovAction = (mode: "fixed" | "member") => {
     updateFormat((format) => {
-      if (!format.fields.some((field) => field.key === "govLink")) {
-        format.fields.push({
-          key: "govLink",
-          type: "url",
-          label: "GOV Link",
-          hint: "The GOV page this post belongs on.",
-          required: true,
-        });
-      }
       format.actions.push({
         id: nextActionId(format, "copyOpenGov"),
         kind: "copy_open",
         label: "Copy & Open GOV",
-        content: "{{govLink}}",
-        requiresField: "govLink",
+        content: "",
         variant: "outline",
       });
+      if (mode === "member") bindLinkField(format, format.actions.length - 1);
     });
+  };
+
+  /** Switches a Copy & Open button to the link the member pastes. */
+  const chooseMemberLink = (index: number) => {
+    updateFormat((format) => bindLinkField(format, index));
   };
 
   const planFiles = async () => {
@@ -1225,23 +1227,64 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                         </Button>
                       </div>
 
-                      {action.kind === "copy_open" && (
-                        <div className="space-y-1">
-                          <Label className="text-[10px] text-muted-foreground">
-                            Opens (a URL, or an input holding one)
-                          </Label>
-                          <Input
-                            value={action.content ?? ""}
-                            onChange={(event) =>
-                              updateAction(index, {
-                                content: event.target.value,
-                              })
-                            }
-                            placeholder="https://gov.eclipse-rp.net/… or {{govLink}}"
-                            className="font-mono text-xs"
-                          />
-                        </div>
-                      )}
+                      {action.kind === "copy_open" &&
+                        (() => {
+                          const linkField = copyOpenField(action.content);
+                          const bound = linkField
+                            ? placed.format.fields.find(
+                                (field) => field.key === linkField,
+                              )
+                            : undefined;
+                          return (
+                            <div className="space-y-1">
+                              <Label className="text-[10px] text-muted-foreground">
+                                Which page it opens
+                              </Label>
+                              <Select
+                                value={linkField ? "member" : "fixed"}
+                                onValueChange={(value) => {
+                                  if (value === "member") {
+                                    chooseMemberLink(index);
+                                    return;
+                                  }
+                                  updateAction(index, {
+                                    content: "",
+                                    requiresField: undefined,
+                                  });
+                                }}
+                              >
+                                <SelectTrigger size="sm" className="w-full">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="fixed">
+                                    A page the format always uses
+                                  </SelectItem>
+                                  <SelectItem value="member">
+                                    The link the member pastes
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                              {linkField ? (
+                                <p className="text-[10px] text-muted-foreground">
+                                  Opens the input “{bound?.label ?? linkField}”,
+                                  which the member fills in.
+                                </p>
+                              ) : (
+                                <Input
+                                  value={action.content ?? ""}
+                                  onChange={(event) =>
+                                    updateAction(index, {
+                                      content: event.target.value,
+                                    })
+                                  }
+                                  placeholder="https://gov.eclipse-rp.net/…"
+                                  className="font-mono text-xs"
+                                />
+                              )}
+                            </div>
+                          );
+                        })()}
 
                       {action.kind === "copy_text" && (
                         <div className="space-y-1">
@@ -1368,7 +1411,14 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                         })
                       }
                     />
-                    <AddAction label="Copy & open GOV" onAdd={addGovAction} />
+                    <AddAction
+                      label="Copy & open GOV"
+                      onAdd={() => addGovAction("fixed")}
+                    />
+                    <AddAction
+                      label="Copy & open GOV + link"
+                      onAdd={() => addGovAction("member")}
+                    />
                     <AddAction
                       label="Today (UTC)"
                       onAdd={() =>
@@ -1486,6 +1536,45 @@ function labelFromKey(key: string): string {
     .replace(/[_.]+/g, " ")
     .trim();
   return words ? words.charAt(0).toUpperCase() + words.slice(1) : "Input";
+}
+
+/**
+ * Binds a Copy & Open button to the input the member pastes its link into,
+ * making that input when the format has none. The button and the input are one
+ * decision: a bound button with no input cannot be pressed, and an input no
+ * button opens is a field the member fills in for nothing.
+ */
+function bindLinkField(format: PaperworkFormat, index: number): string | null {
+  const action = format.actions[index];
+  if (!action) return null;
+  const existing = format.fields.find(
+    (field) => field.type === "url" && /(?:link|url)$/i.test(field.key),
+  );
+  const key = existing?.key ?? createLinkField(format);
+  format.actions[index] = {
+    ...action,
+    content: `{{${key}}}`,
+    requiresField: key,
+  };
+  return key;
+}
+
+/** `govLink`, or `govLink2` when a format already has a `govLink`. */
+function createLinkField(format: PaperworkFormat): string {
+  let key = "govLink";
+  let index = 2;
+  while (format.fields.some((field) => field.key === key)) {
+    key = `govLink${index}`;
+    index += 1;
+  }
+  format.fields.push({
+    key,
+    type: "url",
+    label: key === "govLink" ? "GOV Link" : labelFromKey(key),
+    hint: "The GOV page this post belongs on.",
+    required: true,
+  });
+  return key;
 }
 
 function nextActionId(format: PaperworkFormat, base: string): string {
