@@ -157,7 +157,10 @@ export function allFormats(config: PaperworkConfig): PaperworkFormat[] {
 }
 
 const KEY_PATTERN = /^[a-z][a-zA-Z0-9]*$/;
-const FIELD_KEY_PATTERN = /^[a-z][a-z0-9_]*$/;
+// camelCase is allowed on purpose: a template people already write says
+// `{{patientName}}`, and a key the field validator refuses is one the template
+// can never be satisfied by.
+const FIELD_KEY_PATTERN = /^[a-z][a-zA-Z0-9_]*$/;
 const ACTION_ID_PATTERN = /^[a-z][a-zA-Z0-9]*$/;
 
 export type PaperworkValidation =
@@ -238,7 +241,7 @@ export function validatePaperworkConfig(
         for (const field of format.fields ?? []) {
           if (!FIELD_KEY_PATTERN.test(field.key ?? "")) {
             problems.push(
-              `${where}: field key “${field.key ?? ""}” must be snake_case, starting with a letter.`,
+              `${where}: field key “${field.key ?? ""}” must start with a lowercase letter and use only letters, digits or underscores.`,
             );
           }
           if (fieldKeys.has(field.key)) {

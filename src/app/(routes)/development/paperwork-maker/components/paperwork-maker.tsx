@@ -30,6 +30,7 @@ import { FIELD_TYPES } from "@/lib/paperwork/fields";
 import {
   BUILTIN_PLACEHOLDERS,
   divisionSlug,
+  templatePlaceholders,
   validatePaperworkConfig,
   type PaperworkAction,
   type PaperworkConfig,
@@ -37,6 +38,7 @@ import {
   type PaperworkFieldType,
   type PaperworkFormat,
 } from "@/lib/paperwork/schema";
+import { PAPERWORK_SNIPPETS } from "@/lib/paperwork/snippets";
 
 type PlacedFormat = {
   format: PaperworkFormat;
@@ -248,21 +250,86 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
     });
   };
 
-  const insertPlaceholder = (name: string) => {
-    const token = `{{${name}}}`;
+  /** Inserts at the caret, so a chip or a snippet lands where the cursor is. */
+  const insertText = (text: string) => {
     const textarea = templateRef.current;
     updateFormat((format) => {
       if (!textarea) {
-        format.template += token;
+        format.template += text;
         return;
       }
       const start = textarea.selectionStart ?? format.template.length;
       const end = textarea.selectionEnd ?? start;
       format.template =
-        format.template.slice(0, start) + token + format.template.slice(end);
+        format.template.slice(0, start) + text + format.template.slice(end);
     });
     requestAnimationFrame(() => {
       textarea?.focus();
+    });
+  };
+
+  const insertPlaceholder = (name: string) => insertText(`{{${name}}}`);
+
+  /**
+   * The input a template already names, made real in one click. A template that
+   * says `{{patientName}}` with no such field is a validation error the maker
+   * otherwise offers no way to fix.
+   */
+  const addInput = (key: string) => {
+    updateFormat((format) => {
+      if (format.fields.some((field) => field.key === key)) return;
+      format.fields.push({
+        key,
+        type: /(?:url|link)$/i.test(key) ? "url" : "text",
+        label: labelFromKey(key),
+        required: true,
+      });
+    });
+  };
+
+  const updateAction = (index: number, patch: Partial<PaperworkAction>) => {
+    updateFormat((format) => {
+      format.actions[index] = { ...format.actions[index], ...patch };
+    });
+  };
+
+  const addAction = (action: {
+    idPrefix: string;
+    kind: PaperworkAction["kind"];
+    label: string;
+    content?: string;
+  }) => {
+    updateFormat((format) => {
+      format.actions.push({
+        id: nextActionId(format, action.idPrefix),
+        kind: action.kind,
+        label: action.label,
+        content: action.content,
+        variant: "outline",
+      });
+    });
+  };
+
+  /** Copy & Open GOV: the post's own page is an input, so the extension gets it. */
+  const addGovAction = () => {
+    updateFormat((format) => {
+      if (!format.fields.some((field) => field.key === "govLink")) {
+        format.fields.push({
+          key: "govLink",
+          type: "url",
+          label: "GOV Link",
+          hint: "The GOV page this post belongs on.",
+          required: true,
+        });
+      }
+      format.actions.push({
+        id: nextActionId(format, "copyOpenGov"),
+        kind: "copy_open",
+        label: "Copy & Open GOV",
+        content: "{{govLink}}",
+        requiresField: "govLink",
+        variant: "outline",
+      });
     });
   };
 
@@ -344,6 +411,25 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
     ...(placed?.format.fields.map((field) => field.key) ?? []),
     ...BUILTIN_PLACEHOLDERS,
   ];
+
+  // Everything the format writes that nothing provides yet - the one list a
+  // member can act on, instead of a validation line naming a placeholder.
+  const knownPlaceholders = new Set([
+    ...(placed?.format.fields.map((field) => field.key) ?? []),
+    ...BUILTIN_PLACEHOLDERS,
+  ]);
+  const missingPlaceholders = placed
+    ? [
+        ...templatePlaceholders(placed.format.template),
+        ...templatePlaceholders(placed.format.subject ?? ""),
+        ...placed.format.actions.flatMap((action) =>
+          templatePlaceholders(action.content ?? ""),
+        ),
+      ].filter(
+        (name, index, all) =>
+          !knownPlaceholders.has(name) && all.indexOf(name) === index,
+      )
+    : [];
 
   /**
    * The division the app already declares, if this config is one. It is read from
@@ -767,7 +853,7 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xs font-semibold text-foreground">
-                      Fields
+                      Inputs
                     </h3>
                     <Button
                       type="button"
@@ -793,7 +879,7 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                       }
                     >
                       <Plus className="h-3.5 w-3.5" />
-                      Add field
+                      Add input
                     </Button>
                   </div>
 
@@ -970,6 +1056,51 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                     rows={12}
                     className="resize-y font-mono text-xs"
                   />
+
+                  {missingPlaceholders.length > 0 && (
+                    <div className="space-y-2 rounded-xl border border-amber-300/40 bg-amber-50/60 p-3 dark:border-amber-500/20 dark:bg-amber-500/10">
+                      <p className="text-[10px] text-amber-700 dark:text-amber-300">
+                        The template asks for these, and no input provides them
+                        yet. Press one to add its input.
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {missingPlaceholders.map((name) => (
+                          <Button
+                            key={name}
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            className="h-6 px-2 font-mono text-[10px]"
+                            onClick={() => addInput(name)}
+                          >
+                            <Plus className="h-3 w-3" />
+                            {`{{${name}}}`}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="space-y-1.5 pt-1">
+                    <Label className="text-xs text-muted-foreground">
+                      Insert a BBCode block
+                    </Label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {PAPERWORK_SNIPPETS.map((snippet) => (
+                        <Button
+                          key={snippet.id}
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="h-6 px-2 text-[10px]"
+                          title={snippet.description}
+                          onClick={() => insertText(snippet.bbcode)}
+                        >
+                          {snippet.label}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -979,74 +1110,204 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                   {placed.format.actions.map((action, index) => (
                     <div
                       key={`${action.id}-${index}`}
-                      className="flex items-center gap-2 rounded-xl border border-border bg-background/40 p-2"
+                      className="space-y-2 rounded-xl border border-border bg-background/40 p-2"
                     >
-                      <span className="w-40 shrink-0 font-mono text-[10px] text-muted-foreground">
-                        {action.kind}
-                      </span>
-                      <Input
-                        value={action.label}
-                        onChange={(event) =>
-                          updateFormat((format) => {
-                            format.actions[index] = {
-                              ...format.actions[index],
-                              label: event.target.value,
-                            };
-                          })
-                        }
-                      />
-                      <Button
-                        type="button"
-                        size="icon"
-                        variant="ghost"
-                        aria-label="Remove action"
-                        onClick={() =>
-                          updateFormat((format) => {
-                            format.actions.splice(index, 1);
-                          })
-                        }
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <span className="w-32 shrink-0 font-mono text-[10px] text-muted-foreground">
+                          {action.kind}
+                        </span>
+                        <Input
+                          value={action.label}
+                          onChange={(event) =>
+                            updateAction(index, { label: event.target.value })
+                          }
+                        />
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="ghost"
+                          aria-label="Remove action"
+                          onClick={() =>
+                            updateFormat((format) => {
+                              format.actions.splice(index, 1);
+                            })
+                          }
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+
+                      {action.kind === "copy_open" && (
+                        <div className="space-y-1">
+                          <Label className="text-[10px] text-muted-foreground">
+                            Opens (a URL, or an input holding one)
+                          </Label>
+                          <Input
+                            value={action.content ?? ""}
+                            onChange={(event) =>
+                              updateAction(index, {
+                                content: event.target.value,
+                              })
+                            }
+                            placeholder="https://gov.eclipse-rp.net/… or {{govLink}}"
+                            className="font-mono text-xs"
+                          />
+                        </div>
+                      )}
+
+                      {action.kind === "copy_text" && (
+                        <div className="space-y-1">
+                          <Label className="text-[10px] text-muted-foreground">
+                            BBCode this button copies
+                          </Label>
+                          <Textarea
+                            value={action.content ?? ""}
+                            onChange={(event) =>
+                              updateAction(index, {
+                                content: event.target.value,
+                              })
+                            }
+                            rows={3}
+                            className="resize-y font-mono text-xs"
+                          />
+                        </div>
+                      )}
+
+                      {(action.kind === "insert_utc_date" ||
+                        action.kind === "insert_utc_time") &&
+                        (placed.format.fields.length > 0 ? (
+                          <div className="space-y-1">
+                            <Label className="text-[10px] text-muted-foreground">
+                              Fills the input
+                            </Label>
+                            <Select
+                              value={action.target ?? ""}
+                              onValueChange={(value) =>
+                                updateAction(index, { target: value })
+                              }
+                            >
+                              <SelectTrigger size="sm" className="w-full">
+                                <SelectValue placeholder="Choose an input" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {placed.format.fields.map((field) => (
+                                  <SelectItem key={field.key} value={field.key}>
+                                    {field.label || field.key}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        ) : (
+                          <p className="text-[10px] text-muted-foreground">
+                            Add an input first, so the button has somewhere to
+                            write.
+                          </p>
+                        ))}
+
+                      {(action.kind === "copy_text" ||
+                        action.kind === "copy_open") &&
+                        placed.format.fields.length > 0 && (
+                          <div className="space-y-1">
+                            <Label className="text-[10px] text-muted-foreground">
+                              Stays disabled until this input is filled
+                            </Label>
+                            <Select
+                              value={action.requiresField ?? "none"}
+                              onValueChange={(value) =>
+                                updateAction(index, {
+                                  requiresField:
+                                    value === "none" ? undefined : value,
+                                })
+                              }
+                            >
+                              <SelectTrigger size="sm" className="w-full">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="none">Nothing</SelectItem>
+                                {placed.format.fields.map((field) => (
+                                  <SelectItem key={field.key} value={field.key}>
+                                    {field.label || field.key}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
                     </div>
                   ))}
                   <div className="flex flex-wrap gap-2">
                     <AddAction
                       label="Copy template"
                       onAdd={() =>
-                        updateFormat((format) => {
-                          format.actions.push({
-                            id: nextActionId(format, "copyTemplate"),
-                            kind: "copy_template",
-                            label: "Copy Template",
-                            variant: "outline",
-                          });
+                        addAction({
+                          idPrefix: "copyTemplate",
+                          kind: "copy_template",
+                          label: "Copy Template",
                         })
                       }
                     />
                     <AddAction
                       label="Copy title"
                       onAdd={() =>
-                        updateFormat((format) => {
-                          format.actions.push({
-                            id: nextActionId(format, "copyTitle"),
-                            kind: "copy_subject",
-                            label: "Copy Title",
-                            variant: "outline",
-                          });
+                        addAction({
+                          idPrefix: "copyTitle",
+                          kind: "copy_subject",
+                          label: "Copy Title",
+                        })
+                      }
+                    />
+                    <AddAction
+                      label="Copy text"
+                      onAdd={() =>
+                        addAction({
+                          idPrefix: "copyText",
+                          kind: "copy_text",
+                          label: "Copy Text",
+                          content: "",
+                        })
+                      }
+                    />
+                    <AddAction
+                      label="Copy & open"
+                      onAdd={() =>
+                        addAction({
+                          idPrefix: "copyOpen",
+                          kind: "copy_open",
+                          label: "Copy & Open",
+                          content: "",
+                        })
+                      }
+                    />
+                    <AddAction label="Copy & open GOV" onAdd={addGovAction} />
+                    <AddAction
+                      label="Today (UTC)"
+                      onAdd={() =>
+                        addAction({
+                          idPrefix: "insertDate",
+                          kind: "insert_utc_date",
+                          label: "Today",
+                        })
+                      }
+                    />
+                    <AddAction
+                      label="Time (UTC)"
+                      onAdd={() =>
+                        addAction({
+                          idPrefix: "insertTime",
+                          kind: "insert_utc_time",
+                          label: "Time",
                         })
                       }
                     />
                     <AddAction
                       label="Reset"
                       onAdd={() =>
-                        updateFormat((format) => {
-                          format.actions.push({
-                            id: nextActionId(format, "reset"),
-                            kind: "reset",
-                            label: "Reset",
-                            variant: "outline",
-                          });
+                        addAction({
+                          idPrefix: "reset",
+                          kind: "reset",
+                          label: "Reset",
                         })
                       }
                     />
@@ -1130,6 +1391,15 @@ function AddAction({ label, onAdd }: { label: string; onAdd: () => void }) {
   );
 }
 
+/** `patientName` -> `Patient Name`, for an input added from a placeholder. */
+function labelFromKey(key: string): string {
+  const words = key
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/[_.]+/g, " ")
+    .trim();
+  return words ? words.charAt(0).toUpperCase() + words.slice(1) : "Input";
+}
+
 function nextActionId(format: PaperworkFormat, base: string): string {
   let id = base;
   let index = 2;
@@ -1140,8 +1410,8 @@ function nextActionId(format: PaperworkFormat, base: string): string {
   return id;
 }
 
-// Kept for the next slice: the action kinds the editor will offer, so the
-// registry and the UI cannot drift apart.
+// Every action kind the renderer knows, so a kind that cannot be offered here
+// is visible as a missing entry rather than a silent gap.
 export const ACTION_KINDS: readonly PaperworkAction["kind"][] = [
   "copy_template",
   "copy_subject",
