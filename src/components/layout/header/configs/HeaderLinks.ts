@@ -106,7 +106,9 @@ export const headerLinks: HeaderLink[] = [
         : [],
   ),
   // Paperwork generated for a division the app already has: its own entry, so
-  // the division's hand-written page stays where it is.
+  // the division's hand-written page stays where it is. It is named the division
+  // is named, not "<division> Paperwork" - the sidebar lists pages by the thing
+  // they are, not by the file the maker happened to write.
   ...Object.values(
     GENERATED_PAPERWORK_PAGES as Record<
       string,
@@ -116,7 +118,7 @@ export const headerLinks: HeaderLink[] = [
     entry.route
       ? [
           {
-            label: `${entry.label} Paperwork`,
+            label: entry.label,
             href: entry.route,
             icon: FileText,
             group: "Divisions" as const,

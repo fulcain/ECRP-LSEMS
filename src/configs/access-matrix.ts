@@ -78,7 +78,7 @@ function generatedDivisionRows(): Record<
       >,
     ).map((page) => [
       page.route,
-      { label: `${page.label} Paperwork`, group: "Divisions" as const },
+      { label: page.label, group: "Divisions" as const },
     ]),
   ]);
 }
