@@ -24,6 +24,9 @@ import {
   type PaperworkConfig,
 } from "./schema";
 
+/** Where a division's emblem lives: the maker offers these by name. */
+export const EMBLEM_DIRECTORY = "public/Division";
+
 export const GENERATED_PAPERWORK_DIR = "src/app/constants/paperwork/generated";
 export const GENERATED_DIVISIONS_FILE = "src/configs/generated/divisions.ts";
 export const GENERATED_DIVISION_PAGES_FILE =
@@ -335,6 +338,26 @@ export const GENERATED_DIVISION_PAGES = {
 ${entries}
 } as const;
 `;
+}
+
+/**
+ * The emblems this checkout has, by file name without its extension: `AMU`,
+ * `BLS`, `A&R - old`. Read from disk so the maker cannot offer a division an
+ * image the repository does not hold.
+ */
+export async function readEmblemNames(
+  options: { root?: string } = {},
+): Promise<string[]> {
+  const root = options.root ?? process.cwd();
+  try {
+    const entries = await readdir(path.join(root, EMBLEM_DIRECTORY));
+    return entries
+      .filter((entry) => /\.(png|jpe?g|svg|webp)$/i.test(entry))
+      .map((entry) => entry.replace(/\.[^.]+$/, ""))
+      .sort((a, b) => a.localeCompare(b));
+  } catch {
+    return [];
+  }
 }
 
 /** Every generated config on disk, ordered by key - what the maker reopens. */

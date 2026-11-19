@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
@@ -85,6 +86,23 @@ function clone<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
 
+/** `/Division/AMU.png` -> `AMU`: the emblem's own name, which is what a maker types. */
+function emblemName(path: string | undefined): string {
+  if (!path) return "";
+  return path.trim().replace(/^.*\//, "").replace(/\.[^./]+$/, "");
+}
+
+/**
+ * `AMU` -> `/Division/AMU.png`. A name is what somebody knows about their
+ * division's emblem - the path it lives at is the app's business.
+ */
+function emblemPath(name: string): string {
+  const trimmed = name.trim();
+  if (!trimmed) return "";
+  if (trimmed.startsWith("/") || /^https?:\/\//i.test(trimmed)) return trimmed;
+  return `/Division/${/\.[a-z0-9]+$/i.test(trimmed) ? trimmed : `${trimmed}.png`}`;
+}
+
 function locate(config: PaperworkConfig, key: string): PlacedFormat | null {
   for (const page of config.division.pages) {
     for (const [groupIndex, group] of page.groups.entries()) {
@@ -147,14 +165,20 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
   const [written, setWritten] = useState<string[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState<PaperworkConfig[]>([]);
+  /** The emblems `public/Division` holds, by name - what the emblem box offers. */
+  const [emblems, setEmblems] = useState<string[]>([]);
   const templateRef = useRef<HTMLTextAreaElement>(null);
 
   const refreshSaved = useCallback(async () => {
     try {
       const response = await fetch("/api/paperwork-maker");
       if (!response.ok) return;
-      const body = (await response.json()) as { configs?: PaperworkConfig[] };
+      const body = (await response.json()) as {
+        configs?: PaperworkConfig[];
+        emblems?: string[];
+      };
       setSaved(body.configs ?? []);
+      setEmblems(body.emblems ?? []);
     } catch {
       // The list is a shortcut; the editor works without it.
     }
@@ -719,15 +743,58 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                 <Label className="text-xs text-muted-foreground">
                   Emblem (optional)
                 </Label>
-                <Input
-                  value={config.division.emblem ?? ""}
-                  onChange={(event) =>
-                    update((draft) => {
-                      draft.division.emblem = event.target.value;
-                    })
-                  }
-                  placeholder="/Division/BLS.png"
-                />
+                {(() => {
+                  const name = emblemName(config.division.emblem);
+                  const known = emblems.includes(name);
+                  return (
+                    <>
+                      <div className="flex items-center gap-2">
+                        {name && known ? (
+                          <Image
+                            src={config.division.emblem ?? ""}
+                            alt=""
+                            width={36}
+                            height={36}
+                            className="h-9 w-9 shrink-0 object-contain"
+                          />
+                        ) : (
+                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-dashed border-border text-[10px] text-muted-foreground">
+                            none
+                          </span>
+                        )}
+                        <Input
+                          value={name}
+                          list="division-emblems"
+                          onChange={(event) =>
+                            update((draft) => {
+                              draft.division.emblem =
+                                emblemPath(event.target.value) || undefined;
+                            })
+                          }
+                          placeholder="BLS"
+                          className="font-mono"
+                        />
+                      </div>
+                      <datalist id="division-emblems">
+                        {emblems.map((emblem) => (
+                          <option key={emblem} value={emblem} />
+                        ))}
+                      </datalist>
+                      {name && !known ? (
+                        <p className="text-[10px] text-amber-700 dark:text-amber-300">
+                          No {`public/Division/${name}.png`} in this checkout -
+                          the emblem file has to exist before the page can show
+                          it.
+                        </p>
+                      ) : (
+                        <p className="text-[10px] text-muted-foreground">
+                          Type the emblem name - {emblems.length} in
+                          public/Division - or a path of your own.
+                        </p>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
               {page && (
                 <>

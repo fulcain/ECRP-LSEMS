@@ -7,6 +7,7 @@ import { isDiscordAdmin } from "@/lib/role-config";
 import { isPaperworkMakerAvailable } from "@/lib/paperwork/availability";
 import {
   planDivision,
+  readEmblemNames,
   readGeneratedConfigs,
   writePlan,
 } from "@/lib/paperwork/generate";
@@ -15,7 +16,8 @@ import type { PaperworkConfig } from "@/lib/paperwork/schema";
 /**
  * GET /api/paperwork-maker
  *   every generated config on disk, so a format that was generated can be
- *   reopened in the maker and edited
+ *   reopened in the maker and edited, plus the emblem names `public/Division`
+ *   holds, so the maker can offer them instead of asking for a path
  *
  * POST /api/paperwork-maker
  *   `{ mode: "plan", config }`     - validate and return every file it would write
@@ -88,6 +90,7 @@ export async function GET() {
   return NextResponse.json({
     success: true,
     configs: await readGeneratedConfigs(),
+    emblems: await readEmblemNames(),
   });
 }
 
