@@ -484,24 +484,66 @@ function FieldControl({
     );
   }
 
+  // A date or time field carries its own "now": the format does not have to
+  // declare an insert action for the one thing anyone ever types there.
+  const moment =
+    field.type === "date"
+      ? { label: "Now", value: () => formatUtcDate() }
+      : field.type === "time"
+        ? { label: "Copy now", value: () => formatUtcTime() }
+        : undefined;
+
   return (
     <div className="space-y-1">
       <Label htmlFor={id} className="sr-only">
         {field.label}
       </Label>
-      <Input
-        id={id}
-        type={field.type === "number" ? "number" : "text"}
-        value={String(value ?? "")}
-        onChange={(event) => onChange(event.target.value)}
-        placeholder={
-          field.placeholder ??
-          (field.type === "staff"
-            ? `{{staff.${field.source ?? "name"}}}`
-            : undefined)
-        }
-        className={field.type === "date" || field.type === "time" ? "font-mono" : undefined}
-      />
+      <div className="flex items-center gap-1.5">
+        <Input
+          id={id}
+          type={field.type === "number" ? "number" : "text"}
+          value={String(value ?? "")}
+          onChange={(event) => onChange(event.target.value)}
+          placeholder={
+            field.placeholder ??
+            (field.type === "staff"
+              ? `{{staff.${field.source ?? "name"}}}`
+              : undefined)
+          }
+          className={moment ? "font-mono" : undefined}
+        />
+        {moment && (
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            className="shrink-0 text-xs"
+            title={
+              field.type === "date"
+                ? "Fill in today's date and copy it (UTC)"
+                : "Fill in the current UTC time and copy it"
+            }
+            onClick={async () => {
+              const next = moment.value();
+              onChange(next);
+              let copied = false;
+              try {
+                await navigator.clipboard.writeText(next);
+                copied = true;
+              } catch {
+                copied = false;
+              }
+              toast.success(
+                copied
+                  ? `Copied ${next} (UTC).`
+                  : `Filled in ${next} (UTC).`,
+              );
+            }}
+          >
+            {moment.label}
+          </Button>
+        )}
+      </div>
     </div>
   );
 }
