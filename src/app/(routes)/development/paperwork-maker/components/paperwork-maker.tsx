@@ -69,6 +69,17 @@ type PlanResponse = {
 // open as this division's paperwork.
 const DRAFT_KEY = "paperwork-maker-config-v2";
 
+/**
+ * Every value the Staff Page already holds, ready to drop into a format. They
+ * are inputs like any other, but nobody types them: the renderer seeds them from
+ * the signed-in member, so `{{staffName}}` is filled in when the page opens.
+ */
+const STAFF_INPUTS = [
+  { source: "name", key: "staffName", label: "Staff name" },
+  { source: "rank", key: "staffRank", label: "Staff rank" },
+  { source: "signature", key: "staffSignature", label: "Staff signature" },
+] as const;
+
 function clone<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
@@ -306,6 +317,23 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
         label: action.label,
         content: action.content,
         variant: "outline",
+      });
+    });
+  };
+
+  /** A Staff Page value as an input: known before the member types anything. */
+  const addStaffInput = (source: (typeof STAFF_INPUTS)[number]["source"]) => {
+    const preset = STAFF_INPUTS.find((entry) => entry.source === source);
+    if (!preset) return;
+    updateFormat((format) => {
+      if (format.fields.some((field) => field.key === preset.key)) return;
+      format.fields.push({
+        key: preset.key,
+        type: "staff",
+        label: preset.label,
+        hint: "Filled in from the Staff Page.",
+        source,
+        required: true,
       });
     });
   };
@@ -883,6 +911,36 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                     </Button>
                   </div>
 
+                  <div className="flex flex-wrap gap-1.5">
+                    <span className="w-full text-[10px] text-muted-foreground">
+                      Staff Page values - already filled in whenever the
+                      paperwork is written
+                    </span>
+                    {STAFF_INPUTS.map((entry) => {
+                      const added = placed.format.fields.some(
+                        (field) => field.key === entry.key,
+                      );
+                      return (
+                        <Button
+                          key={entry.key}
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="h-6 px-2 text-[10px]"
+                          disabled={added}
+                          title={`Adds an input that reads {{${entry.key}}} from the Staff Page`}
+                          onClick={() => addStaffInput(entry.source)}
+                        >
+                          <Plus className="h-3 w-3" />
+                          {entry.label}
+                          <span className="font-mono text-muted-foreground">
+                            {`{{${entry.key}}}`}
+                          </span>
+                        </Button>
+                      );
+                    })}
+                  </div>
+
                   <div className="space-y-3">
                     {placed.format.fields.map((field, index) => (
                       <div
@@ -972,6 +1030,9 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                               onValueChange={(value) =>
                                 updateField(index, {
                                   type: value as PaperworkFieldType,
+                                  ...(value === "staff" && !field.source
+                                    ? { source: "name" as const }
+                                    : {}),
                                 })
                               }
                             >
@@ -1022,6 +1083,33 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                             </Select>
                           </div>
                         </div>
+
+                        {field.type === "staff" && (
+                          <div className="space-y-1">
+                            <Label className="text-[10px] text-muted-foreground">
+                              Staff Page value
+                            </Label>
+                            <Select
+                              value={field.source ?? "name"}
+                              onValueChange={(value) =>
+                                updateField(index, {
+                                  source: value as "name" | "rank" | "signature",
+                                })
+                              }
+                            >
+                              <SelectTrigger size="sm" className="w-full">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="name">Name</SelectItem>
+                                <SelectItem value="rank">Rank</SelectItem>
+                                <SelectItem value="signature">
+                                  Signature image
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -1324,7 +1412,7 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
               Live preview
             </h2>
             {placed ? (
-              <PaperworkWorkspace config={config} />
+              <PaperworkWorkspace config={config} persist={false} />
             ) : (
               <p className="text-xs text-muted-foreground">
                 Pick a format to preview it.

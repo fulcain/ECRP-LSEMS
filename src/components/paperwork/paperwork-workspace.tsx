@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { Check, Copy, ExternalLink, RotateCcw, RotateCw } from "lucide-react";
 import { toast } from "react-toastify";
 
@@ -69,7 +69,18 @@ function iconFor(action: PaperworkAction) {
  * the same component reading the same data. It never evaluates a template as
  * code: placeholders are substituted as text.
  */
-export function PaperworkWorkspace({ config }: { config: PaperworkConfig }) {
+export function PaperworkWorkspace({
+  config,
+  persist = true,
+}: {
+  config: PaperworkConfig;
+  /**
+   * Whether typed values are kept as a draft. The Paperwork Maker previews with
+   * this off: what somebody types while editing a format is not paperwork they
+   * are writing, so it is never saved.
+   */
+  persist?: boolean;
+}) {
   const division = config.division;
   const { medicCredentials, divisionRanks } = useMedic();
 
@@ -79,10 +90,15 @@ export function PaperworkWorkspace({ config }: { config: PaperworkConfig }) {
   // Nothing is picked until the member picks it: the cards first, the builder
   // once they have said what they are writing.
   const [formatKey, setFormatKey] = useState<string | null>(null);
-  const [draft, setDraft] = useLocalStorage<Drafts>(
+  const [savedDraft, setSavedDraft] = useLocalStorage<Drafts>(
     `paperwork-draft:${division.key}`,
     {},
   );
+  const [previewDraft, setPreviewDraft] = useState<Drafts>({});
+  const draft = persist ? savedDraft : previewDraft;
+  const setDraft: Dispatch<SetStateAction<Drafts>> = persist
+    ? setSavedDraft
+    : setPreviewDraft;
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const staff = {
@@ -471,7 +487,12 @@ function FieldControl({
         type={field.type === "number" ? "number" : "text"}
         value={String(value ?? "")}
         onChange={(event) => onChange(event.target.value)}
-        placeholder={field.placeholder}
+        placeholder={
+          field.placeholder ??
+          (field.type === "staff"
+            ? `{{staff.${field.source ?? "name"}}}`
+            : undefined)
+        }
         className={field.type === "date" || field.type === "time" ? "font-mono" : undefined}
       />
     </div>
