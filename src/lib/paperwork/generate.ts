@@ -147,8 +147,10 @@ export default function Page() {
 }
 
 type GeneratedTarget = {
-  /** A division the app does not know yet: page plus sidebar entry. */
+  /** This config is the division's own page, not a tab beside one. */
   isNew: boolean;
+  /** Whether the maker also declares the division, or only gives it a page. */
+  ownsDeclaration: boolean;
   route: string;
   pagePath: string;
 };
@@ -158,22 +160,32 @@ function targetFor(config: PaperworkConfig): GeneratedTarget {
   const key = config.division.key;
   const declared = (DIVISIONS as Record<string, Division>)[key];
   const generated = (GENERATED_DIVISIONS as Record<string, Division>)[key];
+  // A hand-written division declares its route once it has a page. One with no
+  // route has none, so its paperwork is the page - hanging it off a parent that
+  // does not exist would leave the division listed with nothing behind it.
+  const handWritten = Boolean(declared && !generated);
+  const base = handWritten ? declared.route?.replace(/\/+$/, "") : undefined;
 
-  if (!declared || generated) {
+  if (base) {
+    // The division already has a hand-written page: this one is the division's
+    // paperwork tab, so the two never compete for the same file.
     return {
-      isNew: true,
-      route: divisionRoute(key),
-      pagePath: `src/app/(routes)/divisions/${divisionSlug(key)}/page.tsx`,
+      isNew: false,
+      ownsDeclaration: false,
+      route: `${base}/paperwork`,
+      pagePath: `src/app/(routes)/divisions/${divisionSlug(key)}/paperwork/page.tsx`,
     };
   }
 
-  // The division already has a hand-written page: this one is the division's
-  // paperwork tab, so the two never compete for the same file.
-  const base = (declared.route ?? divisionRoute(key)).replace(/\/+$/, "");
   return {
-    isNew: false,
-    route: `${base}/paperwork`,
-    pagePath: `src/app/(routes)/divisions/${divisionSlug(key)}/paperwork/page.tsx`,
+    isNew: true,
+    // The ranks and membership of a division declared by hand stay where they
+    // are: the maker only owns divisions it introduced itself.
+    ownsDeclaration: !handWritten,
+    route: handWritten
+      ? divisionRoute(key)
+      : (generated?.route ?? divisionRoute(key)),
+    pagePath: `src/app/(routes)/divisions/${divisionSlug(key)}/page.tsx`,
   };
 }
 
@@ -198,7 +210,10 @@ function generatedRoles(configs: readonly PaperworkConfig[]): {
     const division = config.division;
     const target = targetFor(config);
 
-    if (!target.isNew) {
+    if (!target.isNew || !target.ownsDeclaration) {
+      // Either a tab beside a hand-written page, or the page of a division whose
+      // declaration is hand-written: in both cases the route is a nav entry and a
+      // matrix row, and nothing else is the maker's to write.
       paperworkPages.push({
         key: division.key,
         label: division.label,
@@ -279,8 +294,10 @@ ${divisionEntries}
 } as const satisfies Record<string, Division>;
 
 /**
- * Paperwork pages of divisions that already exist in the app. They are not
- * divisions of their own, so they are only a sidebar entry and a matrix row.
+ * Pages of divisions the app already declares: either the division's paperwork
+ * tab beside a hand-written page, or the page of a division that had none. The
+ * division's own declaration stays in \`configs/roles.ts\`, so these are only a
+ * sidebar entry and a matrix row.
  */
 export const GENERATED_PAPERWORK_PAGES = {
 ${paperworkEntries}
@@ -290,7 +307,9 @@ ${paperworkEntries}
 
 function generatedPagesContent(configs: readonly PaperworkConfig[]): string {
   const entries = configs
-    .filter((config) => targetFor(config).isNew)
+    // A division declared by hand already has its artwork and links in a module;
+    // this file only spells out the ones the maker introduced.
+    .filter((config) => targetFor(config).ownsDeclaration)
     .map((config) => {
       const division = config.division;
       return `  ${JSON.stringify(division.key)}: {
