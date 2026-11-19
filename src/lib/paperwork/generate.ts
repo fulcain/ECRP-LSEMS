@@ -196,18 +196,26 @@ type GeneratedDivisionEntry = {
   key: string;
   label: string;
   route: string;
+  icon?: string;
   membershipAlias?: string;
   ranks: string[];
+};
+
+type GeneratedPageEntry = {
+  key: string;
+  label: string;
+  route: string;
+  icon?: string;
 };
 
 function generatedRoles(configs: readonly PaperworkConfig[]): {
   roles: { alias: string; name: string; id: string }[];
   divisions: GeneratedDivisionEntry[];
-  paperworkPages: { key: string; label: string; route: string }[];
+  paperworkPages: GeneratedPageEntry[];
 } {
   const roles: { alias: string; name: string; id: string }[] = [];
   const divisions: GeneratedDivisionEntry[] = [];
-  const paperworkPages: { key: string; label: string; route: string }[] = [];
+  const paperworkPages: GeneratedPageEntry[] = [];
 
   for (const config of configs) {
     const division = config.division;
@@ -221,6 +229,7 @@ function generatedRoles(configs: readonly PaperworkConfig[]): {
         key: division.key,
         label: division.label,
         route: target.route,
+        icon: division.icon,
       });
       continue;
     }
@@ -242,6 +251,7 @@ function generatedRoles(configs: readonly PaperworkConfig[]): {
       key: division.key,
       label: division.label,
       route: target.route,
+      icon: division.icon,
       membershipAlias: division.membership?.alias,
       ranks: (division.ranks ?? []).map((rank) => rank.alias),
     });
@@ -267,7 +277,7 @@ function generatedRolesContent(configs: readonly PaperworkConfig[]): string {
       (division) => `  ${JSON.stringify(division.key)}: {
     label: ${JSON.stringify(division.label)},
     route: ${JSON.stringify(division.route)},
-    ${division.membershipAlias ? `membership: ${JSON.stringify(division.membershipAlias)},` : ""}
+${division.icon ? `    icon: ${JSON.stringify(division.icon)},\n` : ""}    ${division.membershipAlias ? `membership: ${JSON.stringify(division.membershipAlias)},` : ""}
     ranks: ${JSON.stringify(division.ranks)},
   },`,
     )
@@ -278,7 +288,7 @@ function generatedRolesContent(configs: readonly PaperworkConfig[]): string {
       (entry) => `  ${JSON.stringify(entry.key)}: {
     label: ${JSON.stringify(entry.label)},
     route: ${JSON.stringify(entry.route)},
-  },`,
+${entry.icon ? `    icon: ${JSON.stringify(entry.icon)},\n` : ""}  },`,
     )
     .join("\n");
 
@@ -304,7 +314,10 @@ ${divisionEntries}
  */
 export const GENERATED_PAPERWORK_PAGES = {
 ${paperworkEntries}
-} as const satisfies Record<string, { label: string; route: string }>;
+} as const satisfies Record<
+  string,
+  { label: string; route: string; icon?: string }
+>;
 `;
 }
 

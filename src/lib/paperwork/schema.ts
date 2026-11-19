@@ -116,6 +116,8 @@ export type PaperworkDivision = {
   /** One sentence for the division page header. */
   description: string;
   emblem?: string;
+  /** The sidebar icon, by name in `DIVISION_ICONS`; absent means the file icon. */
+  icon?: string;
   imageSize?: string;
   image?: string;
   membership?: PaperworkDivisionRole;
@@ -193,6 +195,13 @@ export function validatePaperworkConfig(
   if (!division.label?.trim()) problems.push("The division needs a name.");
   if (!division.description?.trim()) {
     problems.push("The division needs a description for its page header.");
+  }
+  // Only the shape is checked here: the names live in the icon module, which is
+  // a component file this engine must not pull into an API route.
+  if (division.icon && !/^[A-Z][a-zA-Z0-9]*$/.test(division.icon)) {
+    problems.push(
+      `Sidebar icon “${division.icon}” must be an icon name such as FileText.`,
+    );
   }
   if (!Array.isArray(division.pages) || division.pages.length === 0) {
     problems.push("The division needs at least one paperwork page.");

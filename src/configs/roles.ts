@@ -457,6 +457,12 @@ export type Division = {
   /** The division's page. Absent => the division has no route yet. */
   route?: string;
   /**
+   * The sidebar icon, by name in `DIVISION_ICONS`
+   * (`components/layout/header/configs/division-icons.ts`). Absent => the file
+   * icon. A name, not a component: it is data in a generated file.
+   */
+  icon?: string;
+  /**
    * The director roles that cover this division - the Director of
    * Administration looks after Basic Life Support, and so on. It is the only
    * place that coverage is written down: `general/directorRoles.ts` derives

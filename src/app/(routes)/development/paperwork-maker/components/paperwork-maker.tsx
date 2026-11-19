@@ -25,6 +25,10 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import {
+  DIVISION_ICON_NAMES,
+  divisionIcon,
+} from "@/components/layout/header/configs/division-icons";
 import { PaperworkWorkspace } from "@/components/paperwork/paperwork-workspace";
 import { DIVISION_ENTRIES } from "@/configs/roles";
 import { FIELD_TYPES } from "@/lib/paperwork/fields";
@@ -515,6 +519,7 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
     update((draft) => {
       draft.division.key = value;
       draft.division.label = entry[1].label;
+      draft.division.icon = entry[1].icon;
     });
   };
 
@@ -738,6 +743,55 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                   rows={2}
                   className="resize-y"
                 />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">
+                  Sidebar icon
+                </Label>
+                {(() => {
+                  const name = config.division.icon ?? "";
+                  const Icon = divisionIcon(name);
+                  const known = (DIVISION_ICON_NAMES as readonly string[]).includes(
+                    name,
+                  );
+                  return (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border bg-background/40">
+                          <Icon className="h-4 w-4" />
+                        </span>
+                        <Input
+                          value={name}
+                          list="division-icons"
+                          onChange={(event) =>
+                            update((draft) => {
+                              draft.division.icon =
+                                event.target.value || undefined;
+                            })
+                          }
+                          placeholder="FileText"
+                          className="font-mono"
+                        />
+                      </div>
+                      <datalist id="division-icons">
+                        {DIVISION_ICON_NAMES.map((icon) => (
+                          <option key={icon} value={icon} />
+                        ))}
+                      </datalist>
+                      {name && !known ? (
+                        <p className="text-[10px] text-amber-700 dark:text-amber-300">
+                          Not a declared icon - the sidebar falls back to
+                          FileText. Pick one from the list.
+                        </p>
+                      ) : (
+                        <p className="text-[10px] text-muted-foreground">
+                          Type the icon name - {DIVISION_ICON_NAMES.length}{" "}
+                          available - and it is used in the sidebar entry.
+                        </p>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs text-muted-foreground">

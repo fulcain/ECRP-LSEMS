@@ -5,6 +5,7 @@ import {
 } from "@/configs/generated/divisions";
 import type { Division } from "@/configs/roles";
 import { isPaperworkMakerAvailable } from "@/lib/paperwork/availability";
+import { divisionIcon } from "./division-icons";
 import type { LucideIcon } from "lucide-react";
 import {
   Activity,
@@ -98,7 +99,7 @@ export const headerLinks: HeaderLink[] = [
             {
               label: division.label,
               href: division.route,
-              icon: FileText,
+              icon: divisionIcon(division.icon),
               group: "Divisions" as const,
               match: [division.route],
             },
@@ -112,7 +113,7 @@ export const headerLinks: HeaderLink[] = [
   ...Object.values(
     GENERATED_PAPERWORK_PAGES as Record<
       string,
-      { label: string; route: string }
+      { label: string; route: string; icon?: string }
     >,
   ).flatMap((entry) =>
     entry.route
@@ -120,7 +121,7 @@ export const headerLinks: HeaderLink[] = [
           {
             label: entry.label,
             href: entry.route,
-            icon: FileText,
+            icon: divisionIcon(entry.icon),
             group: "Divisions" as const,
             match: [entry.route],
           },
