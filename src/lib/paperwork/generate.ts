@@ -124,6 +124,7 @@ function pageContent(config: PaperworkConfig, key: string): string {
 import type { Metadata } from "next";
 
 import { PaperworkWorkspace } from "@/components/paperwork/paperwork-workspace";
+import { PageContainer } from "@/components/ui/page-container";
 import type { PaperworkConfig } from "@/lib/paperwork/schema";
 
 import config from "@/app/constants/paperwork/generated/${key}.json";
@@ -134,7 +135,13 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <PaperworkWorkspace config={config as PaperworkConfig} />;
+  // The same container every division page sits in: the workspace draws the
+  // heading and the builder, not the page's width or margins.
+  return (
+    <PageContainer>
+      <PaperworkWorkspace config={config as PaperworkConfig} />
+    </PageContainer>
+  );
 }
 `;
 }
