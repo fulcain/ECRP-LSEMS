@@ -161,11 +161,11 @@ function placedAt(
  * page renders, so "it looked fine in the maker" cannot mean something else.
  */
 /**
- * The scope a page files a new format under, and the line that scope carries -
- * a scope is a heading with a description, so it is born with both.
+ * What a page starts its scopes from. There is deliberately no default scope:
+ * an auto-made "Documents" is one nobody asked for, and an empty one is a
+ * validation error the author gets blamed for.
  */
-const DEFAULT_SCOPE = "Documents";
-const DEFAULT_SCOPE_HINT = "Every other format for this page.";
+const NEW_SCOPE = "New scope";
 
 export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
   const [config, setConfig] = useLocalStorage<PaperworkConfig>(
@@ -575,27 +575,18 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
   };
 
   const addFormat = () => {
-    if (!page) return;
+    // A format lives in a scope, so a page has to have one before it can hold a
+    // format - the author writes the heading rather than inheriting "Documents".
+    if (!page || page.groups.length === 0) return;
     const existing = new Set(formatOptions.map((option) => option.value));
     let index = 1;
     while (existing.has(`format${index}`)) index += 1;
     const key = `format${index}`;
-    // A new format goes under Documents, whatever scope happens to sit first.
-    const found = page.groups.findIndex(
-      (group) => group.label.trim().toLowerCase() === DEFAULT_SCOPE.toLowerCase(),
-    );
-    const groupIndex = found === -1 ? page.groups.length : found;
-    const formatIndex = found === -1 ? 0 : page.groups[found].formats.length;
+    const groupIndex = 0;
+    const formatIndex = page.groups[0].formats.length;
     update((draft) => {
       const target = draft.division.pages[activePageIndex];
       if (!target) return;
-      if (found === -1) {
-        target.groups.push({
-          label: DEFAULT_SCOPE,
-          hint: DEFAULT_SCOPE_HINT,
-          formats: [],
-        });
-      }
       target.groups[groupIndex]?.formats.push({
         key,
         label: "New format",
@@ -632,7 +623,7 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
       const moved = source?.formats.splice(placed.formatIndex, 1)[0];
       if (!moved) return;
       if (create) {
-        formatPage.groups.push({ label: "New scope", hint: "", formats: [moved] });
+        formatPage.groups.push({ label: NEW_SCOPE, hint: "", formats: [moved] });
         return;
       }
       formatPage.groups[groupIndex]?.formats.push(moved);
@@ -645,7 +636,13 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
     update((draft) => {
       const target = draft.division.pages[activePageIndex];
       if (!target) return;
-      target.groups.push({ label: "New scope", hint: "", formats: [] });
+      let name = NEW_SCOPE;
+      let index = 2;
+      while (target.groups.some((group) => group.label === name)) {
+        name = `${NEW_SCOPE} ${index}`;
+        index += 1;
+      }
+      target.groups.push({ label: name, hint: "", formats: [] });
     });
   };
 
@@ -751,7 +748,7 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
 
       {config.division.pages.length === 0 && (
         <p className="rounded-2xl border border-dashed border-border bg-surface/60 p-4 text-xs text-muted-foreground">
-          Name the division, then add a page and a format. Nothing is
+          Name the division, then add a page, a scope and a format. Nothing is
           pre-filled - enter the paperwork this division actually uses.
         </p>
       )}
@@ -1012,8 +1009,8 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                     </div>
                     {page.groups.length === 0 ? (
                       <p className="text-[10px] text-muted-foreground">
-                        No scopes yet - Add format starts the page off under
-                        Documents.
+                        No scopes yet. Add one and give it a title - a format
+                        is written under a scope, so this page needs one first.
                       </p>
                     ) : (
                       <div className="space-y-1.5">
@@ -1103,7 +1100,12 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                 size="sm"
                 variant="outline"
                 onClick={addFormat}
-                disabled={!page}
+                disabled={!page || page.groups.length === 0}
+                title={
+                  page && page.groups.length === 0
+                    ? "Add a scope to this page first"
+                    : undefined
+                }
               >
                 <Plus className="h-3.5 w-3.5" />
                 Add format
@@ -1112,9 +1114,11 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
 
             {!placed && (
               <p className="text-xs text-muted-foreground">
-                {page
-                  ? "No format yet - press Add format to write the first one."
-                  : "Add a page first, then a format."}
+                {!page
+                  ? "Add a page first, then a scope, then a format."
+                  : page.groups.length === 0
+                    ? "This page has no scope yet. Add one in the Scopes list above - the format goes under it."
+                    : "No format yet - press Add format to write the first one."}
               </p>
             )}
 
@@ -1212,7 +1216,7 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                         onValueChange={moveFormatToScope}
                       >
                         <SelectTrigger size="sm" className="w-full">
-                          <SelectValue placeholder={DEFAULT_SCOPE} />
+                          <SelectValue placeholder="Choose a scope" />
                         </SelectTrigger>
                         <SelectContent>
                           {scopes.map((group, index) => (
@@ -1236,7 +1240,7 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                         onChange={(event) =>
                           updateScope({ label: event.target.value })
                         }
-                        placeholder={DEFAULT_SCOPE}
+                        placeholder={NEW_SCOPE}
                       />
                     </div>
                     <div className="space-y-1.5 sm:col-span-2">
