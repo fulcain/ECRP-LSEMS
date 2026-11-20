@@ -25,6 +25,8 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+import { useMedic } from "@/app/context/MedicContext";
+import { getDirectorTitle } from "@/app/constants/general/directorRoles";
 import {
   DIVISION_ICON_NAMES,
   divisionIcon,
@@ -32,6 +34,7 @@ import {
 import { PaperworkWorkspace } from "@/components/paperwork/paperwork-workspace";
 import { DIVISION_ENTRIES } from "@/configs/roles";
 import { FIELD_TYPES } from "@/lib/paperwork/fields";
+import { renderTemplate } from "@/lib/paperwork/placeholders";
 import {
   BUILTIN_PLACEHOLDERS,
   copyOpenField,
@@ -84,6 +87,7 @@ const STAFF_INPUTS = [
   { source: "name", key: "staffName", label: "Staff name" },
   { source: "rank", key: "staffRank", label: "Staff rank" },
   { source: "signature", key: "staffSignature", label: "Staff signature" },
+  { source: "director", key: "staffDirector", label: "Director title" },
 ] as const;
 
 function clone<T>(value: T): T {
@@ -179,6 +183,7 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
   /** The emblems `public/Division` holds, by name - what the emblem box offers. */
   const [emblems, setEmblems] = useState<string[]>([]);
   const templateRef = useRef<HTMLTextAreaElement>(null);
+  const { medicCredentials, divisionRanks } = useMedic();
 
   const refreshSaved = useCallback(async () => {
     try {
@@ -484,6 +489,23 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
     ...(placed?.format.fields.map((field) => field.key) ?? []),
     ...BUILTIN_PLACEHOLDERS,
   ];
+
+  // What each built-in placeholder writes today, rendered by the same engine the
+  // page uses - so the maker never promises a value the member cannot see.
+  const staffPreview = {
+    name: medicCredentials.name,
+    rank: divisionRanks[config.division.label] || medicCredentials.rank,
+    signature: medicCredentials.signature,
+    director: getDirectorTitle(medicCredentials.directorRole) ?? "",
+  };
+  const placeholderSamples = BUILTIN_PLACEHOLDERS.map((name) => ({
+    name,
+    value: renderTemplate(`{{${name}}}`, {
+      values: {},
+      staff: staffPreview,
+      divisionLabel: config.division.label,
+    }).text,
+  }));
 
   // Everything the format writes that nothing provides yet - the one list a
   // member can act on, instead of a validation line naming a placeholder.
@@ -1341,7 +1363,11 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                               value={field.source ?? "name"}
                               onValueChange={(value) =>
                                 updateField(index, {
-                                  source: value as "name" | "rank" | "signature",
+                                  source: value as
+                                    | "name"
+                                    | "rank"
+                                    | "signature"
+                                    | "director",
                                 })
                               }
                             >
@@ -1353,6 +1379,9 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                                 <SelectItem value="rank">Rank</SelectItem>
                                 <SelectItem value="signature">
                                   Signature image
+                                </SelectItem>
+                                <SelectItem value="director">
+                                  Director title
                                 </SelectItem>
                               </SelectContent>
                             </Select>
@@ -1380,6 +1409,27 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                         {`{{${name}}}`}
                       </Button>
                     ))}
+                  </div>
+                  <div className="rounded-xl border border-border bg-background/40 p-3">
+                    <p className="text-[10px] text-muted-foreground">
+                      What these fill in - your Staff Page and this division, as
+                      they stand now
+                    </p>
+                    <div className="mt-1.5 space-y-0.5">
+                      {placeholderSamples.map((sample) => (
+                        <div
+                          key={sample.name}
+                          className="flex items-baseline gap-2 text-[10px]"
+                        >
+                          <span className="shrink-0 font-mono text-muted-foreground">
+                            {`{{${sample.name}}}`}
+                          </span>
+                          <span className="min-w-0 truncate text-foreground">
+                            {sample.value || "Nothing set yet"}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                   <Textarea
                     ref={templateRef}

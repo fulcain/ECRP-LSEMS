@@ -41,7 +41,7 @@ export type PaperworkField = {
   /** Character limit; defaults to `INPUT_LIMITS.text` in the registry. */
   max?: number;
   /** For `staff` fields - which Staff Page value seeds it. */
-  source?: "name" | "rank" | "signature";
+  source?: "name" | "rank" | "signature" | "director";
 };
 
 export type PaperworkActionKind =
@@ -390,6 +390,7 @@ export const BUILTIN_PLACEHOLDERS: readonly string[] = [
   "staff.name",
   "staff.rank",
   "staff.signature",
+  "staff.director",
   "utc.date",
   "utc.time",
   "division.label",

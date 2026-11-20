@@ -12,7 +12,8 @@ export type PaperworkValue = string | boolean;
 export type PlaceholderContext = {
   /** The form's values, keyed by field. */
   values: Record<string, PaperworkValue>;
-  staff: { name: string; rank: string; signature: string };
+  /** `director` is the title the member holds, empty when they hold none. */
+  staff: { name: string; rank: string; signature: string; director: string };
   divisionLabel: string;
   /** Injected so the engine is pure and a preview can pin "now". */
   now?: Date;
@@ -55,6 +56,8 @@ function readBuiltin(name: string, context: PlaceholderContext): string | null {
       return context.staff.rank;
     case "staff.signature":
       return context.staff.signature;
+    case "staff.director":
+      return context.staff.director;
     case "utc.date":
       return formatUtcDate(context.now);
     case "utc.time":

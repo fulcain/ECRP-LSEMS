@@ -46,12 +46,13 @@ export function defaultValueFor(field: PaperworkField): PaperworkFieldValue {
 
 export function defaultValueForField(
   field: PaperworkField,
-  staff: { name: string; rank: string; signature: string },
+  staff: { name: string; rank: string; signature: string; director: string },
 ): PaperworkFieldValue {
   if (field.type !== "staff") return defaultValueFor(field);
   if (field.source === "name") return staff.name;
   if (field.source === "rank") return staff.rank;
   if (field.source === "signature") return staff.signature;
+  if (field.source === "director") return staff.director;
   return "";
 }
 
@@ -122,7 +123,7 @@ export function maxFor(type: PaperworkFieldType): number {
 export function pruneValues(
   format: { fields: PaperworkField[] },
   values: Record<string, PaperworkFieldValue>,
-  staff: { name: string; rank: string; signature: string },
+  staff: { name: string; rank: string; signature: string; director: string },
 ): Record<string, PaperworkFieldValue> {
   const next: Record<string, PaperworkFieldValue> = {};
   for (const field of format.fields) {
