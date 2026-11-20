@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "division": {
+    "key": "amu",
+    "label": "AMU",
+    "description": "AMU Division formats and links.",
+    "pages": [
+      {
+        "key": "page1",
+        "label": "Formats",
+        "purpose": "AMU Related formats",
+        "groups": [
+          {
+            "label": "Patient Reach-Out",
+            "hint": "Formats Related to Public Requests and Patient Outreach",
+            "formats": [
+              {
+                "key": "communicationUpdateForm",
+                "label": "Communication Update Form",
+                "hint": "Communication Update Form: Use this form whenever you've contacted the patient in an attempt to schedule a session.",
+                "template": "[img]https://i.ibb.co/k209S3H9/image.png[/img]\n[divbox=white]\n[hr]\n[b]Patient Name:[/b] {{patientName}}\n[hr]\n[b]Date / Time:[/b] {{utc.date}} - {{utc.time}} [ooc]UTC[/ooc]\n[hr]\n[b]Contact Method:[/b] {{contactMethod}}\n[hr]\n[b]Details:[/b] {{contactDetails}}\n[hr]\n[/divbox]\n[divbox=white]\n\n[img]{{staff.signature}}[/img]\n[I]{{division.rank}}[/i]\n[b]{{staff.name}}[/b]\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox][img]https://i.ibb.co/cXJ38RPM/image.png[/img]\n",
+                "fields": [
+                  {
+                    "key": "patientName",
+                    "type": "text",
+                    "label": "Patient Name",
+                    "required": true,
+                    "placeholder": "Patients Name"
+                  },
+                  {
+                    "key": "contactDetails",
+                    "type": "textarea",
+                    "label": "Contact Details",
+                    "required": true,
+                    "placeholder": "Enter details of contacting"
+                  },
+                  {
+                    "key": "contactMethod",
+                    "type": "text",
+                    "label": "Contact Method",
+                    "required": true,
+                    "placeholder": "Phone / Email"
+                  },
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "hint": "The GOV page this post belongs on.",
+                    "required": false,
+                    "placeholder": "Link to the public request under the AMU Public Requests section"
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTitle",
+                    "kind": "copy_subject",
+                    "label": "Copy Title",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "variant": "outline",
+                    "requiresField": "govLink"
+                  }
+                ],
+                "subject": ""
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "emblem": "/Division/AMU.png",
+    "icon": "Stethoscope"
+  }
+}

@@ -67,9 +67,10 @@ export const PAPERWORK_SNIPPETS: readonly PaperworkSnippet[] = [
   {
     id: "signature",
     label: "Signature block",
-    description: "Signature image, name and rank from the Staff Page.",
+    description: "Signature image, name and your rank in this division.",
+    // The division rank, because a division's paperwork is signed with it.
     bbcode:
-      "[divbox=white]\n[img]{{staff.signature}}[/img]\n[i]{{staff.name}}[/i]\n{{staff.rank}}\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox]",
+      "[divbox=white]\n[img]{{staff.signature}}[/img]\n[i]{{staff.name}}[/i]\n{{division.rank}}\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox]",
   },
   {
     id: "footer",
