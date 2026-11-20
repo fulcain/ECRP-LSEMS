@@ -640,6 +640,28 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
     setSelectedSlot({ pageIndex: placedPageIndex, groupIndex, formatIndex });
   };
 
+  /** Adds an empty scope, so one can exist before a format is filed under it. */
+  const addScope = () => {
+    update((draft) => {
+      const target = draft.division.pages[activePageIndex];
+      if (!target) return;
+      target.groups.push({ label: "New scope", hint: "", formats: [] });
+    });
+  };
+
+  /**
+   * Removes a scope. One that still holds formats is left alone - they would go
+   * with it, and where they belong instead is the author's call, not a guess.
+   */
+  const removeScope = (pageIndex: number, groupIndex: number) => {
+    const target = config.division.pages[pageIndex]?.groups[groupIndex];
+    if (!target || target.formats.length > 0) return;
+    update((draft) => {
+      draft.division.pages[pageIndex]?.groups.splice(groupIndex, 1);
+    });
+    setSelectedSlot(null);
+  };
+
   /** Writes the heading and the one line that describe a scope. */
   const updateScope = (patch: { label?: string; hint?: string }) => {
     if (!placed) return;
@@ -966,6 +988,70 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                       placeholder="One sentence, shown under the page title"
                     />
                   </div>
+
+                  <div className="space-y-2 rounded-xl border border-border bg-background/40 p-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div>
+                        <h3 className="text-xs font-semibold text-foreground">
+                          Scopes
+                        </h3>
+                        <p className="text-[10px] text-muted-foreground">
+                          The headings the picker groups this page of formats
+                          under. Each one is a title and a line about it.
+                        </p>
+                      </div>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={addScope}
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                        Add scope
+                      </Button>
+                    </div>
+                    {page.groups.length === 0 ? (
+                      <p className="text-[10px] text-muted-foreground">
+                        No scopes yet - Add format starts the page off under
+                        Documents.
+                      </p>
+                    ) : (
+                      <div className="space-y-1.5">
+                        {page.groups.map((group, index) => (
+                          <div
+                            key={`${group.label}-${index}`}
+                            className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-surface/60 px-2.5 py-1.5"
+                          >
+                            <span className="text-xs font-medium text-foreground">
+                              {group.label || `Scope ${index + 1}`}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground">
+                              {group.formats.length} format
+                              {group.formats.length === 1 ? "" : "s"}
+                            </span>
+                            <span className="min-w-0 flex-1 truncate text-[10px] text-muted-foreground">
+                              {group.hint}
+                            </span>
+                            <Button
+                              type="button"
+                              size="icon"
+                              variant="ghost"
+                              aria-label={`Delete ${group.label || "scope"}`}
+                              title={
+                                group.formats.length > 0
+                                  ? "Move its formats to another scope first"
+                                  : "Delete this scope"
+                              }
+                              disabled={group.formats.length > 0}
+                              onClick={() => removeScope(activePageIndex, index)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </>
               )}
             </div>
@@ -1091,9 +1177,30 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                     <h3 className="text-xs font-semibold text-foreground">
                       Scope
                     </h3>
-                    <span className="text-[10px] text-muted-foreground">
-                      The heading this format sits under, with one line about it
-                    </span>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-[10px] text-muted-foreground">
+                        The heading this format sits under, with one line about
+                        it
+                      </span>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        className="text-red-600 hover:text-red-600 dark:text-red-400"
+                        title={
+                          (scope?.formats.length ?? 0) > 0
+                            ? "Move its formats to another scope first"
+                            : "Delete this scope"
+                        }
+                        disabled={!scope || (scope.formats.length ?? 0) > 0}
+                        onClick={() =>
+                          removeScope(placedPageIndex, placed.groupIndex)
+                        }
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        Delete scope
+                      </Button>
+                    </div>
                   </div>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div className="space-y-1.5">
