@@ -8,7 +8,7 @@ import { copyBBCode } from "@/app/helpers/copyBBCode";
 import { copyBBCodeAndOpen } from "@/app/helpers/copyBBCodeAndOpenSite";
 import { useMedic } from "@/app/context/MedicContext";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
-import { getDirectorTitle } from "@/app/constants/general/directorRoles";
+import { directorTitleForDivisionKeyOrLabel } from "@/app/constants/general/directorRoles";
 import { DivisionHeader } from "@/components/division/division-header";
 import { DocumentPicker } from "@/components/division/document-picker";
 import {
@@ -106,9 +106,14 @@ export function PaperworkWorkspace({
     name: medicCredentials.name,
     rank: divisionRanks[division.label] || medicCredentials.rank,
     signature: medicCredentials.signature,
-    // The title the member holds, or nothing: a document signed by a director
-    // prints the post, and everybody else's director line is empty.
-    director: getDirectorTitle(medicCredentials.directorRole) ?? "",
+    // The post only where the member's director role covers this division - a
+    // director signs their own divisions, and everybody else's line is empty.
+    director:
+      directorTitleForDivisionKeyOrLabel(
+        medicCredentials.directorRole,
+        division.key,
+        division.label,
+      ) ?? "",
   };
 
   useEffect(() => {

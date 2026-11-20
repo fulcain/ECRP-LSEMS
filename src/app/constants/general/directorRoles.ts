@@ -96,6 +96,29 @@ export const defaultDirectorRole: DirectorRole = {
 export type DirectorGuard = DirectorRole | null | undefined;
 
 /**
+ * The director title for a division the paperwork configs name by a plain
+ * string - a generated division may not be in `DIVISIONS` at all.
+ *
+ * A declared division is looked up by key, so its coverage is read the same way
+ * every other tool reads it; anything else falls back to the label. Either way
+ * a division this director does not look after yields `null`, which is what
+ * keeps the post off somebody else's paperwork.
+ */
+export function directorTitleForDivisionKeyOrLabel(
+  directorRole: DirectorGuard,
+  divisionKey: string | null | undefined,
+  divisionLabel: string | null | undefined,
+): string | null {
+  const key =
+    divisionKey && divisionKey in DIVISIONS
+      ? (divisionKey as DivisionKey)
+      : null;
+  return key
+    ? getDirectorTitleForDivision(directorRole, DIVISIONS[key].label, key)
+    : getDirectorTitleForDivision(directorRole, divisionLabel);
+}
+
+/**
  * The director title covering a division, from the title the member holds.
  *
  * Keyed by the division's key rather than its label so a caller doesn't write

@@ -26,7 +26,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { useMedic } from "@/app/context/MedicContext";
-import { getDirectorTitle } from "@/app/constants/general/directorRoles";
+import { directorTitleForDivisionKeyOrLabel } from "@/app/constants/general/directorRoles";
 import {
   DIVISION_ICON_NAMES,
   divisionIcon,
@@ -496,7 +496,12 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
     name: medicCredentials.name,
     rank: divisionRanks[config.division.label] || medicCredentials.rank,
     signature: medicCredentials.signature,
-    director: getDirectorTitle(medicCredentials.directorRole) ?? "",
+    director:
+      directorTitleForDivisionKeyOrLabel(
+        medicCredentials.directorRole,
+        config.division.key,
+        config.division.label,
+      ) ?? "",
   };
   const placeholderSamples = BUILTIN_PLACEHOLDERS.map((name) => ({
     name,
