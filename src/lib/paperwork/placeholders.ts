@@ -12,9 +12,11 @@ export type PaperworkValue = string | boolean;
 export type PlaceholderContext = {
   /** The form's values, keyed by field. */
   values: Record<string, PaperworkValue>;
-  /** `director` is the title the member holds, empty when they hold none. */
+  /** `director` is the title the member holds where it covers this division. */
   staff: { name: string; rank: string; signature: string; director: string };
   divisionLabel: string;
+  /** The member's rank in this division, empty when the Staff Page has none. */
+  divisionRank: string;
   /** Injected so the engine is pure and a preview can pin "now". */
   now?: Date;
 };
@@ -64,6 +66,8 @@ function readBuiltin(name: string, context: PlaceholderContext): string | null {
       return formatUtcTime(context.now);
     case "division.label":
       return context.divisionLabel;
+    case "division.rank":
+      return context.divisionRank;
     default:
       return null;
   }

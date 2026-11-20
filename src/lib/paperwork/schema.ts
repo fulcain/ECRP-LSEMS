@@ -394,4 +394,5 @@ export const BUILTIN_PLACEHOLDERS: readonly string[] = [
   "utc.date",
   "utc.time",
   "division.label",
+  "division.rank",
 ];

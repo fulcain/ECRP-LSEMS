@@ -83,12 +83,21 @@ const DRAFT_KEY = "paperwork-maker-config-v2";
  * are inputs like any other, but nobody types them: the renderer seeds them from
  * the signed-in member, so `{{staffName}}` is filled in when the page opens.
  */
-const STAFF_INPUTS = [
-  { source: "name", key: "staffName", label: "Staff name" },
-  { source: "rank", key: "staffRank", label: "Staff rank" },
-  { source: "signature", key: "staffSignature", label: "Staff signature" },
-  { source: "director", key: "staffDirector", label: "Director title" },
-] as const;
+/**
+ * What each built-in placeholder is, in the maker's own words. The Staff Page
+ * values are placeholders the renderer fills in, so they need no input of their
+ * own - this is the list that says which is which, with the member's value.
+ */
+const PLACEHOLDER_NOTES: Record<string, string> = {
+  "staff.name": "your name",
+  "staff.rank": "your Staff Page rank",
+  "staff.signature": "your signature image",
+  "staff.director": "your director post, on a division it covers",
+  "division.rank": "your rank in this division",
+  "division.label": "this division's name",
+  "utc.date": "today, UTC",
+  "utc.time": "now, UTC",
+};
 
 function clone<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
@@ -370,23 +379,6 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
     });
   };
 
-  /** A Staff Page value as an input: known before the member types anything. */
-  const addStaffInput = (source: (typeof STAFF_INPUTS)[number]["source"]) => {
-    const preset = STAFF_INPUTS.find((entry) => entry.source === source);
-    if (!preset) return;
-    updateFormat((format) => {
-      if (format.fields.some((field) => field.key === preset.key)) return;
-      format.fields.push({
-        key: preset.key,
-        type: "staff",
-        label: preset.label,
-        hint: "Filled in from the Staff Page.",
-        source,
-        required: true,
-      });
-    });
-  };
-
   /**
    * Copy & Open GOV, in either of its two shapes: a page the format declares, or
    * a link the member pastes. The second is only a button if an input exists for
@@ -494,7 +486,7 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
   // page uses - so the maker never promises a value the member cannot see.
   const staffPreview = {
     name: medicCredentials.name,
-    rank: divisionRanks[config.division.label] || medicCredentials.rank,
+    rank: medicCredentials.rank,
     signature: medicCredentials.signature,
     director:
       directorTitleForDivisionKeyOrLabel(
@@ -505,10 +497,12 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
   };
   const placeholderSamples = BUILTIN_PLACEHOLDERS.map((name) => ({
     name,
+    note: PLACEHOLDER_NOTES[name] ?? "",
     value: renderTemplate(`{{${name}}}`, {
       values: {},
       staff: staffPreview,
       divisionLabel: config.division.label,
+      divisionRank: divisionRanks[config.division.label] || "",
     }).text,
   }));
 
@@ -1307,36 +1301,6 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                     </Button>
                   </div>
 
-                  <div className="flex flex-wrap gap-1.5">
-                    <span className="w-full text-[10px] text-muted-foreground">
-                      Staff Page values - already filled in whenever the
-                      paperwork is written
-                    </span>
-                    {STAFF_INPUTS.map((entry) => {
-                      const added = placed.format.fields.some(
-                        (field) => field.key === entry.key,
-                      );
-                      return (
-                        <Button
-                          key={entry.key}
-                          type="button"
-                          size="sm"
-                          variant="outline"
-                          className="h-6 px-2 text-[10px]"
-                          disabled={added}
-                          title={`Adds an input that reads {{${entry.key}}} from the Staff Page`}
-                          onClick={() => addStaffInput(entry.source)}
-                        >
-                          <Plus className="h-3 w-3" />
-                          {entry.label}
-                          <span className="font-mono text-muted-foreground">
-                            {`{{${entry.key}}}`}
-                          </span>
-                        </Button>
-                      );
-                    })}
-                  </div>
-
                   <div className="space-y-3">
                     {placed.format.fields.map((field, index) => (
                       <div
@@ -1597,6 +1561,9 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                           </span>
                           <span className="min-w-0 truncate text-foreground">
                             {sample.value || "Nothing set yet"}
+                          </span>
+                          <span className="ml-auto shrink-0 text-muted-foreground">
+                            {sample.note}
                           </span>
                         </div>
                       ))}

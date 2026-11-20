@@ -102,9 +102,11 @@ export function PaperworkWorkspace({
     : setPreviewDraft;
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
+  // Two ranks, kept apart on purpose: `staff.rank` is the member's own rank on
+  // the Staff Page, `division.rank` the rank they hold inside this division.
   const staff = {
     name: medicCredentials.name,
-    rank: divisionRanks[division.label] || medicCredentials.rank,
+    rank: medicCredentials.rank,
     signature: medicCredentials.signature,
     // The post only where the member's director role covers this division - a
     // director signs their own divisions, and everybody else's line is empty.
@@ -147,6 +149,7 @@ export function PaperworkWorkspace({
     values,
     staff,
     divisionLabel: division.label,
+    divisionRank: divisionRanks[division.label] || "",
   };
 
   const output = format
