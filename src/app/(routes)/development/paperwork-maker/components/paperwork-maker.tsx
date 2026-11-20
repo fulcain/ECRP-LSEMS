@@ -156,6 +156,13 @@ function placedAt(
  * pressed. The preview is `PaperworkWorkspace`, the very component a generated
  * page renders, so "it looked fine in the maker" cannot mean something else.
  */
+/**
+ * The scope a page files a new format under, and the line that scope carries -
+ * a scope is a heading with a description, so it is born with both.
+ */
+const DEFAULT_SCOPE = "Documents";
+const DEFAULT_SCOPE_HINT = "Every other format for this page.";
+
 export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
   const [config, setConfig] = useLocalStorage<PaperworkConfig>(
     DRAFT_KEY,
@@ -220,6 +227,14 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
   };
 
   const placed = resolvePlaced(config);
+  // `locate` finds a format anywhere in the config, so the page it sits on comes
+  // from the slot lookup rather than the selection.
+  const placedPageIndex =
+    (placed ? slotOf(config, placed.format.key)?.pageIndex : undefined) ?? 0;
+  const scopes = placed
+    ? (config.division.pages[placedPageIndex]?.groups ?? [])
+    : [];
+  const scope = placed ? scopes[placed.groupIndex] : undefined;
   const validation = useMemo(() => validatePaperworkConfig(config), [config]);
 
   const update = (mutate: (draft: PaperworkConfig) => void) => {
@@ -543,13 +558,23 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
     let index = 1;
     while (existing.has(`format${index}`)) index += 1;
     const key = `format${index}`;
+    // A new format goes under Documents, whatever scope happens to sit first.
+    const found = page.groups.findIndex(
+      (group) => group.label.trim().toLowerCase() === DEFAULT_SCOPE.toLowerCase(),
+    );
+    const groupIndex = found === -1 ? page.groups.length : found;
+    const formatIndex = found === -1 ? 0 : page.groups[found].formats.length;
     update((draft) => {
       const target = draft.division.pages[activePageIndex];
       if (!target) return;
-      if (target.groups.length === 0) {
-        target.groups.push({ label: "Documents", hint: "", formats: [] });
+      if (found === -1) {
+        target.groups.push({
+          label: DEFAULT_SCOPE,
+          hint: DEFAULT_SCOPE_HINT,
+          formats: [],
+        });
       }
-      target.groups[0].formats.push({
+      target.groups[groupIndex]?.formats.push({
         key,
         label: "New format",
         hint: "",
@@ -559,10 +584,49 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
       });
     });
     setSelectedKey(key);
-    setSelectedSlot({
-      pageIndex: activePageIndex,
-      groupIndex: 0,
-      formatIndex: page.groups[0]?.formats.length ?? 0,
+    setSelectedSlot({ pageIndex: activePageIndex, groupIndex, formatIndex });
+  };
+
+  /**
+   * Files the selected format under one of its page's scopes, or under a new
+   * one - a format is only ever reached through the heading it sits under, so
+   * this is how it gets a heading of its own.
+   */
+  const moveFormatToScope = (value: string) => {
+    if (!placed) return;
+    const atPage = config.division.pages[placedPageIndex];
+    if (!atPage) return;
+    const create = value === "new";
+    const groupIndex = create ? atPage.groups.length : Number(value);
+    if (!Number.isInteger(groupIndex)) return;
+    if (!create && groupIndex === placed.groupIndex) return;
+    const formatIndex = create
+      ? 0
+      : (atPage.groups[groupIndex]?.formats.length ?? 0);
+    update((draft) => {
+      const formatPage = draft.division.pages[placedPageIndex];
+      if (!formatPage) return;
+      const source = formatPage.groups[placed.groupIndex];
+      const moved = source?.formats.splice(placed.formatIndex, 1)[0];
+      if (!moved) return;
+      if (create) {
+        formatPage.groups.push({ label: "New scope", hint: "", formats: [moved] });
+        return;
+      }
+      formatPage.groups[groupIndex]?.formats.push(moved);
+    });
+    setSelectedSlot({ pageIndex: placedPageIndex, groupIndex, formatIndex });
+  };
+
+  /** Writes the heading and the one line that describe a scope. */
+  const updateScope = (patch: { label?: string; hint?: string }) => {
+    if (!placed) return;
+    update((draft) => {
+      const target =
+        draft.division.pages[placedPageIndex]?.groups[placed.groupIndex];
+      if (!target) return;
+      if (patch.label !== undefined) target.label = patch.label;
+      if (patch.hint !== undefined) target.hint = patch.hint;
     });
   };
 
@@ -998,6 +1062,67 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                         })
                       }
                     />
+                  </div>
+                </div>
+
+                <div className="space-y-3 rounded-xl border border-border bg-background/40 p-3">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <h3 className="text-xs font-semibold text-foreground">
+                      Scope
+                    </h3>
+                    <span className="text-[10px] text-muted-foreground">
+                      The heading this format sits under, with one line about it
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div className="space-y-1.5">
+                      <Label className="text-[10px] text-muted-foreground">
+                        Where it sits
+                      </Label>
+                      <Select
+                        value={String(placed.groupIndex)}
+                        onValueChange={moveFormatToScope}
+                      >
+                        <SelectTrigger size="sm" className="w-full">
+                          <SelectValue placeholder={DEFAULT_SCOPE} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {scopes.map((group, index) => (
+                            <SelectItem
+                              key={`${group.label}-${index}`}
+                              value={String(index)}
+                            >
+                              {group.label || `Scope ${index + 1}`}
+                            </SelectItem>
+                          ))}
+                          <SelectItem value="new">New scope…</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-[10px] text-muted-foreground">
+                        Scope title
+                      </Label>
+                      <Input
+                        value={scope?.label ?? ""}
+                        onChange={(event) =>
+                          updateScope({ label: event.target.value })
+                        }
+                        placeholder={DEFAULT_SCOPE}
+                      />
+                    </div>
+                    <div className="space-y-1.5 sm:col-span-2">
+                      <Label className="text-[10px] text-muted-foreground">
+                        Scope description
+                      </Label>
+                      <Input
+                        value={scope?.hint ?? ""}
+                        onChange={(event) =>
+                          updateScope({ hint: event.target.value })
+                        }
+                        placeholder="One line under the title, e.g. Where their application sits right now"
+                      />
+                    </div>
                   </div>
                 </div>
 
