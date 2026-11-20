@@ -758,8 +758,7 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
         </p>
       )}
 
-      <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-2">
-        <div className="space-y-5">
+      <div className="space-y-5">
           <section className="space-y-4 rounded-2xl border border-border bg-surface/90 p-5">
             <h2 className="text-sm font-semibold text-foreground">Division</h2>
             <div className="space-y-1.5">
@@ -1149,10 +1148,21 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                 </div>
 
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-xs font-semibold text-foreground">
-                      Inputs
-                    </h3>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <h3 className="text-xs font-semibold text-foreground">
+                        Inputs
+                        {placed.format.fields.length > 0 && (
+                          <span className="ml-1.5 font-normal text-muted-foreground">
+                            {placed.format.fields.length}
+                          </span>
+                        )}
+                      </h3>
+                      <p className="text-[10px] text-muted-foreground">
+                        One input per thing the member fills in. Each one is a
+                        placeholder the template writes.
+                      </p>
+                    </div>
                     <Button
                       type="button"
                       size="sm"
@@ -1215,35 +1225,31 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                     {placed.format.fields.map((field, index) => (
                       <div
                         key={index}
-                        className="space-y-3 rounded-xl border border-border bg-background/40 p-3"
+                        className="space-y-3 rounded-xl border border-border bg-surface/60 p-4"
                       >
-                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_1fr_auto]">
-                          <div className="space-y-1">
-                            <Label className="text-[10px] text-muted-foreground">
-                              Key (placeholder)
-                            </Label>
-                            <Input
-                              value={field.key}
-                              onChange={(event) =>
-                                renameField(index, event.target.value)
-                              }
-                              className="font-mono"
-                            />
+                        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-2">
+                          <div className="flex min-w-0 flex-wrap items-center gap-2">
+                            <span className="flex h-5 min-w-5 items-center justify-center rounded-md bg-muted px-1.5 text-[10px] font-semibold text-muted-foreground">
+                              {index + 1}
+                            </span>
+                            <span className="text-xs font-semibold text-foreground">
+                              {field.label || "Untitled input"}
+                            </span>
+                            <span className="rounded-full border border-border px-2 py-0.5 text-[10px] text-muted-foreground">
+                              {FIELD_TYPES.find(
+                                (entry) => entry.type === field.type,
+                              )?.label ?? field.type}
+                            </span>
+                            <span className="font-mono text-[10px] text-muted-foreground">
+                              {`{{${field.key || "key"}}}`}
+                            </span>
+                            {field.required === false && (
+                              <span className="rounded-full border border-amber-300/50 px-2 py-0.5 text-[10px] text-amber-700 dark:text-amber-300">
+                                Optional
+                              </span>
+                            )}
                           </div>
-                          <div className="space-y-1">
-                            <Label className="text-[10px] text-muted-foreground">
-                              Label
-                            </Label>
-                            <Input
-                              value={field.label}
-                              onChange={(event) =>
-                                updateField(index, {
-                                  label: event.target.value,
-                                })
-                              }
-                            />
-                          </div>
-                          <div className="flex items-end gap-1">
+                          <div className="flex items-center gap-1">
                             <Button
                               type="button"
                               size="icon"
@@ -1290,7 +1296,38 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                          <div className="space-y-1">
+                            <Label className="text-[10px] text-muted-foreground">
+                              Name the member sees
+                            </Label>
+                            <Input
+                              value={field.label}
+                              onChange={(event) =>
+                                updateField(index, {
+                                  label: event.target.value,
+                                })
+                              }
+                              placeholder="Patient name"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-[10px] text-muted-foreground">
+                              Placeholder in the template
+                            </Label>
+                            <Input
+                              value={field.key}
+                              onChange={(event) =>
+                                renameField(index, event.target.value)
+                              }
+                              className="font-mono"
+                              placeholder="patientName"
+                            />
+                            <p className="text-[10px] text-muted-foreground">
+                              The template writes{" "}
+                              <span className="font-mono">{`{{${field.key || "key"}}}`}</span>
+                            </p>
+                          </div>
                           <div className="space-y-1">
                             <Label className="text-[10px] text-muted-foreground">
                               Type
@@ -1317,19 +1354,13 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                                 ))}
                               </SelectContent>
                             </Select>
-                          </div>
-                          <div className="space-y-1">
-                            <Label className="text-[10px] text-muted-foreground">
-                              Placeholder
-                            </Label>
-                            <Input
-                              value={field.placeholder ?? ""}
-                              onChange={(event) =>
-                                updateField(index, {
-                                  placeholder: event.target.value,
-                                })
+                            <p className="text-[10px] text-muted-foreground">
+                              {
+                                FIELD_TYPES.find(
+                                  (entry) => entry.type === field.type,
+                                )?.description
                               }
-                            />
+                            </p>
                           </div>
                           <div className="space-y-1">
                             <Label className="text-[10px] text-muted-foreground">
@@ -1351,13 +1382,30 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                                 <SelectItem value="no">Optional</SelectItem>
                               </SelectContent>
                             </Select>
+                            <p className="text-[10px] text-muted-foreground">
+                              An optional input can be left empty.
+                            </p>
+                          </div>
+                          <div className="space-y-1 sm:col-span-2">
+                            <Label className="text-[10px] text-muted-foreground">
+                              Grey hint in the empty input
+                            </Label>
+                            <Input
+                              value={field.placeholder ?? ""}
+                              onChange={(event) =>
+                                updateField(index, {
+                                  placeholder: event.target.value,
+                                })
+                              }
+                              placeholder="Left empty, the input shows nothing"
+                            />
                           </div>
                         </div>
 
                         {field.type === "staff" && (
-                          <div className="space-y-1">
+                          <div className="space-y-1 rounded-lg bg-muted/40 p-2">
                             <Label className="text-[10px] text-muted-foreground">
-                              Staff Page value
+                              Seeded from the Staff Page
                             </Label>
                             <Select
                               value={field.source ?? "name"}
@@ -1389,6 +1437,13 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                         )}
                       </div>
                     ))}
+                    {placed.format.fields.length === 0 && (
+                      <p className="rounded-xl border border-dashed border-border p-3 text-xs text-muted-foreground">
+                        No inputs yet. Add one for every value the template
+                        writes - the member sees them in the order they are
+                        listed here.
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -1750,21 +1805,27 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
               </>
             )}
           </section>
-        </div>
 
-        <div className="space-y-5">
-          <section className="rounded-2xl border border-border bg-surface/90 p-5">
-            <h2 className="mb-4 text-sm font-semibold text-foreground">
+        <section className="space-y-3 rounded-2xl border border-border bg-surface/90 p-5">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 className="text-sm font-semibold text-foreground">
               Live preview
             </h2>
-            {placed ? (
+            <span className="text-[10px] text-muted-foreground">
+              The division page as the member sees it - same header, same
+              picker, same renderer
+            </span>
+          </div>
+          {placed ? (
+            <div className="mx-auto w-full max-w-6xl rounded-2xl border border-border bg-background px-4 pt-5 pb-6 sm:px-6">
               <PaperworkWorkspace config={config} persist={false} />
-            ) : (
-              <p className="text-xs text-muted-foreground">
-                Pick a format to preview it.
-              </p>
-            )}
-          </section>
+            </div>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              Pick a format to preview it.
+            </p>
+          )}
+        </section>
 
           {plan && (
             <section className="space-y-4 rounded-2xl border border-border bg-surface/90 p-5">
@@ -1810,7 +1871,6 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
               )}
             </section>
           )}
-        </div>
       </div>
     </div>
   );
