@@ -76,7 +76,7 @@ export function fieldError(
     }
     case "date":
       return validationMessage(
-        validateDateString(value, field.label, { required }),
+        validateDateString(value, field.label, { required, minYear: 1900 }),
       );
     case "time":
       return validationMessage(

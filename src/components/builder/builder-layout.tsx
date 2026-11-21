@@ -3,6 +3,7 @@ import { AlertTriangle, Copy, ShieldCheck } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { RequiredMark } from "@/components/ui/required-mark";
 import { cn } from "@/lib/utils";
 
 /**
@@ -93,11 +94,13 @@ export function BuilderField({
   label,
   htmlFor,
   hint,
+  required = false,
   children,
   className,
 }: {
   label: string;
   htmlFor?: string;
+  required?: boolean;
   /** How the field is filled in - a format, a unit, where the value is used. */
   hint?: React.ReactNode;
   children: React.ReactNode;
@@ -107,6 +110,7 @@ export function BuilderField({
     <div className={cn("space-y-1.5", className)}>
       <Label htmlFor={htmlFor} className="text-xs text-muted-foreground">
         {label}
+        {required && <RequiredMark />}
       </Label>
       {children}
       {hint && (

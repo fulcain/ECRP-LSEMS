@@ -40,6 +40,8 @@ export type PaperworkField = {
   width?: "full" | "half";
   /** Character limit; defaults to `INPUT_LIMITS.text` in the registry. */
   max?: number;
+  /** Shows the date/time quick-fill button unless explicitly disabled. */
+  showNowButton?: boolean;
   /** For `staff` fields - which Staff Page value seeds it. */
   source?: "name" | "rank" | "signature" | "director";
 };
@@ -261,6 +263,14 @@ export function validatePaperworkConfig(
             problems.push(`${where}: field “${field.key}” is declared twice.`);
           }
           fieldKeys.add(field.key);
+          if (
+            field.showNowButton !== undefined &&
+            typeof field.showNowButton !== "boolean"
+          ) {
+            problems.push(
+              `${where}: field “${field.key}” has an invalid Now button setting.`,
+            );
+          }
           if (!field.label?.trim()) {
             problems.push(`${where}: field “${field.key}” needs a label.`);
           }

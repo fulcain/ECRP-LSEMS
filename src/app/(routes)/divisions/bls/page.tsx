@@ -52,6 +52,7 @@ import type { UpcomingCourseType } from "@/configs/bls-upcoming-courses";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RequiredMark } from "@/components/ui/required-mark";
 import { toast } from "react-toastify";
 import {
   INPUT_LIMITS,
@@ -460,7 +461,7 @@ export default function BLSFormatsPage() {
                     className="animate-fade-up space-y-4"
                   >
                     <div className="space-y-2">
-                      <Label htmlFor="applicant-name">Applicant name</Label>
+                      <Label htmlFor="applicant-name">Applicant name<RequiredMark /></Label>
                       <Input
                         id="applicant-name"
                         value={applicantName}
@@ -501,7 +502,7 @@ export default function BLSFormatsPage() {
                       </p>
 
                       <div className="space-y-2">
-                        <Label htmlFor="cooldown-days">Cool-down days</Label>
+                        <Label htmlFor="cooldown-days">Cool-down days<RequiredMark /></Label>
                         <Input
                           id="cooldown-days"
                           type="number"
@@ -524,7 +525,7 @@ export default function BLSFormatsPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="reapply-date">Reapply date</Label>
+                        <Label htmlFor="reapply-date">Reapply date<RequiredMark /></Label>
                         <Input
                           id="reapply-date"
                           value={reapplyDate}
@@ -552,7 +553,7 @@ export default function BLSFormatsPage() {
                         Upcoming class details
                       </p>
                       <div className="space-y-2">
-                        <Label htmlFor="course-date">Course date</Label>
+                        <Label htmlFor="course-date">Course date<RequiredMark /></Label>
                         <Input
                           id="course-date"
                           value={courseDate}
@@ -569,7 +570,7 @@ export default function BLSFormatsPage() {
                         </p>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="course-time">Course time ((UTC))</Label>
+                        <Label htmlFor="course-time">Course time ((UTC))<RequiredMark /></Label>
                         <div className="flex gap-2">
                           <Input
                             id="course-time"
@@ -599,6 +600,7 @@ export default function BLSFormatsPage() {
                     >
                       <p className="eyebrow text-amber-700 dark:text-amber-300">
                         Hold reasons
+                        <RequiredMark />
                       </p>
                       <div className="space-y-2">
                         {reasons.map((reason, index) => (

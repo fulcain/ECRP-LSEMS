@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
-import { Check, Copy, ExternalLink, RotateCcw, RotateCw } from "lucide-react";
+import { Calendar as CalendarIcon, Check, Copy, ExternalLink, RotateCcw, RotateCw } from "lucide-react";
 import { toast } from "react-toastify";
 
 import { copyBBCode } from "@/app/helpers/copyBBCode";
@@ -22,9 +22,12 @@ import {
   BuilderTitleRow,
 } from "@/components/builder/builder-layout";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { parseDate } from "@/lib/format-date";
 import {
   Select,
   SelectContent,
@@ -52,6 +55,24 @@ import type {
 } from "@/lib/paperwork/schema";
 
 type Drafts = Record<string, Record<string, PaperworkFieldValue>>;
+
+const MONTH_ABBREVIATIONS = [
+  "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+  "JUL", "AUG", "SEP", "OCT", "NOV", "DEC",
+];
+
+function paperworkDateValue(date: Date): string {
+  return `${String(date.getDate()).padStart(2, "0")}/${MONTH_ABBREVIATIONS[date.getMonth()]}/${date.getFullYear()}`;
+}
+
+function timePickerValue(value: string): string {
+  const match = /^(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM)?$/i.exec(value.trim());
+  if (!match) return "";
+  let hour = Number(match[1]);
+  const meridiem = match[3]?.toUpperCase();
+  if (meridiem) hour = (hour % 12) + (meridiem === "PM" ? 12 : 0);
+  return `${String(hour).padStart(2, "0")}:${match[2]}`;
+}
 
 function iconFor(action: PaperworkAction) {
   if (action.kind === "copy_open") return ExternalLink;
@@ -330,7 +351,11 @@ export function PaperworkWorkspace({
                     key={field.key}
                     className={field.width === "half" ? undefined : "sm:col-span-2"}
                   >
-                    <BuilderField label={field.label} hint={field.hint}>
+                    <BuilderField
+                      label={field.label}
+                      hint={field.hint}
+                      required={field.required !== false}
+                    >
                       <div className="flex items-start gap-2">
                         <div className="min-w-0 flex-1">
                           <FieldControl
@@ -424,6 +449,7 @@ function FieldControl({
   onChange: (value: PaperworkFieldValue) => void;
 }) {
   const id = `paperwork-${field.key}`;
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   if (field.type === "checkbox") {
     return (
@@ -499,11 +525,68 @@ function FieldControl({
   // A date or time field carries its own "now": the format does not have to
   // declare an insert action for the one thing anyone ever types there.
   const moment =
-    field.type === "date"
+    field.showNowButton === false
+      ? undefined
+      : field.type === "date"
       ? { label: "Now", value: () => formatUtcDate() }
       : field.type === "time"
         ? { label: "Copy now", value: () => formatUtcTime() }
         : undefined;
+
+  if (field.type === "date") {
+    const dateValue = String(value ?? "");
+    const selectedDate = parseDate(dateValue) ?? undefined;
+    return (
+      <div className="space-y-1">
+        <Label htmlFor={id} className="sr-only">{field.label}</Label>
+        <div className="flex items-center gap-1.5">
+          <Input
+            id={id}
+            type="text"
+            value={dateValue}
+            onChange={(event) => onChange(event.target.value)}
+            placeholder={field.placeholder ?? "02/NOV/1998"}
+            className="font-mono"
+          />
+          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+            <PopoverTrigger asChild>
+              <Button type="button" size="icon" variant="outline" aria-label={`Choose ${field.label}`} title="Choose from calendar">
+                <CalendarIcon className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+              <Calendar
+                mode="single"
+                captionLayout="dropdown"
+                startMonth={new Date(1900, 0)}
+                endMonth={new Date(2100, 11)}
+                selected={selectedDate}
+                defaultMonth={selectedDate ?? new Date()}
+                onSelect={(date) => {
+                  if (date) onChange(paperworkDateValue(date));
+                  setCalendarOpen(false);
+                }}
+              />
+            </PopoverContent>
+          </Popover>
+          {moment && (
+            <Button type="button" size="sm" variant="secondary" className="shrink-0 text-xs" title="Fill in today's date and copy it (UTC)" onClick={async () => {
+              const next = moment.value();
+              onChange(next);
+              try {
+                await navigator.clipboard.writeText(next);
+                toast.success(`Copied ${next} (UTC).`);
+              } catch {
+                toast.success(`Filled in ${next} (UTC).`);
+              }
+            }}>
+              {moment.label}
+            </Button>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-1">
@@ -513,8 +596,8 @@ function FieldControl({
       <div className="flex items-center gap-1.5">
         <Input
           id={id}
-          type={field.type === "number" ? "number" : "text"}
-          value={String(value ?? "")}
+          type={field.type === "number" || field.type === "time" ? field.type : "text"}
+          value={field.type === "time" ? timePickerValue(String(value ?? "")) : String(value ?? "")}
           onChange={(event) => onChange(event.target.value)}
           placeholder={
             field.placeholder ??
@@ -530,11 +613,7 @@ function FieldControl({
             size="sm"
             variant="secondary"
             className="shrink-0 text-xs"
-            title={
-              field.type === "date"
-                ? "Fill in today's date and copy it (UTC)"
-                : "Fill in the current UTC time and copy it"
-            }
+            title="Fill in the current UTC time and copy it"
             onClick={async () => {
               const next = moment.value();
               onChange(next);

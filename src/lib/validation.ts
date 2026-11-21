@@ -182,9 +182,9 @@ export function validateGovUrl(
 export function validateDateString(
   value: unknown,
   label = "Date",
-  options: { required?: boolean } = {},
+  options: { required?: boolean; minYear?: number; maxYear?: number } = {},
 ): ValidationResult {
-  const { required = true } = options;
+  const { required = true, minYear = 2000, maxYear = 2100 } = options;
   const trimmed = inputText(value).trim();
 
   if (!trimmed) {
@@ -198,8 +198,8 @@ export function validateDateString(
   if (!parsed || Number.isNaN(parsed.getTime())) {
     return fail(`${label} must be a real date (for example DD/MMM/YYYY).`);
   }
-  if (parsed.getFullYear() < 2000 || parsed.getFullYear() > 2100) {
-    return fail(`${label} must be a date between 2000 and 2100.`);
+  if (parsed.getFullYear() < minYear || parsed.getFullYear() > maxYear) {
+    return fail(`${label} must be a date between ${minYear} and ${maxYear}.`);
   }
   return VALID;
 }

@@ -21,6 +21,14 @@
                 "template": "[img]https://i.ibb.co/k209S3H9/image.png[/img]\n[divbox=white]\n[hr]\n[b]Patient Name:[/b] {{patientName}}\n[hr]\n[b]Date / Time:[/b] {{utc.date}} - {{utc.time}} [ooc]UTC[/ooc]\n[hr]\n[b]Contact Method:[/b] {{contactMethod}}\n[hr]\n[b]Details:[/b] {{contactDetails}}\n[hr]\n[/divbox]\n[divbox=white]\n\n[img]{{staff.signature}}[/img]\n[I]{{division.rank}}[/i]\n[b]{{staff.name}}[/b]\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox][img]https://i.ibb.co/cXJ38RPM/image.png[/img]\n",
                 "fields": [
                   {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "hint": "The GOV page this post belongs on.",
+                    "required": false,
+                    "placeholder": "Link to the public request under the AMU Public Requests section"
+                  },
+                  {
                     "key": "patientName",
                     "type": "text",
                     "label": "Patient Name",
@@ -40,14 +48,6 @@
                     "label": "Contact Method",
                     "required": true,
                     "placeholder": "Phone / Email"
-                  },
-                  {
-                    "key": "govLink",
-                    "type": "url",
-                    "label": "GOV Link",
-                    "hint": "The GOV page this post belongs on.",
-                    "required": false,
-                    "placeholder": "Link to the public request under the AMU Public Requests section"
                   }
                 ],
                 "actions": [
@@ -73,6 +73,203 @@
                   }
                 ],
                 "subject": ""
+              }
+            ]
+          },
+          {
+            "label": "Patient File Formats",
+            "hint": "Formats related to the patient file that must be posted under it.",
+            "formats": [
+              {
+                "key": "patientFile",
+                "label": "Patient File",
+                "hint": "When creating a patient file for someone who is attending an appointment with an AMU member.",
+                "template": "[img]https://i.ibb.co/sJ2w66t6/vd-Lu-CPo.png[/img]\n[lsemssubtitle]GENERAL INFORMATION[/lsemssubtitle]\n[divbox=white]\n[b]Full name:[/b] {{patientName}}\n[hr]\n[b]Date of birth:[/b] {{dateOfBirth}}\n[hr]\n[b]Place of birth:[/b] {{placeOfBirth}}\n[hr]\n[b]Address:[/b] {{address}}\n[hr]\n[b]Phone number:[/b] {{phoneNumber}}\n[hr]\n[b]Profession:[/b] {{profession}}\n[hr]\n[b]Height:[/b] {{height}}\n[hr]\n[b]Weight:[/b] {{weight}}\n[hr]\n[b]Blood Type:[/b] {{bloodType}}\n[hr]\n[b]Allergies:[/b] {{allergies}}\n[hr]\n[/divbox]\n[lsemssubtitle]REGULAR EXAMINATIONS[/lsemssubtitle]\n[divbox=white]\n[b]General Screening:[/b] {{generalScreening}}\n[hr]\n[b]ECG Band:[/b] {{ecgBand}}\n[hr]\n[b]Oximeter:[/b] {{oximeter}}\n[hr]\n[b]Temperature:[/b] {{temperature}}\n[hr]\n[b]Blood Pressure:[/b] {{bloodPressure}}\n[hr]\n[b]Auscultation:[/b] {{auscultation}}\n[hr]\n[b]BMI:[/b] {{bmi}}\n[hr]\n[b]Cover Test:[/b] {{coverTest}}\n[hr]\n[b]Refraction Test:[/b] {{refractionTest}}\n[hr]\n[b]Audio-meter Test:[/b] {{audioMeterTest}}\n[hr]\n[b]Additional Notes:[/b] {{additionalNotes}}\n[hr]\n[/divbox]\n[lsemssubtitle]PRE-OPERATIVE TESTS[/lsemssubtitle]\n[divbox=white]\n[b]Complete Blood Count:[/b] {{completeBloodCount}}\n[hr]\n[b]X-ray:[/b] {{xRay}}\n[hr]\n[b]ECG:[/b] {{ecg}}\n[hr]\n[b]Urinalysis:[/b] {{urinalysis}}\n[hr]\n[/divbox]\n[divbox=white]\n\n[img]{{staff.signature}}[/img]\n[I]{{staff.name}}[/i]\n[b]{{division.rank}}, {{staff.rank}}[/b]\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox][img]https://i.ibb.co/SwX3xjq2/HNP4ks-W.png[/img]",
+                "fields": [
+                  {
+                    "key": "patientName",
+                    "type": "text",
+                    "label": "Patient Name",
+                    "required": true,
+                    "placeholder": ""
+                  },
+                  {
+                    "key": "dateOfBirth",
+                    "type": "date",
+                    "label": "Date of Birth",
+                    "required": true,
+                    "placeholder": "",
+                    "showNowButton": false
+                  },
+                  {
+                    "key": "placeOfBirth",
+                    "type": "text",
+                    "label": "Place of Birth",
+                    "required": false,
+                    "placeholder": ""
+                  },
+                  {
+                    "key": "address",
+                    "type": "text",
+                    "label": "Address",
+                    "required": false,
+                    "placeholder": ""
+                  },
+                  {
+                    "key": "phoneNumber",
+                    "type": "number",
+                    "label": "Phone Number",
+                    "required": true
+                  },
+                  {
+                    "key": "profession",
+                    "type": "text",
+                    "label": "Profession",
+                    "required": false
+                  },
+                  {
+                    "key": "height",
+                    "type": "text",
+                    "label": "Height",
+                    "required": false
+                  },
+                  {
+                    "key": "weight",
+                    "type": "text",
+                    "label": "Weight",
+                    "required": false
+                  },
+                  {
+                    "key": "bloodType",
+                    "type": "text",
+                    "label": "Blood Type",
+                    "required": false
+                  },
+                  {
+                    "key": "allergies",
+                    "type": "text",
+                    "label": "Allergies",
+                    "required": false
+                  },
+                  {
+                    "key": "generalScreening",
+                    "type": "text",
+                    "label": "General Screening",
+                    "required": false
+                  },
+                  {
+                    "key": "ecgBand",
+                    "type": "text",
+                    "label": "Ecg Band",
+                    "required": false
+                  },
+                  {
+                    "key": "oximeter",
+                    "type": "text",
+                    "label": "Oximeter",
+                    "required": false
+                  },
+                  {
+                    "key": "temperature",
+                    "type": "text",
+                    "label": "Temperature",
+                    "required": false
+                  },
+                  {
+                    "key": "bloodPressure",
+                    "type": "text",
+                    "label": "Blood Pressure",
+                    "required": false
+                  },
+                  {
+                    "key": "auscultation",
+                    "type": "text",
+                    "label": "Auscultation",
+                    "required": false
+                  },
+                  {
+                    "key": "bmi",
+                    "type": "text",
+                    "label": "BMI",
+                    "required": false
+                  },
+                  {
+                    "key": "coverTest",
+                    "type": "text",
+                    "label": "Cover Test",
+                    "required": false
+                  },
+                  {
+                    "key": "refractionTest",
+                    "type": "text",
+                    "label": "Refraction Test",
+                    "required": false
+                  },
+                  {
+                    "key": "audioMeterTest",
+                    "type": "text",
+                    "label": "Audio-meter Test",
+                    "required": false
+                  },
+                  {
+                    "key": "additionalNotes",
+                    "type": "text",
+                    "label": "Additional Notes",
+                    "required": false
+                  },
+                  {
+                    "key": "completeBloodCount",
+                    "type": "text",
+                    "label": "Complete Blood Count",
+                    "required": false
+                  },
+                  {
+                    "key": "xRay",
+                    "type": "text",
+                    "label": "X-ray",
+                    "required": false
+                  },
+                  {
+                    "key": "ecg",
+                    "type": "text",
+                    "label": "ECG",
+                    "required": false
+                  },
+                  {
+                    "key": "urinalysis",
+                    "type": "text",
+                    "label": "Urinalysis",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTitle",
+                    "kind": "copy_subject",
+                    "label": "Copy Title",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "reset",
+                    "kind": "reset",
+                    "label": "Reset",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpen",
+                    "kind": "copy_open",
+                    "label": "Copy & Open",
+                    "content": "https://gov.eclipse-rp.net/posting.php?mode=post&f=1223",
+                    "variant": "outline"
+                  }
+                ],
+                "subject": "Patient File | {{patientName}}"
               }
             ]
           }

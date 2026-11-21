@@ -41,6 +41,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RequiredMark } from "@/components/ui/required-mark";
 import { toast } from "react-toastify";
 import {
   INPUT_LIMITS,
@@ -516,6 +517,7 @@ export default function REDFormatsPage() {
                     <div className="space-y-2">
                       <Label htmlFor="applicant-name">
                         {isWelcomeEmail ? "Applicant full name" : "Applicant name"}
+                        <RequiredMark />
                       </Label>
                       <Input
                         id="applicant-name"
@@ -533,7 +535,7 @@ export default function REDFormatsPage() {
                         needs beyond the applicant's is the recipient's. */}
                     {isFeedbackRequest && (
                       <div className="space-y-2">
-                        <Label htmlFor="feedback-recipient">Recipient</Label>
+                        <Label htmlFor="feedback-recipient">Recipient<RequiredMark /></Label>
                         <Input
                           id="feedback-recipient"
                           value={recipient}
@@ -586,6 +588,7 @@ export default function REDFormatsPage() {
                       <div className="space-y-2">
                         <Label htmlFor="interview-date">
                           Interview date
+                          <RequiredMark />
                         </Label>
                         <Input
                           id="interview-date"
@@ -601,6 +604,7 @@ export default function REDFormatsPage() {
                       <div className="space-y-2">
                         <Label htmlFor="interview-time">
                           Interview time ((UTC))
+                          <RequiredMark />
                         </Label>
                         <div className="flex gap-2">
                           <Input
@@ -628,7 +632,7 @@ export default function REDFormatsPage() {
                         Reinstatement offer details
                       </p>
                       <div className="space-y-2">
-                        <Label htmlFor="employment-rank">Rank offered</Label>
+                        <Label htmlFor="employment-rank">Rank offered<RequiredMark /></Label>
                         <Input
                           id="employment-rank"
                           value={employmentRank}
@@ -642,6 +646,7 @@ export default function REDFormatsPage() {
                         <div className="flex items-center justify-between gap-2">
                           <Label htmlFor="offer-tier">
                             Activity requirement
+                            <RequiredMark />
                           </Label>
                           <span className="chip rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide">
                             {offerHours}
@@ -790,7 +795,7 @@ export default function REDFormatsPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="weeks">Cool-down weeks</Label>
+                        <Label htmlFor="weeks">Cool-down weeks<RequiredMark /></Label>
                         <Input
                           id="weeks"
                           type="number"
@@ -811,7 +816,7 @@ export default function REDFormatsPage() {
                       </div>
 
                       <div className="space-y-3">
-                        <Label id="red-reasons-label">Reasons for denial</Label>
+                        <Label id="red-reasons-label">Reasons for denial<RequiredMark /></Label>
                         <div role="group" aria-labelledby="red-reasons-label" className="space-y-2">
                           {reasons.map((reason, index) => (
                             <div

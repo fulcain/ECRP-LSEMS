@@ -4,16 +4,19 @@ import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
-  ArrowDown,
-  ArrowUp,
   Check,
+  ChevronsUpDown,
   FileCode2,
+  GripVertical,
   Plus,
+  Redo2,
   Trash2,
+  Undo2,
   Wand2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -24,6 +27,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 import { useMedic } from "@/app/context/MedicContext";
 import { directorTitleForDivisionKeyOrLabel } from "@/app/constants/general/directorRoles";
@@ -31,7 +47,6 @@ import {
   DIVISION_ICON_NAMES,
   divisionIcon,
 } from "@/components/layout/header/configs/division-icons";
-import { PaperworkWorkspace } from "@/components/paperwork/paperwork-workspace";
 import { DIVISION_ENTRIES } from "@/configs/roles";
 import { FIELD_TYPES } from "@/lib/paperwork/fields";
 import { renderTemplate } from "@/lib/paperwork/placeholders";
@@ -59,6 +74,13 @@ type FormatSlot = {
   pageIndex: number;
   groupIndex: number;
   formatIndex: number;
+};
+
+type EditorSnapshot = {
+  config: PaperworkConfig;
+  selectedKey: string;
+  selectedSlot: FormatSlot | null;
+  pageIndex: number;
 };
 
 type PlannedFile = {
@@ -166,8 +188,7 @@ function placedAt(
  *
  * It edits one config object and asks the server what that config would write -
  * the plan is the only path to a file, and it is shown before Generate can be
- * pressed. The preview is `PaperworkWorkspace`, the very component a generated
- * page renders, so "it looked fine in the maker" cannot mean something else.
+ * pressed.
  */
 /**
  * What a page starts its scopes from. There is deliberately no default scope:
@@ -183,12 +204,30 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
   );
   const [selectedKey, setSelectedKey] = useState<string>("");
   const [selectedSlot, setSelectedSlot] = useState<FormatSlot | null>(null);
+  const [formatPickerOpen, setFormatPickerOpen] = useState(false);
+  const [formatSearch, setFormatSearch] = useState("");
+  const [formatToDelete, setFormatToDelete] = useState<{
+    pageIndex: number;
+    groupIndex: number;
+    formatIndex: number;
+    key: string;
+    label: string;
+  } | null>(null);
   const [pageIndex, setPageIndex] = useState(0);
   const [plan, setPlan] = useState<PlanResponse | null>(null);
   const [busy, setBusy] = useState<"plan" | "generate" | null>(null);
   const [written, setWritten] = useState<string[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [placeholderSearch, setPlaceholderSearch] = useState("");
+  const [fieldSearch, setFieldSearch] = useState("");
+  const [draggedFieldIndex, setDraggedFieldIndex] = useState<number | null>(null);
+  const [dragTargetFieldIndex, setDragTargetFieldIndex] = useState<number | null>(null);
   const [saved, setSaved] = useState<PaperworkConfig[]>([]);
+  const history = useRef<{ undo: EditorSnapshot[]; redo: EditorSnapshot[] }>({
+    undo: [],
+    redo: [],
+  });
+  const [, setHistoryRevision] = useState(0);
   /** The emblems `public/Division` holds, by name - what the emblem box offers. */
   const [emblems, setEmblems] = useState<string[]>([]);
   const templateRef = useRef<HTMLTextAreaElement>(null);
@@ -217,6 +256,7 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
   const editSaved = (key: string) => {
     const found = saved.find((entry) => entry.division.key === key);
     if (!found) return;
+    resetHistory();
     setConfig(clone(found));
     setPageIndex(0);
     const first = found.division.pages[0]?.groups[0]?.formats[0];
@@ -251,7 +291,47 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
   const scope = placed ? scopes[placed.groupIndex] : undefined;
   const validation = useMemo(() => validatePaperworkConfig(config), [config]);
 
+  const snapshot = (): EditorSnapshot => ({
+    config: clone(config),
+    selectedKey,
+    selectedSlot: selectedSlot ? { ...selectedSlot } : null,
+    pageIndex,
+  });
+
+  const resetHistory = () => {
+    history.current = { undo: [], redo: [] };
+    setHistoryRevision((revision) => revision + 1);
+  };
+
+  const restoreSnapshot = (entry: EditorSnapshot) => {
+    setConfig(clone(entry.config));
+    setSelectedKey(entry.selectedKey);
+    setSelectedSlot(entry.selectedSlot ? { ...entry.selectedSlot } : null);
+    setPageIndex(entry.pageIndex);
+    setPlan(null);
+    setWritten(null);
+    setHistoryRevision((revision) => revision + 1);
+  };
+
+  const undo = () => {
+    const previous = history.current.undo.pop();
+    if (!previous) return;
+    history.current.redo.push(snapshot());
+    restoreSnapshot(previous);
+  };
+
+  const redo = () => {
+    const next = history.current.redo.pop();
+    if (!next) return;
+    history.current.undo.push(snapshot());
+    restoreSnapshot(next);
+  };
+
   const update = (mutate: (draft: PaperworkConfig) => void) => {
+    history.current.undo.push(snapshot());
+    if (history.current.undo.length > 100) history.current.undo.shift();
+    history.current.redo = [];
+    setHistoryRevision((revision) => revision + 1);
     setConfig((prev) => {
       const next = clone(prev);
       mutate(next);
@@ -290,10 +370,12 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
    * template, the subject, the copy actions and the insert targets. A chip is
    * derived from the field, so it follows on its own.
    */
-  const renameField = (index: number, next: string) => {
+  const renameField = (index: number, next: string, label?: string) => {
     updateFormat((format) => {
       const field = format.fields[index];
-      if (!field || field.key === next) return;
+      if (!field) return;
+      if (label !== undefined) field.label = label;
+      if (field.key === next) return;
       const previous = field.key;
       field.key = next;
       if (!previous) return;
@@ -322,18 +404,20 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
   /** Inserts at the caret, so a chip or a snippet lands where the cursor is. */
   const insertText = (text: string) => {
     const textarea = templateRef.current;
+    const currentTemplate = placed?.format.template ?? "";
+    const start = textarea?.selectionStart ?? currentTemplate.length;
+    const end = textarea?.selectionEnd ?? start;
     updateFormat((format) => {
       if (!textarea) {
         format.template += text;
         return;
       }
-      const start = textarea.selectionStart ?? format.template.length;
-      const end = textarea.selectionEnd ?? start;
       format.template =
         format.template.slice(0, start) + text + format.template.slice(end);
     });
     requestAnimationFrame(() => {
-      textarea?.focus();
+      textarea?.focus({ preventScroll: true });
+      textarea?.setSelectionRange(start + text.length, start + text.length);
     });
   };
 
@@ -476,6 +560,14 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
       })),
     ),
   );
+  const selectedFormatOption = formatOptions.find(
+    (option) => option.value === placed?.format.key,
+  );
+  const filteredFormatOptions = formatOptions.filter((option) =>
+    `${option.label} ${option.value}`
+      .toLocaleLowerCase()
+      .includes(formatSearch.trim().toLocaleLowerCase()),
+  );
 
   const placeholderChips = [
     ...(placed?.format.fields.map((field) => field.key) ?? []),
@@ -505,6 +597,22 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
       divisionRank: divisionRanks[config.division.label] || "",
     }).text,
   }));
+  const normalizedPlaceholderSearch = placeholderSearch.trim().toLocaleLowerCase();
+  const filteredPlaceholderChips = placeholderChips.filter((name) => {
+    if (!normalizedPlaceholderSearch) return true;
+    const field = placed?.format.fields.find((entry) => entry.key === name);
+    const sample = placeholderSamples.find((entry) => entry.name === name);
+    return [name, field?.label, sample?.value, sample?.note].some((value) =>
+      value?.toLocaleLowerCase().includes(normalizedPlaceholderSearch),
+    );
+  });
+  const normalizedFieldSearch = fieldSearch.trim().toLocaleLowerCase();
+  const filteredFields = (placed?.format.fields ?? [])
+    .map((field, index) => ({ field, index }))
+    .filter(({ field }) =>
+      [field.label, field.key, field.type, field.hint ?? "", field.placeholder ?? "", field.source ?? ""]
+        .some((value) => value.toLocaleLowerCase().includes(normalizedFieldSearch)),
+    );
 
   // Everything the format writes that nothing provides yet - the one list a
   // member can act on, instead of a validation line naming a placeholder.
@@ -597,6 +705,32 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
     });
     setSelectedKey(key);
     setSelectedSlot({ pageIndex: activePageIndex, groupIndex, formatIndex });
+  };
+
+  const requestFormatRemoval = () => {
+    if (!placed) return;
+    setFormatToDelete({
+      pageIndex: placedPageIndex,
+      groupIndex: placed.groupIndex,
+      formatIndex: placed.formatIndex,
+      key: placed.format.key,
+      label: placed.format.label || placed.format.key,
+    });
+  };
+
+  const removeFormat = () => {
+    if (!formatToDelete) return;
+    update((draft) => {
+      draft.division.pages[formatToDelete.pageIndex]?.groups[
+        formatToDelete.groupIndex
+      ]?.formats.splice(
+        formatToDelete.formatIndex,
+        1,
+      );
+    });
+    setSelectedKey("");
+    setSelectedSlot(null);
+    setFormatToDelete(null);
   };
 
   /**
@@ -714,6 +848,7 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
             size="sm"
             variant="outline"
             onClick={() => {
+              resetHistory();
               setConfig(clone(initial));
               setPageIndex(0);
               setSelectedKey("");
@@ -1078,21 +1213,75 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-sm font-semibold text-foreground">Format</h2>
               <div className="w-64">
-                <Select
-                  value={placed ? placed.format.key : ""}
-                  onValueChange={selectFormat}
+                <Popover
+                  open={formatPickerOpen}
+                  onOpenChange={setFormatPickerOpen}
                 >
-                  <SelectTrigger size="sm" className="w-full">
-                    <SelectValue placeholder="Choose a format" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {formatOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  <PopoverTrigger asChild>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={formatPickerOpen}
+                      className="w-full justify-between font-normal"
+                    >
+                      <span className="truncate">
+                        {selectedFormatOption?.label ?? "Choose a format"}
+                      </span>
+                      <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    align="start"
+                    className="w-[var(--radix-popover-trigger-width)] p-2"
+                  >
+                    <Input
+                      autoFocus
+                      value={formatSearch}
+                      onChange={(event) => setFormatSearch(event.target.value)}
+                      placeholder="Search formats or scopes…"
+                      aria-label="Search formats"
+                      className="h-8 text-xs"
+                    />
+                    <div
+                      role="listbox"
+                      aria-label="Formats"
+                      className="mt-2 max-h-64 space-y-1 overflow-y-auto"
+                    >
+                      {filteredFormatOptions.map((option) => (
+                        <Button
+                          key={option.value}
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          role="option"
+                          aria-selected={option.value === placed?.format.key}
+                          className="w-full justify-start gap-2 text-left font-normal"
+                          onClick={() => {
+                            selectFormat(option.value);
+                            setFormatPickerOpen(false);
+                            setFormatSearch("");
+                          }}
+                        >
+                          <Check
+                            className={`h-3.5 w-3.5 shrink-0 ${
+                              option.value === placed?.format.key
+                                ? "opacity-100"
+                                : "opacity-0"
+                            }`}
+                          />
+                          <span className="truncate">{option.label}</span>
+                        </Button>
+                      ))}
+                      {filteredFormatOptions.length === 0 && (
+                        <p className="px-2 py-3 text-xs text-muted-foreground">
+                          No formats match that search.
+                        </p>
+                      )}
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
               <Button
                 type="button"
@@ -1108,6 +1297,18 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
               >
                 <Plus className="h-3.5 w-3.5" />
                 Add format
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="text-destructive hover:text-destructive"
+                onClick={requestFormatRemoval}
+                disabled={!placed}
+                title={placed ? "Delete the selected format" : "Choose a format to delete"}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Delete format
               </Button>
             </div>
 
@@ -1273,39 +1474,51 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                         placeholder the template writes.
                       </p>
                     </div>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={() =>
-                        updateFormat((format) => {
-                          let index = 1;
-                          while (
-                            format.fields.some(
-                              (field) => field.key === `field_${index}`,
-                            )
-                          ) {
-                            index += 1;
-                          }
-                          format.fields.push({
-                            key: `field_${index}`,
-                            type: "text",
-                            label: `Field ${index}`,
-                            required: true,
-                          });
-                        })
-                      }
-                    >
-                      <Plus className="h-3.5 w-3.5" />
-                      Add input
-                    </Button>
                   </div>
 
+                  <Input
+                    type="search"
+                    value={fieldSearch}
+                    onChange={(event) => setFieldSearch(event.target.value)}
+                    placeholder="Search inputs by name, placeholder, type, or hint"
+                    aria-label="Search inputs"
+                  />
+
                   <div className="space-y-3">
-                    {placed.format.fields.map((field, index) => (
+                    {filteredFields.map(({ field, index }) => (
                       <div
                         key={index}
-                        className="space-y-3 rounded-xl border border-border bg-surface/60 p-4"
+                        onDragOver={(event) => {
+                          event.preventDefault();
+                          setDragTargetFieldIndex(index);
+                        }}
+                        onDrop={(event) => {
+                          event.preventDefault();
+                          const from = Number(event.dataTransfer.getData("text/plain"));
+                          if (
+                            Number.isInteger(from) &&
+                            from >= 0 &&
+                            from < placed.format.fields.length &&
+                            from !== index
+                          ) {
+                            updateFormat((format) => {
+                              const [moved] = format.fields.splice(from, 1);
+                              if (moved) format.fields.splice(index, 0, moved);
+                            });
+                          }
+                          setDraggedFieldIndex(null);
+                          setDragTargetFieldIndex(null);
+                        }}
+                        onDragLeave={(event) => {
+                          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                            setDragTargetFieldIndex(null);
+                          }
+                        }}
+                        className={`space-y-3 rounded-xl border bg-surface/60 p-4 transition-colors ${
+                          dragTargetFieldIndex === index && draggedFieldIndex !== index
+                            ? "border-primary ring-2 ring-primary/20"
+                            : "border-border"
+                        } ${draggedFieldIndex === index ? "opacity-50" : ""}`}
                       >
                         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-2">
                           <div className="flex min-w-0 flex-wrap items-center gap-2">
@@ -1330,35 +1543,56 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                             )}
                           </div>
                           <div className="flex items-center gap-1">
+                            <label className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                              Move to
+                              <Input
+                                key={`${field.key}-${index}`}
+                                type="number"
+                                min={1}
+                                max={placed.format.fields.length}
+                                defaultValue={index + 1}
+                                aria-label={`Move ${field.label || "input"} to position`}
+                                className="h-8 w-16 px-2 text-center text-xs"
+                                onBlur={(event) => {
+                                  const requested = Number(event.currentTarget.value);
+                                  if (!Number.isInteger(requested)) {
+                                    event.currentTarget.value = String(index + 1);
+                                    return;
+                                  }
+                                  const destination = Math.max(
+                                    0,
+                                    Math.min(placed.format.fields.length - 1, requested - 1),
+                                  );
+                                  if (destination !== index) {
+                                    updateFormat((format) => {
+                                      const [moved] = format.fields.splice(index, 1);
+                                      if (moved) format.fields.splice(destination, 0, moved);
+                                    });
+                                  }
+                                }}
+                                onKeyDown={(event) => {
+                                  if (event.key === "Enter") event.currentTarget.blur();
+                                }}
+                              />
+                            </label>
                             <Button
                               type="button"
                               size="icon"
                               variant="ghost"
-                              aria-label="Move field up"
-                              disabled={index === 0}
-                              onClick={() =>
-                                updateFormat((format) => {
-                                  const [moved] = format.fields.splice(index, 1);
-                                  format.fields.splice(index - 1, 0, moved);
-                                })
-                              }
+                              aria-label={`Drag to reorder ${field.label || "input"}`}
+                              title="Drag to reorder"
+                              draggable
+                              onDragStart={(event) => {
+                                event.dataTransfer.effectAllowed = "move";
+                                event.dataTransfer.setData("text/plain", String(index));
+                                setDraggedFieldIndex(index);
+                              }}
+                              onDragEnd={() => {
+                                setDraggedFieldIndex(null);
+                                setDragTargetFieldIndex(null);
+                              }}
                             >
-                              <ArrowUp className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              type="button"
-                              size="icon"
-                              variant="ghost"
-                              aria-label="Move field down"
-                              disabled={index === placed.format.fields.length - 1}
-                              onClick={() =>
-                                updateFormat((format) => {
-                                  const [moved] = format.fields.splice(index, 1);
-                                  format.fields.splice(index + 1, 0, moved);
-                                })
-                              }
-                            >
-                              <ArrowDown className="h-4 w-4" />
+                              <GripVertical className="h-4 w-4" />
                             </Button>
                             <Button
                               type="button"
@@ -1383,13 +1617,24 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                             </Label>
                             <Input
                               value={field.label}
-                              onChange={(event) =>
-                                updateField(index, {
-                                  label: event.target.value,
-                                })
-                              }
+                              onChange={(event) => {
+                                const label = event.target.value;
+                                const words = label.match(/[a-zA-Z0-9]+/g) ?? [];
+                                const key = words
+                                  .map((word, wordIndex) =>
+                                    wordIndex === 0
+                                      ? word.toLocaleLowerCase()
+                                      : word[0].toLocaleUpperCase() + word.slice(1).toLocaleLowerCase(),
+                                  )
+                                  .join("");
+                                if (key) renameField(index, key, label);
+                                else updateField(index, { label });
+                              }}
                               placeholder="Patient name"
                             />
+                            <p className="text-[10px] text-muted-foreground">
+                              The template placeholder updates automatically in camelCase.
+                            </p>
                           </div>
                           <div className="space-y-1">
                             <Label className="text-[10px] text-muted-foreground">
@@ -1466,6 +1711,29 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                               An optional input can be left empty.
                             </p>
                           </div>
+                          {(field.type === "date" || field.type === "time") && (
+                            <label className="flex items-start gap-2 rounded-lg border border-border bg-background/40 p-3 sm:col-span-2">
+                              <Checkbox
+                                checked={field.showNowButton !== false}
+                                onCheckedChange={(checked) =>
+                                  updateField(index, {
+                                    showNowButton: checked === true,
+                                  })
+                                }
+                                aria-label={`Show quick-fill button for ${field.label || field.type} field`}
+                              />
+                              <span className="space-y-0.5">
+                                <span className="block text-xs font-medium text-foreground">
+                                  Show “{field.type === "date" ? "Now" : "Copy now"}” button
+                                </span>
+                                <span className="block text-[10px] text-muted-foreground">
+                                  {field.type === "date"
+                                    ? "Fills in today's UTC date."
+                                    : "Fills in and copies the current UTC time."}
+                                </span>
+                              </span>
+                            </label>
+                          )}
                           <div className="space-y-1 sm:col-span-2">
                             <Label className="text-[10px] text-muted-foreground">
                               Grey hint in the empty input
@@ -1524,31 +1792,59 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                         listed here.
                       </p>
                     )}
+                    {placed.format.fields.length > 0 && filteredFields.length === 0 && (
+                      <div className="rounded-xl border border-dashed border-border p-3 text-xs text-muted-foreground">
+                        <p>No inputs match that search.</p>
+                        <Button type="button" variant="link" size="sm" className="h-auto px-0" onClick={() => setFieldSearch("")}>
+                          Clear search
+                        </Button>
+                      </div>
+                    )}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="h-auto min-h-14 w-full justify-start border-dashed px-4 py-3 text-left hover:border-primary/50 hover:bg-primary/5"
+                      onClick={() => {
+                        setFieldSearch("");
+                        updateFormat((format) => {
+                          let index = 1;
+                          while (
+                            format.fields.some(
+                              (field) => field.key === `field_${index}`,
+                            )
+                          ) {
+                            index += 1;
+                          }
+                          format.fields.push({
+                            key: `field_${index}`,
+                            type: "text",
+                            label: `Field ${index}`,
+                            required: true,
+                          });
+                        });
+                      }}
+                    >
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <Plus className="h-4 w-4" />
+                      </span>
+                      <span className="flex flex-col gap-0.5">
+                        <span className="text-sm font-medium text-foreground">
+                          {placed.format.fields.length === 0
+                            ? "Add your first input"
+                            : "Add another input"}
+                        </span>
+                        <span className="text-xs font-normal text-muted-foreground">
+                          Create a value the member can fill in on the form.
+                        </span>
+                      </span>
+                    </Button>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-xs text-muted-foreground">
-                    BBCode template
-                  </Label>
-                  <div className="flex flex-wrap gap-1.5">
-                    {placeholderChips.map((name) => (
-                      <Button
-                        key={name}
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        className="h-6 px-2 font-mono text-[10px]"
-                        onClick={() => insertPlaceholder(name)}
-                      >
-                        {`{{${name}}}`}
-                      </Button>
-                    ))}
-                  </div>
                   <div className="rounded-xl border border-border bg-background/40 p-3">
                     <p className="text-[10px] text-muted-foreground">
-                      What these fill in - your Staff Page and this division, as
-                      they stand now
+                      Current values from your Staff Page and this division
                     </p>
                     <div className="mt-1.5 space-y-0.5">
                       {placeholderSamples.map((sample) => (
@@ -1567,6 +1863,38 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                           </span>
                         </div>
                       ))}
+                    </div>
+                  </div>
+                  <div className="sticky top-16 z-20 space-y-2 rounded-xl border border-border bg-background/95 p-3 shadow-md backdrop-blur">
+                    <Label className="text-xs text-muted-foreground">
+                      BBCode template · click a placeholder to insert it
+                    </Label>
+                    <Input
+                      type="search"
+                      value={placeholderSearch}
+                      onChange={(event) => setPlaceholderSearch(event.target.value)}
+                      placeholder="Search inputs or current values"
+                      aria-label="Search BBCode template inputs"
+                      className="h-8 text-xs"
+                    />
+                    <div className="flex flex-wrap gap-1.5">
+                      {filteredPlaceholderChips.map((name) => (
+                        <Button
+                          key={name}
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="h-6 px-2 font-mono text-[10px]"
+                          onClick={() => insertPlaceholder(name)}
+                        >
+                          {`{{${name}}}`}
+                        </Button>
+                      ))}
+                      {filteredPlaceholderChips.length === 0 && (
+                        <p className="text-[10px] text-muted-foreground">
+                          No inputs or placeholders match that search.
+                        </p>
+                      )}
                     </div>
                   </div>
                   <Textarea
@@ -1889,27 +2217,6 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
             )}
           </section>
 
-        <section className="space-y-3 rounded-2xl border border-border bg-surface/90 p-5">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h2 className="text-sm font-semibold text-foreground">
-              Live preview
-            </h2>
-            <span className="text-[10px] text-muted-foreground">
-              The division page as the member sees it - same header, same
-              picker, same renderer
-            </span>
-          </div>
-          {placed ? (
-            <div className="mx-auto w-full max-w-6xl rounded-2xl border border-border bg-background px-4 pt-5 pb-6 sm:px-6">
-              <PaperworkWorkspace config={config} persist={false} />
-            </div>
-          ) : (
-            <p className="text-xs text-muted-foreground">
-              Pick a format to preview it.
-            </p>
-          )}
-        </section>
-
           {plan && (
             <section className="space-y-4 rounded-2xl border border-border bg-surface/90 p-5">
               <h2 className="text-sm font-semibold text-foreground">
@@ -1954,6 +2261,58 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
               )}
             </section>
           )}
+      </div>
+      <Dialog
+        open={formatToDelete !== null}
+        onOpenChange={(open) => !open && setFormatToDelete(null)}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete format?</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete “{formatToDelete?.label}”? This
+              action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setFormatToDelete(null)}
+            >
+              Cancel
+            </Button>
+            <Button type="button" variant="destructive" onClick={removeFormat}>
+              Delete format
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <div className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-[4.25rem] z-[60] flex gap-2">
+        <Button
+          type="button"
+          size="icon"
+          variant="outline"
+          onClick={undo}
+          disabled={history.current.undo.length === 0}
+          aria-label="Undo paperwork change"
+          title="Undo paperwork change"
+          className="rounded-full bg-background/90 shadow-lg backdrop-blur-sm"
+        >
+          <Undo2 className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          size="icon"
+          variant="outline"
+          onClick={redo}
+          disabled={history.current.redo.length === 0}
+          aria-label="Redo paperwork change"
+          title="Redo paperwork change"
+          className="rounded-full bg-background/90 shadow-lg backdrop-blur-sm"
+        >
+          <Redo2 className="h-4 w-4" />
+        </Button>
       </div>
     </div>
   );

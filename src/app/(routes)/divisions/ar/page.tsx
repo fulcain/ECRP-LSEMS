@@ -61,6 +61,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { RequiredMark } from "@/components/ui/required-mark";
 import { toast } from "react-toastify";
 import {
   INPUT_LIMITS,
@@ -612,6 +613,7 @@ export default function ARFormatsPage() {
                   <div className="space-y-2">
                     <Label htmlFor="student-name">
                       {isCertificate ? "Member certified" : "Student name"}
+                      {(isCertificate || documentKind === "certification") && <RequiredMark />}
                     </Label>
                     <EmployeeNameInput
                       id="student-name"
@@ -660,7 +662,7 @@ export default function ARFormatsPage() {
 
                 {(isCertificate || selectedDocument === "mr-certification") && (
                   <div className="space-y-2">
-                    <Label htmlFor="completion-date">Date</Label>
+                    <Label htmlFor="completion-date">Date<RequiredMark /></Label>
                     <div className="flex items-center gap-2">
                       <Input
                         id="completion-date"
@@ -693,6 +695,7 @@ export default function ARFormatsPage() {
                       <div key={field.key} className="space-y-1.5">
                         <Label htmlFor={`answer-${field.key}`} className="text-xs">
                           {field.label}
+                          <RequiredMark />
                           {field.hint ? (
                             <span className="ml-1.5 font-normal text-muted-foreground">
                               ({field.hint})
