@@ -3,4 +3,6 @@
 // Spread into `DIVISION_PAGES` in `src/app/constants/divisions/index.ts`. The
 // shape is spelled out rather than imported so this module has no cycle with the
 // registry that consumes it.
-export const GENERATED_DIVISION_PAGES = {} as const;
+export const GENERATED_DIVISION_PAGES = {
+
+} as const;

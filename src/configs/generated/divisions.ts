@@ -4,15 +4,27 @@
 // that, a new division is one run of the maker and no edit to that registry.
 import type { Division, GuildRoleEntry } from "@/configs/roles";
 
-export const GENERATED_ROLES = {} as const satisfies Record<string, GuildRoleEntry>;
+export const GENERATED_ROLES = {
 
-export const GENERATED_DIVISIONS = {} as const satisfies Record<string, Division>;
+} as const satisfies Record<string, GuildRoleEntry>;
+
+export const GENERATED_DIVISIONS = {
+
+} as const satisfies Record<string, Division>;
 
 /**
- * Paperwork pages of divisions that already exist in the app. They are not
- * divisions of their own, so they are only a sidebar entry and a matrix row.
+ * Pages of divisions the app already declares: either the division's paperwork
+ * tab beside a hand-written page, or the page of a division that had none. The
+ * division's own declaration stays in `configs/roles.ts`, so these are only a
+ * sidebar entry and a matrix row.
  */
-export const GENERATED_PAPERWORK_PAGES = {} as const satisfies Record<
+export const GENERATED_PAPERWORK_PAGES = {
+  "amu": {
+    label: "AMU",
+    route: "/divisions/amu",
+    icon: "Stethoscope",
+  },
+} as const satisfies Record<
   string,
-  { label: string; route: string }
+  { label: string; route: string; icon?: string }
 >;
