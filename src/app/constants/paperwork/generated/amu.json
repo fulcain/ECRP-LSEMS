@@ -387,6 +387,91 @@
                     "requiresField": "amuPublicRequestLink"
                   }
                 ]
+              },
+              {
+                "key": "amuPrescription",
+                "label": "AMU Prescription",
+                "hint": "General prescriptions to be added to the patient's file.",
+                "template": "[img]https://i.ibb.co/ccp2ZP52/9i-RWEv-N.png[/img]\n[lsemssubtitle]INFORMATION[/lsemssubtitle]\n[divbox=white][b]Patient's Name:[/b] {{patientName}}\n[hr][/hr]\n[b]Patient's Phone Number:[/b] {{phoneNumber}}\n[hr][/hr]\n[b]Reason For Prescription:[/b] {{reasonForPrescription}}\n[hr][/hr]\n[b]What Is Prescribed:[/b] {{whatIsPrescribed}}\n[hr][/hr]\n[b]Starting on:[/b] {{startingDate}} at {{startTime}} \n[hr][/hr]\n[b]Expiring on:[/b] {{endDate}} at {{endTime}}\n[hr][/hr]\n[center][color=blue][b]\n\n[ooc]Use UTC timezone (/time) to keep it universal[/ooc][/b][/color][/center] \n\n[/divbox]\n[divbox=white]\n[img]{{staff.signature}}[/img]\n[i]{{staff.name}}[/i]\n[b][i]{{division.rank}}[/i]\nLos Santos Advanced Medicine Division[/b]\n[/divbox][img]https://i.ibb.co/SwX3xjq2/HNP4ks-W.png[/img]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "Patient File Link",
+                    "hint": "The GOV page this post belongs on.",
+                    "required": false
+                  },
+                  {
+                    "key": "patientName",
+                    "type": "text",
+                    "label": "Patient Name",
+                    "required": true
+                  },
+                  {
+                    "key": "phoneNumber",
+                    "type": "text",
+                    "label": "Phone Number",
+                    "required": true
+                  },
+                  {
+                    "key": "reasonForPrescription",
+                    "type": "text",
+                    "label": "Reason For Prescription",
+                    "required": true
+                  },
+                  {
+                    "key": "whatIsPrescribed",
+                    "type": "text",
+                    "label": "What Is Prescribed",
+                    "required": true
+                  },
+                  {
+                    "key": "startingDate",
+                    "type": "date",
+                    "label": "Starting Date",
+                    "required": true
+                  },
+                  {
+                    "key": "endDate",
+                    "type": "date",
+                    "label": "End Date",
+                    "required": true
+                  },
+                  {
+                    "key": "startTime",
+                    "type": "time",
+                    "label": "Start Time",
+                    "required": true
+                  },
+                  {
+                    "key": "endTime",
+                    "type": "time",
+                    "label": "End Time",
+                    "required": true
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "variant": "outline",
+                    "requiresField": "govLink"
+                  },
+                  {
+                    "id": "reset",
+                    "kind": "reset",
+                    "label": "Reset",
+                    "variant": "outline"
+                  }
+                ]
               }
             ]
           }
