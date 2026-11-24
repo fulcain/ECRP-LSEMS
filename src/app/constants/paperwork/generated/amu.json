@@ -338,6 +338,55 @@
                     "variant": "outline"
                   }
                 ]
+              },
+              {
+                "key": "appointmentScheduled",
+                "label": "Appointment Scheduled",
+                "hint": "When an appointment has been scheduled with a patient. To be posted under the AMU Public Request.",
+                "template": "[img]https://i.ibb.co/49Kv1wN/o-Kr-Ee-Dx.png[/img]\n[lsemssubtitle]SCHEDULING APPOINTMENT[/lsemssubtitle]\n[divbox=white]\n[hr]\n[b]Reason for Appointment:[/b] {{reasonForAppointment}}\n[hr]\n[b]Date of Appointment:[/b] {{dateOfAppointment}}\n[hr]\n[b]Time scheduled:[/b] {{time}}\n\n[center][color=blue][b]\n\n((Use UTC timezone for the appointments to keep it universal))[/b][/color][/center]\n[/divbox]\n[divbox=white]\n\n[img]{{staff.signature}}[/img]\n[i]{{staff.name}}[/i]\n[b][i]{{division.rank}}[/i]\nLos Santos Advanced Medicine Division[/b]\n[/divbox][img]https://i.ibb.co/SwX3xjq2/HNP4ks-W.png[/img]",
+                "fields": [
+                  {
+                    "key": "amuPublicRequestLink",
+                    "type": "url",
+                    "label": "AMU Public Request Link",
+                    "hint": "The GOV page this post belongs on.",
+                    "required": false
+                  },
+                  {
+                    "key": "reasonForAppointment",
+                    "type": "text",
+                    "label": "Reason for Appointment",
+                    "required": true
+                  },
+                  {
+                    "key": "dateOfAppointment",
+                    "type": "date",
+                    "label": "Date of Appointment",
+                    "required": true
+                  },
+                  {
+                    "key": "time",
+                    "type": "time",
+                    "label": "Time",
+                    "required": true
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{amuPublicRequestLink}}",
+                    "variant": "outline",
+                    "requiresField": "amuPublicRequestLink"
+                  }
+                ]
               }
             ]
           }
