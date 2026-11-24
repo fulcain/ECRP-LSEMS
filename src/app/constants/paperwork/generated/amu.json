@@ -472,6 +472,154 @@
                     "variant": "outline"
                   }
                 ]
+              },
+              {
+                "key": "saaaMedicalCheckup",
+                "label": "SAAA Medical Checkup",
+                "hint": "SAAA Medical checkup to be posted under patients file.",
+                "template": "[img]https://i.ibb.co/yFGD48Pt/yr-VPI6t.png[/img]\n[lsemssubtitle]PATIENT INFORMATION[/lsemssubtitle]\n[divbox=white]\n[b]Full name:[/b] {{patientName}}\n[hr]\n[b]Phone number:[/b] {{phoneNumber}}\n[hr]\n[/divbox]\n[lsemssubtitle]PHYSICAL EXAMINATION[/lsemssubtitle]\n[divbox=white]\n[b]Auscultation:[/b] {{auscultation}}\n[hr]\n[b]Cover Test *using corrective lenses if prescribed if needed*:[/b] {{coverTest}}\n[hr]\n[b]Audio-meter Test *using corrective equipment if prescribed if needed*:[/b] {{audioMeter}}\n[hr]\n[b]Drug Test [ooc]/drugtest[/ooc]:[/b] {{drugTest}}\n[hr]\n[/divbox]\n[divbox=white]\n\n[img]{{staff.signature}}[/img]\n[i]{{staff.name}}[/i]\n[b]{{division.rank}}[/b]\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox][img]https://i.ibb.co/SwX3xjq2/HNP4ks-W.png[/img]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "Patient Profile Link",
+                    "hint": "The GOV page this post belongs on.",
+                    "required": false
+                  },
+                  {
+                    "key": "patientName",
+                    "type": "text",
+                    "label": "Patient Name",
+                    "required": true
+                  },
+                  {
+                    "key": "phoneNumber",
+                    "type": "text",
+                    "label": "Phone Number",
+                    "required": true
+                  },
+                  {
+                    "key": "auscultation",
+                    "type": "text",
+                    "label": "Auscultation",
+                    "required": true
+                  },
+                  {
+                    "key": "coverTest",
+                    "type": "text",
+                    "label": "Cover Test",
+                    "required": false
+                  },
+                  {
+                    "key": "audioMeter",
+                    "type": "text",
+                    "label": "Audio-meter",
+                    "required": false
+                  },
+                  {
+                    "key": "drugTest",
+                    "type": "text",
+                    "label": "Drug Test",
+                    "required": true
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "variant": "outline",
+                    "requiresField": "govLink"
+                  },
+                  {
+                    "id": "reset",
+                    "kind": "reset",
+                    "label": "Reset",
+                    "variant": "outline"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "label": "Certificates",
+            "hint": "Medical Certificates.",
+            "formats": [
+              {
+                "key": "saaaMedicalCertificate",
+                "label": "SAAA Medical Certificate",
+                "hint": "To be posted under the SAAA section once the medical check-up has been completed.",
+                "template": "[img]https://i.ibb.co/5hyGd6f1/M7FTb-Hm.png[/img]\n\n[divbox=white]\n[color=transparent]spacer[/color]\n[center][fimg=130,130]https://i.ibb.co/0jJZGLHB/QYXPM0p.png[/fimg]\n[color=transparent]spacer[/color]\n[img]https://i.ibb.co/fVH41CcS/7x0vy1x.png[/img][/center]\n[color=transparent]spacer[/color]\n[center][size=140]{{patientName}}[/size]\n[color=transparent]spacer[/color]\n[size=120]was examined by AMU staff on [b]{{date}}[/b] \nand found medically fit to be educated on and practice as:\n[{{anAircraftPilot}}] An Aircraft Pilot\n[{{aFixedWingPilot}}] A Fixed-wing Pilot\n[{{aJumpmaster}}] A Jumpmaster.[/size]\n\n\n[center][img]https://i.ibb.co/fVH41CcS/7x0vy1x.png[/img][/center]\n\n[hr][/hr]\n\n[i][b]Examination performed by:[/b][/i]\n\n[img]{{staff.signature}}[/img]\n[I]{{staff.name}}[/i]\n[b]{{division.rank}}, {{staff.rank}}[/b]\n[b]Los Santos Emergency Medical Services[/b]\n\n[/divbox][lsemsfooter]",
+                "fields": [
+                  {
+                    "key": "patientName",
+                    "type": "text",
+                    "label": "Patient Name",
+                    "required": true
+                  },
+                  {
+                    "key": "date",
+                    "type": "date",
+                    "label": "Date ",
+                    "required": true
+                  },
+                  {
+                    "key": "anAircraftPilot",
+                    "type": "radio",
+                    "label": "An Aircraft Pilot",
+                    "required": false,
+                    "placeholder": "",
+                    "options": [
+                      {
+                        "label": "X",
+                        "value": "An Aircraft Pilot",
+                        "output": "X"
+                      }
+                    ]
+                  },
+                  {
+                    "key": "aFixedWingPilot",
+                    "type": "radio",
+                    "label": "A Fixed-wing Pilot",
+                    "required": false,
+                    "options": [
+                      {
+                        "label": "X",
+                        "value": "A Fixed-wing Pilot",
+                        "output": "X"
+                      }
+                    ]
+                  },
+                  {
+                    "key": "aJumpmaster",
+                    "type": "radio",
+                    "label": "A Jumpmaster",
+                    "required": false,
+                    "options": [
+                      {
+                        "label": "X",
+                        "value": "A Jumpmaster",
+                        "output": "X"
+                      }
+                    ]
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyOpen",
+                    "kind": "copy_open",
+                    "label": "Copy & Open",
+                    "content": "https://gov.eclipse-rp.net/posting.php?mode=post&f=3462",
+                    "variant": "outline"
+                  }
+                ]
               }
             ]
           }
