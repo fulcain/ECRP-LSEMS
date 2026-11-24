@@ -545,6 +545,139 @@
                     "variant": "outline"
                   }
                 ]
+              },
+              {
+                "key": "lawEnforcementEvaluation",
+                "label": "Law Enforcement Evaluation",
+                "hint": "Law Enforcement Evaluation Report to be posted to the patient's file.",
+                "template": "[img]https://i.ibb.co/DDVrd8MB/LAW-ENFORCEMENT-EVALUATION.png[/img]\n[lsemssubtitle]PATIENT INFORMATION[/lsemssubtitle]\n[divbox=white]\n[b]Full name:[/b] \n[hr]\n[b]Phone number:[/b] {{patientName}}\n[hr]\n[b]Profession:[/b] {{profession}}\n[hr]\n[b]Height:[/b] {{height}}\n[hr]\n[b]Weight:[/b] {{weight}}\n[hr]\n[b]Blood Type:[/b] {{bloodType}}\n[hr]\n[b]Allergies:[/b] {{allergies}}\n[hr]\n[/divbox]\n[lsemssubtitle]PHYSICAL EXAMINATION[/lsemssubtitle]\n[divbox=white]\n[b]ECG Band:[/b] {{ecgBand}}\n[hr]\n[b]Oximeter:[/b] {{oximeter}}\n[hr]\n[b]Temperature:[/b] {{temperature}}\n[hr]\n[b]Blood Pressure:[/b] {{bloodPressure}}\n[hr]\n[b]Auscultation:[/b] {{auscultation}}\n\n[hr]\n[b]BMI:[/b] {{bmi}}\n[hr]\n[b]Cover Test:[/b] {{coverTest}}\n\n[hr]\n[b]Audio-meter Test:[/b] {{audioMeterTest}}\n\n[hr]\n[b]ECG:[/b] {{ecg}}\n[hr]\n[b]Urinalysis:[/b] {{urinalysis}}\n[/divbox]\n[divbox=white]\n\n[img]{{staff.signature}}[/img]\n[I]{{staff.name}}[/i]\n[b]{{division.rank}}[/b]\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox][img]https://i.ibb.co/SwX3xjq2/HNP4ks-W.png[/img]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "Patient Profile Link",
+                    "hint": "The GOV page this post belongs on.",
+                    "required": false
+                  },
+                  {
+                    "key": "patientName",
+                    "type": "text",
+                    "label": "Patient Name",
+                    "required": true
+                  },
+                  {
+                    "key": "profession",
+                    "type": "text",
+                    "label": "Profession",
+                    "required": true
+                  },
+                  {
+                    "key": "height",
+                    "type": "text",
+                    "label": "Height",
+                    "required": true
+                  },
+                  {
+                    "key": "weight",
+                    "type": "text",
+                    "label": "Weight",
+                    "required": true
+                  },
+                  {
+                    "key": "bloodType",
+                    "type": "text",
+                    "label": "Blood Type",
+                    "required": true
+                  },
+                  {
+                    "key": "allergies",
+                    "type": "text",
+                    "label": "Allergies",
+                    "required": true
+                  },
+                  {
+                    "key": "ecgBand",
+                    "type": "text",
+                    "label": "ECG Band",
+                    "required": true
+                  },
+                  {
+                    "key": "oximeter",
+                    "type": "text",
+                    "label": "Oximeter",
+                    "required": true
+                  },
+                  {
+                    "key": "temperature",
+                    "type": "text",
+                    "label": "Temperature",
+                    "required": true
+                  },
+                  {
+                    "key": "bloodPressure",
+                    "type": "text",
+                    "label": "Blood Pressure",
+                    "required": true
+                  },
+                  {
+                    "key": "auscultation",
+                    "type": "text",
+                    "label": "Auscultation",
+                    "required": true
+                  },
+                  {
+                    "key": "bmi",
+                    "type": "text",
+                    "label": "BMI",
+                    "required": true
+                  },
+                  {
+                    "key": "coverTest",
+                    "type": "text",
+                    "label": "Cover Test",
+                    "required": true
+                  },
+                  {
+                    "key": "audioMeterTest",
+                    "type": "text",
+                    "label": "Audio-meter Test",
+                    "required": true
+                  },
+                  {
+                    "key": "ecg",
+                    "type": "text",
+                    "label": "ECG",
+                    "required": true
+                  },
+                  {
+                    "key": "urinalysis",
+                    "type": "text",
+                    "label": "Urinalysis",
+                    "required": true
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "variant": "outline",
+                    "requiresField": "govLink"
+                  },
+                  {
+                    "id": "reset",
+                    "kind": "reset",
+                    "label": "Reset",
+                    "variant": "outline"
+                  }
+                ]
               }
             ]
           },
