@@ -621,6 +621,48 @@
                   }
                 ],
                 "subject": " Medical Certificate | {{patientName}}"
+              },
+              {
+                "key": "leoEvaluation",
+                "label": "LEO Evaluation",
+                "hint": "To be sent via government email to the Commanding Officers of the employee being examined.",
+                "template": "[img]https://i.ibb.co/5xSWMjkK/LAW-ENFORCEMENT-EVALUATION-certification.png[/img]\n\n[divbox=white]\n[color=transparent]spacer[/color]\n[center][fimg=130,130]https://i.ibb.co/0jJZGLHB/QYXPM0p.png[/fimg]\n[color=transparent]spacer[/color]\n[img]https://i.ibb.co/fVH41CcS/7x0vy1x.png[/img][/center]\n[color=transparent]spacer[/color]\n[center][size=140]{{patientName}}[/size]\n[color=transparent]spacer[/color]\n[size=120]was examined by AMU staff on [b]{{date}}[/b] \nand found medically fit to proceed.\n\n\n[center][img]https://i.ibb.co/fVH41CcS/7x0vy1x.png[/img][/center]\n\n[hr][/hr]\n\n[i][b]Examination performed by:[/b][/i]\n\n[img]{{staff.signature}}[/img]\n[I]{{staff.name}}[/i]\n[b]{{division.rank}}, {{staff.rank}}[/b]\n[b]Los Santos Emergency Medical Services[/b]\n\n[/divbox][lsemsfooter]",
+                "fields": [
+                  {
+                    "key": "patientName",
+                    "type": "text",
+                    "label": "Patient Name",
+                    "required": true
+                  },
+                  {
+                    "key": "date",
+                    "type": "date",
+                    "label": "Date",
+                    "required": true
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyOpen",
+                    "kind": "copy_open",
+                    "label": "Copy & Open",
+                    "content": "https://gov.eclipse-rp.net/ucp.php?i=pm&mode=compose",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "reset",
+                    "kind": "reset",
+                    "label": "Reset",
+                    "variant": "outline"
+                  }
+                ],
+                "subject": "LEO Evaluation | {{patientName}}"
               }
             ]
           }
