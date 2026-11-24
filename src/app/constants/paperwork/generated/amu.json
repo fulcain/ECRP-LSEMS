@@ -619,7 +619,8 @@
                     "content": "https://gov.eclipse-rp.net/posting.php?mode=post&f=3462",
                     "variant": "outline"
                   }
-                ]
+                ],
+                "subject": " Medical Certificate | {{patientName}}"
               }
             ]
           }
