@@ -270,6 +270,74 @@
                   }
                 ],
                 "subject": "Patient File | {{patientName}}"
+              },
+              {
+                "key": "visitReport",
+                "label": "Visit Report",
+                "hint": "For when a session has been conducted and you want to fill out its details.",
+                "template": "[img]https://i.ibb.co/JwrgsRWT/XDND6bf.png[/img]\n[lsemssubtitle]REPORT[/lsemssubtitle]\n[divbox=white]\n[hr]\n[b]Date of Visit:[/b] {{dateOfVisit}}\n[hr]\n[b]Reason For Visit:[/b] {{reasonForVisit}}\n[hr]\n[b]Diagnosis made:[/b] {{diagnosisMade}}\n[hr]\n[b]Personnel Present:[/b] {{personnelPresent}}\n[hr]\n[b]Visit Report:[/b] \n{{visitReport}}\n[hr]\n[/divbox]\n[divbox=white]\n\n[img]{{staff.signature}}[/img]\n[i]{{staff.name}}[/i]\n[b][i]{{division.rank}}[/i]\nLos Santos Advanced Medicine Division[/b]\n[/divbox][img]https://i.ibb.co/SwX3xjq2/HNP4ks-W.png[/img]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "Link to the Patient File",
+                    "hint": "The GOV page this post belongs on.",
+                    "required": false
+                  },
+                  {
+                    "key": "dateOfVisit",
+                    "type": "date",
+                    "label": "Date of Visit",
+                    "required": true
+                  },
+                  {
+                    "key": "reasonForVisit",
+                    "type": "text",
+                    "label": "Reason For Visit",
+                    "required": true
+                  },
+                  {
+                    "key": "diagnosisMade",
+                    "type": "text",
+                    "label": "Diagnosis made",
+                    "required": true
+                  },
+                  {
+                    "key": "personnelPresent",
+                    "type": "text",
+                    "label": "Personnel Present",
+                    "required": true
+                  },
+                  {
+                    "key": "visitReport",
+                    "type": "textarea",
+                    "label": "Visit Report",
+                    "required": true,
+                    "placeholder": ""
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "variant": "outline",
+                    "requiresField": "govLink"
+                  },
+                  {
+                    "id": "reset",
+                    "kind": "reset",
+                    "label": "Reset",
+                    "variant": "outline"
+                  }
+                ]
               }
             ]
           }
