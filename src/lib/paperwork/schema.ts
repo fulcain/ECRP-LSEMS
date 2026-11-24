@@ -6,6 +6,8 @@
  * ever become JavaScript that a deployment executes.
  */
 
+import { INPUT_LIMITS, validateText, validationMessage } from "@/lib/validation";
+
 export const PAPERWORK_CONFIG_VERSION = 1;
 
 export type PaperworkFieldType =
@@ -22,8 +24,11 @@ export type PaperworkFieldType =
   | "staff";
 
 export type PaperworkFieldOption = {
+  /** Stored selection key; radio fields may render a different output. */
   value: string;
   label: string;
+  /** Text written into the template when this radio choice is selected. */
+  output?: string;
 };
 
 export type PaperworkField = {
@@ -286,6 +291,41 @@ export function validatePaperworkConfig(
             problems.push(
               `${where}: “${field.label}” is a ${field.type} with no options.`,
             );
+          }
+          for (const [optionIndex, option] of (field.options ?? []).entries()) {
+            const optionLabelError = validationMessage(
+              validateText(option.label, `${field.label} choice`, {
+                max: INPUT_LIMITS.short,
+                allowMarkup: false,
+              }),
+            );
+            const optionValueError = validationMessage(
+              validateText(option.value, `${field.label} choice value`, {
+                max: INPUT_LIMITS.short,
+                allowMarkup: false,
+              }),
+            );
+            const outputError =
+              option.output === undefined
+                ? undefined
+                : validationMessage(
+                    validateText(option.output, `${field.label} output`, {
+                      required: false,
+                      max: INPUT_LIMITS.short,
+                      allowMarkup: true,
+                    }),
+                  );
+            for (const message of [
+              optionLabelError,
+              optionValueError,
+              outputError,
+            ]) {
+              if (message) {
+                problems.push(
+                  `${where}: choice ${optionIndex + 1} for “${field.label}” ${message}`,
+                );
+              }
+            }
           }
         }
 

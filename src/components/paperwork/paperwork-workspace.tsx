@@ -27,6 +27,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { parseDate } from "@/lib/format-date";
 import {
   Select,
@@ -158,6 +159,15 @@ export function PaperworkWorkspace({
     }
   }
 
+  const templateValues = { ...values };
+  for (const field of format?.fields ?? []) {
+    if (field.type !== "radio") continue;
+    const selected = field.options?.find(
+      (option) => option.value === String(values[field.key] ?? ""),
+    );
+    if (selected) templateValues[field.key] = selected.output ?? selected.value;
+  }
+
   const setValue = (fieldKey: string, value: PaperworkFieldValue) => {
     if (!format) return;
     setDraft((prev) => ({
@@ -167,7 +177,7 @@ export function PaperworkWorkspace({
   };
 
   const context: PlaceholderContext = {
-    values,
+    values: templateValues,
     staff,
     divisionLabel: division.label,
     divisionRank: divisionRanks[division.label] || "",
@@ -492,20 +502,43 @@ function FieldControl({
   }
 
   if (field.type === "radio") {
+    const options = field.options ?? [];
     return (
-      <div className="flex flex-wrap gap-2">
-        {(field.options ?? []).map((option) => (
-          <Button
+      <RadioGroup
+        value={String(value ?? "")}
+        onValueChange={onChange}
+        aria-label={field.label}
+        dir={options.length === 1 ? "ltr" : undefined}
+        className="flex flex-wrap gap-x-5 gap-y-2"
+      >
+        {options.map((option) => (
+          <div
             key={option.value}
-            type="button"
-            size="sm"
-            variant={value === option.value ? "default" : "outline"}
-            onClick={() => onChange(option.value)}
+            className="inline-flex items-center gap-2 whitespace-nowrap"
           >
-            {option.label}
-          </Button>
+            <RadioGroupItem
+              id={`${id}-${option.value}`}
+              value={option.value}
+              aria-label={options.length === 1 ? field.label : undefined}
+              onClick={(event) => {
+                if (value === option.value) {
+                  event.preventDefault();
+                  onChange("");
+                }
+              }}
+            />
+            {options.length > 1 && (
+              <Label
+                htmlFor={`${id}-${option.value}`}
+                dir="auto"
+                className="cursor-pointer text-sm text-foreground"
+              >
+                {option.label}
+              </Label>
+            )}
+          </div>
         ))}
-      </div>
+      </RadioGroup>
     );
   }
 

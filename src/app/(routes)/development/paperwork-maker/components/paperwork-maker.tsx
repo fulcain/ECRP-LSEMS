@@ -50,6 +50,7 @@ import {
 import { DIVISION_ENTRIES } from "@/configs/roles";
 import { FIELD_TYPES } from "@/lib/paperwork/fields";
 import { renderTemplate } from "@/lib/paperwork/placeholders";
+import { INPUT_LIMITS } from "@/lib/validation";
 import {
   BUILTIN_PLACEHOLDERS,
   copyOpenField,
@@ -401,6 +402,20 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
     });
   };
 
+  const updateFieldOption = (
+    fieldIndex: number,
+    optionIndex: number,
+    patch: Partial<NonNullable<PaperworkField["options"]>[number]>,
+  ) => {
+    const field = placed?.format.fields[fieldIndex];
+    if (!field) return;
+    updateField(fieldIndex, {
+      options: (field.options ?? []).map((option, index) =>
+        index === optionIndex ? { ...option, ...patch } : option,
+      ),
+    });
+  };
+
   /** Inserts at the caret, so a chip or a snippet lands where the cursor is. */
   const insertText = (text: string) => {
     const textarea = templateRef.current;
@@ -556,17 +571,32 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
     entry.groups.flatMap((group) =>
       group.formats.map((format) => ({
         value: format.key,
-        label: `${entry.label} / ${group.label} / ${format.label}`,
+        label: format.label,
+        pageLabel: entry.label,
+        scopeLabel: group.label,
       })),
     ),
   );
   const selectedFormatOption = formatOptions.find(
     (option) => option.value === placed?.format.key,
   );
-  const filteredFormatOptions = formatOptions.filter((option) =>
-    `${option.label} ${option.value}`
-      .toLocaleLowerCase()
-      .includes(formatSearch.trim().toLocaleLowerCase()),
+  const normalizedFormatSearch = formatSearch.trim().toLocaleLowerCase();
+  const filteredFormatGroups = pages
+    .flatMap((entry) =>
+      entry.groups.map((group) => ({
+        pageLabel: entry.label,
+        scopeLabel: group.label,
+        formats: group.formats.filter((format) =>
+          `${format.label} ${format.key} ${entry.label} ${group.label}`
+            .toLocaleLowerCase()
+            .includes(normalizedFormatSearch),
+        ),
+      })),
+    )
+    .filter((group) => group.formats.length > 0);
+  const filteredFormatCount = filteredFormatGroups.reduce(
+    (count, group) => count + group.formats.length,
+    0,
   );
 
   const placeholderChips = [
@@ -1210,9 +1240,9 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
           </section>
 
           <section className="space-y-4 rounded-2xl border border-border bg-surface/90 p-5">
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-sm font-semibold text-foreground">Format</h2>
-              <div className="w-64">
+              <div className="w-full sm:w-[min(30rem,calc(100vw-6rem))]">
                 <Popover
                   open={formatPickerOpen}
                   onOpenChange={setFormatPickerOpen}
@@ -1224,17 +1254,24 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                       variant="outline"
                       role="combobox"
                       aria-expanded={formatPickerOpen}
-                      className="w-full justify-between font-normal"
+                      className="h-auto min-h-9 w-full justify-between py-2 text-left font-normal"
                     >
-                      <span className="truncate">
-                        {selectedFormatOption?.label ?? "Choose a format"}
+                      <span className="flex min-w-0 flex-1 flex-col items-start">
+                        <span className="w-full break-words font-medium text-foreground">
+                          {selectedFormatOption?.label ?? "Choose a format"}
+                        </span>
+                        {selectedFormatOption && (
+                          <span className="w-full break-words text-[10px] text-muted-foreground">
+                            {selectedFormatOption.pageLabel} / {selectedFormatOption.scopeLabel}
+                          </span>
+                        )}
                       </span>
                       <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent
                     align="start"
-                    className="w-[var(--radix-popover-trigger-width)] p-2"
+                    className="w-[min(38rem,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] p-3"
                   >
                     <Input
                       autoFocus
@@ -1247,34 +1284,45 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                     <div
                       role="listbox"
                       aria-label="Formats"
-                      className="mt-2 max-h-64 space-y-1 overflow-y-auto"
+                      className="mt-2 max-h-[min(70vh,32rem)] space-y-3 overflow-y-auto"
                     >
-                      {filteredFormatOptions.map((option) => (
-                        <Button
-                          key={option.value}
-                          type="button"
-                          size="sm"
-                          variant="ghost"
-                          role="option"
-                          aria-selected={option.value === placed?.format.key}
-                          className="w-full justify-start gap-2 text-left font-normal"
-                          onClick={() => {
-                            selectFormat(option.value);
-                            setFormatPickerOpen(false);
-                            setFormatSearch("");
-                          }}
+                      {filteredFormatGroups.map((group) => (
+                        <div
+                          key={`${group.pageLabel}-${group.scopeLabel}`}
+                          className="space-y-1"
                         >
-                          <Check
-                            className={`h-3.5 w-3.5 shrink-0 ${
-                              option.value === placed?.format.key
-                                ? "opacity-100"
-                                : "opacity-0"
-                            }`}
-                          />
-                          <span className="truncate">{option.label}</span>
-                        </Button>
+                          <p className="sticky top-0 z-10 rounded-md bg-popover/95 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground backdrop-blur">
+                            {group.pageLabel} <span aria-hidden="true">›</span> {group.scopeLabel}
+                          </p>
+                          <div className="space-y-1">
+                            {group.formats.map((format) => {
+                              const selected = format.key === placed?.format.key;
+                              return (
+                                <Button
+                                  key={format.key}
+                                  type="button"
+                                  size="sm"
+                                  variant={selected ? "secondary" : "ghost"}
+                                  role="option"
+                                  aria-selected={selected}
+                                  className="h-auto min-h-9 w-full justify-start gap-2 whitespace-normal py-2 text-left font-normal"
+                                  onClick={() => {
+                                    selectFormat(format.key);
+                                    setFormatPickerOpen(false);
+                                    setFormatSearch("");
+                                  }}
+                                >
+                                  <Check
+                                    className={`h-3.5 w-3.5 shrink-0 ${selected ? "opacity-100" : "opacity-0"}`}
+                                  />
+                                  <span className="min-w-0 break-words">{format.label}</span>
+                                </Button>
+                              );
+                            })}
+                          </div>
+                        </div>
                       ))}
-                      {filteredFormatOptions.length === 0 && (
+                      {filteredFormatCount === 0 && (
                         <p className="px-2 py-3 text-xs text-muted-foreground">
                           No formats match that search.
                         </p>
@@ -1781,6 +1829,108 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                                 </SelectItem>
                               </SelectContent>
                             </Select>
+                          </div>
+                        )}
+                        {(field.type === "radio" || field.type === "select") && (
+                          <div className="space-y-2 rounded-lg border border-border/70 bg-background/30 p-3 sm:col-span-2">
+                            <div>
+                              <p className="text-xs font-medium text-foreground">
+                                {field.type === "radio" ? "Radio choices" : "Dropdown choices"}
+                              </p>
+                              <p className="text-[10px] text-muted-foreground">
+                                {field.type === "radio"
+                                  ? "Set each radio label and the text written into the template when it is selected."
+                                  : "Set the choices the member can select."}
+                              </p>
+                            </div>
+                            {(field.options ?? []).map((option, optionIndex) => (
+                              <div
+                                key={`${option.value}-${optionIndex}`}
+                                className={`grid gap-2 ${field.type === "radio" ? "sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]" : "sm:grid-cols-[1fr_1fr_auto]"}`}
+                              >
+                                <Input
+                                  value={option.label}
+                                  maxLength={INPUT_LIMITS.short}
+                                  aria-label={`Choice ${optionIndex + 1} label`}
+                                  onChange={(event) =>
+                                    updateFieldOption(index, optionIndex, {
+                                      label: event.target.value,
+                                    })
+                                  }
+                                  placeholder={field.type === "radio" ? "Radio label" : "Choice label"}
+                                />
+                                {field.type !== "radio" && (
+                                  <Input
+                                  value={option.value}
+                                  maxLength={INPUT_LIMITS.short}
+                                  aria-label={`Choice ${optionIndex + 1} selection value`}
+                                  onChange={(event) =>
+                                    updateFieldOption(index, optionIndex, {
+                                      value: event.target.value,
+                                    })
+                                  }
+                                  placeholder="Selection value"
+                                  className="font-mono"
+                                  />
+                                )}
+                                {field.type === "radio" && (
+                                  <Input
+                                    value={option.output ?? ""}
+                                    maxLength={INPUT_LIMITS.short}
+                                    aria-label={`Choice ${optionIndex + 1} template output`}
+                                    onChange={(event) =>
+                                      updateFieldOption(index, optionIndex, {
+                                        output: event.target.value,
+                                      })
+                                    }
+                                    placeholder="Template output, e.g. X"
+                                    className="font-mono"
+                                  />
+                                )}
+                                <Button
+                                  type="button"
+                                  size="icon"
+                                  variant="ghost"
+                                  aria-label={`Remove choice ${optionIndex + 1}`}
+                                  onClick={() =>
+                                    updateField(index, {
+                                      options: (field.options ?? []).filter(
+                                        (_, itemIndex) => itemIndex !== optionIndex,
+                                      ),
+                                    })
+                                  }
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                            {(field.options ?? []).length === 0 && (
+                              <p className="text-[10px] text-amber-700 dark:text-amber-300">
+                                This field has no choices yet. Add at least one to make it usable.
+                              </p>
+                            )}
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                const optionNumber = (field.options?.length ?? 0) + 1;
+                                const label = `Option ${optionNumber}`;
+                                updateField(index, {
+                                  options: [
+                                    ...(field.options ?? []),
+                                    {
+                                      label,
+                                      value: `option_${optionNumber}`,
+                                      ...(field.type === "radio" ? { output: "" } : {}),
+                                    },
+                                  ],
+                                });
+                              }}
+                            >
+                              <Plus className="h-3.5 w-3.5" />
+                              Add choice
+                            </Button>
                           </div>
                         )}
                       </div>
