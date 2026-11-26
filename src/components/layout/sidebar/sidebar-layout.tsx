@@ -1,6 +1,7 @@
 "use client";
 
 import { headerLinks } from "@/components/layout/header/configs/HeaderLinks";
+import { ROUTES } from "@/configs/routes";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { SidebarDesktop } from "./components/sidebar-desktop";
 import { SidebarMobile } from "./components/sidebar-mobile";
@@ -9,7 +10,7 @@ import { ContentWrapper } from "./content-wrapper";
 import { CommandPalette } from "../command-palette";
 import React from "react";
 import type { SearchDestination } from "../command-palette";
-import { Search } from "lucide-react";
+import { Search, Wand2 } from "lucide-react";
 
 /**
  * The shell around every page.
@@ -56,7 +57,20 @@ export function SidebarLayout({
   }
 
   const allowed = new Set(allowedHrefs);
-  const links = headerLinks
+  const visibleHeaderLinks = [...headerLinks];
+  const makerHref = ROUTES.development.paperworkMaker;
+  if (
+    allowed.has(makerHref) &&
+    !visibleHeaderLinks.some((item) => item.href === makerHref)
+  ) {
+    visibleHeaderLinks.push({
+      label: "Paperwork Maker",
+      href: makerHref,
+      icon: Wand2,
+      group: "Development",
+    });
+  }
+  const links = visibleHeaderLinks
     .filter((item) => item.href && allowed.has(item.href))
     .map((item) => ({
       ...item,
