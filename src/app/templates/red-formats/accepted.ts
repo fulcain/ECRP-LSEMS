@@ -1,4 +1,4 @@
-import { REDTemplateDefinition } from "./types";
+import type { REDTemplateDefinition } from "./types";
 
 export const acceptedTemplate: REDTemplateDefinition = {
   value: "accepted",

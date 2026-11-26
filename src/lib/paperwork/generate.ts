@@ -154,8 +154,10 @@ type GeneratedTarget = {
   isNew: boolean;
   /** Whether the maker also declares the division, or only gives it a page. */
   ownsDeclaration: boolean;
+  /** New formats for an existing page are mounted as an additional section. */
+  supplemental: boolean;
   route: string;
-  pagePath: string;
+  pagePath?: string;
 };
 
 /** Where one config's page goes, without touching anything. */
@@ -170,13 +172,12 @@ function targetFor(config: PaperworkConfig): GeneratedTarget {
   const base = handWritten ? declared.route?.replace(/\/+$/, "") : undefined;
 
   if (base) {
-    // The division already has a hand-written page: this one is the division's
-    // paperwork tab, so the two never compete for the same file.
+    // New formats are rendered inside the existing division workspace.
     return {
       isNew: false,
       ownsDeclaration: false,
-      route: `${base}/paperwork`,
-      pagePath: `src/app/(routes)/divisions/${divisionSlug(key)}/paperwork/page.tsx`,
+      supplemental: true,
+      route: base,
     };
   }
 
@@ -185,6 +186,7 @@ function targetFor(config: PaperworkConfig): GeneratedTarget {
     // The ranks and membership of a division declared by hand stay where they
     // are: the maker only owns divisions it introduced itself.
     ownsDeclaration: !handWritten,
+    supplemental: false,
     route: handWritten
       ? divisionRoute(key)
       : (generated?.route ?? divisionRoute(key)),
@@ -220,6 +222,8 @@ function generatedRoles(configs: readonly PaperworkConfig[]): {
   for (const config of configs) {
     const division = config.division;
     const target = targetFor(config);
+
+    if (target.supplemental) continue;
 
     if (!target.isNew || !target.ownsDeclaration) {
       // Either a tab beside a hand-written page, or the page of a division whose
@@ -455,12 +459,18 @@ export async function planDivision(
       path: `${GENERATED_PAPERWORK_DIR}/index.ts`,
       content: aggregatorContent(configs.map((entry) => entry.division.key)),
     },
-    { path: GENERATED_DIVISIONS_FILE, content: generatedRolesContent(configs) },
-    {
-      path: GENERATED_DIVISION_PAGES_FILE,
-      content: generatedPagesContent(configs),
-    },
-    { path: target.pagePath, content: pageContent(config, key) },
+    ...(!target.supplemental
+      ? [
+          { path: GENERATED_DIVISIONS_FILE, content: generatedRolesContent(configs) },
+          {
+            path: GENERATED_DIVISION_PAGES_FILE,
+            content: generatedPagesContent(configs),
+          },
+        ]
+      : []),
+    ...(target.pagePath
+      ? [{ path: target.pagePath, content: pageContent(config, key) }]
+      : []),
   ];
 
   const files: PlannedFile[] = [];
@@ -506,7 +516,7 @@ export async function planDivision(
     ok: true,
     problems: [],
     files,
-    integration: [
+    integration: target.supplemental ? [] : [
       "src/configs/roles.ts - spread GENERATED_ROLES into ROLES and GENERATED_DIVISIONS into DIVISIONS (already wired once this slice is merged).",
       `src/app/constants/divisions/index.ts - spread GENERATED_DIVISION_PAGES, so ${divisionSlug(key)} has a division module when it is a new division.`,
       "src/components/layout/header/configs/HeaderLinks.ts - generated divisions and generated paperwork pages appear in the Divisions section.",

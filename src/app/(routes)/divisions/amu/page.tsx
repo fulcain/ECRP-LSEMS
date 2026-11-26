@@ -4,19 +4,35 @@ import type { Metadata } from "next";
 import { PaperworkWorkspace } from "@/components/paperwork/paperwork-workspace";
 import { PageContainer } from "@/components/ui/page-container";
 import type { PaperworkConfig } from "@/lib/paperwork/schema";
+import amuSeed from "@/app/constants/paperwork/generated/amu.json";
+import { hasMongoPaperworkStore, readAMUPaperwork } from "@/lib/paperwork/amu-store";
 
-import config from "@/app/constants/paperwork/generated/amu.json";
 
 export const metadata: Metadata = {
   title: "AMU",
   description: "AMU Division formats and links.",
 };
 
-export default function Page() {
+export default async function Page() {
+  let config = amuSeed as PaperworkConfig;
+  let databaseUnavailable = false;
+  if (hasMongoPaperworkStore()) {
+    try {
+      config = await readAMUPaperwork();
+    } catch (error) {
+      databaseUnavailable = true;
+      console.error("AMU paperwork database read failed; using the bundled config.", error);
+    }
+  }
   // The same container every division page sits in: the workspace draws the
   // heading and the builder, not the page's width or margins.
   return (
     <PageContainer>
+      {databaseUnavailable && (
+        <div role="status" className="mb-6 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-800 dark:text-amber-200">
+          The paperwork database is temporarily unavailable. AMU is showing its bundled backup and will use the database again when the connection recovers.
+        </div>
+      )}
       <PaperworkWorkspace config={config as PaperworkConfig} />
     </PageContainer>
   );

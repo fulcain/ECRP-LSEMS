@@ -1,4 +1,4 @@
-import { REDTemplateDefinition } from "./types";
+import type { REDTemplateDefinition } from "./types";
 
 export const pendingContractTemplate: REDTemplateDefinition = {
   value: "pending-contract",

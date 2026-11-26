@@ -1,0 +1,689 @@
+{
+  "version": 1,
+  "origin": "legacy-migration",
+  "division": {
+    "key": "ar",
+    "label": "A&R",
+    "description": "Air & Rescue Division paperwork.",
+    "emblem": "/Division/A&R.png",
+    "icon": "Plane",
+    "imageSize": "235,150",
+    "image": "https://i.vgy.me/2bdgwx.png",
+    "ranks": [
+      {
+        "alias": "HeadofAR",
+        "name": "Head of A&R",
+        "id": "579588741950341132"
+      },
+      {
+        "alias": "InterimHeadofAR",
+        "name": "Interim Head of A&R",
+        "id": null
+      },
+      {
+        "alias": "AssistantHeadofAR",
+        "name": "Assistant Head of A&R",
+        "id": "1195192928306470912"
+      },
+      {
+        "alias": "InterimAssistantHeadofAR",
+        "name": "Interim Assistant Head of A&R",
+        "id": null
+      },
+      {
+        "alias": "SeniorFlightInstructor",
+        "name": "Senior Flight Instructor",
+        "id": null
+      },
+      {
+        "alias": "FlightInstructor",
+        "name": "Flight Instructor",
+        "id": "1278870648772362240"
+      },
+      {
+        "alias": "SeniorPilot",
+        "name": "Senior Pilot",
+        "id": null
+      },
+      {
+        "alias": "Pilot",
+        "name": "Pilot",
+        "id": null
+      },
+      {
+        "alias": "StudentPilot",
+        "name": "Student Pilot",
+        "id": null
+      },
+      {
+        "alias": "SeniorMountainRescueInstructor",
+        "name": "Senior Mountain Rescue Instructor",
+        "id": null
+      },
+      {
+        "alias": "MountainRescueInstructor",
+        "name": "Mountain Rescue Instructor",
+        "id": "1278870369935036570"
+      },
+      {
+        "alias": "MountainandRescueOperator",
+        "name": "Mountain and Rescue Operator",
+        "id": null
+      },
+      {
+        "alias": "MountainRescueStudent",
+        "name": "Mountain Rescue Student",
+        "id": null
+      }
+    ],
+    "quickLinks": [
+      {
+        "name": "Division Index",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=866"
+      },
+      {
+        "name": "Air Branch Manual",
+        "url": "https://gov.eclipse-rp.net/viewtopic.php?t=174011"
+      },
+      {
+        "name": "Ground Branch Manual",
+        "url": "https://gov.eclipse-rp.net/viewtopic.php?t=160335"
+      },
+      {
+        "name": "Lifeguard Handbook",
+        "url": "https://gov.eclipse-rp.net/viewtopic.php?t=225803"
+      },
+      {
+        "name": "Pilot Student Profiles (Instructor+)",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=926"
+      },
+      {
+        "name": "Ability Course (Instructor+)",
+        "url": "https://gov.eclipse-rp.net/viewtopic.php?t=211472"
+      },
+      {
+        "name": "Senior Pilot Profiles (Instructor+)",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=1232"
+      },
+      {
+        "name": "Flight Instructor Profiles (Instructor+)",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=3950"
+      },
+      {
+        "name": "Instructor Area (Instructor+)",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=3545"
+      },
+      {
+        "name": "Discussion Board",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=1886"
+      },
+      {
+        "name": "A&R - Command Area",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=1968"
+      }
+    ],
+    "pages": [
+      {
+        "key": "paperwork",
+        "label": "Paperwork",
+        "purpose": "Pick what you are writing, fill it in, then copy it into GOV - the extension pastes it in for you.",
+        "groups": [
+          {
+            "label": "Air - Pilot",
+            "hint": "Medevac Pilot certification and the paperwork around it.",
+            "formats": [
+              {
+                "key": "certification",
+                "label": "Pilot Certification",
+                "hint": "The full pilot certification - theory, airfield practice, agility course and time trial.",
+                "subject": "{{studentName}}",
+                "template": "[img]https://i.ibb.co/7d6CHcYG/ij789o-I.png[/img]\n[color=transparent]spacer[/color]\n[lsemssubtitle][b][size=120]Section 1: Theory Portion[/size][/b][/lsemssubtitle][divbox=white]\n[b]Were all of the radio calls covered?[/b]\n{{radioCalls}}\n\n[b]Did the student understand how to conduct a helipad inspection?[/b]\n{{helipadInspection}}\n\n[b]Did the student understand how to land a medevac properly?[/b]\n{{medevacLanding}}\n\n[b]Did the student have any questions? If so, what were they about?[/b]\n{{questions}}\n\n[b]How would you rate the student's knowledge of Radio Protocols 1-5?[/b]\n{{radioProtocolRating}}\n\n[b]How would you rate the student's understanding of Helicopter Safety? 1-5[/b]\n{{helicopterSafetyRating}}\n\n[/divbox]\n[lsemssubtitle][b][size=120]Section 2: Airfield Practice[/size][/b][/lsemssubtitle]\n[divbox=white]\n[b]How would you rate the student's performance during practice? 1-5[/b]\n{{practicePerformance}}\n\n[b]What are the student's piloting strengths and weaknesses during the practical training?[/b]\n{{strengthsWeaknesses}}\n\n[b]Did the student collide with anything at any point during the practical training? [/b]\n{{collisions}}\n\n[b]Did the student understand how to perform a basket rescue, as well as when to do it? [/b]\n{{basketRescue}}\n\n[/divbox]\n[lsemssubtitle][b][size=120]Section 3: Agility Course[/size][/b][/lsemssubtitle]\n[divbox=white]\n[b]Did the student fly safely throughout the course?[/b]\n{{courseFlightSafety}}\n\n[b]Did the student misidentify any of the landings, if so, did they correct on their own?[/b]\n{{landings}}\n\n[b]Did the student collide with anything at any point during the course? [/b]\n{{courseCollisions}}\n\n[b]Handling (RATING) 1-5:[/b] \n{{handling}}\n\n[b]Confidence (RATING) 1-5:[/b] \n{{confidence}}\n\n[b]How long did the course take (from liftoff to landing & engine off):[/b] \n{{courseTime}}\n\n[/divbox]\n\n[lsemssubtitle][b][size=120]Section 4: Time Trial[/size][/b][/lsemssubtitle]\n[divbox=white]\n[b]Time:[/b] {{trialTime}}\n\n[b]Comments (optional):[/b] {{trialComments}}\n[/divbox]\n[lsemssubtitle][size=120][b]Conclusion[/size][/b][/lsemssubtitle]\n[divbox=white]\n[b]Final thoughts:[/b]\n{{finalThoughts}}\n\n[b]Status:[/b] {{status}}\n\n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{division.rank}}\n[/divbox]\n[lsemsfooter][/lsemsfooter]",
+                "fields": [
+                  {
+                    "key": "studentName",
+                    "type": "text",
+                    "label": "Student name",
+                    "required": true
+                  },
+                  {
+                    "key": "radioCalls",
+                    "type": "text",
+                    "label": "Radio Calls",
+                    "required": true
+                  },
+                  {
+                    "key": "helipadInspection",
+                    "type": "text",
+                    "label": "Helipad Inspection",
+                    "required": true
+                  },
+                  {
+                    "key": "medevacLanding",
+                    "type": "text",
+                    "label": "Medevac Landing",
+                    "required": true
+                  },
+                  {
+                    "key": "questions",
+                    "type": "text",
+                    "label": "Questions",
+                    "required": true
+                  },
+                  {
+                    "key": "radioProtocolRating",
+                    "type": "text",
+                    "label": "Radio Protocol Rating",
+                    "required": true
+                  },
+                  {
+                    "key": "helicopterSafetyRating",
+                    "type": "text",
+                    "label": "Helicopter Safety Rating",
+                    "required": true
+                  },
+                  {
+                    "key": "practicePerformance",
+                    "type": "text",
+                    "label": "Practice Performance",
+                    "required": true
+                  },
+                  {
+                    "key": "strengthsWeaknesses",
+                    "type": "textarea",
+                    "label": "Strengths Weaknesses",
+                    "required": true
+                  },
+                  {
+                    "key": "collisions",
+                    "type": "text",
+                    "label": "Collisions",
+                    "required": true
+                  },
+                  {
+                    "key": "basketRescue",
+                    "type": "text",
+                    "label": "Basket Rescue",
+                    "required": true
+                  },
+                  {
+                    "key": "courseFlightSafety",
+                    "type": "text",
+                    "label": "Course Flight Safety",
+                    "required": true
+                  },
+                  {
+                    "key": "landings",
+                    "type": "text",
+                    "label": "Landings",
+                    "required": true
+                  },
+                  {
+                    "key": "courseCollisions",
+                    "type": "text",
+                    "label": "Course Collisions",
+                    "required": true
+                  },
+                  {
+                    "key": "handling",
+                    "type": "text",
+                    "label": "Handling",
+                    "required": true
+                  },
+                  {
+                    "key": "confidence",
+                    "type": "text",
+                    "label": "Confidence",
+                    "required": true
+                  },
+                  {
+                    "key": "courseTime",
+                    "type": "text",
+                    "label": "Course Time",
+                    "required": true
+                  },
+                  {
+                    "key": "trialTime",
+                    "type": "text",
+                    "label": "Trial Time",
+                    "required": true
+                  },
+                  {
+                    "key": "trialComments",
+                    "type": "textarea",
+                    "label": "Trial Comments",
+                    "required": true
+                  },
+                  {
+                    "key": "finalThoughts",
+                    "type": "textarea",
+                    "label": "Final Thoughts",
+                    "required": true
+                  },
+                  {
+                    "key": "status",
+                    "type": "text",
+                    "label": "Status",
+                    "required": true
+                  },
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "certificate",
+                "label": "Pilot Certificate",
+                "hint": "The pilot certificate for their divisional profile once they have passed.",
+                "subject": "{{studentName}}",
+                "template": "[lsemsfooter][center][img]https://i.ibb.co/1Jj3zt2q/eCAmFX9.png[/img]\n\n[size=125]{{studentName}} has been certified as a Medevac Pilot![/size]\n\n[size=115]\n[b]Date:[/b] {{completionDate}}\n[b]Certified by:[/b] {{certifiedBy}}\n[/size][/center]\n[lsemsfooter]",
+                "fields": [
+                  {
+                    "key": "studentName",
+                    "type": "text",
+                    "label": "Student name",
+                    "required": true
+                  },
+                  {
+                    "key": "completionDate",
+                    "type": "date",
+                    "label": "Completion date",
+                    "required": true
+                  },
+                  {
+                    "key": "certifiedBy",
+                    "type": "staff",
+                    "label": "Certified by",
+                    "source": "rank",
+                    "required": true
+                  },
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "pilotIrregularity",
+                "label": "Pilot Irregularity",
+                "hint": "An irregularity report after a flight issue during training.",
+                "subject": "{{studentName}}",
+                "template": "[img]https://i.imgur.com/ylD2pwP.png[/img]\n\n[divbox=white]\n[b]Your name:[/b] {{staff.name}}\n[b]Your rank:[/b] {{division.rank}}\n[b]Date:[/b] {{date}}\n[b]Time:[/b] {{time}}\n[b]Information:[/b] {{information}}\n[b]What was the student instructed to do next:[/b] {{nextStep}}\n\n[/divbox]\n[lsemsfooter]",
+                "fields": [
+                  {
+                    "key": "date",
+                    "type": "date",
+                    "label": "Date",
+                    "required": true
+                  },
+                  {
+                    "key": "time",
+                    "type": "time",
+                    "label": "Time",
+                    "required": true
+                  },
+                  {
+                    "key": "information",
+                    "type": "textarea",
+                    "label": "Information",
+                    "required": true
+                  },
+                  {
+                    "key": "nextStep",
+                    "type": "textarea",
+                    "label": "What was the student instructed to do next",
+                    "required": true
+                  },
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "label": "Rescue - Mountain Rescue",
+            "hint": "Mountain Rescue certification and the paperwork around it.",
+            "formats": [
+              {
+                "key": "mrCertification",
+                "label": "Mountain Rescue Certification",
+                "hint": "The full Mountain Rescue certification - theory, practice, roads and Mount Chilliad.",
+                "subject": "{{studentName}}",
+                "template": "[img]https://i.ibb.co/LD23BDj6/image.png[/img]\n\n[divbox=white]\n[b]Instructor In-Charge:[/b] {{staff.name}}\n[b]Instructor’s Rank:[/b] {{division.rank}}\n[b]Date:[/b] {{completionDate}}\n[/divbox]\n\n[lsemssubtitle]MOUNTAINOUS OPERATION THEORY[/lsemssubtitle]\n[divbox=white]\n\n[b]Did the student understand how to accurately drive the Kamacho?[/b]\n{{kamachoDriving}}\n\n[b]Does the student clearly understand the policies for driving the Kamacho?[/b]\n{{kamachoPolicies}}\n\n[b]Was the student briefed on what their callsign will be when driving the Kamacho?[/b]\n{{callsignBriefing}}\n\n[b]What would you rate their understanding of how to properly secure themselves to either their vehicle or sturdy obstacle? 1-5[/b]\n{{securingRating}}\n\n[/divbox]\n\n[lsemssubtitle]MOUNTAIN PRACTICE[/lsemssubtitle]\n[divbox=white]\n\n[b]Did the student struggle with any of the hills to trek up or down? If so, which one?[/b]\n{{hillsStruggle}}\n\n[b]When driving on paved and noticeable roads, did the student follow city speed laws?[/b]\n{{citySpeedLaws}}\n\n[b]How would you rate the student's performance during practice? 1-5[/b]\n{{practiceRating}}\n\n[/divbox]\n\n[lsemssubtitle]TRAVERSING NARROW MOUNTAINOUS ROADS[/lsemssubtitle]\n[divbox=white]\n\n[b]Did the student struggle navigating through the offroad paths?[/b]\n{{offroadStruggle}}\n\n[b]Did the student drive reasonably considering the road situation?[/b]\n{{roadSituation}}\n\n[b]Handling (RATING) 1-5:[/b]\n{{roadsHandling}}\n\n[/divbox]\n\n[lsemssubtitle]TREKKING UP MOUNT CHILLIAD[/lsemssubtitle]\n[divbox=white]\n\n[b]Was the student able to safely trek all the way up Mount Chilliad?[/b]\n{{summitTrek}}\n\n[b]How long did it take for the student to reach the top?[/b]\n{{summitTime}}\n\n[b]How many times, if any, did they stall the Kamacho?[/b]\n{{summitStalls}}\n\n[b]Handling (RATING) 1-5:[/b]\n{{summitHandling}}\n\n[b]Speed (RATING) 1-5:[/b]\n{{summitSpeed}}\n\n[b]Confidence (RATING) 1-5:[/b]\n{{summitConfidence}}\n\n[/divbox]\n\n[lsemssubtitle]OFF-ROADING DOWN MOUNT CHILLIAD[/lsemssubtitle]\n[divbox=white]\n\n[b]Was the student able to safely trek down Mount Chilliad towards Paleto / Paleto MD?[/b]\n{{descentTrek}}\n\n[b]How many times, if any, did they stall the Kamacho?[/b]\n{{descentStalls}}\n\n[b]Handling (RATING) 1-5:[/b]\n{{descentHandling}}\n\n[b]Confidence (RATING) 1-5:[/b]\n{{descentConfidence}}\n\n[/divbox]\n\n[lsemssubtitle]FINALIZATION & SIGNATURE[/lsemssubtitle]\n[divbox=white]\n[b]Final Comments:[/b] {{finalComments}}\n\n[b]Result:[/b] {{result}}\n\n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{division.rank}}\n[/divbox]\n\n[lsemsfooter][/lsemsfooter]",
+                "fields": [
+                  {
+                    "key": "studentName",
+                    "type": "text",
+                    "label": "Student name",
+                    "required": true
+                  },
+                  {
+                    "key": "completionDate",
+                    "type": "date",
+                    "label": "Completion date",
+                    "required": true
+                  },
+                  {
+                    "key": "kamachoDriving",
+                    "type": "text",
+                    "label": "Kamacho Driving",
+                    "required": true
+                  },
+                  {
+                    "key": "kamachoPolicies",
+                    "type": "text",
+                    "label": "Kamacho Policies",
+                    "required": true
+                  },
+                  {
+                    "key": "callsignBriefing",
+                    "type": "text",
+                    "label": "Callsign Briefing",
+                    "required": true
+                  },
+                  {
+                    "key": "securingRating",
+                    "type": "text",
+                    "label": "Securing Rating",
+                    "required": true
+                  },
+                  {
+                    "key": "hillsStruggle",
+                    "type": "text",
+                    "label": "Hills Struggle",
+                    "required": true
+                  },
+                  {
+                    "key": "citySpeedLaws",
+                    "type": "text",
+                    "label": "City Speed Laws",
+                    "required": true
+                  },
+                  {
+                    "key": "practiceRating",
+                    "type": "text",
+                    "label": "Practice Rating",
+                    "required": true
+                  },
+                  {
+                    "key": "offroadStruggle",
+                    "type": "text",
+                    "label": "Offroad Struggle",
+                    "required": true
+                  },
+                  {
+                    "key": "roadSituation",
+                    "type": "text",
+                    "label": "Road Situation",
+                    "required": true
+                  },
+                  {
+                    "key": "roadsHandling",
+                    "type": "text",
+                    "label": "Roads Handling",
+                    "required": true
+                  },
+                  {
+                    "key": "summitTrek",
+                    "type": "text",
+                    "label": "Summit Trek",
+                    "required": true
+                  },
+                  {
+                    "key": "summitTime",
+                    "type": "text",
+                    "label": "Summit Time",
+                    "required": true
+                  },
+                  {
+                    "key": "summitStalls",
+                    "type": "text",
+                    "label": "Summit Stalls",
+                    "required": true
+                  },
+                  {
+                    "key": "summitHandling",
+                    "type": "text",
+                    "label": "Summit Handling",
+                    "required": true
+                  },
+                  {
+                    "key": "summitSpeed",
+                    "type": "text",
+                    "label": "Summit Speed",
+                    "required": true
+                  },
+                  {
+                    "key": "summitConfidence",
+                    "type": "text",
+                    "label": "Summit Confidence",
+                    "required": true
+                  },
+                  {
+                    "key": "descentTrek",
+                    "type": "text",
+                    "label": "Descent Trek",
+                    "required": true
+                  },
+                  {
+                    "key": "descentStalls",
+                    "type": "text",
+                    "label": "Descent Stalls",
+                    "required": true
+                  },
+                  {
+                    "key": "descentHandling",
+                    "type": "text",
+                    "label": "Descent Handling",
+                    "required": true
+                  },
+                  {
+                    "key": "descentConfidence",
+                    "type": "text",
+                    "label": "Descent Confidence",
+                    "required": true
+                  },
+                  {
+                    "key": "finalComments",
+                    "type": "textarea",
+                    "label": "Final Comments",
+                    "required": true
+                  },
+                  {
+                    "key": "result",
+                    "type": "text",
+                    "label": "Result",
+                    "required": true
+                  },
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "mrCertificate",
+                "label": "Mountain Rescue Certificate",
+                "hint": "The Mountain Rescue certificate for their divisional profile once they have passed.",
+                "subject": "{{studentName}}",
+                "template": "[lsemsfooter][divbox=white][center][img]https://i.ibb.co/xKHjB3bM/image.png[/img]\n\n[size=125]{{studentName}} has been certified as a Mountain Rescuer![/size]\n\n[size=115]\n[b]Date:[/b] {{completionDate}}\n[b]Certified by:[/b] {{certifiedBy}}\n[/size][/center][/divbox]\n[lsemsfooter]",
+                "fields": [
+                  {
+                    "key": "studentName",
+                    "type": "text",
+                    "label": "Student name",
+                    "required": true
+                  },
+                  {
+                    "key": "completionDate",
+                    "type": "date",
+                    "label": "Completion date",
+                    "required": true
+                  },
+                  {
+                    "key": "certifiedBy",
+                    "type": "staff",
+                    "label": "Certified by",
+                    "source": "rank",
+                    "required": true
+                  },
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "mrIrregularity",
+                "label": "Mountain Rescue Irregularity",
+                "hint": "An irregularity report after a trek or off-road issue during training.",
+                "subject": "{{studentName}}",
+                "template": "[img]https://i.ibb.co/xqPQKv7G/image.png[/img]\n\n[divbox=white]\n[b]Your name:[/b] {{staff.name}}\n[b]Your rank:[/b] {{division.rank}}\n[b]Date:[/b] {{date}}\n[b]Time:[/b] {{time}}\n[b]Information:[/b] {{information}}\n[b]What was the student instructed to do next:[/b] {{nextStep}}\n\n[/divbox]\n[lsemsfooter]",
+                "fields": [
+                  {
+                    "key": "date",
+                    "type": "date",
+                    "label": "Date",
+                    "required": true
+                  },
+                  {
+                    "key": "time",
+                    "type": "time",
+                    "label": "Time",
+                    "required": true
+                  },
+                  {
+                    "key": "information",
+                    "type": "textarea",
+                    "label": "Information",
+                    "required": true
+                  },
+                  {
+                    "key": "nextStep",
+                    "type": "textarea",
+                    "label": "What was the student instructed to do next",
+                    "required": true
+                  },
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

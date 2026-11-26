@@ -1,0 +1,1293 @@
+{
+  "version": 1,
+  "origin": "legacy-migration",
+  "division": {
+    "key": "red",
+    "label": "RED",
+    "description": "Recruitment and Employment Division paperwork.",
+    "emblem": "/Division/RED.png",
+    "icon": "UsersRound",
+    "imageSize": "150,150",
+    "image": "https://i.vgy.me/lybSum.png",
+    "ranks": [
+      {
+        "alias": "HeadOfRED",
+        "name": "Head of RED",
+        "id": "566996097667563535"
+      },
+      {
+        "alias": "InterimHeadofRED",
+        "name": "Interim Head of RED",
+        "id": null
+      },
+      {
+        "alias": "AssistantHeadOfRED",
+        "name": "Assistant Head of RED",
+        "id": null
+      },
+      {
+        "alias": "InterimAssistantHeadofRED",
+        "name": "Interim Assistant Head of RED",
+        "id": "1147266557060337724"
+      },
+      {
+        "alias": "SeniorHandler",
+        "name": "Senior Handler",
+        "id": "1268336808354119833"
+      },
+      {
+        "alias": "ApplicationHandler",
+        "name": "Application Handler",
+        "id": null
+      },
+      {
+        "alias": "ProbationaryApplicationHandler",
+        "name": "Probationary Application Handler",
+        "id": null
+      }
+    ],
+    "quickLinks": [
+      {
+        "name": "Divisions Index",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=869"
+      },
+      {
+        "name": "RED Handbook",
+        "url": "https://gov.eclipse-rp.net/viewtopic.php?t=106951"
+      },
+      {
+        "name": "Reinstatement Handbook",
+        "url": "https://gov.eclipse-rp.net/viewtopic.php?t=141450"
+      },
+      {
+        "name": "Discussion Board",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=1892"
+      },
+      {
+        "name": "Employee Feedback Requests",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=2516"
+      },
+      {
+        "name": "Feedback Requests Information",
+        "url": "https://gov.eclipse-rp.net/viewtopic.php?p=456235#p456235"
+      },
+      {
+        "name": "Recruitment Desk",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=575"
+      },
+      {
+        "name": "Reinstatements Desk",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=576"
+      },
+      {
+        "name": "Student Profiles (Senior Handler+)",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=2520"
+      },
+      {
+        "name": "Training Reports (Senior Handler+)",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=3723"
+      },
+      {
+        "name": "RED - Command Area",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=1969"
+      }
+    ],
+    "pages": [
+      {
+        "key": "paperwork",
+        "label": "Paperwork",
+        "purpose": "Pick what you are writing, fill it in, then copy it into GOV - the extension pastes it in for you.",
+        "groups": [
+          {
+            "label": "New applications",
+            "hint": "Where their application sits right now.",
+            "formats": [
+              {
+                "key": "walkInWelcomeEmail",
+                "label": "Walk-In Welcome Email",
+                "hint": "Welcome a new walk-in applicant and direct them to the application form.",
+                "template": "[mdheader2\ntitle=\"October 4th, 2026\"\nlocation=\"Recruitment And Employment\"\ndate=\"\"\nlogo=\"https://i.vgy.me/lybSum.png\"\ndepartment=\"One Team, One Mission, Saving Lives\"\n][/mdheader2]\n\n[divbox4=eeeeee]\n\n[list=none]\nGreetings {{applicantName}},\n\nWelcome to the first step on the journey on becoming an EMT with the Los Santos Emergency Services. Before we can conduct your interview we first need you to fill in the following form, found [url=https://lsems-formats.vercel.app/][b]here[/b][/url].\n\nYou cannot move on to the next stage of the process until you've completed this step in it's entirety. Please reach out to member of RED or LSEMS if you need help with your application.\n\nGood luck!\n\n[ooc]You're required to join the LSEMS Discord for an OOC interview and while employed with the department. Please join [url=https://discord.gg/3nysTssuMw][b]HERE[/b][/url] and rename yourself with your IC name.[/ooc]\n\n[/list][hr][/hr][list=none]\n\nSincerely,\nRecruitment And Employment Division\nLos Santos Emergency Medical Services\n[/list]\n\n[/divbox4]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "pendingReview",
+                "label": "Application Received (Pending Review)",
+                "hint": "A new application is in - acknowledge it and say what happens next.",
+                "subject": "[PENDING REVIEW] LSEMS Application - {{applicantName}}",
+                "template": "[img]https://i.ibb.co/ddCcBXV/SBZNl34.png[/img]\n[divbox=white]\n[right][color=black]Pillbox Hill Medical Center[/color] [/right]\n[right][color=black]Elgin Avenue, Pillbox Hill[/color] [/right]\n[right][color=black]Los Santos, San Andreas[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[center][b][size=160][color=Forestgreen]APPLICATION RECEIVED[/color][/size][/b]\n[img]https://i.ibb.co/xKYgq6P0/7x0vy1x.png[/img][/center]\n\n \nDear {{applicantName}},\n\nThe Recruitment and Employment Division of the Los Santos Emergency Medical Services has [color=Forestgreen][b]RECEIVED[/b][/color] your application. We will review your application, evaluate your qualifications, and perform the appropriate background checks. \n\nA member of RED will update the application status as soon as the initial review is completed.  \n\n[hr][/hr]\nSincerely,\n \n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{staff.rank}} / {{division.rank}}\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox] \n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTitle",
+                    "kind": "copy_subject",
+                    "label": "Copy Title",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "pendingEdit",
+                "label": "Application On Hold (Pending Edit)",
+                "hint": "They have to fix something before you can carry on.",
+                "subject": "[PENDING EDIT] LSEMS Application - {{applicantName}}",
+                "template": "[img]https://i.ibb.co/mrN6MdMy/m-Je9I1A.png[/img]\n[divbox=white]\n[right][color=black]Pillbox Hill Medical Center[/color] [/right]\n[right][color=black]Elgin Avenue, Pillbox Hill[/color] [/right]\n[right][color=black]Los Santos, San Andreas[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[center][b][size=160][color=Coral]APPLICATION ON-HOLD[/color][/size][/b]\n[img]https://i.ibb.co/xKYgq6P0/7x0vy1x.png[/img][/center]\n \nDear {{applicantName}},\n \nWe would first like to thank you for your interest in becoming a part of the Los Santos Emergency Medical Services. However, we have some concerns regarding your application. As such, your application has been placed [color=Coral][b]ON-HOLD[/b] [/color]until these issues are resolved.\n\n\n[list]\n[*] {{reason1}}\n[*] {{reason2}}\n[/list]\n\nYou have 2 days to correct your application. When ALL of the above issues have been resolved, reply to this thread to notify us.\n\n\n[hr][/hr]\nSincerely,\n \n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{staff.rank}} / {{division.rank}}\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  },
+                  {
+                    "key": "reason1",
+                    "type": "text",
+                    "label": "Reason1",
+                    "required": false
+                  },
+                  {
+                    "key": "reason2",
+                    "type": "text",
+                    "label": "Reason2",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTitle",
+                    "kind": "copy_subject",
+                    "label": "Copy Title",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "pendingEmployerFeedback",
+                "label": "Application On Hold - Pending Employer Feedback",
+                "hint": "You are waiting on their employer to reply.",
+                "subject": "[PENDING FEEDBACK] LSEMS Application - {{applicantName}}",
+                "template": "[img]https://i.ibb.co/mrN6MdMy/m-Je9I1A.png[/img]\n[divbox=white]\n[right][color=black]Pillbox Hill Medical Center[/color] [/right]\n[right][color=black]Elgin Avenue, Pillbox Hill[/color] [/right]\n[right][color=black]Los Santos, San Andreas[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[center][b][size=160][color=Coral]APPLICATION ON-HOLD[/color][/size][/b]\n[img]https://i.ibb.co/xKYgq6P0/7x0vy1x.png[/img][/center]\n \nDear {{applicantName}},\n \nWe would first like to thank you for your interest in becoming a part of the Los Santos Emergency Medical Services. We have reached out to your past employer to receive feedback and once this step has been completed you will hear back from us shortly.\n\nPlease be patient whilst we have reached out to your previous employer as this timeframe is dependent on how fast we receive a response.\n\n[hr][/hr]\nSincerely,\n \n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{staff.rank}} / {{division.rank}}\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTitle",
+                    "kind": "copy_subject",
+                    "label": "Copy Title",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "withdrawn",
+                "label": "Application Withdrawn",
+                "hint": "The applicant pulled out.",
+                "subject": "[WITHDRAWN] LSEMS Application - {{applicantName}}",
+                "template": "[img]https://i.ibb.co/7d2V0mF6/y-CCu-Alh.png[/img]\n[divbox=white]\n[right][color=black]Pillbox Hill Medical Center[/color] [/right]\n[right][color=black]Elgin Avenue, Pillbox Hill[/color] [/right]\n[right][color=black]Los Santos, San Andreas[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[center][b][size=160][color=Firebrick]APPLICATION WITHDRAWN[/color][/size][/b]\n[img]https://i.ibb.co/xKYgq6P0/7x0vy1x.png[/img][/center]\n \nDear {{applicantName}},\n \nWe appreciate your interest in joining the Los Santos Emergency Medical Services. \nUnfortunately, you have informed us that you would not like to move forward in the application process. For that reason, your application has been [b][color=firebrick]WITHDRAWN[/color][/b].\n\nYou may reapply immediately.\n\n[hr][/hr]\nSincerely,\n \n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{staff.rank}} / {{division.rank}}\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTitle",
+                    "kind": "copy_subject",
+                    "label": "Copy Title",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "label": "Interviews",
+            "hint": "From booking the interview to its result.",
+            "formats": [
+              {
+                "key": "pendingInterview",
+                "label": "Pending Interview",
+                "hint": "A spot needs booking - remind them to join Discord.",
+                "subject": "[PENDING INTERVIEW] LSEMS Application - {{applicantName}}",
+                "template": "[img]https://i.ibb.co/ymX6fdGK/yvwnkuk.png[/img]\n[divbox=white]\n[right][color=black]Pillbox Hill Medical Center[/color] [/right]\n[right][color=black]Elgin Avenue, Pillbox Hill[/color] [/right]\n[right][color=black]Los Santos, San Andreas[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[center][b][size=160][color=Seagreen]PENDING INTERVIEW[/color][/size][/b]\n[img]https://i.ibb.co/xKYgq6P0/7x0vy1x.png[/img][/center]\n \nDear {{applicantName}},\n \nWe are pleased to inform you that after a careful review of your application you have [color=Seagreen][b]PASSED[/b][/color] the first stage of our recruitment process. The next step will consist of a formal interview with a member of the Recruitment and Employment Division.\n\nPlease leave your availability as a response to this topic and we will contact you with your scheduled interview time. You may utilize [url=https://pastebin.com/raw/gAL7u3pY]this format[/url] for optimal scheduling.\n\n[ooc] Once your application has received the status of [i]Pending Interview[/i], you will be sent the invitation link for the Official LSEMS Discord here on the government website. You can find it by looking at the top right corner and pressing [i]Private Messages[/i]. [/ooc]\n\n\n[hr][/hr]\nSincerely,\n \n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{staff.rank}} / {{division.rank}}\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTitle",
+                    "kind": "copy_subject",
+                    "label": "Copy Title",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "interviewScheduled",
+                "label": "Interview Scheduled",
+                "hint": "The interview is booked - send them the time.",
+                "subject": "[INTERVIEW SCHEDULED] LSEMS Application - {{applicantName}}",
+                "template": "[img]https://i.ibb.co/qMpHz5W4/x-Ig-Db2-F.png[/img]\n[divbox=white]\n[right][color=black]Pillbox Hill Medical Center[/color] [/right]\n[right][color=black]Elgin Avenue, Pillbox Hill[/color] [/right]\n[right][color=black]Los Santos, San Andreas[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[center][b][size=160][color=Seagreen]INTERVIEW SCHEDULED[/color][/size][/b]\n[img]https://i.ibb.co/xKYgq6P0/7x0vy1x.png[/img][/center]\n \nDear {{applicantName}},\n \nAfter checking our available time slots and considering the time convenient for you, we have decided to book your interview on the following schedule below:\n\n[b][u]Interview Schedule[/u][/b]\n{{interviewDate}} | {{interviewTime}} ((UTC)) at Pillbox Hill Medical Center, Elgin Avenue\n\nPlease wait in the main lobby of Upper Pillbox for a representative to collect you. You are expected to wear a formal outfit suitable for an interview and present yourself with a government-issued ID.\n\nNote that you are welcome to show up for an interview before the scheduled date, but we cannot guarantee that a member of RED will be available to conduct it outside of the scheduled time.\n\nShould the schedule be inconvenient for you, you may ask for a reschedule by replying to this topic. Failure to do so will be considered an automatic agreement to the scheduled date.\n[hr][/hr]\nSincerely,\n \n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{staff.rank}} / {{division.rank}}\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  },
+                  {
+                    "key": "interviewDate",
+                    "type": "text",
+                    "label": "Interview Date",
+                    "required": false
+                  },
+                  {
+                    "key": "interviewTime",
+                    "type": "text",
+                    "label": "Interview Time",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTitle",
+                    "kind": "copy_subject",
+                    "label": "Copy Title",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "denied",
+                "label": "Interview Failed (Denied)",
+                "hint": "They did not pass the interview.",
+                "subject": "[DENIED] LSEMS Application - {{applicantName}}",
+                "template": "[img]https://i.ibb.co/W1VmKfh/nxi-E8Ho.png[/img]\n[divbox=white]\n[right][color=black]Pillbox Hill Medical Center[/color] [/right]\n[right][color=black]Elgin Avenue, Pillbox Hill[/color] [/right]\n[right][color=black]Los Santos, San Andreas[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[center][b][size=160][color=Firebrick]APPLICATION DENIED[/color][/size][/b]\n[img]https://i.ibb.co/xKYgq6P0/7x0vy1x.png[/img][/center]\n \nDear {{applicantName}},\n \nThank you for applying to the Los Santos Emergency Medical Services. \nAfter reviewing your application, we regret to inform you that we will not be moving forward with your application. You have been [color=Firebrick][b]DENIED[/b][/color] for the following reason(s):\n\n\n[list]\n[*] {{reason1}}\n[*] {{reason2}}\n[/list]\n\nYou may apply again after [color=firebrick][b]2 weeks[/b][/color]. ((This is an [color=firebrick][b]{{denialType}}[/b][/color] denial and you [color=firebrick][b]{{applyOtherChar}}[/b][/color] apply on a different character before the denial timeframe is done.))\n\n[hr][/hr]\nSincerely,\n \n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{staff.rank}} / {{division.rank}}\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  },
+                  {
+                    "key": "reason1",
+                    "type": "text",
+                    "label": "Reason1",
+                    "required": false
+                  },
+                  {
+                    "key": "reason2",
+                    "type": "text",
+                    "label": "Reason2",
+                    "required": false
+                  },
+                  {
+                    "key": "denialType",
+                    "type": "text",
+                    "label": "Denial Type",
+                    "required": false
+                  },
+                  {
+                    "key": "applyOtherChar",
+                    "type": "text",
+                    "label": "Apply Other Char",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTitle",
+                    "kind": "copy_subject",
+                    "label": "Copy Title",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "label": "Decision & onboarding",
+            "hint": "After the interview.",
+            "formats": [
+              {
+                "key": "pendingDecision",
+                "label": "Pending Decision",
+                "hint": "The interview is done and the outcome is being decided.",
+                "subject": "[PENDING DECISION] LSEMS Application - {{applicantName}}",
+                "template": "[img]https://i.ibb.co/Qv0tBKD6/6w-KFjwv.png[/img]\n[divbox=white]\n[right][color=black]Pillbox Hill Medical Center[/color] [/right]\n[right][color=black]Elgin Avenue, Pillbox Hill[/color] [/right]\n[right][color=black]Los Santos, San Andreas[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[center][b][size=160][color=coral]PENDING DECISION[/color][/size][/b]\n[img]https://i.ibb.co/xKYgq6P0/7x0vy1x.png[/img][/center]\n \nDear {{applicantName}},\n \nWe appreciate your interest in joining the LSEMS. Please allow us up to 48 hours to decide on the result of your interview. You will find our decision as a response to this topic along with instructions on what to do next.\n\nThank you for your patience.\n\n[hr][/hr]\nSincerely,\n \n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{staff.rank}} / {{division.rank}}\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTitle",
+                    "kind": "copy_subject",
+                    "label": "Copy Title",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "pendingContract",
+                "label": "Pending Employment Contract",
+                "hint": "They accepted - the employment contract is with them.",
+                "subject": "[PENDING CONTRACT] LSEMS Application - {{applicantName}}",
+                "template": "[img]https://i.ibb.co/fVpLhtTB/Tt-AE3wk.png[/img]\n[divbox=white]\n[right][color=black]Pillbox Hill Medical Center[/color] [/right]\n[right][color=black]Elgin Avenue, Pillbox Hill[/color] [/right]\n[right][color=black]Los Santos, San Andreas[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[center][b][size=160][color=Darksalmon]PENDING EMPLOYMENT CONTRACT[/color][/size][/b]\n[img]https://i.ibb.co/xKYgq6P0/7x0vy1x.png[/img][/center]\n \nDear {{applicantName}},\n \nWe are pleased to inform you that you have [color=Seagreen][b]PASSED[/b][/color] your interview and we will be moving you forward in our recruitment process. \n\nAt your earliest convenience, please make your way to Pillbox Medical Center to review and sign the employment contract with a member of the recruitment division. Upon signing the contract, you will be given your EMR badge and uniform.\n\nWe look forward to seeing you again soon.\n\nPlease note: You will have a maximum of four (4) weeks to accept and sign this contract. After 4 weeks, you will need to reapply should the contract not be completed.\n\n[hr][/hr]\nSincerely,\n \n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{staff.rank}} / {{division.rank}}\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTitle",
+                    "kind": "copy_subject",
+                    "label": "Copy Title",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "accepted",
+                "label": "Application Processed (Accepted)",
+                "hint": "All done - the application is processed.",
+                "subject": "[ACCEPTED] LSEMS Application - {{applicantName}}",
+                "template": "[img]https://i.ibb.co/238K858F/HUIBiac.png[/img]\n[divbox=white]\n[right][color=black]Pillbox Hill Medical Center[/color] [/right]\n[right][color=black]Elgin Avenue, Pillbox Hill[/color] [/right]\n[right][color=black]Los Santos, San Andreas[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[center][b][size=160][color=Seagreen]APPLICATION ACCEPTED[/color][/size][/b]\n[img]https://i.ibb.co/xKYgq6P0/7x0vy1x.png[/img][/center]\n \nDear {{applicantName}},\n \nWe are glad to inform you that upon passing our screening process and signing the employment contract, your application has been [color=Seagreen][b]ACCEPTED[/b][/color] and you are now an [b]Emergency Medical Responder[/b] with the Los Santos Emergency Medical Services.\n\n\nWe look forward to seeing you on duty soon. Congratulations!\n\n\n[hr][/hr]\nSincerely,\n \n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{staff.rank}} / {{division.rank}}\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTitle",
+                    "kind": "copy_subject",
+                    "label": "Copy Title",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "discordInvite",
+                "label": "Discord Invite",
+                "hint": "Send them the Discord invite code.",
+                "template": "[lsemssubtitle][ooc]DISCORD INVITATION[/ooc][/lsemssubtitle]\n[divbox=white][aligntable=right,0,0,0,0,0,0][right][font=Arial][b]\n[size=150]Los Santos Emergency Medical Services[/size][/b]\n[size=115]((LSEMS Discord Invite))[/size][/font][/right][/aligntable]\n[hr]\n[b](([/b]Dear Applicant,\n\nKindly find linked below an invitation link to the LSEMS Discord. Once you join, change your nickname to your In Character name. You will be directly guided to the #Interview-Lobby where you will find information regarding the Out of Character Interview. Simply use the format provided in the channel to give your available times for an interview and a member or RED will be there to assist you. Remember to still respond to the IC topic with your availability in order to schedule the In Character portion of the Interview.\n\nDiscord Link: [url]https://discord.gg/3nysTssuMw[/url][b]))[/b]\n[hr]\nSincerely,\n\n[size=100]Recruitment and Employment Division[/size]\n[i][b]Los Santos Emergency Medical Services[/b][/i]\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "label": "Reinstatement",
+            "hint": "For someone who served before and wants to come back.",
+            "formats": [
+              {
+                "key": "reinstatementReceived",
+                "label": "Reinstatement Received",
+                "hint": "We have their reinstatement request.",
+                "subject": "[RECEIVED] Reinstatement - {{applicantName}}",
+                "template": "[img]https://i.ibb.co/whQ37Rnf/f-Xst1f-H.png[/img]\n[divbox=white]\n[right][color=black]Pillbox Hill Medical Center[/color] [/right]\n[right][color=black]Elgin Avenue, Pillbox Hill[/color] [/right]\n[right][color=black]Los Santos, San Andreas[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[center][b][size=160][color=Forestgreen]REINSTATEMENT RECEIVED[/color][/size][/b]\n[img]https://i.ibb.co/hJf6jJzZ/7x0vy1x.png[/img][/center]\n \nDear {{applicantName}},\n\nWe have [color=Forestgreen][b]received[/b][/color] your reinstatement application. We will review your application, evaluate your qualifications, and perform the appropriate background checks.\n\nAfter this, we will get back to you with an answer.\n \n[hr][/hr]\nSincerely,\n \n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{staff.rank}} / {{division.rank}}\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  },
+                  {
+                    "key": "offerTier",
+                    "type": "select",
+                    "label": "Employment tier",
+                    "required": false,
+                    "defaultValue": "EMTs",
+                    "options": [
+                      {
+                        "value": "EMT-P",
+                        "label": "EMT-P"
+                      },
+                      {
+                        "value": "EMTs",
+                        "label": "EMTs"
+                      },
+                      {
+                        "value": "Supervisors",
+                        "label": "Supervisors"
+                      },
+                      {
+                        "value": "Command+",
+                        "label": "Command+"
+                      }
+                    ]
+                  },
+                  {
+                    "key": "offerHours",
+                    "type": "text",
+                    "label": "Required hours",
+                    "required": false,
+                    "defaultValue": "2.5 hours/ week"
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTitle",
+                    "kind": "copy_subject",
+                    "label": "Copy Title",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "reinstatementOnHold",
+                "label": "Reinstatement On-Hold",
+                "hint": "Their reinstatement has to wait.",
+                "subject": "[ON-HOLD] Reinstatement - {{applicantName}}",
+                "template": "[img]https://i.ibb.co/SwRYyHph/t99Kigs.png[/img]\n[divbox=white]\n[right][color=black]Pillbox Hill Medical Center[/color] [/right]\n[right][color=black]Elgin Avenue, Pillbox Hill[/color] [/right]\n[right][color=black]Los Santos, San Andreas[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[center][b][size=160][color=Coral]ON-HOLD[/color][/size][/b]\n[img]https://i.ibb.co/hJf6jJzZ/7x0vy1x.png[/img][/center]\n \nDear {{applicantName}},\n \nWe would first like to thank you for your interest in reinstating into the Los Santos Emergency Medical Services. However, we have some concerns regarding your reinstatement application. As such, your reinstatement application has been placed [color=Coral][b]ON-HOLD[/b] [/color]until these issues are resolved.\n\n[list]\n[*] {{reason1}}\n[*] {{reason2}}\n[/list] \nYou have 2 days to correct your reinstatement application. When ALL of the above issues have been resolved, reply to this thread to notify us.\n\nWe look forward to hearing from you again soon.\n \n[hr][/hr]\nSincerely,\n \n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{staff.rank}} / {{division.rank}}\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  },
+                  {
+                    "key": "reason1",
+                    "type": "text",
+                    "label": "Reason1",
+                    "required": false
+                  },
+                  {
+                    "key": "reason2",
+                    "type": "text",
+                    "label": "Reason2",
+                    "required": false
+                  },
+                  {
+                    "key": "offerTier",
+                    "type": "select",
+                    "label": "Employment tier",
+                    "required": false,
+                    "defaultValue": "EMTs",
+                    "options": [
+                      {
+                        "value": "EMT-P",
+                        "label": "EMT-P"
+                      },
+                      {
+                        "value": "EMTs",
+                        "label": "EMTs"
+                      },
+                      {
+                        "value": "Supervisors",
+                        "label": "Supervisors"
+                      },
+                      {
+                        "value": "Command+",
+                        "label": "Command+"
+                      }
+                    ]
+                  },
+                  {
+                    "key": "offerHours",
+                    "type": "text",
+                    "label": "Required hours",
+                    "required": false,
+                    "defaultValue": "2.5 hours/ week"
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTitle",
+                    "kind": "copy_subject",
+                    "label": "Copy Title",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "reinstatementOffer",
+                "label": "Offer Of Employment",
+                "hint": "Offer them their rank and hours back.",
+                "subject": "[OFFER OF EMPLOYMENT] Reinstatement - {{applicantName}}",
+                "template": "[img]https://i.ibb.co/wNRPqW7p/T6c-Do05.png[/img]\n[divbox=white]\n[right][color=black]Pillbox Hill Medical Center[/color] [/right]\n[right][color=black]Elgin Avenue, Pillbox Hill[/color] [/right]\n[right][color=black]Los Santos, San Andreas[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[center][b][size=160][color=Darksalmon]OFFER OF EMPLOYMENT[/color][/size][/b]\n[img]https://i.ibb.co/hJf6jJzZ/7x0vy1x.png[/img][/center]\n \nDear {{applicantName}},\n \nWe are pleased to offer you employment in the position of [b]{{employmentRank}}[/b] in the Los Santos Emergency Medical Services. \n\n[b]Terms of Reinstatement Employment[/b]\n\n[list]\n[*]You must go through the Los Santos Emergency Medical Services Manual and sign the Employment Contract before going on duty.\n[*]You must successfully complete reinstatement training\n[*]Do the minimum required hours per pay cycle ({{offerHours}})\n[/list] \nPlease confirm your acceptance of this offer within 1 Week (7 days) by replying to this thread. Please let us know if you have any questions before accepting the offer.\n\nWe look forward to seeing you again soon.\n \n[hr][/hr]\nSincerely,\n \n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{staff.rank}} / {{division.rank}}\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  },
+                  {
+                    "key": "employmentRank",
+                    "type": "text",
+                    "label": "Employment Rank",
+                    "required": false
+                  },
+                  {
+                    "key": "offerTier",
+                    "type": "select",
+                    "label": "Employment tier",
+                    "required": true,
+                    "defaultValue": "EMTs",
+                    "options": [
+                      {
+                        "value": "EMT-P",
+                        "label": "EMT-P"
+                      },
+                      {
+                        "value": "EMTs",
+                        "label": "EMTs"
+                      },
+                      {
+                        "value": "Supervisors",
+                        "label": "Supervisors"
+                      },
+                      {
+                        "value": "Command+",
+                        "label": "Command+"
+                      }
+                    ]
+                  },
+                  {
+                    "key": "offerHours",
+                    "type": "text",
+                    "label": "Required hours",
+                    "required": false,
+                    "defaultValue": "2.5 hours/ week"
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTitle",
+                    "kind": "copy_subject",
+                    "label": "Copy Title",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "reinstatementContract",
+                "label": "Offer Of Employment Contract",
+                "hint": "The contract that comes with the offer.",
+                "subject": "[EMPLOYMENT CONTRACT] Reinstatement - {{applicantName}}",
+                "template": "[img]https://i.ibb.co/pr9bZWFD/rcif-Zu-Q.png[/img]\n[divbox=white]\n[right][color=black]Pillbox Hill Medical Center[/color] [/right]\n[right][color=black]Elgin Avenue, Pillbox Hill[/color] [/right]\n[right][color=black]Los Santos, San Andreas[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[center][b][size=160][color=Darksalmon]OFFER OF EMPLOYMENT CONTRACT[/color][/size][/b]\n[img]https://i.ibb.co/hJf6jJzZ/7x0vy1x.png[/img][/center]\n \nDear {{applicantName}},\n \nWe are pleased to receive your acceptance of our offer of employment. At your earliest convenience, please make your way to the Pillbox Medical Center to read through and sign our personalized employment contract and receive your badge.\n\n(( You will be sent the LSEMS Discord Invite via the gov site email shortly. Join the server, and rename yourself to your IC name. Contact someone ICly to sign your contract. ))\n\nWe look forward to seeing you again soon.\n\nPlease note: You will have a maximum of four (4) weeks to accept and sign this contract. After 4 weeks, you will need to reapply should the contract not be completed.\n \n[hr][/hr]\nSincerely,\n \n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{staff.rank}} / {{division.rank}}\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  },
+                  {
+                    "key": "offerTier",
+                    "type": "select",
+                    "label": "Employment tier",
+                    "required": false,
+                    "defaultValue": "EMTs",
+                    "options": [
+                      {
+                        "value": "EMT-P",
+                        "label": "EMT-P"
+                      },
+                      {
+                        "value": "EMTs",
+                        "label": "EMTs"
+                      },
+                      {
+                        "value": "Supervisors",
+                        "label": "Supervisors"
+                      },
+                      {
+                        "value": "Command+",
+                        "label": "Command+"
+                      }
+                    ]
+                  },
+                  {
+                    "key": "offerHours",
+                    "type": "text",
+                    "label": "Required hours",
+                    "required": false,
+                    "defaultValue": "2.5 hours/ week"
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTitle",
+                    "kind": "copy_subject",
+                    "label": "Copy Title",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "reinstatementAccepted",
+                "label": "Reinstatement Accepted",
+                "hint": "Approved - welcome them back.",
+                "subject": "[ACCEPTED] Reinstatement - {{applicantName}}",
+                "template": "[img]https://i.ibb.co/C3t6hphS/y5f-Ps5V.png[/img]\n[divbox=white]\n[right][color=black]Pillbox Hill Medical Center[/color] [/right]\n[right][color=black]Elgin Avenue, Pillbox Hill[/color] [/right]\n[right][color=black]Los Santos, San Andreas[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[center][b][size=160][color=Forestgreen]REINSTATEMENT ACCEPTED[/color][/size][/b]\n[img]https://i.ibb.co/hJf6jJzZ/7x0vy1x.png[/img][/center]\n \nDear {{applicantName}},\n \nWe are pleased to inform you that, with the signing of your employment contract, you will be reinstated as an [b]EMR[/b] until you complete and pass your training. Make sure to give our [url=https://gov.eclipse-rp.net/viewforum.php?f=804]handbook[/url] a full review. We are looking forward to working with you again!\n \n[hr][/hr]\nSincerely,\n \n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{staff.rank}} / {{division.rank}}\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  },
+                  {
+                    "key": "offerTier",
+                    "type": "select",
+                    "label": "Employment tier",
+                    "required": false,
+                    "defaultValue": "EMTs",
+                    "options": [
+                      {
+                        "value": "EMT-P",
+                        "label": "EMT-P"
+                      },
+                      {
+                        "value": "EMTs",
+                        "label": "EMTs"
+                      },
+                      {
+                        "value": "Supervisors",
+                        "label": "Supervisors"
+                      },
+                      {
+                        "value": "Command+",
+                        "label": "Command+"
+                      }
+                    ]
+                  },
+                  {
+                    "key": "offerHours",
+                    "type": "text",
+                    "label": "Required hours",
+                    "required": false,
+                    "defaultValue": "2.5 hours/ week"
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTitle",
+                    "kind": "copy_subject",
+                    "label": "Copy Title",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "reinstatementDenied",
+                "label": "Reinstatement Denied",
+                "hint": "The reinstatement is turned down.",
+                "subject": "[DENIED] Reinstatement - {{applicantName}}",
+                "template": "[img]https://i.ibb.co/VWJcnHNy/t49u-JPW.png[/img]\n[divbox=white]\n[right][color=black]Pillbox Hill Medical Center[/color] [/right]\n[right][color=black]Elgin Avenue, Pillbox Hill[/color] [/right]\n[right][color=black]Los Santos, San Andreas[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[right][color=transparent].[/color] [/right]\n[center][b][size=160][color=Firebrick]REINSTATEMENT DENIED[/color][/size][/b]\n[img]https://i.ibb.co/hJf6jJzZ/7x0vy1x.png[/img][/center]\n \nDear {{applicantName}},\n \nWe regret to inform you that we will not be moving forward with your application for reinstatement for the reason(s) listed below. \n \n[list]\n[*] {{reason1}}\n[*] {{reason2}}\n[/list]\n\nWe'd like to wish you a lot of luck with your future endeavors.\n \n[hr][/hr]\nSincerely,\n \n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{staff.rank}} / {{division.rank}}\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  },
+                  {
+                    "key": "reason1",
+                    "type": "text",
+                    "label": "Reason1",
+                    "required": false
+                  },
+                  {
+                    "key": "reason2",
+                    "type": "text",
+                    "label": "Reason2",
+                    "required": false
+                  },
+                  {
+                    "key": "offerTier",
+                    "type": "select",
+                    "label": "Employment tier",
+                    "required": false,
+                    "defaultValue": "EMTs",
+                    "options": [
+                      {
+                        "value": "EMT-P",
+                        "label": "EMT-P"
+                      },
+                      {
+                        "value": "EMTs",
+                        "label": "EMTs"
+                      },
+                      {
+                        "value": "Supervisors",
+                        "label": "Supervisors"
+                      },
+                      {
+                        "value": "Command+",
+                        "label": "Command+"
+                      }
+                    ]
+                  },
+                  {
+                    "key": "offerHours",
+                    "type": "text",
+                    "label": "Required hours",
+                    "required": false,
+                    "defaultValue": "2.5 hours/ week"
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTitle",
+                    "kind": "copy_subject",
+                    "label": "Copy Title",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "label": "Feedback",
+            "hint": "Asking someone else for their read on an employee or applicant.",
+            "formats": [
+              {
+                "key": "feedbackRequest",
+                "label": "Feedback Request",
+                "hint": "Ask an employee how their RED course went.",
+                "template": "[img]https://i.ibb.co/7xQvQQQR/HNP4ks-W.png[/img]\n[divbox=white]\n[img]https://i.ibb.co/v6VwdjB6/9u-Gi-Pq-F.png[/img][aligntable=right,0,0,0,0,0,0][right][font=Arial][b]\n[size=150]Los Santos Emergency Medical Services[/size][/b]\n[i]Employee Feedback Request[/i]\n[/right][/aligntable]\n[hr][/hr]\nGood Day,\n\nI am reaching out to you today as a representative from the LSEMS Recruitment and Employment Division. One of your current/past employees, [b]{{applicantName}}[/b], has applied to be a part of the Los Santos Emergency Medical Services. \n\nI hereby request access to their file, most importantly, their disciplinary action history and activity within the department. I also wish to have a brief statement from their direct supervisor, if possible, along with the other requested information. If you have any other additional information to share about the requested employees, do not hesitate to share them.\n\n[ooc]We are also asking that you provide any OOC notes you might have on the employee as we are also looking into their OOC Behavior and RP standards[/ooc]\n\n[hr][/hr]\nKind regards,\n\n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{staff.rank}} / {{division.rank}}\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  },
+                  {
+                    "key": "recipient",
+                    "type": "text",
+                    "label": "Recipient",
+                    "required": true
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "frdFeedbackRequest",
+                "label": "FRD Feedback Request",
+                "hint": "Ask FRD for feedback on an applicant.",
+                "template": "[img]https://i.ibb.co/7xQvQQQR/HNP4ks-W.png[/img]\n[divbox=white]\n[img]https://i.ibb.co/v6VwdjB6/9u-Gi-Pq-F.png[/img][aligntable=right,0,0,0,0,0,0][right][font=Arial][b]\n[size=150]Los Santos Emergency Medical Services[/size][/b]\n[i]Reformee Feedback Request[/i]\n[/right][/aligntable]\n[hr][/hr]\nGood Day,\n\nI am reaching out to you today as a representative from the LSEMS Recruitment and Employment Division. One of our Applicants, [b]{{applicantName}}[/b], has indicated that they have undergone the SADOC's Felon Reformation Program, and we would like to request your feedback on them, along with access to their FRD File.\n\n[ooc]We are requesting both IC and OOC feedback.[/ooc]\n\n[hr][/hr]\nKind regards,\n\n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{staff.rank}} / {{division.rank}}\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  },
+                  {
+                    "key": "recipient",
+                    "type": "text",
+                    "label": "Recipient",
+                    "required": true
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "label": "Post on the board",
+            "hint": "Nothing to attach - just a topic written in the RED house style.",
+            "formats": [
+              {
+                "key": "redDiscussionBoard",
+                "label": "RED Discussion Board",
+                "hint": "Open a topic in the RED discussion board.",
+                "template": "[mdheader2\ntitle=\"{{subject}} | {{utc.date}}\"\nlocation=\"Recruitment and Employment Division\"\ndate=\"\"\nlogo=\"https://i.vgy.me/lybSum.png\"\ndepartment=\"One Team, One Mission, Saving Lives\"\n][/mdheader2]\n[divbox4=eeeeee]\n{{boardPost}}\n[/divbox4]",
+                "fields": [
+                  {
+                    "key": "subject",
+                    "type": "text",
+                    "label": "Subject",
+                    "required": true,
+                    "max": 150
+                  },
+                  {
+                    "key": "boardPost",
+                    "type": "textarea",
+                    "label": "Post",
+                    "required": true,
+                    "max": 50000
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyBoard",
+                    "kind": "copy_template",
+                    "label": "Copy Post",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "openBoard",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "https://gov.eclipse-rp.net/posting.php?mode=post&f=1892",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "resetBoard",
+                    "kind": "reset",
+                    "label": "Reset",
+                    "variant": "outline"
+                  }
+                ],
+                "subject": "{{subject}}"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

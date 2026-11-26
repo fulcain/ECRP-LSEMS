@@ -1,4 +1,4 @@
-import { REDTemplateDefinition } from "./types";
+import type { REDTemplateDefinition } from "./types";
 
 export const discordInviteTemplate: REDTemplateDefinition = {
   value: "discord-invite",

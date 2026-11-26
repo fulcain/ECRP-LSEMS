@@ -18,7 +18,7 @@
                 "key": "communicationUpdateForm",
                 "label": "Communication Update Form",
                 "hint": "Communication Update Form: Use this form whenever you've contacted the patient in an attempt to schedule a session.",
-                "template": "[img]https://i.ibb.co/k209S3H9/image.png[/img]\n[divbox=white]\n[hr]\n[b]Patient Name:[/b] {{patientName}}\n[hr]\n[b]Date / Time:[/b] {{utc.date}} - {{utc.time}} [ooc]UTC[/ooc]\n[hr]\n[b]Contact Method:[/b] {{contactMethod}}\n[hr]\n[b]Details:[/b] {{contactDetails}}\n[hr]\n[/divbox]\n[divbox=white]\n\n[img]{{staff.signature}}[/img]\n[I]{{division.rank}}[/i]\n[b]{{staff.name}}[/b]\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox][img]https://i.ibb.co/cXJ38RPM/image.png[/img]\n",
+                "template": "[img]https://i.ibb.co/k209S3H9/image.png[/img]\n[divbox=white]\n[hr]\n[b]Patient Name:[/b] {{patientName}}\n[hr]\n[b]Date / Time:[/b] {{utc.date}} - {{utc.time}} [ooc]UTC[/ooc]\n[hr]\n[b]Contact Method:[/b] {{contactMethod}}\n[hr]\n[b]Details:[/b] {{contactDetails}}\n[hr]\n[/divbox]\n[divbox=white]\n\n[img]{{staff.signature}}[/img]\n[I]{{staff.director}} {{division.rank}}[/i]\n[b]{{staff.name}}[/b]\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox][img]https://i.ibb.co/cXJ38RPM/image.png[/img]\n",
                 "fields": [
                   {
                     "key": "govLink",

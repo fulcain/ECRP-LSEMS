@@ -34,6 +34,7 @@ import {
   BuilderTitleRow,
 } from "@/components/builder/builder-layout";
 import { DocumentPicker } from "@/components/division/document-picker";
+import { DivisionPaperworkAdditions } from "@/components/paperwork/division-paperwork-additions";
 import { DiscussionBoardComposer } from "@/components/discussion-board-composer";
 import {
   BLS_LISTING,
@@ -100,6 +101,10 @@ const PAGE_PURPOSE =
   "Pick what you are writing, fill it in, then copy it into GOV - the extension pastes it in for you.";
 
 export default function BLSFormatsPage() {
+  const [showLegacyPaperwork, setShowLegacyPaperwork] = useState(false);
+  useEffect(() => {
+    setShowLegacyPaperwork(new URLSearchParams(window.location.search).get("legacyPaperwork") === "1");
+  }, []);
   const { medicCredentials, divisionRanks } = useMedic();
   // Nothing is chosen until the member picks a card, so the page opens on the
   // picker alone - no builder is filled in for a document nobody asked for.
@@ -396,7 +401,7 @@ export default function BLSFormatsPage() {
     });
   };
 
-  return (
+  return showLegacyPaperwork ? (
     <>
       {/* ── One-shot entry animations (cheap, GPU-friendly) ── */}
       <style>{`
@@ -717,7 +722,19 @@ export default function BLSFormatsPage() {
           </BuilderShell>
         </div>
         )}
+        <DivisionPaperworkAdditions divisionKey="bls" />
       </PageContainer>
     </>
+  ) : (
+    <PageContainer>
+      <DivisionHeader
+        label={BLS.label}
+        emblem={BLS.image}
+        title={PAGE_TITLE}
+        purpose={PAGE_PURPOSE}
+        actions={<><DivisionUserGroupsLink group="bls" /><DivisionQuickLinksLink division="bls" /></>}
+      />
+      <DivisionPaperworkAdditions divisionKey="bls" />
+    </PageContainer>
   );
 }

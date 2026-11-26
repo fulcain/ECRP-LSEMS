@@ -1,4 +1,4 @@
-import { BLSTemplateDefinition } from "./types";
+import type { BLSTemplateDefinition } from "./types";
 
 export const expiredTemplate: BLSTemplateDefinition = {
   value: "expired",

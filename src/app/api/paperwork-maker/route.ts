@@ -6,27 +6,35 @@ import { verifySessionToken } from "@/lib/jwt";
 import { isDiscordAdmin } from "@/lib/role-config";
 import { isPaperworkMakerAvailable } from "@/lib/paperwork/availability";
 import {
+  hasMongoPaperworkStore,
+  ensurePaperworkWorkspaces,
+  readAMUPaperwork,
+  readAllPaperworkConfigs,
+  writePaperworkConfig,
+} from "@/lib/paperwork/amu-store";
+import {
   planDivision,
   readEmblemNames,
   readGeneratedConfigs,
   writePlan,
 } from "@/lib/paperwork/generate";
 import type { PaperworkConfig } from "@/lib/paperwork/schema";
+import { validatePaperworkConfig } from "@/lib/paperwork/schema";
+import { DIVISION_ENTRIES } from "@/configs/roles";
+import { GENERATED_PAPERWORK } from "@/app/constants/paperwork/generated";
 
 /**
  * GET /api/paperwork-maker
- *   every generated config on disk, so a format that was generated can be
- *   reopened in the maker and edited, plus the emblem names `public/Division`
- *   holds, so the maker can offer them instead of asking for a path
+ *   all saved divisions from MongoDB when configured, otherwise generated configs on disk,
+ *   plus the emblem names `public/Division` holds
  *
  * POST /api/paperwork-maker
  *   `{ mode: "plan", config }`     - validate and return every file it would write
- *   `{ mode: "generate", config }` - write those files in this checkout
+ *   `{ mode: "generate", config }` - save a division to MongoDB or write files locally
  *
- * Development only, and only for a `DISCORD_ADMIN_IDS` developer: the tool
- * writes the repository, which is the one thing no stored rule may hand out. The
- * page gate is not this gate - both are checked here because a request can arrive
- * without ever loading the page.
+ * Only `DISCORD_ADMIN_IDS` developers can use it. Production accepts database
+ * saves for any division; local generation may write files. Both gates are repeated
+ * here because a request can arrive without loading the page.
  *
  * `plan` is read-only and is what the UI shows before anything is written.
  */
@@ -87,6 +95,46 @@ export async function GET() {
   const maker = await requireMaker();
   if (!maker.ok) return maker.response;
 
+  if (hasMongoPaperworkStore()) {
+    try {
+      const amu = await readAMUPaperwork();
+      const sourceKeys = new Set(GENERATED_PAPERWORK.map((entry) => entry.division.key));
+      await ensurePaperworkWorkspaces(
+        [
+          ...GENERATED_PAPERWORK,
+          ...DIVISION_ENTRIES
+            .filter(([key]) => key !== "cru" && !sourceKeys.has(key))
+            .map(([key, division]) => ({
+            version: 1,
+            division: {
+              key,
+              label: division.label,
+              description: `${division.label} paperwork formats.`,
+              pages: [{
+                key: "paperwork",
+                label: "Paperwork",
+                purpose: `Create and organize ${division.label} paperwork.`,
+                groups: [{ label: "Formats", formats: [] }],
+              }],
+            },
+            } satisfies PaperworkConfig)),
+        ],
+      );
+      const stored = await readAllPaperworkConfigs();
+      const configs = [amu, ...stored.filter((entry) => entry.division.key !== "amu")];
+      return NextResponse.json({
+        success: true,
+        configs,
+        emblems: await readEmblemNames(),
+      });
+    } catch {
+      return NextResponse.json(
+          { success: false, error: "Paperwork formats could not be loaded from the database." },
+        { status: 503 },
+      );
+    }
+  }
+
   return NextResponse.json({
     success: true,
     configs: await readGeneratedConfigs(),
@@ -120,6 +168,42 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { success: false, error: "The body must carry a paperwork config." },
       { status: 400 },
+    );
+  }
+
+  const productionBuild = process.env.NODE_ENV === "production" || Boolean(process.env.VERCEL);
+  if (hasMongoPaperworkStore()) {
+    if (body.mode !== "generate") {
+      return NextResponse.json(
+        { success: false, error: "Database paperwork edits must be saved." },
+        { status: 403 },
+      );
+    }
+    const validation = validatePaperworkConfig(config);
+    if (!validation.ok) {
+      return NextResponse.json(
+        { success: false, problems: validation.problems },
+        { status: 422 },
+      );
+    }
+    try {
+      await writePaperworkConfig(config);
+      return NextResponse.json({
+        success: true,
+        written: [`${config.division.label} formats`],
+        backedUp: true,
+      });
+    } catch {
+      return NextResponse.json(
+        { success: false, error: "Paperwork formats could not be saved to the database." },
+        { status: 503 },
+      );
+    }
+  }
+  if (productionBuild) {
+    return NextResponse.json(
+      { success: false, error: "Production paperwork editing requires MongoDB." },
+      { status: 403 },
     );
   }
 

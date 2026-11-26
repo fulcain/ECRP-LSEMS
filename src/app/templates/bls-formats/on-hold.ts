@@ -1,4 +1,4 @@
-import { BLSTemplateDefinition } from "./types";
+import type { BLSTemplateDefinition } from "./types";
 
 export const onHoldTemplate: BLSTemplateDefinition = {
   value: "on-hold",

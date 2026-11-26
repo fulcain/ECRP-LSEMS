@@ -6,7 +6,8 @@
  * ever become JavaScript that a deployment executes.
  */
 
-import { INPUT_LIMITS, validateText, validationMessage } from "@/lib/validation";
+import { INPUT_LIMITS, validateText, validateUrl, validationMessage } from "@/lib/validation";
+import { templateControlErrors } from "@/lib/paperwork/placeholders";
 
 export const PAPERWORK_CONFIG_VERSION = 1;
 
@@ -20,6 +21,8 @@ export type PaperworkFieldType =
   | "select"
   | "radio"
   | "checkbox"
+  /** Several individual reason inputs rendered as BBCode list entries. */
+  | "reasons"
   /** A value the Staff Page already holds - name, rank or signature image. */
   | "staff";
 
@@ -49,6 +52,8 @@ export type PaperworkField = {
   showNowButton?: boolean;
   /** For `staff` fields - which Staff Page value seeds it. */
   source?: "name" | "rank" | "signature" | "director";
+  /** Show a field only while another field has the selected value. */
+  visibleWhen?: { field: string; equals: string };
 };
 
 export type PaperworkActionKind =
@@ -68,6 +73,8 @@ export type PaperworkActionKind =
   | "insert_utc_date"
   /** Fills `target` with the current UTC time. */
   | "insert_utc_time"
+  /** Builds a declared generated format after its required inputs are checked. */
+  | "generate_course_listing"
   | "reset";
 
 export type PaperworkAction = {
@@ -92,6 +99,17 @@ export type PaperworkFormat = {
   template: string;
   fields: PaperworkField[];
   actions: PaperworkAction[];
+  /** A declarative generator for legacy builders whose output is computed. */
+  generator?: {
+    kind: "course_listing";
+    actionField: string;
+    dateField: string;
+    timeField: string;
+    previousDateField: string;
+    previousTimeField: string;
+    instructorField: string;
+    outputField: string;
+  };
 };
 
 export type PaperworkGroup = {
@@ -135,6 +153,8 @@ export type PaperworkDivision = {
 
 export type PaperworkConfig = {
   version: number;
+  /** Identifies a migrated legacy snapshot so it is not mounted as an extra form. */
+  origin?: "legacy-migration";
   division: PaperworkDivision;
 };
 
@@ -147,7 +167,17 @@ export type PaperworkConfig = {
 export function createEmptyPaperworkConfig(): PaperworkConfig {
   return {
     version: PAPERWORK_CONFIG_VERSION,
-    division: { key: "", label: "", description: "", pages: [] },
+    division: {
+      key: "",
+      label: "",
+      description: "",
+      pages: [{
+        key: "paperwork",
+        label: "Paperwork",
+        purpose: "Create and organize this division's paperwork.",
+        groups: [{ label: "Formats", formats: [] }],
+      }],
+    },
   };
 }
 
@@ -203,6 +233,23 @@ export function validatePaperworkConfig(
   if (!division.description?.trim()) {
     problems.push("The division needs a description for its page header.");
   }
+  for (const [index, link] of (division.quickLinks ?? []).entries()) {
+    if (!link || typeof link !== "object") {
+      problems.push(`Quick link ${index + 1} needs a name and URL.`);
+      continue;
+    }
+    if (!link.name?.trim() || link.name.length > INPUT_LIMITS.text) {
+      problems.push(`Quick link ${index + 1} needs a name (up to ${INPUT_LIMITS.text} characters).`);
+    }
+    const urlError = validationMessage(validateUrl(link.url, `Quick link ${index + 1}`, { required: true }));
+    if (urlError) problems.push(urlError);
+    try {
+      const url = new URL(link.url);
+      if (url.protocol !== "https:" && url.protocol !== "http:") throw new Error();
+    } catch {
+      problems.push(`Quick link ${index + 1} needs a valid HTTP or HTTPS URL.`);
+    }
+  }
   // Only the shape is checked here: the names live in the icon module, which is
   // a component file this engine must not pull into an API route.
   if (division.icon && !/^[A-Z][a-zA-Z0-9]*$/.test(division.icon)) {
@@ -232,9 +279,6 @@ export function validatePaperworkConfig(
     // nothing the page-level line does not already say.
     const groups = page.groups ?? [];
     const pageHasFormats = groups.some((group) => group.formats?.length > 0);
-    if (!pageHasFormats) {
-      problems.push(`Page “${page.key}” has no formats yet.`);
-    }
 
     for (const group of groups) {
       if (!group.label?.trim()) {
@@ -257,6 +301,16 @@ export function validatePaperworkConfig(
         }
         if (!format.template?.trim()) problems.push(`${where} has no template.`);
 
+        if (format.generator?.kind === "course_listing") {
+          for (const key of [format.generator.actionField, format.generator.dateField,
+            format.generator.timeField, format.generator.previousDateField,
+            format.generator.previousTimeField, format.generator.instructorField,
+            format.generator.outputField]) {
+            if (!format.fields.some((field) => field.key === key)) {
+              problems.push(`${where}: generator field “${key}” is missing.`);
+            }
+          }
+        }
         const fieldKeys = new Set<string>();
         for (const field of format.fields ?? []) {
           if (!FIELD_KEY_PATTERN.test(field.key ?? "")) {
@@ -328,8 +382,19 @@ export function validatePaperworkConfig(
             }
           }
         }
+        for (const field of format.fields ?? []) {
+          if (field.visibleWhen && !fieldKeys.has(field.visibleWhen.field)) {
+            problems.push(`${where}: conditional field “${field.key}” refers to missing field “${field.visibleWhen.field}”.`);
+          }
+        }
 
         const placeholders = templatePlaceholders(format.template);
+        for (const error of templateControlErrors(format.template)) {
+          problems.push(`${where}: ${error}`);
+        }
+        for (const error of templateControlErrors(format.subject ?? "")) {
+          problems.push(`${where} subject: ${error}`);
+        }
         const known = new Set([
           ...fieldKeys,
           ...BUILTIN_PLACEHOLDERS,
@@ -344,6 +409,9 @@ export function validatePaperworkConfig(
 
         const actionIds = new Set<string>();
         for (const action of format.actions ?? []) {
+          for (const error of templateControlErrors(action.content ?? "")) {
+            problems.push(`${where}, “${action.label}”: ${error}`);
+          }
           if (!ACTION_ID_PATTERN.test(action.id ?? "")) {
             problems.push(`${where}: action id “${action.id}” must be camelCase.`);
           }
@@ -429,6 +497,11 @@ export function copyOpenField(content: string | undefined): string | null {
 /** Placeholder names in a template, deduped, in first-seen order. */
 export function templatePlaceholders(template: string): string[] {
   const names: string[] = [];
+  for (const match of template.matchAll(
+    /\{\{\s*#if\s+([a-zA-Z0-9_.]+)\s*\}\}/g,
+  )) {
+    if (!names.includes(match[1])) names.push(match[1]);
+  }
   for (const match of template.matchAll(/\{\{\s*([a-zA-Z0-9_.]+)\s*\}\}/g)) {
     if (!names.includes(match[1])) names.push(match[1]);
   }

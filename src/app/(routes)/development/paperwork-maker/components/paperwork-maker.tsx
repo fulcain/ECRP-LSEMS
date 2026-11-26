@@ -48,12 +48,15 @@ import {
   divisionIcon,
 } from "@/components/layout/header/configs/division-icons";
 import { DIVISION_ENTRIES } from "@/configs/roles";
+import { GENERATED_PAPERWORK } from "@/app/constants/paperwork/generated";
 import { FIELD_TYPES } from "@/lib/paperwork/fields";
 import { renderTemplate } from "@/lib/paperwork/placeholders";
 import { INPUT_LIMITS } from "@/lib/validation";
 import {
   BUILTIN_PLACEHOLDERS,
+  allFormats,
   copyOpenField,
+  createEmptyPaperworkConfig,
   divisionSlug,
   templatePlaceholders,
   validatePaperworkConfig,
@@ -99,7 +102,7 @@ type PlanResponse = {
 
 // Bumped with the sample removal: a draft saved against the old sample must not
 // open as this division's paperwork.
-const DRAFT_KEY = "paperwork-maker-config-v2";
+const DRAFT_KEY = "paperwork-maker-config-v3";
 
 /**
  * Every value the Staff Page already holds, ready to drop into a format. They
@@ -198,13 +201,26 @@ function placedAt(
  */
 const NEW_SCOPE = "New scope";
 
-export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
+export function PaperworkMaker({
+  initial,
+  productionStore = false,
+  databaseUnavailable = false,
+}: {
+  initial: PaperworkConfig;
+  productionStore?: boolean;
+  databaseUnavailable?: boolean;
+}) {
   const [config, setConfig] = useLocalStorage<PaperworkConfig>(
     DRAFT_KEY,
     initial,
   );
-  const [selectedKey, setSelectedKey] = useState<string>("");
-  const [selectedSlot, setSelectedSlot] = useState<FormatSlot | null>(null);
+  const initialFormat = allFormats(initial)[0];
+  const [selectedKey, setSelectedKey] = useState<string>(
+    initialFormat?.key ?? "",
+  );
+  const [selectedSlot, setSelectedSlot] = useState<FormatSlot | null>(
+    initialFormat ? slotOf(initial, initialFormat.key) : null,
+  );
   const [formatPickerOpen, setFormatPickerOpen] = useState(false);
   const [formatSearch, setFormatSearch] = useState("");
   const [formatToDelete, setFormatToDelete] = useState<{
@@ -673,28 +689,42 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
     ([key]) => key === config.division.key,
   );
   const divisionChoice = existingDivision ? config.division.key : "new";
+  const canonicalWorkspace = GENERATED_PAPERWORK.some(
+    (entry) => entry.division.key === config.division.key,
+  );
 
   const targetRoute = config.division.key
-    ? existingDivision?.[1].route
-      ? `${existingDivision[1].route.replace(/\/+$/, "")}/paperwork`
+    ? existingDivision?.[1].route && !canonicalWorkspace
+      ? `/divisions/database/${divisionSlug(config.division.key)}`
+      : existingDivision?.[1].route
+        ? existingDivision[1].route.replace(/\/+$/, "")
       : `/divisions/${divisionSlug(config.division.key)}`
     : "";
 
   const chooseDivision = (value: string) => {
     if (value === "new") {
-      update((draft) => {
-        draft.division.key = "";
-        draft.division.label = "";
-      });
+      resetHistory();
+      setConfig(createEmptyPaperworkConfig());
+      setPageIndex(0);
+      setSelectedKey("");
+      setSelectedSlot(null);
       return;
     }
     const entry = DIVISION_ENTRIES.find(([key]) => key === value);
     if (!entry) return;
-    update((draft) => {
-      draft.division.key = value;
-      draft.division.label = entry[1].label;
-      draft.division.icon = entry[1].icon;
-    });
+    const draft = createEmptyPaperworkConfig();
+    draft.division = {
+      ...draft.division,
+      key: value,
+      label: entry[1].label,
+      icon: entry[1].icon,
+      description: `${entry[1].label} paperwork formats.`,
+    };
+    resetHistory();
+    setConfig(draft);
+    setPageIndex(0);
+    setSelectedKey("");
+    setSelectedSlot(null);
   };
 
   const addPage = () => {
@@ -836,6 +866,11 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
 
   return (
     <div className="space-y-6">
+      {databaseUnavailable && (
+        <div role="status" className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-800 dark:text-amber-200">
+          The database could not be reached. The AMU backup is loaded; database saves will work once the connection is restored.
+        </div>
+      )}
       <section className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-surface/90 p-4">
         <span className="flex items-center gap-2 text-xs text-muted-foreground">
           <FileCode2 className="h-4 w-4" />
@@ -851,7 +886,9 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
           )}
         </span>
         <span className="text-xs text-muted-foreground">
-          Development only - Generate writes files in this checkout. Review, commit, deploy.
+          {productionStore
+          ? "Database editing - saving updates the shared division formats immediately."
+            : "Development only - Generate writes files in this checkout. Review, commit, deploy."}
         </span>
         <div className="ml-auto flex flex-wrap items-center gap-2">
           {saved.length > 0 && (
@@ -888,7 +925,7 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
           >
             Clear draft
           </Button>
-          <Button
+          {!productionStore && <Button
             type="button"
             size="sm"
             variant="outline"
@@ -897,15 +934,17 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
           >
             <Wand2 className="h-4 w-4" />
             {busy === "plan" ? "Planning…" : "Plan files"}
-          </Button>
+          </Button>}
           <Button
             type="button"
             size="sm"
             onClick={generate}
-            disabled={busy !== null || !plan?.ok}
+            disabled={busy !== null || !validation.ok || (!productionStore && !plan?.ok)}
           >
             <Check className="h-4 w-4" />
-            {busy === "generate" ? "Generating…" : "Generate files"}
+            {busy === "generate"
+              ? productionStore ? "Saving…" : "Generating…"
+              : productionStore ? "Save division formats" : "Generate files"}
           </Button>
         </div>
       </section>
@@ -936,8 +975,13 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
 
       {written && (
         <p className="rounded-2xl border border-emerald-300/30 bg-emerald-50/60 p-4 text-xs text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
-          Wrote {written.length} file{written.length === 1 ? "" : "s"}:{" "}
+          {productionStore ? "Saved to the shared database: " : `Wrote ${written.length} file${written.length === 1 ? "" : "s"}: `}
           {written.join(", ")}
+          {productionStore && targetRoute && (
+            <a href={targetRoute} className="ml-2 underline underline-offset-4">
+              Open division page
+            </a>
+          )}
         </p>
       )}
 
@@ -952,7 +996,7 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="new">New division…</SelectItem>
-                  {DIVISION_ENTRIES.map(([key, division]) => (
+                  {DIVISION_ENTRIES.filter(([key]) => key !== "cru" && !saved.some((entry) => entry.division.key === key)).map(([key, division]) => (
                     <SelectItem key={key} value={key}>
                       {division.label}
                       {division.route ? " (has its own page)" : ""}
@@ -963,8 +1007,8 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
               {config.division.key && (
                 <p className="text-xs text-muted-foreground">
                   {existingDivision
-                    ? `Adds paperwork to ${existingDivision[1].label} at ${targetRoute}, with its own entry under Divisions.`
-                    : `New division: its page is ${targetRoute}, and it is added under Divisions.`}
+                    ? `Database paperwork for ${existingDivision[1].label} is available at ${targetRoute}.`
+                    : `Database division page: ${targetRoute}. New divisions can be opened directly at this address.`}
                 </p>
               )}
             </div>
@@ -1237,6 +1281,31 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                 Add page
               </Button>
             </div>
+            </section>
+
+          <section className="space-y-3 rounded-2xl border border-border bg-surface/90 p-5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h2 className="text-sm font-semibold text-foreground">Division header links</h2>
+                <p className="text-xs text-muted-foreground">These open as buttons beside the division page heading.</p>
+              </div>
+              <Button type="button" size="sm" variant="outline" onClick={() => update((draft) => { draft.division.quickLinks ??= []; draft.division.quickLinks.push({ name: "", url: "" }); })}>
+                <Plus className="h-3.5 w-3.5" /> Add link
+              </Button>
+            </div>
+            {(config.division.quickLinks ?? []).length === 0 ? (
+              <p className="text-xs text-muted-foreground">No header links configured.</p>
+            ) : (
+              <div className="space-y-2">
+                {(config.division.quickLinks ?? []).map((link, index) => (
+                  <div key={`header-link-${index}`} className="grid grid-cols-1 items-center gap-2 sm:grid-cols-[minmax(10rem,0.8fr)_minmax(14rem,1.5fr)_auto]">
+                    <Input aria-label={`Header link ${index + 1} name`} value={link.name} maxLength={INPUT_LIMITS.text} placeholder="Button name" onChange={(event) => update((draft) => { if (draft.division.quickLinks?.[index]) draft.division.quickLinks[index].name = event.target.value; })} />
+                    <Input aria-label={`Header link ${index + 1} URL`} value={link.url} maxLength={INPUT_LIMITS.url} placeholder="https://…" onChange={(event) => update((draft) => { if (draft.division.quickLinks?.[index]) draft.division.quickLinks[index].url = event.target.value; })} />
+                    <Button type="button" size="icon" variant="ghost" aria-label={`Remove header link ${index + 1}`} onClick={() => update((draft) => { draft.division.quickLinks?.splice(index, 1); })}><Trash2 className="h-4 w-4" /></Button>
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
 
           <section className="space-y-4 rounded-2xl border border-border bg-surface/90 p-5">
@@ -2047,6 +2116,50 @@ export function PaperworkMaker({ initial }: { initial: PaperworkConfig }) {
                       )}
                     </div>
                   </div>
+                  <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-surface/60 p-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        insertText(
+                          "{{#if staff.director}}\n\n{{else}}\n\n{{/if}}",
+                        )
+                      }
+                    >
+                      Insert director if / else
+                    </Button>
+                    <p className="text-[10px] text-muted-foreground">
+                      The first block appears when the value is set; the else
+                      block appears when it is empty. You can use any input or
+                      built-in placeholder.
+                    </p>
+                  </div>
+                  <details className="group rounded-xl border border-border bg-surface/60 p-3 text-xs">
+                    <summary className="cursor-pointer font-medium text-foreground">
+                      How conditional blocks work
+                    </summary>
+                    <div className="mt-2 space-y-2 text-muted-foreground">
+                      <p>
+                        Put the content to show when a value exists between
+                        <code className="mx-1 font-mono text-foreground">{"{{#if staff.director}}"}</code>
+                        and
+                        <code className="mx-1 font-mono text-foreground">{"{{else}}"}</code>.
+                        Put the fallback after <code className="font-mono text-foreground">{"{{else}}"}</code>;
+                        it appears when the value is empty. The else block is optional.
+                      </p>
+                      <pre className="overflow-x-auto rounded-lg bg-background/80 p-3 font-mono text-[11px] text-foreground">{`{{#if staff.director}}
+{{staff.director}}
+{{else}}
+[Fallback signature or text]
+{{/if}}`}</pre>
+                      <p>
+                        Replace <code className="font-mono text-foreground">staff.director</code> with any built-in value or input name.
+                        You can nest conditional blocks; each opening if needs a matching
+                        <code className="mx-1 font-mono text-foreground">{"{{/if}}"}</code>.
+                      </p>
+                    </div>
+                  </details>
                   <Textarea
                     ref={templateRef}
                     value={placed.format.template}

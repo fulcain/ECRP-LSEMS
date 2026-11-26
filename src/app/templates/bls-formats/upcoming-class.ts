@@ -1,4 +1,4 @@
-import { BLSTemplateDefinition } from "./types";
+import type { BLSTemplateDefinition } from "./types";
 
 const MONTH_TO_INDEX: Record<string, number> = {
   JAN: 0,

@@ -50,6 +50,7 @@ import {
   BuilderShell,
 } from "@/components/builder/builder-layout";
 import { DocumentPicker } from "@/components/division/document-picker";
+import { DivisionPaperworkAdditions } from "@/components/paperwork/division-paperwork-additions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { EmployeeNameInput } from "@/components/employees/employee-name-input";
@@ -194,6 +195,10 @@ function titleCase(value: string) {
 }
 
 export default function ARFormatsPage() {
+  const [showLegacyPaperwork, setShowLegacyPaperwork] = useState(false);
+  useEffect(() => {
+    setShowLegacyPaperwork(new URLSearchParams(window.location.search).get("legacyPaperwork") === "1");
+  }, []);
   const { medicCredentials, divisionRanks } = useMedic();
   // Nothing is chosen until the member picks a card, so the page opens on the
   // picker alone - no builder is filled in for a document nobody asked for.
@@ -581,7 +586,7 @@ export default function ARFormatsPage() {
     });
   };
 
-  return (
+  return showLegacyPaperwork ? (
     <PageContainer>
       <DivisionHeader
         label={AR.label}
@@ -832,6 +837,18 @@ export default function ARFormatsPage() {
           </BuilderShell>
         </div>
       )}
+      <DivisionPaperworkAdditions divisionKey="ar" />
+    </PageContainer>
+  ) : (
+    <PageContainer>
+      <DivisionHeader
+        label={AR.label}
+        emblem={AR.image}
+        title={PAGE_TITLE}
+        purpose={PAGE_PURPOSE}
+        actions={<><DivisionUserGroupsLink group="air-rescue" /><DivisionQuickLinksLink division="ar" /></>}
+      />
+      <DivisionPaperworkAdditions divisionKey="ar" />
     </PageContainer>
   );
 }

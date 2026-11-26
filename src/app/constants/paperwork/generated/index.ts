@@ -2,8 +2,14 @@
 import type { PaperworkConfig } from "@/lib/paperwork/schema";
 
 import amu from "./amu.json";
+import ar from "./ar.json";
+import bls from "./bls.json";
+import red from "./red.json";
 
 /** Every generated division's paperwork, in generated-file order. */
 export const GENERATED_PAPERWORK: readonly PaperworkConfig[] = [
   amu as PaperworkConfig,
+  ar as PaperworkConfig,
+  bls as PaperworkConfig,
+  red as PaperworkConfig,
 ];

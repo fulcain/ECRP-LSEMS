@@ -4,23 +4,27 @@ import { notFound, redirect } from "next/navigation";
 import { PageContainer } from "@/components/ui/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { isPaperworkMakerAvailable } from "@/lib/paperwork/availability";
-import { createEmptyPaperworkConfig } from "@/lib/paperwork/schema";
+import {
+  createEmptyPaperworkConfig,
+  type PaperworkConfig,
+} from "@/lib/paperwork/schema";
 import { isDiscordAdmin } from "@/lib/role-config";
 import { getSession } from "@/lib/session";
+import { hasMongoPaperworkStore, readAMUPaperwork } from "@/lib/paperwork/amu-store";
+import amuSeed from "@/app/constants/paperwork/generated/amu.json";
 import { PaperworkMaker } from "./components/paperwork-maker";
 
 export const metadata: Metadata = {
   title: "Paperwork Maker",
-  description:
-    "Build a division's paperwork, preview it, and generate its files (development only)",
+  description: "Edit and save paperwork formats for the app.",
 };
 
 export const dynamic = "force-dynamic";
 
 /**
  * The visual editor. Three locks, all on the server: this build must be a
- * development one, the caller must be a `DISCORD_ADMIN_IDS` developer, and the
- * API behind the buttons repeats both checks - a hidden nav item is not a gate.
+ * local file generation or an AMU database store must be available, and the
+ * caller must be a `DISCORD_ADMIN_IDS` developer. The API repeats both checks.
  */
 export default async function PaperworkMakerPage() {
   if (!isPaperworkMakerAvailable()) notFound();
@@ -30,14 +34,34 @@ export default async function PaperworkMakerPage() {
     redirect("/unauthorized?path=/development/paperwork-maker&hint=role");
   }
 
+  const databaseStore = hasMongoPaperworkStore();
+  let initial: PaperworkConfig = databaseStore
+    ? (amuSeed as PaperworkConfig)
+    : createEmptyPaperworkConfig();
+  let databaseUnavailable = false;
+  if (databaseStore) {
+    try {
+      initial = await readAMUPaperwork();
+    } catch (error) {
+      databaseUnavailable = true;
+      console.error("Paperwork Maker database read failed; using the bundled AMU config.", error);
+    }
+  }
+
   return (
     <PageContainer>
       <PageHeader
-        eyebrow="LSEMS Development"
+        eyebrow={databaseStore ? "Division Paperwork" : "LSEMS Development"}
         title="Paperwork Maker"
-        subtitle="Build a division's paperwork as data: pages, formats, fields, placeholders and buttons. Preview it with the same renderer the app uses, then generate the files it needs - nothing is written until you press Generate."
+        subtitle={databaseStore
+            ? "Create or edit division paperwork and save it directly to the shared database."
+          : "Build a division's paperwork as data: pages, formats, fields, placeholders and buttons. Preview it with the same renderer the app uses, then generate the files it needs - nothing is written until you press Generate."}
       />
-      <PaperworkMaker initial={createEmptyPaperworkConfig()} />
+      <PaperworkMaker
+        initial={initial}
+        productionStore={databaseStore}
+        databaseUnavailable={databaseUnavailable}
+      />
     </PageContainer>
   );
 }

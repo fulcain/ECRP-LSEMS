@@ -1,0 +1,926 @@
+{
+  "version": 1,
+  "origin": "legacy-migration",
+  "division": {
+    "key": "bls",
+    "label": "Basic Life Support",
+    "description": "Basic Life Support Division paperwork.",
+    "emblem": "/Division/BLS.png",
+    "icon": "BookOpen",
+    "imageSize": "150,150",
+    "image": "https://i.vgy.me/5Mkn7G.png",
+    "ranks": [
+      {
+        "alias": "HeadOfBLS",
+        "name": "Head of BLS",
+        "id": "565645208436604930"
+      },
+      {
+        "alias": "InterimHeadofBLS",
+        "name": "Interim Head of BLS",
+        "id": null
+      },
+      {
+        "alias": "AssistantHeadOfBLS",
+        "name": "Assistant Head of BLS",
+        "id": "1099082229411479614"
+      },
+      {
+        "alias": "InterimAssistantHeadofBLS",
+        "name": "Interim Assistant Head of BLS",
+        "id": null
+      },
+      {
+        "alias": "SeniorBLSInstructor",
+        "name": "Senior BLS Instructor",
+        "id": "1270398018885128233"
+      },
+      {
+        "alias": "BLSInstructor",
+        "name": "BLS Instructor",
+        "id": null
+      },
+      {
+        "alias": "BLSInstructorTrainee",
+        "name": "BLS Instructor Trainee",
+        "id": null
+      }
+    ],
+    "quickLinks": [
+      {
+        "name": "Division Index",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=867"
+      },
+      {
+        "name": "BLS Handbook",
+        "url": "https://gov.eclipse-rp.net/viewtopic.php?t=214677"
+      },
+      {
+        "name": "Incoming Applications (Division Command+)",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=1948"
+      },
+      {
+        "name": "Activity Log (Division Command+)",
+        "url": "https://gov.eclipse-rp.net/viewtopic.php?t=184979"
+      },
+      {
+        "name": "Command Handbook (Division Command+)",
+        "url": "https://gov.eclipse-rp.net/viewtopic.php?p=1055095#p1055095"
+      },
+      {
+        "name": "Command Area (Division Command+)",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=1948"
+      },
+      {
+        "name": "Student Profiles (Senior BLS Instructors+)",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=1694"
+      },
+      {
+        "name": "Discussion Board",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=1889"
+      },
+      {
+        "name": "Course Reports",
+        "url": "https://gov.eclipse-rp.net/viewtopic.php?p=573545#p573545"
+      },
+      {
+        "name": "BLS Courses",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=578"
+      },
+      {
+        "name": "LSPD LSEMS Joint Section Index",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=4277"
+      },
+      {
+        "name": "Police Cadet Roster",
+        "url": "https://gov.eclipse-rp.net/viewtopic.php?t=223266"
+      },
+      {
+        "name": "Joint BLS Course Reports",
+        "url": "https://gov.eclipse-rp.net/viewtopic.php?t=222067"
+      },
+      {
+        "name": "Cadets & BLS Instructors",
+        "url": "https://gov.eclipse-rp.net/viewforum.php?f=4278"
+      }
+    ],
+    "pages": [
+      {
+        "key": "paperwork",
+        "label": "Paperwork",
+        "purpose": "Pick what you are writing, fill it in, then copy it into GOV - the extension pastes it in for you.",
+        "groups": [
+          {
+            "label": "Course applications",
+            "hint": "Someone applied for a course - this is the answer that goes on their application.",
+            "formats": [
+              {
+                "key": "accepted",
+                "label": "Accepted",
+                "hint": "They passed - tell them a course can be booked.",
+                "subject": "[ACCEPTED] BLS Training - {{applicantName}}",
+                "template": "[img]https://i.postimg.cc/VkC3tbBY/BLS-Accepted-Application.png[/img]\n[LSEMSsubtitle]Application Status[/LSEMSsubtitle]\n[divbox=white]\nDear [i]{{applicantName}}[/i],\n\nYour application to attend BLS training has been [b][u][color=green]ACCEPTED[/color][/u][/b]. Our BLS Classes are scheduled based on instructors' availability. All scheduled classes can be found on the [url=https://gov.eclipse-rp.net/viewtopic.php?f=578&t=18125]Upcoming Course Dates[/url] page and are normally announced a week prior to them occurring. However, they can be announced at any time, so it is worth checking often!\n\nAll courses are held at the Pillbox Medical Center. Please wait inside the reception area of [u]Upper Pillbox[/u] around [u]10 minutes[/u] prior to the scheduled start of the class, and a BLS instructor will collect you from there. Please do not bring any weapons to the class.\n\nPayment is required on the day at the beginning of the course. Cash is the preferred form of payment. Wire transfers are also possible for a small fee. If you are unable to pay at the start of the course, you will be rejected from the class and will need to attend the next available course date.\n\n\n[divbox=white]\nFull Price: $20,000.\nDiscount: $10,000 for JB, DCC, Bayview, Bennys & Weazel personnel.\nFree: SADOC (CO1+), LSPD, Reapplicants, LSSD & LSEMS\n[/divbox]\n\n\nPlease note that the Pillbox Medical Center is a [u]non-smoking facility[/u]. Smoking is only permitted off hospital premises.\n\n[hr][/hr]\n\nKind regards,\n\n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{staff.rank}} | {{division.rank}}\n[b][i]Los Santos Emergency Medical Services[/i][/b]\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTitle",
+                    "kind": "copy_subject",
+                    "label": "Copy Title",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "denied",
+                "label": "Denied",
+                "hint": "The application is refused.",
+                "subject": "[DENIED] BLS Training - {{applicantName}}",
+                "template": "[img]https://i.postimg.cc/QNYPnqfM/BLS-Denied-Application.png[/img]\n[LSEMSsubtitle]Application Status[/LSEMSsubtitle]\n[divbox=white]\nDear [i]{{applicantName}}[/i],\n\nWe regret to inform you that your BLS course application has been [color=red][b][u]DENIED[/u][/b][/color], due to disqualifying charges.\n\nYou may reapply in [b]7 Days[/b] on [b]{{reapplyDate}}[/b]. [color=gray][/color]\n\n[hr][/hr]\n\nThank you for showing an interest in our course,\n\n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{staff.rank}} | {{division.rank}}\n[b][i]Los Santos Emergency Medical Services[/i][/b]\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  },
+                  {
+                    "key": "reapplyDate",
+                    "type": "text",
+                    "label": "Reapply Date",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTitle",
+                    "kind": "copy_subject",
+                    "label": "Copy Title",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "onHold",
+                "label": "On Hold",
+                "hint": "You need something from them before deciding.",
+                "subject": "[ON HOLD] BLS Training - {{applicantName}}",
+                "template": "[img]https://i.postimg.cc/ryHn9wp6/BLS-Application-On-Hold.png[/img]\n[LSEMSsubtitle]Application Status[/LSEMSsubtitle]\n[divbox=white]\nDear [i]{{applicantName}}[/i],\n\nThank you for showing interest in our BLS course - unfortunately, your application has been put [color=orange][b][u]ON HOLD[/u][/b][/color] for the following reason(s):\n\n[list]\n[*] {{reason1}}\n[*] {{reason2}}\n[/list]\n\nOnce the issue(s) above have been resolved, please respond to this thread to notify us.\n\n[hr][/hr]\n\nThank you for your interest in our course,\n\n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{staff.rank}} | {{division.rank}}\n[b][i]Los Santos Emergency Medical Services[/i][/b]\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  },
+                  {
+                    "key": "reason1",
+                    "type": "text",
+                    "label": "Reason1",
+                    "required": false
+                  },
+                  {
+                    "key": "reason2",
+                    "type": "text",
+                    "label": "Reason2",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTitle",
+                    "kind": "copy_subject",
+                    "label": "Copy Title",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "expired",
+                "label": "Expired",
+                "hint": "They never got back to us in time.",
+                "subject": "[EXPIRED] BLS Training - {{applicantName}}",
+                "template": "[img]https://i.postimg.cc/635jM7ZD/BLS-Expired-Application.png[/img]\n[LSEMSsubtitle]Application Status[/LSEMSsubtitle]\n[divbox=white]\nDear [i]{{applicantName}}[/i],\n\nYour Basic Life Support application request with the Los Santos Emergency Medical Services has [size=100][color=orange][b][u]EXPIRED[/u][/b][/color][/size] and is no longer valid. Thank you for showing interest in our BLS Course. If you wish to take a class, please reapply. Applications are valid for [u]30 days[/u].\n\nOur BLS Classes are scheduled based on instructors' availability. All scheduled classes can be found on the [url=https://gov.eclipse-rp.net/viewtopic.php?f=578&t=18125]Upcoming Course Dates[/url] page and are normally announced a week prior to them occurring. However, they can be announced at any time, so it is worth checking often!\n\n[hr][/hr]\n\nThank you for showing an interest in our course,\n\n[img]{{staff.signature}}[/img]\n{{staff.name}}\n{{staff.rank}} | {{division.rank}}\n[b][i]Los Santos Emergency Medical Services[/i][/b]\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "applicantName",
+                    "type": "text",
+                    "label": "Applicant Name",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyTitle",
+                    "kind": "copy_subject",
+                    "label": "Copy Title",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "label": "Course details",
+            "hint": "What goes on GOV for the class itself.",
+            "formats": [
+              {
+                "key": "upcomingClass",
+                "label": "Notification of Upcoming Class",
+                "hint": "Announce a class date, time and location.",
+                "template": "[LSEMSfooter][/LSEMSfooter][divbox=white]\n[fimg=150,150]https://i.ibb.co/bMQfhCpG/Cdzl6Gz.png[/fimg][aligntable=right,0,0,0,0,0,0][right][font=Arial][b]\n[size=150]LSEMS Basic Life Support Division[/size][/b]\n[size=120]Upcoming BLS Course[/size]\n[size=95]{{courseDate}}[/size][/font][/right][/aligntable]\n\n[hr]\n\n[b]Greetings[/b],\n\nYou are receiving this email to notify you of an upcoming BLS course that is slated for a time that you marked in your application for availability.\n\nThe course will be:\n[b][/b]\n[img][/img]\n\nAll courses are held at the Pillbox Medical Center. Please wait inside the reception area of [u]Upper Pillbox[/u] around [u]10 minutes[/u] prior to the scheduled start of the class, and a BLS instructor will collect you from there. Please do not bring any weapons to the class.\n\nPayment is required on the day at the beginning of the course. Cash is the preferred form of payment. Wire transfers are also possible for a small fee. If you are unable to pay at the start of the course, you will be rejected from the class and will need to attend the next available course date.\n\n\n[divbox=white]\nFull Price: $20,000.\nDiscount: $10,000 for JB, DCC, Bayview, Bennys & Weazel personnel.\nFree: SADOC (CO1+), LSPD, Reapplicants, LSSD & LSEMS\n[/divbox]\n\n\nPlease note that the Pillbox Medical Center is a [u]non-smoking facility[/u]. Smoking is only permitted off hospital premises.\n\nIf you are unable to make this class, be sure to check back to where we post our [url=https://gov.eclipse-rp.net/viewtopic.php?t=18125]Upcoming Course Dates[/url] to hopefully catch a future one.\n\n[hr]\n[b]Kind regards,[/b]\n\n[img]{{staff.signature}}[/img]\n[i]{{staff.name}}[/i]\n{{staff.rank}} | {{division.rank}}\n[b]Los Santos Emergency Medical Services[/b]\n\n[/divbox]\n[LSEMSfooter][/LSEMSfooter]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "courseDate",
+                    "type": "text",
+                    "label": "Course Date",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "quickGuide",
+                "label": "BLS Quick Guide",
+                "hint": "The reference post staff point new members at.",
+                "template": "[img]https://i.ibb.co/N6Sx6TX0/BLS-Quick-Guide.png[/img]\n[divbox=white]\n[color=transparent]UwU[/color]\n[center][size=150][color=#BF0000][u]This guide is for those that have completed our BLS course.[/u][/color][/size]\n[color=transparent]UwU[/color]\nWe highly recommend attending one of our classes before attempting any of the treatments below. LSEMS do not stand responsible if this guide is used without a proper medical license. This guide is intended as a quick reminder from what is covered on the courses.[center]\n[color=transparent]UwU[/color]\n[/divbox]\n[lsemssubtitle]1.0 Table Of Content:[/lsemssubtitle]\n[divbox=white]\n[list]\n[*] [goto=EQUIP]2. Equipment[/goto]\n[*] [goto=TREAT] 3. Treatment Guide[/goto]\n[*] [goto=OOC][ooc] 4. OOC information[/ooc][/goto]\n[*] [goto=USE]5. Useful Information[/goto]\n[/list]\n[color=transparent]UwU[/color]\n[/divbox]\n[anchor]EQUIP[/anchor]\n[lsemssubtitle]2. Equipment:[/lsemssubtitle]\n[divbox=white]\nWhen you have completed your course, you will receive a bag full of essentials to assist you with your new license. This can always be refilled by our receptionist at upper pillbox if needed.\n[list]\n[*] Quick Guide\n[*] Sterile Gloves\n[*] Medical Tape\n[*] Gauze, Gauze Pads and Bandages\n[*] Dressings, multiple sizes and types\n[*] Icepacks, both prewrapped and not\n[*] Splints in various sizes\n[*] Arm sling\n[*] Sterile saline bottle\n[*] Sterile wipes\n[*] Trauma shears and scissors\n[*] CPR mouth pieces and oxygen mask\n[*] Tweezers\n[*] Tourniquet with a pen\n[*] Neck bracelet that can be adjustable\n[*] Shock blanket\n[*] Plastic bags\n[*] Light pen\n[/list]\n[/divbox]\n[anchor]TREAT[/anchor]\n[lsemssubtitle]3. Treatment:[/lsemssubtitle]\n[divbox=white]\n[color=transparent]UwU[/color]\n[lsemssubtitle]3.1 Broken bones:[/lsemssubtitle]\n[divbox=white]\nEquipment required:\n[list]\n[*] Splints / Arm sling\n[*] Gauze\n[*] Icepack\n[/list]\nAlways check if it is an open or closed fracture, [b]do not attempt to move the bone.[/b] Immobilize the fracture and use the icepack to relieve pain.\n[/divbox]\n[lsemssubtitle]3.2 Bruises:[/lsemssubtitle]\n[divbox=white]\nEquipment required:\n[list]\n[*]Ice pack\n[*]Towel\n[*]Bandage\n[/list]\n\nApply ice pack wrapped in towel to bruised area. Secure with bandage if needed.\n[/divbox]\n\n[lsemssubtitle]3.3 Burns:[/lsemssubtitle]\n[divbox=white]\nEquipment required:\n[list]\n[*]Sterile water\n[*]Gauze\n[*]Burn dressing\n[/list]\n\nCool burn with sterile water. Cover with gauze then apply burn dressing. Don't remove stuck clothing.\n[/divbox]\n\n[lsemssubtitle]3.4 Sprains:[/lsemssubtitle]\n[divbox=white]\nEquipment required:\n[list]\n[*]Bandage\n[*]Sling (for arm)\n[*]Ice pack\n[/list]\n\nWrap injured area with bandage. Use sling for arm injuries. Apply ice pack to reduce swelling.\n[/divbox]\n\n[lsemssubtitle]3.5 Cuts:[/lsemssubtitle]\n[divbox=white]\nEquipment required:\n[list]\n[*]Clean water\n[*]Gauze\n[*]Bandage\n[*]Tourniquet (for severe bleeding)\n[/list]\n\nClean wound with water. Press gauze on cut until bleeding stops. Use tourniquet if bleeding won't stop.\n[/divbox]\n\n[lsemssubtitle]3.6 Gunshot Wounds:[/lsemssubtitle]\n[divbox=white]\nEquipment required:\n[list]\n[*]Gauze\n[*]Bandage\n[*]Tourniquet\n[/list]\n\nCheck for exit wound. Press gauze firmly on wound. Use tourniquet if won't stop bleeding. Don't apply pressure on vital areas.\n[/divbox]\n\n[lsemssubtitle]3.7 Severe Allergic Reaction:[/lsemssubtitle]\n[divbox=white]\nEquipment required:\n[list]\n[*]EpiPen\n[/list]\n\nLay person flat. Use EpiPen on outer thigh. Hold for 10 seconds. Call ambulance.\n[/divbox]\n[/divbox]\n[anchor]OOC[/anchor]\n[lsemssubtitle][ooc]4. OOC Information:[/ooc][/lsemssubtitle]\n[divbox=white]\nThe command for BLS is /cpr ID and should be used [u]after[/u] RP has been concluded.\n\nPlease read the following examples:\n\n[spoiler=Acceptable examples of RP]\n[divbox=white]\n[color=#00FF00]John Doe (1)[/color]: /me checks Jane for injuries.\n[color=#00FF00]John Doe (1)[/color]: /do what would he see?\n[color=#FFBF00]Jane Doe (2)[/color]: /me have a twisted ankle.\n[color=#00FF00]John Doe (1)[/color]: /me takes out some bandage, and wraps it around the twisted ankle.\n[color=#00FF00]John Doe (1)[/color]: /me takes out an icepack, activates it and wraps it in cloth, then secures it to the twisted ankle.\n[color=#00FF00]John Doe (1)[/color]: /do does this help?\n[color=#FFBF00]Jane Doe (2)[/color]: /do yes!\n[color=#00FF00]John Doe (1)[/color]: /cpr 2\n[/divbox]\n\n[divbox=white]\n[color=#00FF00]John Doe (1)[/color]: /me looks over Jane for injuries\n[color=#00FF00]John Doe (1)[/color]: /do what would he see?\n[color=#FFBF00]Jane Doe (2)[/color]: /do would have a cut on the left arm\n[color=#00FF00]John Doe (1)[/color]: /me takes out a sterilized gauze pad and places it on the cut and applies enough pressure to stop the bleeding\n[color=#00FF00]John Doe (1)[/color]: /do would the bleeding be stopped?\n[color=#FFBF00]Jane Doe (2)[/color]: /do yes it would\n[color=#00FF00]John Doe (1)[/color]: /cpr 2\n[/divbox]\n\n[divbox=white]\n[color=#00FF00]John Doe (1)[/color]: /me looks over Jane for injuries\n[color=#00FF00]John Doe (1)[/color]: /do what would he see?\n[color=#FFBF00]Jane Doe (2)[/color]: /do would see a 1st degree burn\n[color=#00FF00]John Doe (1)[/color]: /me takes out a gauze pad and soaks it in some saline the places it on the burn site\n[color=#00FF00]John Doe (1)[/color]: /me after it has cool down replaces the gauze pad with a fresh one\n[color=#00FF00]John Doe (1)[/color]: /do would this help the burn?\n[color=#FFBF00]Jane Doe (2)[/color]: /do yes it would\n[color=#00FF00]John Doe (1)[/color]: /cpr 2\n\n[/divbox]\n[/spoiler]\n\n[spoiler=Not acceptable examples of RP]\n[divbox=white]\n[color=#00FF00]John Doe (1)[/color]: Omg Jane what happened to you?\n[color=#FFBF00]Jane Doe (2)[/color]: Oh my leg is broken I think!\n[color=#00FF00]John Doe (1)[/color]: Don't worry I got you!\n[color=#00FF00]John Doe (1)[/color]: /me looks intensely into the fracture making it go back in place without even touching it\n[color=#00FF00]John Doe (1)[/color]: /do would this help?\n[color=#FFBF00]Jane Doe (2)[/color]: /do yes it would\n[color=#00FF00]John Doe (1)[/color]: /cpr 2\n\n[b][color=red]NOTE: reasons this is not acceptable[/color][/b]\n[list]\n[*] Not identifying the injury throw /me's and /do's\n[*] Unrealistic treatment RP\n[/list]\n[/divbox]\n\n[divbox=white]\n[color=#FFBF00]Jane Doe (2)[/color]: HELP ME IM DYING\n[color=#00FF00]John Doe (1)[/color]: /cpr 2\n[color=#00FF00]John Doe (1)[/color]: /me fixes Jane\n\n[b][color=red]NOTE: reasons this is not acceptable[/color][/b]\n[list]\n[*] Not identifying the injury throw /me's and /do's\n[*] Not doing any treatment RP\n[*] Using /cpr command before the RP\n[/list]\n[/divbox]\n\n[divbox=white]\n[color=#00FF00]John Doe (1)[/color]: /me looks over Jane for injuries\n[color=#00FF00]John Doe (1)[/color]: /do what do I see?\n[color=#FFBF00]Jane Doe (2)[/color]: /do GSW to the arm\n[color=#00FF00]John Doe (1)[/color]: /me takes an icepack and places it on the GSW\n[color=#00FF00]John Doe (1)[/color]: /do would this help?\n[color=#FFBF00]Jane Doe (2)[/color]: /do yes it would\n[color=#00FF00]John Doe (1)[/color]: /cpr 2\n\n[b][color=red]NOTE: reasons this is not acceptable[/color][/b]\n[list]\n[*] Unrealistic treatment RP\n[/list]\n[/divbox]\n[/spoiler]\n[color=transparent]UwU[/color]\nIts important to note that the cooldown is not linked to the person issuing the command, but is linked to the ID that received it. If you gonna use the command again on the same person, you will need to RP treat another injury.\nWhile it sucks sometimes, the command [u]cannot[/u] be used before the RP is done. Even if the person is mere seconds from death.\nFailing to following this breaches the power gaming rule, and staff will act accordingly. This can result in a rule break punishment and your characters medical license to be revoked.\n[/divbox]\n[anchor]USE[/anchor]\n[lsemssubtitle]5. Useful information[/lsemssubtitle]\n[divbox=white]\n[list]\n[*] If you feel rusty, you are always welcome to apply for a free course after receiving your license.\n[*] You are always welcome to reach out to a instructor if you have any questions, even after the course is done.\n[*] If you want to commend your instructors, feel free to do it [url=https://gov.eclipse-rp.net/viewforum.php?f=580]here.[/url]\n[*] If you have any complaints, please reach out to the Head of BLS and/or Assistant head of BLS. [url=https://gov.eclipse-rp.net/viewtopic.php?t=55728]Roster found here.[/url]\n[*] You get a free refill of the equipment from Henry in our lobby. [ooc]Just RP it![/ooc]\n[/list]\n[/divbox]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyTemplate",
+                    "kind": "copy_template",
+                    "label": "Copy Template",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenGov",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "{{govLink}}",
+                    "requiresField": "govLink",
+                    "variant": "outline"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "label": "Upcoming course listing",
+            "hint": "The one post that lists the classes coming up - what goes on it, and what comes off.",
+            "formats": [
+              {
+                "key": "courseListing",
+                "label": "Edit the listing",
+                "hint": "Add a class, move one, or strike one off - you pick which inside.",
+                "template": "{{listingOutput}}",
+                "fields": [
+                  {
+                    "key": "courseType",
+                    "type": "select",
+                    "label": "What are you doing?",
+                    "hint": "Add a class, move one, or strike one off.",
+                    "required": true,
+                    "defaultValue": "new",
+                    "options": [
+                      {
+                        "value": "new",
+                        "label": "Add a class"
+                      },
+                      {
+                        "value": "reschedule",
+                        "label": "Reschedule a class"
+                      },
+                      {
+                        "value": "cancelled",
+                        "label": "Cancel a class"
+                      }
+                    ]
+                  },
+                  {
+                    "key": "courseDate",
+                    "type": "date",
+                    "label": "Course date (UTC)",
+                    "hint": "Used for the listing line and timezone image.",
+                    "required": false
+                  },
+                  {
+                    "key": "courseTime",
+                    "type": "time",
+                    "label": "Course time (UTC)",
+                    "required": false,
+                    "defaultValue": "12:00"
+                  },
+                  {
+                    "key": "previousDate",
+                    "type": "date",
+                    "label": "Previous date (UTC)",
+                    "hint": "The original slot, struck through when rescheduling.",
+                    "required": false,
+                    "visibleWhen": {
+                      "field": "courseType",
+                      "equals": "reschedule"
+                    }
+                  },
+                  {
+                    "key": "previousTime",
+                    "type": "time",
+                    "label": "Previous time (UTC)",
+                    "required": false,
+                    "visibleWhen": {
+                      "field": "courseType",
+                      "equals": "reschedule"
+                    }
+                  },
+                  {
+                    "key": "instructor",
+                    "type": "text",
+                    "label": "Instructor name",
+                    "placeholder": "First Last",
+                    "required": false,
+                    "max": 64
+                  },
+                  {
+                    "key": "listingOutput",
+                    "type": "textarea",
+                    "label": "Generated listing block",
+                    "required": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "generateListing",
+                    "kind": "generate_course_listing",
+                    "label": "Generate"
+                  },
+                  {
+                    "id": "copyOpenListing",
+                    "kind": "copy_open",
+                    "label": "Copy & Open Listing",
+                    "content": "https://gov.eclipse-rp.net/posting.php?mode=edit&p=55540",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyListingBlock",
+                    "kind": "copy_template",
+                    "label": "Copy BBCode"
+                  },
+                  {
+                    "id": "resetListing",
+                    "kind": "reset",
+                    "label": "Clear",
+                    "variant": "outline"
+                  }
+                ],
+                "generator": {
+                  "kind": "course_listing",
+                  "actionField": "courseType",
+                  "dateField": "courseDate",
+                  "timeField": "courseTime",
+                  "previousDateField": "previousDate",
+                  "previousTimeField": "previousTime",
+                  "instructorField": "instructor",
+                  "outputField": "listingOutput"
+                }
+              }
+            ]
+          },
+          {
+            "label": "Course reports",
+            "hint": "The class has run - this is the report that goes on GOV afterwards.",
+            "formats": [
+              {
+                "key": "joint",
+                "label": "Joint BLS Course Reports",
+                "hint": "A course run together with another department.",
+                "template": "[img]https://i.postimg.cc/q7qqnwN2/BLS-Course-Report.png[/img]\n[divbox=white]\n\n{{date}} at {{time}} [ooc]UTC[/ooc] \n\n[b][u]Instructor:[/u][/b] {{instructors}}\n[b][u]Location:[/u][/b] {{location}}\n\n[color=#FF0000][b][u]Course Graduates:[/u][/b][/color]\n[list=1]\n[*] {{graduates}}\n[/list]\n\n[i]Place a tick (✓) in the box[/i]\n[b]BLS Guide email sent?[/b] [✓] \n[/divbox]\n[img]https://i.postimg.cc/WzBgYKkF/BLS-Footer.png[/img]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "date",
+                    "type": "date",
+                    "label": "Course date",
+                    "required": true
+                  },
+                  {
+                    "key": "time",
+                    "type": "time",
+                    "label": "Course time",
+                    "required": true,
+                    "defaultValue": "12:00"
+                  },
+                  {
+                    "key": "instructors",
+                    "type": "textarea",
+                    "label": "Instructors",
+                    "required": true
+                  },
+                  {
+                    "key": "location",
+                    "type": "select",
+                    "label": "Location",
+                    "required": true,
+                    "defaultValue": "Pillbox MD",
+                    "options": [
+                      {
+                        "value": "Pillbox MD",
+                        "label": "Pillbox MD"
+                      },
+                      {
+                        "value": "Paleto MD",
+                        "label": "Paleto MD"
+                      }
+                    ]
+                  },
+                  {
+                    "key": "graduates",
+                    "type": "textarea",
+                    "label": "Graduates",
+                    "required": true
+                  },
+                  {
+                    "key": "fundsObtained",
+                    "type": "number",
+                    "label": "Funds obtained",
+                    "required": false
+                  },
+                  {
+                    "key": "receiptUrl",
+                    "type": "url",
+                    "label": "Funds receipt",
+                    "required": false
+                  },
+                  {
+                    "key": "guideEmailSent",
+                    "type": "checkbox",
+                    "label": "BLS Guide email sent",
+                    "defaultValue": false
+                  },
+                  {
+                    "key": "moneyGivenToGovernment",
+                    "type": "checkbox",
+                    "label": "Money given to Government",
+                    "defaultValue": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyReport",
+                    "kind": "copy_template",
+                    "label": "Copy Report",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenReport",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "https://gov.eclipse-rp.net/viewtopic.php?t=222067",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "resetReport",
+                    "kind": "reset",
+                    "label": "Reset",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "normal",
+                "label": "Normal BLS Course Reports",
+                "hint": "A normal BLS course, run by us alone.",
+                "template": "[img]https://i.ibb.co/LdWPwcK0/BLS-Course-Report.png[/img]\n[divbox=white]\n\n{{date}} at {{time}} [ooc]UTC[/ooc] \n\n[b][u]Instructor:[/u][/b] {{instructors}}\n[b][u]Location:[/u][/b] {{location}}\n\n[color=#FF0000][b][u]Course Graduates:[/u][/b][/color]\n[list=1]\n[*] {{graduates}}\n[/list]\n\n[b]Funds Obtained: [/b] ${{fundsObtained}}\n[i]Place a tick (✓) in the box[/i]\n[b]Money given to the Government?[/b] [✓] \n[b]BLS Guide email sent?[/b] [✓] \n[b]Receipt:[/b] [url={{receiptUrl}}]*Attachment*[/url]\n[/divbox]\n[img]https://i.ibb.co/hJjNvPWz/BLS-Footer.png[/img]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "date",
+                    "type": "date",
+                    "label": "Course date",
+                    "required": true
+                  },
+                  {
+                    "key": "time",
+                    "type": "time",
+                    "label": "Course time",
+                    "required": true,
+                    "defaultValue": "12:00"
+                  },
+                  {
+                    "key": "instructors",
+                    "type": "textarea",
+                    "label": "Instructors",
+                    "required": true
+                  },
+                  {
+                    "key": "location",
+                    "type": "select",
+                    "label": "Location",
+                    "required": true,
+                    "defaultValue": "Pillbox MD",
+                    "options": [
+                      {
+                        "value": "Pillbox MD",
+                        "label": "Pillbox MD"
+                      },
+                      {
+                        "value": "Paleto MD",
+                        "label": "Paleto MD"
+                      }
+                    ]
+                  },
+                  {
+                    "key": "graduates",
+                    "type": "textarea",
+                    "label": "Graduates",
+                    "required": true
+                  },
+                  {
+                    "key": "fundsObtained",
+                    "type": "number",
+                    "label": "Funds obtained",
+                    "required": true
+                  },
+                  {
+                    "key": "receiptUrl",
+                    "type": "url",
+                    "label": "Funds receipt",
+                    "required": false
+                  },
+                  {
+                    "key": "guideEmailSent",
+                    "type": "checkbox",
+                    "label": "BLS Guide email sent",
+                    "defaultValue": false
+                  },
+                  {
+                    "key": "moneyGivenToGovernment",
+                    "type": "checkbox",
+                    "label": "Money given to Government",
+                    "defaultValue": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyReport",
+                    "kind": "copy_template",
+                    "label": "Copy Report",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenReport",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "https://gov.eclipse-rp.net/viewtopic.php?t=129042",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "resetReport",
+                    "kind": "reset",
+                    "label": "Reset",
+                    "variant": "outline"
+                  }
+                ]
+              },
+              {
+                "key": "ots",
+                "label": "On the Spot Classes",
+                "hint": "A class taught on the spot, with no application behind it.",
+                "template": "[img]https://i.ibb.co/vxVmQxCX/BLS-OTS-Report.png[/img]\n[divbox=white]\n[b]Instructors name:[/b] {{instructors}}\n[b]Date and time:[/b] {{date}} at {{time}} [ooc]UTC[/ooc]\n[b]Officer(s) name:[/b] {{officers}}\n[b]Students:[/b]\n[list] \n[*] {{students}}\n[/list]\n\n[b]Funds Obtained: [/b] ${{fundsObtained}}\n[i]Place a tick (✓) in the box[/i]\n[b]Money given to the Government?[/b] [✓] \n[b]Receipt (funds):[/b] [url={{receiptUrl}}]*Attachment*[/url]\n[b]Receipt (Weazel):[/b] [url={{receiptWeazelUrl}}]*Attachment*[/url]\n\n[img]{{staff.signature}}[/img]\n[i]{{staff.name}}[/i]\n{{staff.rank}} | {{division.rank}}\n[b]Los Santos Emergency Medical Services[/b]\n[/divbox]\n[img]https://i.ibb.co/hJjNvPWz/BLS-Footer.png[/img]",
+                "fields": [
+                  {
+                    "key": "govLink",
+                    "type": "url",
+                    "label": "GOV Link",
+                    "required": false
+                  },
+                  {
+                    "key": "instructors",
+                    "type": "textarea",
+                    "label": "Instructors",
+                    "required": true
+                  },
+                  {
+                    "key": "date",
+                    "type": "date",
+                    "label": "Course date",
+                    "required": true
+                  },
+                  {
+                    "key": "time",
+                    "type": "time",
+                    "label": "Course time",
+                    "required": true,
+                    "defaultValue": "12:00"
+                  },
+                  {
+                    "key": "officers",
+                    "type": "textarea",
+                    "label": "Officer(s)",
+                    "required": true
+                  },
+                  {
+                    "key": "students",
+                    "type": "textarea",
+                    "label": "Students",
+                    "required": true
+                  },
+                  {
+                    "key": "fundsObtained",
+                    "type": "number",
+                    "label": "Funds obtained",
+                    "required": true
+                  },
+                  {
+                    "key": "receiptUrl",
+                    "type": "url",
+                    "label": "Funds receipt",
+                    "required": false
+                  },
+                  {
+                    "key": "receiptWeazelUrl",
+                    "type": "url",
+                    "label": "Weazel receipt",
+                    "required": false
+                  },
+                  {
+                    "key": "graduates",
+                    "type": "textarea",
+                    "label": "Graduates",
+                    "required": false
+                  },
+                  {
+                    "key": "location",
+                    "type": "select",
+                    "label": "Location",
+                    "required": true,
+                    "defaultValue": "Pillbox MD",
+                    "options": [
+                      {
+                        "value": "Pillbox MD",
+                        "label": "Pillbox MD"
+                      },
+                      {
+                        "value": "Paleto MD",
+                        "label": "Paleto MD"
+                      }
+                    ]
+                  },
+                  {
+                    "key": "guideEmailSent",
+                    "type": "checkbox",
+                    "label": "BLS Guide email sent",
+                    "defaultValue": false
+                  },
+                  {
+                    "key": "moneyGivenToGovernment",
+                    "type": "checkbox",
+                    "label": "Money given to Government",
+                    "defaultValue": false
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyReport",
+                    "kind": "copy_template",
+                    "label": "Copy Report",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "copyOpenReport",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "https://gov.eclipse-rp.net/viewtopic.php?t=129042",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "resetReport",
+                    "kind": "reset",
+                    "label": "Reset",
+                    "variant": "outline"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "label": "Post on the boards",
+            "hint": "No applicant and no class - just a topic written in the BLS house style.",
+            "formats": [
+              {
+                "key": "blsDiscussionBoard",
+                "label": "BLS Discussion Board",
+                "hint": "Open a topic in the BLS discussion board.",
+                "template": "[mdheader2\ntitle=\"{{subject}} | {{utc.date}}\"\nlocation=\"Basic Life Support Division\"\ndate=\"\"\nlogo=\"https://i.vgy.me/5Mkn7G.png\"\ndepartment=\"One Team, One Mission, Saving Lives\"\n][/mdheader2]\n[divbox4=eeeeee]\n{{boardPost}}\n[/divbox4]",
+                "fields": [
+                  {
+                    "key": "subject",
+                    "type": "text",
+                    "label": "Subject",
+                    "required": true,
+                    "max": 150
+                  },
+                  {
+                    "key": "boardPost",
+                    "type": "textarea",
+                    "label": "Post",
+                    "required": true,
+                    "max": 50000
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyBoard",
+                    "kind": "copy_template",
+                    "label": "Copy Post",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "openBoard",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "https://gov.eclipse-rp.net/posting.php?mode=post&f=1889",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "resetBoard",
+                    "kind": "reset",
+                    "label": "Reset",
+                    "variant": "outline"
+                  }
+                ],
+                "subject": "{{subject}}"
+              },
+              {
+                "key": "blsSeniorInstructorBoard",
+                "label": "Senior Instructor Discussion Board",
+                "hint": "Open a topic in the senior instructors' board.",
+                "template": "[mdheader2\ntitle=\"{{subject}} | {{utc.date}}\"\nlocation=\"Basic Life Support Division\"\ndate=\"\"\nlogo=\"https://i.vgy.me/5Mkn7G.png\"\ndepartment=\"One Team, One Mission, Saving Lives\"\n][/mdheader2]\n[divbox4=eeeeee]\n{{boardPost}}\n[/divbox4]",
+                "fields": [
+                  {
+                    "key": "subject",
+                    "type": "text",
+                    "label": "Subject",
+                    "required": true,
+                    "max": 150
+                  },
+                  {
+                    "key": "boardPost",
+                    "type": "textarea",
+                    "label": "Post",
+                    "required": true,
+                    "max": 50000
+                  }
+                ],
+                "actions": [
+                  {
+                    "id": "copyBoard",
+                    "kind": "copy_template",
+                    "label": "Copy Post",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "openBoard",
+                    "kind": "copy_open",
+                    "label": "Copy & Open GOV",
+                    "content": "https://gov.eclipse-rp.net/posting.php?mode=post&f=3819",
+                    "variant": "outline"
+                  },
+                  {
+                    "id": "resetBoard",
+                    "kind": "reset",
+                    "label": "Reset",
+                    "variant": "outline"
+                  }
+                ],
+                "subject": "{{subject}}"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

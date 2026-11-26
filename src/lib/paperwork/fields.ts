@@ -17,6 +17,7 @@ import {
 import type { PaperworkField, PaperworkFieldType } from "./schema";
 
 export type PaperworkFieldValue = string | boolean;
+export const PAPERWORK_REASON_LIMIT = 20;
 
 export type FieldTypeDefinition = {
   type: PaperworkFieldType;
@@ -36,6 +37,7 @@ export const FIELD_TYPES: readonly FieldTypeDefinition[] = [
   { type: "select", label: "Select", description: "One option from a dropdown.", defaultMax: INPUT_LIMITS.short },
   { type: "radio", label: "Radio", description: "One option, shown as a row of choices.", defaultMax: INPUT_LIMITS.short },
   { type: "checkbox", label: "Checkbox", description: "Yes when ticked, No when not.", defaultMax: INPUT_LIMITS.short },
+  { type: "reasons", label: "Reasons", description: "Several text inputs rendered as one BBCode list.", defaultMax: INPUT_LIMITS.notes },
   { type: "staff", label: "Staff page value", description: "Name, rank or signature from the Staff Page.", defaultMax: INPUT_LIMITS.url },
 ];
 
@@ -67,6 +69,16 @@ export function fieldError(
   switch (field.type) {
     case "checkbox":
       return undefined;
+    case "reasons": {
+      const reasons = String(value ?? "").split(/\r?\n/).map((reason) => reason.trim()).filter(Boolean);
+      if (required && reasons.length === 0) return `${field.label} needs at least one reason.`;
+      if (reasons.length > PAPERWORK_REASON_LIMIT) return `${field.label} can have at most ${PAPERWORK_REASON_LIMIT} reasons.`;
+      for (const [index, reason] of reasons.entries()) {
+        const error = validationMessage(validateText(reason, `${field.label} ${index + 1}`, { required: true, max, allowMarkup: false }));
+        if (error) return error;
+      }
+      return undefined;
+    }
     case "number": {
       if (required && String(value).trim() === "") return `${field.label} is required.`;
       if (!required && String(value).trim() === "") return undefined;
@@ -113,6 +125,12 @@ export function fieldError(
         }),
       );
   }
+}
+
+/** Each entered reason becomes a BBCode list item inside the template's list. */
+export function templateValueForField(field: PaperworkField, value: PaperworkFieldValue): PaperworkFieldValue {
+  if (field.type !== "reasons") return value;
+  return String(value ?? "").split(/\r?\n/).map((reason) => reason.trim()).filter(Boolean).map((reason) => `[*] ${reason}`).join("\n");
 }
 
 export function maxFor(type: PaperworkFieldType): number {

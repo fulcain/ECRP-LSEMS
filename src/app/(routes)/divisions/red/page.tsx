@@ -31,6 +31,7 @@ import { DivisionQuickLinksLink } from "@/components/division-quick-links-link";
 import { DivisionHeader } from "@/components/division/division-header";
 import { DivisionUserGroupsLink } from "@/components/division/division-user-groups-link";
 import { DocumentPicker } from "@/components/division/document-picker";
+import { DivisionPaperworkAdditions } from "@/components/paperwork/division-paperwork-additions";
 import { DiscussionBoardComposer } from "@/components/discussion-board-composer";
 import {
   isREDBoardKey,
@@ -108,6 +109,10 @@ const FORMAT_POST_TARGETS: Partial<
 };
 
 export default function REDFormatsPage() {
+  const [showLegacyPaperwork, setShowLegacyPaperwork] = useState(false);
+  useEffect(() => {
+    setShowLegacyPaperwork(new URLSearchParams(window.location.search).get("legacyPaperwork") === "1");
+  }, []);
   const { medicCredentials, divisionRanks } = useMedic();
   // Nothing is chosen until the member picks a card, so the page opens on the
   // picker alone - no builder is filled in for a document nobody asked for.
@@ -414,7 +419,7 @@ export default function REDFormatsPage() {
     });
   };
 
-  return (
+  return showLegacyPaperwork ? (
     <>
       {/* ── One-shot entry animations (cheap, GPU-friendly) ── */}
       <style>{`
@@ -988,7 +993,19 @@ export default function REDFormatsPage() {
           </div>
         </div>
         ) : null}
+        <DivisionPaperworkAdditions divisionKey="red" />
       </PageContainer>
     </>
+  ) : (
+    <PageContainer>
+      <DivisionHeader
+        label={RED.label}
+        emblem={RED.image}
+        title="Paperwork"
+        purpose="Every reply a RED application can get - pick the stage the applicant is at, then copy it into GOV."
+        actions={<><DivisionUserGroupsLink group="red" /><DivisionQuickLinksLink division="red" /></>}
+      />
+      <DivisionPaperworkAdditions divisionKey="red" />
+    </PageContainer>
   );
 }

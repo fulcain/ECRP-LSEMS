@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
-import { Calendar as CalendarIcon, Check, Copy, ExternalLink, RotateCcw, RotateCw } from "lucide-react";
+import { Calendar as CalendarIcon, CalendarClock, Check, Copy, ExternalLink, RotateCcw, RotateCw } from "lucide-react";
 import { toast } from "react-toastify";
 
 import { copyBBCode } from "@/app/helpers/copyBBCode";
@@ -29,6 +29,7 @@ import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { parseDate } from "@/lib/format-date";
+import { validateName, validationMessage } from "@/lib/validation";
 import {
   Select,
   SelectContent,
@@ -40,6 +41,8 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   defaultValueForField,
   fieldError,
+  templateValueForField,
+  PAPERWORK_REASON_LIMIT,
   type PaperworkFieldValue,
 } from "@/lib/paperwork/fields";
 import {
@@ -53,6 +56,7 @@ import type {
   PaperworkAction,
   PaperworkConfig,
   PaperworkField,
+  PaperworkFormat,
 } from "@/lib/paperwork/schema";
 
 type Drafts = Record<string, Record<string, PaperworkFieldValue>>;
@@ -75,12 +79,76 @@ function timePickerValue(value: string): string {
   return `${String(hour).padStart(2, "0")}:${match[2]}`;
 }
 
+function courseListingOutput(
+  format: PaperworkFormat,
+  values: Record<string, PaperworkFieldValue>,
+): { text: string; missing: string[]; errors: string[] } | null {
+  const generator = format.generator;
+  if (generator?.kind !== "course_listing") return null;
+  const action = String(values[generator.actionField] ?? "new");
+  const dateText = String(values[generator.dateField] ?? "").trim();
+  const timeText = String(values[generator.timeField] ?? "").trim();
+  const instructor = String(values[generator.instructorField] ?? "").trim();
+  const previousDateText = String(values[generator.previousDateField] ?? "").trim();
+  const previousTimeText = String(values[generator.previousTimeField] ?? "").trim();
+  const missing: string[] = [];
+  if (!dateText) missing.push(generator.dateField);
+  if (!timeText) missing.push(generator.timeField);
+  if (!instructor) missing.push(generator.instructorField);
+  if (action === "reschedule") {
+    if (!previousDateText) missing.push(generator.previousDateField);
+    if (!previousTimeText) missing.push(generator.previousTimeField);
+  }
+  const instructorError = validationMessage(validateName(instructor, "Instructor name", { required: false }));
+  const dateInfo = listingDateInfo(dateText, timeText);
+  const previousInfo = action === "reschedule" ? listingDateInfo(previousDateText, previousTimeText) : null;
+  const errors = [instructorError, dateText && timeText && !dateInfo ? "Course date or time is invalid." : undefined,
+    action === "reschedule" && previousDateText && previousTimeText && !previousInfo ? "Previous date or time is invalid." : undefined]
+    .filter((entry): entry is string => Boolean(entry));
+  if (missing.length || errors.length || !dateInfo || (action === "reschedule" && !previousInfo)) {
+    return { text: "", missing, errors };
+  }
+  const body = action === "cancelled"
+    ? `[b][size=112][color=red]Class cancelled[/color][/size][/b]\n[b][s]${dateInfo.formatted} - ${instructor}[/s][/b]`
+    : action === "reschedule"
+      ? `[b][size=112][color=darkorange]Class rescheduled[/color][/size][/b]\n[b][s]${previousInfo!.formatted} - ${instructor}[/s][/b]\n[b]${dateInfo.formatted} - ${instructor}[/b]`
+      : `[b]${dateInfo.formatted} - ${instructor}[/b]`;
+  return { text: `[hr][/hr]\n${body}\n[img]https://www.inyourowntime.zone/${dateInfo.urlDate}_${dateInfo.hours}.${dateInfo.minutes}_UTC.png[/img]\n[hr][/hr]`, missing, errors };
+}
+
+function isFieldVisible(
+  field: PaperworkField,
+  values: Record<string, PaperworkFieldValue>,
+  format: PaperworkFormat,
+): boolean {
+  if (format.generator?.kind === "course_listing" && field.key === format.generator.outputField) return false;
+  return !field.visibleWhen || String(values[field.visibleWhen.field] ?? "") === field.visibleWhen.equals;
+}
+
+function listingDateInfo(dateText: string, timeText: string) {
+  const date = parseDate(dateText);
+  const time = timePickerValue(timeText);
+  const match = /^(\d{2}):(\d{2})$/.exec(time);
+  if (!date || !match) return null;
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const day = date.getDate();
+  const hours = match[1];
+  const minutes = match[2];
+  const ordinal = day > 5 && day < 21 ? `${day}th` : `${day}${({ 1: "st", 2: "nd", 3: "rd" } as Record<number, string>)[day % 10] ?? "th"}`;
+  const utcDate = new Date(Date.UTC(year, month, day));
+  const weekday = utcDate.toLocaleString("en-GB", { weekday: "long", timeZone: "UTC" });
+  const monthName = utcDate.toLocaleString("en-GB", { month: "long", timeZone: "UTC" });
+  return { formatted: `${weekday}, ${ordinal} ${monthName} ${year} @ ${hours}:${minutes} [ooc]UTC[/ooc]`, urlDate: `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`, hours, minutes };
+}
+
 function iconFor(action: PaperworkAction) {
   if (action.kind === "copy_open") return ExternalLink;
   if (action.kind === "reset") return RotateCcw;
   if (action.kind === "insert_utc_date" || action.kind === "insert_utc_time") {
     return RotateCw;
   }
+  if (action.kind === "generate_course_listing") return CalendarClock;
   return Copy;
 }
 
@@ -95,6 +163,7 @@ function iconFor(action: PaperworkAction) {
 export function PaperworkWorkspace({
   config,
   persist = true,
+  showHeader = true,
 }: {
   config: PaperworkConfig;
   /**
@@ -103,6 +172,7 @@ export function PaperworkWorkspace({
    * are writing, so it is never saved.
    */
   persist?: boolean;
+  showHeader?: boolean;
 }) {
   const division = config.division;
   const { medicCredentials, divisionRanks } = useMedic();
@@ -161,18 +231,33 @@ export function PaperworkWorkspace({
 
   const templateValues = { ...values };
   for (const field of format?.fields ?? []) {
-    if (field.type !== "radio") continue;
-    const selected = field.options?.find(
-      (option) => option.value === String(values[field.key] ?? ""),
-    );
-    if (selected) templateValues[field.key] = selected.output ?? selected.value;
+    if (field.type === "radio") {
+      const selected = field.options?.find(
+        (option) => option.value === String(values[field.key] ?? ""),
+      );
+      if (selected) templateValues[field.key] = selected.output ?? selected.value;
+    } else {
+      templateValues[field.key] = templateValueForField(field, values[field.key]);
+    }
   }
+  const generatedCandidate = format ? courseListingOutput(format, values) : null;
+  const generatedOutput = format?.generator?.kind === "course_listing"
+    ? draft[format.key]?.__generated === true
+      ? generatedCandidate
+      : { text: "", missing: ["__generate"], errors: [] }
+    : null;
 
   const setValue = (fieldKey: string, value: PaperworkFieldValue) => {
     if (!format) return;
     setDraft((prev) => ({
       ...prev,
-      [format.key]: { ...(prev[format.key] ?? {}), [fieldKey]: value },
+      [format.key]: {
+        ...(prev[format.key] ?? {}),
+        [fieldKey]: value,
+        ...(format.generator?.kind === "course_listing" && fieldKey !== "__generated"
+          ? { __generated: false }
+          : {}),
+      },
     }));
   };
 
@@ -184,21 +269,27 @@ export function PaperworkWorkspace({
   };
 
   const output = format
-    ? renderTemplate(format.template, context)
-    : { text: "", missing: [] };
+    ? generatedOutput ?? renderTemplate(format.template, context)
+    : { text: "", missing: [], errors: [] };
   const subject = format?.subject
     ? renderTemplate(format.subject, context)
-    : { text: "", missing: [] };
+    : { text: "", missing: [], errors: [] };
 
   const errors = format
     ? format.fields
+        .filter((field) => isFieldVisible(field, values, format))
         .map((field) => ({ field, message: fieldError(field, values[field.key]) }))
         .filter(
           (entry): entry is { field: PaperworkField; message: string } =>
             Boolean(entry.message),
         )
     : [];
-  const complete = errors.length === 0 && output.missing.length === 0;
+  const complete =
+    errors.length === 0 &&
+    output.missing.length === 0 &&
+    output.errors.length === 0 &&
+    subject.missing.length === 0 &&
+    subject.errors.length === 0;
 
   // Each Copy & Open button names its own page: one the format declares, or the
   // link the member pasted into an input. Two of them in one format are two
@@ -214,16 +305,25 @@ export function PaperworkWorkspace({
 
   const requirement = errors[0]?.message
     ? errors[0].message
-    : output.missing.length > 0
-      ? `The template asks for ${output.missing.map((name) => `{{${name}}}`).join(", ")}, which nothing provides.`
-      : null;
+    : output.errors[0] ??
+      subject.errors[0] ??
+      (output.missing.length > 0
+        ? `Complete ${output.missing.map((name) => format?.fields.find((field) => field.key === name)?.label ?? name).join(", ")}.`
+        : subject.missing.length > 0
+          ? `The subject asks for ${subject.missing.map((name) => `{{${name}}}`).join(", ")}, which nothing provides.`
+          : null);
 
   const disabledFor = (action: PaperworkAction): boolean => {
     if (action.kind === "reset") return false;
+    if (action.kind === "generate_course_listing") return false;
     if (action.kind === "insert_utc_date" || action.kind === "insert_utc_time") {
       return false;
     }
     if (action.kind === "copy_open") return !complete || !urlFor(action);
+    if (action.kind === "copy_text" && action.content) {
+      const rendered = renderTemplate(action.content, context);
+      if (rendered.missing.length > 0 || rendered.errors.length > 0) return true;
+    }
     if (action.requiresField) {
       const value = values[action.requiresField];
       if (value === undefined || !String(value).trim()) return true;
@@ -253,6 +353,19 @@ export function PaperworkWorkspace({
         return next;
       });
       toast.success("Cleared.");
+      return;
+    }
+    if (action.kind === "generate_course_listing") {
+      if (generatedCandidate?.missing.length) {
+        toast.error(`Complete ${generatedCandidate.missing.map((name) => format.fields.find((field) => field.key === name)?.label ?? name).join(", ")}.`);
+        return;
+      }
+      if (generatedCandidate?.errors.length) {
+        toast.error(generatedCandidate.errors[0]);
+        return;
+      }
+      setValue("__generated", true);
+      toast.success("Course post generated successfully.");
       return;
     }
     if (action.kind === "copy_template") {
@@ -298,6 +411,14 @@ export function PaperworkWorkspace({
   const previewActions = format?.actions.filter(
     (action) =>
       action.kind !== "insert_utc_date" && action.kind !== "insert_utc_time",
+  ).filter((action) =>
+    action.kind !== "generate_course_listing" &&
+    !(format?.generator?.kind === "course_listing" && action.kind === "reset"),
+  );
+
+  const formActions = format?.actions.filter((action) =>
+    action.kind === "generate_course_listing" ||
+    (format.generator?.kind === "course_listing" && action.kind === "reset"),
   );
 
   const fieldActions = (fieldKey: string) =>
@@ -310,25 +431,36 @@ export function PaperworkWorkspace({
 
   return (
     <>
-      <DivisionHeader
-        label={division.label}
-        emblem={division.emblem}
-        title={page?.label ?? "Paperwork"}
-        purpose={page?.purpose}
-        tabs={
-          division.pages.length > 1
-            ? division.pages.map((entry) => ({
-                value: entry.key,
-                label: entry.label,
-              }))
-            : undefined
-        }
-        active={page?.key}
-        onChange={(value) => {
-          setPageKey(value);
-          setFormatKey(null);
-        }}
-      />
+      {showHeader && (
+        <DivisionHeader
+          label={division.label}
+          emblem={division.emblem}
+          title={page?.label ?? "Paperwork"}
+          purpose={page?.purpose}
+          actions={division.quickLinks?.length ? (
+            <div className="flex flex-wrap gap-2">
+              {division.quickLinks.map((link) => (
+                <Button key={`${link.name}-${link.url}`} asChild size="sm" variant="outline">
+                  <a href={link.url} target="_blank" rel="noopener noreferrer">{link.name}<ExternalLink className="ml-1.5 h-3.5 w-3.5" /></a>
+                </Button>
+              ))}
+            </div>
+          ) : undefined}
+          tabs={
+            division.pages.length > 1
+              ? division.pages.map((entry) => ({
+                  value: entry.key,
+                  label: entry.label,
+                }))
+              : undefined
+          }
+          active={page?.key}
+          onChange={(value) => {
+            setPageKey(value);
+            setFormatKey(null);
+          }}
+        />
+      )}
 
       <DocumentPicker
         groups={(page?.groups ?? []).map((group) => ({
@@ -356,7 +488,7 @@ export function PaperworkWorkspace({
               hint={format.hint}
             >
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {format.fields.map((field) => (
+                {format.fields.filter((field) => isFieldVisible(field, values, format)).map((field) => (
                   <div
                     key={field.key}
                     className={field.width === "half" ? undefined : "sm:col-span-2"}
@@ -391,6 +523,15 @@ export function PaperworkWorkspace({
                   </div>
                 ))}
               </div>
+              {formActions?.length ? (
+                <div className="flex flex-wrap gap-3 pt-1">
+                  {formActions.map((action) => (
+                    <Button key={action.id} type="button" variant={action.kind === "reset" ? "outline" : "default"} disabled={disabledFor(action)} onClick={() => void runAction(action)}>
+                      {action.label}
+                    </Button>
+                  ))}
+                </div>
+              ) : null}
             </BuilderSection>
           </BuilderForm>
 
@@ -552,6 +693,34 @@ function FieldControl({
         rows={4}
         className="resize-y"
       />
+    );
+  }
+
+  if (field.type === "reasons") {
+    const reasons = String(value ?? "").split(/\r?\n/);
+    const updateReason = (index: number, next: string) => {
+      reasons[index] = next;
+      onChange(reasons.join("\n"));
+    };
+    return (
+      <div className="space-y-2">
+        {reasons.map((reason, index) => (
+          <div key={`${field.key}-${index}`} className="flex gap-2">
+            <Input
+              id={index === 0 ? id : `${id}-${index + 1}`}
+              aria-label={`${field.label} ${index + 1}`}
+              value={reason}
+              maxLength={field.max}
+              placeholder={field.placeholder ?? `Reason ${index + 1}`}
+              onChange={(event) => updateReason(index, event.target.value)}
+            />
+            <Button type="button" variant="outline" size="icon" aria-label={`Remove ${field.label} ${index + 1}`} disabled={reasons.length === 1} onClick={() => onChange(reasons.filter((_, i) => i !== index).join("\n"))}>
+              <span aria-hidden="true">−</span>
+            </Button>
+          </div>
+        ))}
+        <Button type="button" variant="outline" size="sm" disabled={reasons.length >= PAPERWORK_REASON_LIMIT} onClick={() => onChange([...reasons, ""].join("\n"))}>Add reason</Button>
+      </div>
     );
   }
 

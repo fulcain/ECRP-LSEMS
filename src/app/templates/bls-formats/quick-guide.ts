@@ -1,4 +1,4 @@
-import { BLSTemplateDefinition } from "./types";
+import type { BLSTemplateDefinition } from "./types";
 
 /**
  * The BLS Quick Guide reference post graduates receive after completing their

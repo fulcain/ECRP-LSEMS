@@ -15,6 +15,11 @@ import { QUICK_SEARCH_CATALOG } from "@/configs/quick-search-catalog";
 import { resolveMemberIdentity } from "@/lib/member-identity";
 import { EmployeeRosterProvider } from "@/components/employees/employee-roster-provider";
 import { BackToTop } from "@/components/layout/back-to-top";
+import { divisionIcon } from "@/components/layout/header/configs/division-icons";
+import { DIVISION_ENTRIES } from "@/configs/roles";
+import { GENERATED_PAPERWORK } from "@/app/constants/paperwork/generated";
+import { hasMongoPaperworkStore, readPaperworkDivisionSummaries } from "@/lib/paperwork/amu-store";
+import { divisionSlug } from "@/lib/paperwork/schema";
 
 export const metadata: Metadata = {
   // The brand is written down once. Every route's layout declares only its own
@@ -60,8 +65,31 @@ export default async function RootLayout({
   // The same matrix the middleware gates on, so a hidden page is never left in
   // the sidebar and a granted one is never left out of it.
   const overrides = await readAccessMatrix();
+  let databaseDivisionLinks: typeof headerLinks = [];
+  if (hasMongoPaperworkStore()) {
+    try {
+      const sourceKeys = new Set(GENERATED_PAPERWORK.map((config) => config.division.key));
+      const summaries = await readPaperworkDivisionSummaries();
+      databaseDivisionLinks = summaries.flatMap((division) => {
+        if (sourceKeys.has(division.key)) return [];
+        const declared = DIVISION_ENTRIES.find(([key]) => key === division.key)?.[1];
+        const href = declared?.route
+          ? `/divisions/database/${divisionSlug(division.key)}`
+          : `/divisions/${divisionSlug(division.key)}`;
+        return [{
+          label: division.label,
+          href,
+          icon: divisionIcon(division.icon),
+          group: "Divisions" as const,
+          match: [href],
+        }];
+      });
+    } catch {
+      // Saved division links return when the paperwork database reconnects.
+    }
+  }
   const links = filterAccessibleLinks(
-    headerLinks,
+    [...headerLinks, ...databaseDivisionLinks],
     session?.roles ?? null,
     session?.discordId,
     overrides,
