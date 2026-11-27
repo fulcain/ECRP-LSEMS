@@ -21,6 +21,7 @@
     "paperwork:audit": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file-if-exists=.env --import ./scripts/lib/ts-config-loader.mjs scripts/paperwork-audit.ts",
     "paperwork:migrate-bls-listing": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file-if-exists=.env --import ./scripts/lib/ts-config-loader.mjs scripts/paperwork-migrate-bls-listing.ts",
     "paperwork:remove-revisions": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file-if-exists=.env --import ./scripts/lib/ts-config-loader.mjs scripts/paperwork-remove-revisions.ts",
+    "employees:remove-callsigns": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file-if-exists=.env --import ./scripts/lib/ts-config-loader.mjs scripts/remove-employee-roster-callsigns.ts",
     "extension:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/extension-check.mjs",
     "extension:zip": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/lib/ts-config-loader.mjs scripts/extension-zip.ts",
     "extension:assets": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/extension-assets.mjs"

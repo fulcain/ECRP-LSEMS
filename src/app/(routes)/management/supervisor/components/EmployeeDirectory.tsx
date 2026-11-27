@@ -46,7 +46,6 @@ type DirectoryResponse = {
 };
 
 const blankEmployee = (): EmployeeRecord => ({
-  callsign: "",
   name: "",
   group: "EMTs",
   govProfileUrl: "",
@@ -316,8 +315,8 @@ export function EmployeeDirectory() {
           <Input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search by name or callsign"
-            aria-label="Search employees by name or callsign"
+            placeholder="Search by name"
+            aria-label="Search employees by name"
             className="pl-9"
           />
         </div>
@@ -361,7 +360,7 @@ export function EmployeeDirectory() {
             </thead>
             <tbody className="divide-y divide-border/80">
               {filteredEmployees.map((employee, index) => (
-                <Fragment key={`${employee.name}-${employee.callsign}`}>
+                <Fragment key={employee.name}>
                 {filteredEmployees[index - 1]?.group !== employee.group && (
                   <tr key={`group-${employee.group}`} className="bg-background/70">
                     <th colSpan={canManage ? 5 : 4} className="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:px-5">
@@ -369,7 +368,7 @@ export function EmployeeDirectory() {
                     </th>
                   </tr>
                 )}
-                <tr key={`${employee.name}-${employee.callsign}`} className="transition-colors hover:bg-background/45">
+                <tr key={employee.name} className="transition-colors hover:bg-background/45">
                   <th scope="row" className="px-4 py-3 text-left font-normal sm:px-5">
                     <div className="flex min-w-48 items-center gap-3">
                       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-xs font-semibold text-primary">
@@ -377,7 +376,6 @@ export function EmployeeDirectory() {
                       </div>
                       <div className="min-w-0">
                         <p className="truncate font-semibold text-foreground">{employee.name}</p>
-                        <p className="font-mono text-xs text-muted-foreground">{employee.callsign || "No callsign assigned"}</p>
                       </div>
                     </div>
                   </th>
@@ -420,7 +418,7 @@ export function EmployeeDirectory() {
                   <td colSpan={canManage ? 5 : 4} className="px-6 py-12 text-center">
                     <Users className="mx-auto h-8 w-8 text-muted-foreground/60" />
                     <p className="mt-3 text-sm font-medium text-foreground">No employees match that search.</p>
-                    <p className="mt-1 text-xs text-muted-foreground">Try another name, callsign, or group.</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Try another name or group.</p>
                   </td>
                 </tr>
               )}
@@ -439,10 +437,6 @@ export function EmployeeDirectory() {
               <div className="space-y-2">
                 <Label htmlFor="employee-name">Name</Label>
                 <Input id="employee-name" value={draft.name} maxLength={INPUT_LIMITS.name} required onChange={(event) => setDraft({ ...draft, name: event.target.value })} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="employee-callsign">Callsign <span className="text-muted-foreground">(optional)</span></Label>
-                <Input id="employee-callsign" value={draft.callsign} maxLength={INPUT_LIMITS.short} onChange={(event) => setDraft({ ...draft, callsign: event.target.value })} />
               </div>
               <div className="space-y-2 sm:col-span-2">
                 <Label htmlFor="employee-group">Group</Label>

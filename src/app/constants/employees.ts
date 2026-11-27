@@ -8,7 +8,6 @@ export type EmployeeGroup =
   | "Applicants";
 
 export type EmployeeRecord = {
-  callsign: string;
   name: string;
   group: EmployeeGroup;
   govProfileUrl: string;
@@ -27,35 +26,8 @@ export const EMPLOYEE_GROUPS: readonly EmployeeGroup[] = [
   "Applicants",
 ];
 
-const CALLSIGN_PREFIX_ALIASES: Readonly<Record<string, string>> = {
-  ALPHA: "A",
-  BRAVO: "B",
-  CHARLIE: "C",
-  DELTA: "D",
-  ECHO: "E",
-  OSCAR: "O",
-  ZULU: "Z",
-  A: "ALPHA",
-  B: "BRAVO",
-  C: "CHARLIE",
-  D: "DELTA",
-  E: "ECHO",
-  O: "OSCAR",
-  Z: "ZULU",
-};
-
 function normalizeEmployeeSearchText(value: string): string {
   return value.toLocaleLowerCase().replace(/[^a-z0-9]/g, "");
-}
-
-function callsignSearchTerms(callsign: string): string[] {
-  const trimmed = callsign.trim().toUpperCase();
-  const match = /^([A-Z]+)(.*)$/.exec(trimmed);
-  if (!match) return [callsign];
-
-  const [, prefix, suffix] = match;
-  const alias = CALLSIGN_PREFIX_ALIASES[prefix];
-  return alias ? [callsign, `${alias}${suffix}`] : [callsign];
 }
 
 export function employeeMatchesSearch(
@@ -70,9 +42,7 @@ export function employeeMatchesSearch(
     .filter(Boolean);
   if (queryParts.length === 0) return true;
 
-  const searchTerms = [employee.name, ...callsignSearchTerms(employee.callsign)]
-    .map(normalizeEmployeeSearchText)
-    .filter(Boolean);
+  const searchTerms = [normalizeEmployeeSearchText(employee.name)].filter(Boolean);
 
   return queryParts.every((part) => searchTerms.some((term) => term.includes(part)));
 }

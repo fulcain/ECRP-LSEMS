@@ -1,5 +1,5 @@
 import { EMPLOYEE_GROUPS, type EmployeeRecord } from "@/app/constants/employees";
-import { INPUT_LIMITS, validateName, validateText, validateUrl } from "@/lib/validation";
+import { validateName, validateUrl } from "@/lib/validation";
 
 export type EmployeeRecordResult =
   | { ok: true; value: EmployeeRecord }
@@ -11,17 +11,11 @@ export function parseEmployeeRecord(value: unknown): EmployeeRecordResult {
   }
 
   const record = value as Record<string, unknown>;
-  const callsign = typeof record.callsign === "string" ? record.callsign.trim() : "";
   const name = typeof record.name === "string" ? record.name.trim() : "";
   const group = record.group;
   const govProfileUrl = typeof record.govProfileUrl === "string" ? record.govProfileUrl.trim() : "";
   const personnelFileUrl = typeof record.personnelFileUrl === "string" ? record.personnelFileUrl.trim() : "";
 
-  const callsignResult = validateText(callsign, "Callsign", {
-    max: INPUT_LIMITS.short,
-    required: false,
-  });
-  if (!callsignResult.ok) return callsignResult;
   const nameResult = validateName(name, "Name");
   if (!nameResult.ok) return nameResult;
   if (typeof group !== "string" || !EMPLOYEE_GROUPS.includes(group as (typeof EMPLOYEE_GROUPS)[number])) {
@@ -34,7 +28,7 @@ export function parseEmployeeRecord(value: unknown): EmployeeRecordResult {
 
   return {
     ok: true,
-    value: { callsign, name, group: group as EmployeeRecord["group"], govProfileUrl, personnelFileUrl },
+    value: { name, group: group as EmployeeRecord["group"], govProfileUrl, personnelFileUrl },
   };
 }
 

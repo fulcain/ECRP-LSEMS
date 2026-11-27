@@ -107,8 +107,8 @@ export function EmployeeNameInput({
           <div className="border-b border-border p-2">
             <Input
               ref={searchInputRef}
-              aria-label="Search employees by name or callsign"
-              placeholder="Search by name or callsign…"
+              aria-label="Search employees by name"
+              placeholder="Search by name…"
               value={search}
               maxLength={INPUT_LIMITS.name}
               onChange={(event) => setSearch(event.target.value)}
@@ -123,7 +123,7 @@ export function EmployeeNameInput({
                   .filter((employee) => employeeMatchesSearch(employee, search))
                   .map((employee) => (
                     <button
-                      key={`${employee.callsign}-${employee.name}`}
+                      key={employee.name}
                       type="button"
                       role="option"
                       aria-selected={selectedEmployee?.name === employee.name}
@@ -132,9 +132,6 @@ export function EmployeeNameInput({
                     >
                       <span className="min-w-0 flex-1">
                         <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                          <span className="font-mono text-xs text-muted-foreground">
-                            {employee.callsign || "Applicant"}
-                          </span>
                           <span>{employee.name}</span>
                         </span>
                         <span className="block text-xs text-muted-foreground">{employee.group}</span>
@@ -146,7 +143,7 @@ export function EmployeeNameInput({
                   ))}
                 {!employees.some((employee) => employeeMatchesSearch(employee, search)) && (
                   <p className="px-3 py-2 text-sm text-muted-foreground">
-                    No employees match that name or callsign.
+                    No employees match that name.
                   </p>
                 )}
               </>
@@ -189,7 +186,6 @@ export function EmployeeNameInput({
       )}
       {selectedEmployee && (
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-          <span className="font-mono text-foreground/80">{selectedEmployee.callsign}</span>
           {selectedEmployee.govProfileUrl && (
             <a
               href={selectedEmployee.govProfileUrl}
