@@ -364,8 +364,10 @@ export function ResignationProcessor() {
       {
         id: "revoke-access",
         label:
-          "Revoke access cards, keys, and all other employment-issued access (( Remove from F4 only if pay is processed ))",
+          "Revoke access cards, keys, and all other employment-issued access (( Roleplay revoking access and save a screenshot of the roleplay with /time ))",
         icon: KeyRound,
+        copyText: revokeAccessBBCode,
+        copyLabel: "Copy /me",
       },
       {
         id: "usergroups",
@@ -450,19 +452,12 @@ export function ResignationProcessor() {
       dischargeTitle,
       resignationPostUrl,
       personnelFileUrl,
+      revokeAccessBBCode,
     ],
   );
 
   const oocItems: OocItem[] = useMemo(
     () => [
-      {
-        id: "revoke-access-ooc",
-        label:
-          "Roleplay revoking access and save a screenshot of the roleplay with /time",
-        icon: KeyRound,
-        copyText: revokeAccessBBCode,
-        copyLabel: "Copy /me",
-      },
       {
         id: "player-log",
         label:
@@ -479,19 +474,13 @@ export function ResignationProcessor() {
         note: "Strongly encouraged - doing it this way is easier on you and your time.",
       },
       {
-        id: "f4-removal",
-        label:
-          "Create a request in #forum-and-f4-requests for F4 removal. If Command+ is around, ask them to process pay; if you are Command+, process pay yourself and remove from F4.",
-        icon: Shield,
-      },
-      {
         id: "discord-roles",
         label:
           "Remove Discord roles. Issue the Guest role for an Honorable discharge; kick from Discord for a Dishonorable discharge.",
         icon: Headphones,
       },
     ],
-    [revokeAccessBBCode, playerLogBBCode],
+    [playerLogBBCode],
   );
 
   const completedOocCount = oocItems.filter((item) =>
